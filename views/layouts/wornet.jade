@@ -12,8 +12,11 @@ html.no-js(lang=lang())
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
 		block css
+			link(media="all", rel="stylesheet", href='/application.css')
 		block link
 			link(rel="shortcut icon", href='/favicon.ico')
 		block head
 	body
 		block body
+		block js
+			script(type="text/javascript", src="/application.js")
