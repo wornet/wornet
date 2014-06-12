@@ -1,0 +1,19 @@
+doctype html
+html.no-js(lang=lang())
+	head
+		meta(charset="UTF-8")
+		title
+			block title
+				=s("Wornet")
+		block meta
+			mixin meta(name, content)
+				meta(name=name, content=content)
+			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
+			+meta("apple-mobile-web-app-capable", "yes")
+			+meta("format-detection", "telephone=no")
+		block css
+		block link
+			link(rel="shortcut icon", href='/favicon.ico')
+		block head
+	body
+		block body
