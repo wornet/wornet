@@ -31,14 +31,18 @@ describe('/', function () {
 
 
     it('should say "hello"', function (done) {
-        request(mock)
-            .get('/')
-            .expect(200)
-            .expect('Content-Type', /html/)
-            .expect(/Hello, /)
-            .end(function (err, res) {
-                done(err);
-            });
+        setTimeout(function () {
+            console.log('la');
+            request(mock)
+                .get('/')
+                .expect(200)
+                .expect('Content-Type', /html/)
+                .expect(/Hello, /)
+                .end(function (err, res) {
+                    done(err);
+                });
+        }, 4000);
+        console.log('ici');
     });
 
 });
