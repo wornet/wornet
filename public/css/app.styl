@@ -1,0 +1,36 @@
+main-color = #dfa980
+highlight-color = lighten(main-color, 60%)
+light-color = lighten(main-color, 35%)
+dark-color = darken(main-color, 35%)
+sat-color = saturate(main-color, 35%)
+gray-color = desaturate(main-color, 35%)
+main-padding = 10px
+big-padding = main-padding * 2
+small-padding = main-padding / 2
+fonts = helvetica, arial, sans-serif
+
+
+border-radius()
+	-webkit-border-radius arguments
+	-moz-border-radius arguments
+	border-radius arguments
+
+
+box-shadow()
+	-webkit-box-shadow arguments
+	-moz-box-shadow arguments
+	box-shadow arguments
+
+
+body 
+	font 14px/1.4 fonts
+	background main-color
+
+h1
+	background light-color
+	color dark-color
+	border-radius(3px)
+	margin big-padding
+	padding main-padding
+	box-shadow(0 0 1px dark-color)
+	text-shadow 0 1px 1px highlight-color

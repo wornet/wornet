@@ -20,7 +20,12 @@
 		"ejs": "^1.0.0",
 		"dustjs-helpers": "^1.2.0",
 		"then-jade": "^2.0.0",
-		"extend": "^1.2.1"
+		"extend": "^1.2.1",
+		"glob": "^4.0.2",
+		"coffee-script": "^1.7.1",
+		"twitter-bootstrap": "^2.1.1",
+		"stitch": "^0.3.3",
+		"connect": "^2.19.6"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",
