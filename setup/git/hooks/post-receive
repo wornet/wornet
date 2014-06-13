@@ -1,0 +1,4 @@
+#!/bin/sh
+npm i > /dev/null
+npm update > /dev/null
+coffee --join index.js --compile core/server/*.coffee > /dev/null
