@@ -1,25 +1,24 @@
-"use strict"
+'use strict'
 #global describe:false, it:false, beforeEach:false, afterEach:false
 
-require './test'
+standartTimeout = 6000
 
-# describe "/", ->
-#     app = undefined
-#     mock = undefined
-#     beforeEach (done) ->
-#         app = express()
-#         app.on "start", done
-#         app.use kraken(basedir: process.cwd())
-#         mock = app.listen(1337)
+onready = require './test'
 
-#     afterEach (done) ->
-#         mock.close done
+describe "/", ->
 
-#     it "should say \"hello\"", (done) ->
-#         setTimeout (->
-#             console.log "la"
-#             request(mock).get("/").expect(200).expect("Content-Type", /html/).expect(/Hello, /).end (err, res) ->
-#                 done err
-#         ), 4000
-#         console.log "ici"
+	@timeout standartTimeout
 
+	app = undefined
+	agent = undefined
+
+	beforeEach (done) ->
+		onready (givenApp, givenAgent) ->
+			app = givenApp
+			agent = givenAgent
+			done()
+
+
+	it "should contain 'Wornet'", (done) ->
+		agent.get("/").expect(200).expect("Content-Type", /html/).expect(/Wornet/).end (err, res) ->
+			done err

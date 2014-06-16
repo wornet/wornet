@@ -1,7 +1,11 @@
 {
     
     "wornet": {
-        "version": "0.1.0"
+        "version": "0.1.0",
+        "autoloadDirectories": [
+            "models",
+            "core/utils"
+        ]
     },
 
     "view engines": {

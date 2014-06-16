@@ -21,10 +21,7 @@ app = express()
 
 # Config load
 config = {}
-autoloadDirectories = [
-	'models',
-	'core/utils'
-]
+
 options =
 	onconfig: (localConfig, next) ->
 		extend config, localConfig._store
@@ -52,26 +49,26 @@ extend app.locals, functions
 extend app.locals,
 	config: config
 
+defer = []
+app.onready = (done) ->
+	defer.push done
+
 # Load all files contained in autoloadDirectories
-pending = autoloadDirectories.length
-autoloadDirectories.forEach (directory) ->
-	glob directory + "/**/*.coffee", (er, files) ->
-		files.forEach (file) ->
-			loadedValue = require './' + file
-			if typeof(loadedValue.name) is 'undefined' || empty(loadedValue.name)
-				name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
-			else
-				name = loadedValue.name
-			global[name] = loadedValue unless global[name]?
+onready = require './core/system/autoload'
+onready ->
 
-		# When no more directory need to be loaded
-		unless --pending
+	# When no more directory need to be loaded
 
-			# Launch Kraken
-			app.use kraken options
+	# Launch Kraken
+	app.use kraken options
 
-			# Handle errors and print in the console
-			app.listen port, (err) ->
-				console.log '[%s] Listening on http://localhost:%d', app.settings.env, port
+	app.on 'start', ->
+		console.log 'Wornet is ready'
+		defer.forEach (done) ->
+			done app
 
-			console.log "Wornet is ready"
+	# Handle errors and print in the console
+	app.listen port, (err) ->
+		console.log '[%s] Listening on http://localhost:%d', app.settings.env, port
+
+exports = module.exports = app

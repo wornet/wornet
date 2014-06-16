@@ -1,10 +1,10 @@
 #!/bin/sh
-nodeunit > /dev/null
+mocha --compilers coffee:coffee-script/register > /dev/null
 
 # $? is a shell variable which stores the return code from what we just ran
 rc=$?
 if [[ $rc != 0 ]] ; then
     # A non-zero return code means an error occurred, so tell the user and exit
-    echo "nodeunit failed on rev $newrev - push deniend. Run tests locally and confirm they pass before pushing"
+    echo "unit tests failed on rev $newrev - push deniend. Run tests locally and confirm they pass before pushing"
     exit $rc
 fi
