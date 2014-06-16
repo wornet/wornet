@@ -1,9 +1,6 @@
 "use strict"
 
-kraken = require 'kraken-js'
-express = require 'express'
-request = require 'supertest'
-mocha = require 'mocha'
-extend = require 'extend'
-
-extend global, mocha
+require('extend') global, 
+	kraken: require 'kraken-js'
+	express: require 'express'
+	assert: require 'assert'
