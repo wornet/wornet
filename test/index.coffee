@@ -1,9 +1,8 @@
 "use strict"
 #global describe:false, it:false, beforeEach:false, afterEach:false
 
-kraken = require("kraken-js")
-express = require("express")
-request = require("supertest")
+require './test'
+
 describe "/", ->
     app = undefined
     mock = undefined
