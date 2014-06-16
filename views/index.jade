@@ -4,3 +4,5 @@ block body
 	h1
 		=s("Respirez, vous êtes sur Wornet.")
 	input.btn.btn-primary(type="button", value=s("If I am blue, Bootstrap works !"))
+	section(ng-controller="MainCtrl")
+		input.btn.btn-primary(type="button", value="{{isAngularWorking}}")

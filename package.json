@@ -23,9 +23,10 @@
 		"extend": "^1.2.1",
 		"glob": "^4.0.2",
 		"coffee-script": "^1.7.1",
-		"twitter-bootstrap": "^2.1.1",
+		"bootstrap-stylus": "^0.2.1",
 		"stitch": "^0.3.3",
-		"connect": "^2.19.6"
+		"connect": "^2.19.6",
+		"nodemon": "^1.2.0"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",
@@ -38,7 +39,9 @@
 		"grunt-localizr": "^0.1.0",
 		"grunt-mocha-cli": "^1.5.0",
 		"mocha": "^1.18.0",
-		"supertest": "^0.9.0"
+		"supertest": "^0.9.0",
+		"karma": "~0.12.0",
+		"karma-jasmine": "^0.2.2"
 	},
 	"generator-kraken": {
 		"version": "1.1.0",

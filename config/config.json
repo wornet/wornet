@@ -1,5 +1,9 @@
 {
     
+    "wornet": {
+        "version": "0.1.0"
+    },
+
     "view engines": {
         "jade": {
             "module": "consolidate"
@@ -42,7 +46,7 @@
 
         "router": {
             "module": {
-                "arguments": [{ "directory": "path:./controllers" }]
+                "arguments": [{ "directory": "path:./controllers/" }]
             }
         },
 

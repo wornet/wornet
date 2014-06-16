@@ -1,0 +1,10 @@
+mixin ie(condition)
+	| <!--[!{condition}]>
+	block
+	| <![endif]-->
+
+mixin meta(name, content)
+	meta(name=name, content=content)
+
+mixin link(href, name)
+	a(class!=attributes.class, href=href)= name
