@@ -1,5 +1,8 @@
 'use strict'
 
+# No conflict if a 8000 port app is running
+process.env.PORT = 8001
+
 request = require 'supertest'
 chai = require 'chai'
 chai.should()

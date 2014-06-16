@@ -1,7 +1,6 @@
 'use strict'
-#global describe:false, it:false, beforeEach:false, afterEach:false
 
-standartTimeout = 6000
+standartTimeout = 12000
 
 onready = require './test'
 
