@@ -5,6 +5,10 @@ module.exports =
 		n = parseInt(n)
 		if isNaN(n) then 0 else n
 	,
+	floatval: (n) ->
+		n = parseFloat(n)
+		if isNaN(n) then 0 else n
+	,
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
 	,
@@ -33,8 +37,9 @@ module.exports =
 	,
 	copy: (from, to) ->
 		fs.createReadStream(from).pipe(fs.createWriteStream(to))
-	s: (val) ->
-		val
+	,
+	s: (text, replacements, count) ->
+		local lang(), text, replacements, count
 	,
 	lang: ->
 		"fr"

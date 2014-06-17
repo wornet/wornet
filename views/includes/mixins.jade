@@ -3,6 +3,11 @@ mixin ie(condition)
 	block
 	| <![endif]-->
 
+mixin non-ie()
+	| <!--[if !IE]><!-->
+	block
+	| <!--<![endif]-->
+
 mixin meta(name, content)
 	meta(name=name, content=content)
 

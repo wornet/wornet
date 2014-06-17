@@ -5,8 +5,8 @@ block body
 		Abc
 	h1
 		=s("Respirez, vous êtes sur Wornet.")
-	input.btn.btn-primary(type="button", value=s("If I am blue, Bootstrap works !"))
-	section(ng-controller="MainCtrl")
+	section
+		input.btn.btn-primary(type="button", value=s("If I am blue, Bootstrap works !"))
 		input.btn.btn-primary(type="button", value="{{isAngularWorking}}")
 	- for(var i = 0; i < 1000; i++)
 		p.

@@ -1,1 +1,1 @@
-node tasks/test
+mocha --compilers coffee:coffee-script/register

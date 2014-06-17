@@ -1,5 +1,5 @@
 #!/bin/sh
-node tasks/test > /dev/null
+mocha --compilers coffee:coffee-script/register > /dev/null
 
 # $? is a shell variable which stores the return code from what we just ran
 rc=$?
