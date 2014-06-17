@@ -1,6 +1,6 @@
 'use strict'
 
-standartTimeout = 12000
+standartTimeout = 16000
 
 onready = require './test'
 

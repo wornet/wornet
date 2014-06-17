@@ -3,7 +3,7 @@
 module.exports =
 	intval: (n) ->
 		n = parseInt(n)
-		isNaN(n) ? 0 : n
+		if isNaN(n) then 0 else n
 	,
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
@@ -25,7 +25,7 @@ module.exports =
 						typeof(value.length) is 'undefined' &&
 						typeof(JSON) is 'object' &&
 						typeof(JSON.stringify) is 'function' &&
-						JSON.stringify(b) is '{}'
+						JSON.stringify(value) is '{}'
 					)
 				)
 			)
@@ -40,7 +40,7 @@ module.exports =
 		"fr"
 	,
 	jd: (code) ->
-		jadeRender = require('then-jade').render
+		jadeRender = require('jade').render
 		jadeRender(code)
 	,
 	assetUrl: (file, directory, extension) ->
