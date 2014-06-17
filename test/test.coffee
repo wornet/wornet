@@ -15,11 +15,14 @@ require('extend') global,
 	chai: chai
 	expect: chai.expect
 
-
-app = require __dirname + '/../index'
-agent = request.agent app
-#onready = require __dirname + '/../core/system/autoload'
-
-module.exports = (done) ->
-	app.onready ->
-		done app, agent
+module.exports =
+	utils: (done) ->
+		autoload = require __dirname + '/../core/system/autoload'
+		autoload ->
+			done()
+	,
+	app: (done) ->
+		app = require __dirname + '/../index'
+		agent = request.agent app
+		app.onready ->
+			done app, agent

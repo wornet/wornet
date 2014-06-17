@@ -36,17 +36,8 @@ port = process.env.PORT || 8000
 # Build coffee scripts
 exec 'coffee -b -o .build/js -wc public/js'
 
-# Get functions
-functions = require './core/utils/functions'
-
-# Make functions and config usables in controllers and other stuff
-extend global, functions
+# Make config usables everywhere
 extend global,
-	config: config
-
-# Make functions and config usables in views
-extend app.locals, functions
-extend app.locals,
 	config: config
 
 defer = []
@@ -58,6 +49,11 @@ onready = require './core/system/autoload'
 onready ->
 
 	# When no more directory need to be loaded
+
+	# Make functions and config usables in views
+	extend app.locals, functions
+	extend app.locals,
+		config: config
 
 	# Launch Kraken
 	app.use kraken options

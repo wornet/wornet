@@ -4,6 +4,16 @@ root = __dirname + '/../../'
 config = require root + 'config/config.json'
 autoloadDirectories = config.wornet.autoloadDirectories
 
+extend = require 'extend'
+glob = require 'glob'
+
+# Get functions
+functions = require root + 'core/utils/functions'
+
+# Make functions and config usables in controllers and other stuff
+extend global, functions
+
+
 # Load all files contained in autoloadDirectories
 pending = autoloadDirectories.length
 autoloadDirectories.forEach (directory) ->

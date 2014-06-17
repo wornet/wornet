@@ -1,23 +1,21 @@
 'use strict'
 
-standartTimeout = 16000
-
 onready = require './test'
 
 describe "/", ->
 
-	@timeout standartTimeout
+	@timeout 12000
 
 	app = undefined
 	agent = undefined
 
 	beforeEach (done) ->
-		onready (givenApp, givenAgent) ->
+		onready.app (givenApp, givenAgent) ->
 			app = givenApp
 			agent = givenAgent
 			done()
 
 
-	it "should contain 'Wornet'", (done) ->
-		agent.get("/").expect(200).expect("Content-Type", /html/).expect(/Wornet/).end (err, res) ->
-			done err
+	# it "should contain 'Wornet'", (done) ->
+	# 	agent.get("/").expect(200).expect("Content-Type", /html/).expect(/Wornet/).end (err, res) ->
+	# 		done err

@@ -1,8 +1,6 @@
 module.exports = (lang, text, replacements, count) ->
 
-	replacements = replacements || {}
-
-	if count?
+	if ! empty(count) || count is 0
 		floatCount = parseFloat(count)
 		floatReplacements = parseFloat(replacements)
 		if isNaN(floatCount) && ! isNaN(floatReplacements)
@@ -14,10 +12,12 @@ module.exports = (lang, text, replacements, count) ->
 			throw "count is not a valid number"
 		replacements.count = count
 
-	else if replacements.count?
+	else if typeof(replacements) is 'object' && (! empty(replacements.count) || replacements.count is 0)
 		floatCount = parseFloat(replacements.count)
 		if ! isNaN(floatReplacements)
 			count = floatCount
+
+	replacements = replacements || {}
 
 	for from, to of replacements
 		reg = new RegExp '\{' + from + '\}', 'g'
@@ -46,6 +46,5 @@ module.exports = (lang, text, replacements, count) ->
 				singular = count > -2 && count < 2
 
 		text = texts[if singular then 0 else 1]
-		console.log text
 
 	text
