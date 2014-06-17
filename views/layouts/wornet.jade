@@ -20,21 +20,33 @@ html.no-js(lang=lang())
 			link(rel="shortcut icon", href="/favicon.ico")
 		block id
 			+ie('if IE lte 8')
-				script.
-					document.createElement('tabs');
-					document.createElement('pane');
-					document.createElement('ng-pluralize');
+				script
+					:coffee
+						document.createElement 'tabs'
+						document.createElement 'pane'
+						document.createElement 'ng-pluralize'
 		block head
+
 	body(ng-app="Wornet")
-		+ie('if IE lt 7')
-			.alert.alert-danger
-				- var upgradeUrl = "http://browsehappy.com/"
-				- var ieFrameUrl = "http://www.google.com/chromeframe/?redirect=true"
-				- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
-				- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
-				!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
-		div(ng-controller="AppCtrl")
-			block body
+
+		nav.navbar-fixed-top.
+			Abc
+
+		#wrap
+			+ie('if IE lt 7')
+				.alert.alert-danger
+					- var upgradeUrl = "http://browsehappy.com/"
+					- var ieFrameUrl = "http://www.google.com/chromeframe/?redirect=true"
+					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
+					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
+					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+
+			div(ng-controller="AppCtrl")
+				block body
+
+		footer
+			=s("Wornet")
+
 		block js
 			+ie('if IE lte 9')
 				script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
