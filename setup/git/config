@@ -7,7 +7,7 @@
 	ignorecase = true
 	hideDotFiles = dotGitOnly
 [remote "origin"]
-	url = http://git.wornet.com/Bastien/wornet.git
+	url = http://198.27.82.208:8888/Bastien/wornet.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [branch "master"]
 	remote = origin
