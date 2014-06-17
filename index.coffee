@@ -22,16 +22,16 @@ app = express()
 # Config load
 config = {}
 
+port = process.env.PORT || 8000
+
 options =
 	onconfig: (localConfig, next) ->
 		extend config, localConfig._store
-		if config.env.development
+		if port is 8000 && config.env.development
 			(['config', 'hooks/post-receive', 'hooks/post-receive.bat', 'hooks/pre-commit', 'hooks/pre-commit.bat']).forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console.log 'setup/git/' + file + ' >>> .git/' + file
 		next null, localConfig
-
-port = process.env.PORT || 8000
 
 # Build coffee scripts
 exec 'coffee -b -o .build/js -wc public/js'
