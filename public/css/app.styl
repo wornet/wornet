@@ -1,0 +1,40 @@
+$baseColor = #dfa954
+$highlightColor = lighten($baseColor, 60%)
+$lightColor = lighten($baseColor, 35%)
+$darkColor = darken($baseColor, 35%)
+$satColor = saturate($baseColor, 35%)
+$grayColor = desaturate($baseColor, 35%)
+$mainPadding = 10px
+$bigPadding = $mainPadding * 2
+$smallPadding = $mainPadding / 2
+$fonts = helvetica, arial, sans-serif
+
+
+//@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
+//@import "lib/bootstrap-theme"
+
+
+border-radius()
+	-webkit-border-radius arguments
+	-moz-border-radius arguments
+	border-radius arguments
+
+
+box-shadow()
+	-webkit-box-shadow arguments
+	-moz-box-shadow arguments
+	box-shadow arguments
+
+
+body 
+	font 14px/1.4 $fonts
+	background $baseColor
+
+h1
+	background $lightColor
+	color $darkColor
+	margin $bigPadding
+	padding $mainPadding
+	text-shadow 0 1px 1px $highlightColor
+	border-radius(3px)
+	box-shadow(0 0 1px $darkColor)

@@ -1,0 +1,60 @@
+include ../includes/mixins
+doctype html
+html.no-js(lang=lang())
+	head
+		meta(charset="UTF-8")
+		title
+			block title
+				=s("Wornet")
+		base(href="/")
+		block meta
+			meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
+			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
+			+meta("apple-mobile-web-app-capable", "yes")
+			+meta("format-detection", "telephone=no")
+		block css
+			link(media="all", rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+			link(media="all", rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css")
+			link(media="all", rel="stylesheet", href=style("app"))
+		block link
+			link(rel="shortcut icon", href="/favicon.ico")
+		block id
+			+ie('if IE lte 8')
+				script
+					:coffee
+						document.createElement 'tabs'
+						document.createElement 'pane'
+						document.createElement 'ng-pluralize'
+		block head
+
+	body(ng-app="Wornet")
+
+		nav.navbar-fixed-top.
+			Abc
+
+		#wrap
+			+ie('if IE lt 7')
+				.alert.alert-danger
+					- var upgradeUrl = "http://browsehappy.com/"
+					- var ieFrameUrl = "http://www.google.com/chromeframe/?redirect=true"
+					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
+					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
+					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+
+			div(ng-controller="AppCtrl")
+				block body
+
+		footer
+			=s("Wornet")
+
+		block js
+			+ie('if IE lte 9')
+				script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
+			+ie('if IE gt 9')
+				script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+			+non-ie()
+				script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")
+			script(type="text/javascript", src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+			script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js")
+			script(type="text/javascript", src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js")
+			script(type="text/javascript", src=script("app"))
