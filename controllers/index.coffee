@@ -1,14 +1,9 @@
 'use strict'
 
-command = require(__dirname + "/../core/system/command.js")
-
 module.exports = (router) ->
 
-	router.get '/push-hook', (req, res) ->
+    model = new IndexModel()
 
-		command 'cd /var/www/nodejs/wornet/int'
-		command 'git pull'
-		command 'npm i'
+    router.get '/', (req, res) ->
 
-		res.render 'index',
-			executed: 'push-hook'
+        res.render 'index', model
