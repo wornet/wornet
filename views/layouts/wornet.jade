@@ -29,9 +29,6 @@ html.no-js(lang=lang())
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top.
-			Abc
-
 		#wrap
 			+ie('if IE lt 7')
 				.alert.alert-danger
@@ -43,9 +40,6 @@ html.no-js(lang=lang())
 
 			div(ng-controller="AppCtrl")
 				block body
-
-		footer
-			=s("Wornet")
 
 		block js
 			+ie('if IE lte 9')
