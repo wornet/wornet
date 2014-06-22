@@ -12,6 +12,9 @@ module.exports =
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
 	,
+	delay: (ms, cb) ->
+		setTimeout cb, m
+	,
 	empty: (value) ->
 		type = typeof(value)
 		(

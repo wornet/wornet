@@ -24,21 +24,15 @@ config = {}
 
 port = process.env.PORT || 8000
 
-options =
-	onconfig: (localConfig, next) ->
-		extend config, localConfig._store
-		if port is 8000 && config.env.development
-			(['config', 'hooks/post-receive', 'hooks/post-receive.bat', 'hooks/pre-commit', 'hooks/pre-commit.bat']).forEach (file) ->
-				copy 'setup/git/' + file, '.git/' + file
-				console.log 'setup/git/' + file + ' >>> .git/' + file
-		next null, localConfig
+options = (require './core/system/options')(port)
 
 # Build coffee scripts
 exec 'coffee -b -o .build/js -wc public/js'
 
 # Make config usables everywhere
 extend global,
-	config: config
+	config: config,
+	options: options
 
 defer = []
 app.onready = (done) ->
@@ -54,6 +48,7 @@ onready ->
 	extend app.locals, functions
 	extend app.locals,
 		config: config
+		options: options
 
 	# Launch Kraken
 	app.use kraken options
