@@ -44,7 +44,7 @@ module.exports = (port) ->
 	onconfig: (localConfig, next) ->
 		extend config, localConfig._store
 		if port is 8000 && config.env.development
-			([
+			[
 				'config',
 				'hooks/post-receive',
 				'hooks/post-receive.bat',
@@ -52,7 +52,7 @@ module.exports = (port) ->
 				'hooks/pre-commit.bat',
 				'hooks/pre-push',
 				'hooks/pre-push.bat'
-			]).forEach (file) ->
+			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console.log 'setup/git/' + file + ' >>> .git/' + file
 		next null, localConfig

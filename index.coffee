@@ -1,13 +1,9 @@
 'use strict'
 
 # Dependancies to load
-kraken = require 'kraken-js'
-extend = require 'extend'
-glob = require 'glob'
-express = require 'express'
-path = require 'path'
-connect = require 'connect'
-fs = require 'fs'
+'kraken-js extend glob express path connect fs mongodb'.split(/\s+/).forEach (dependancy) ->
+	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
+
 exec = require('child_process').exec
 
 # Available everywhere
