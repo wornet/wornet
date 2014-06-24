@@ -24,7 +24,17 @@ autoloadDirectories.forEach (directory) ->
 				name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
 			else
 				name = loadedValue.name
-			global[name] = loadedValue unless global[name]?
+			if global[name]?
+				console.warn name + ' variable already declared'
+			else
+				global[name] = loadedValue
+				if name.length > 6 && name.substr(-6) is 'Schema'
+					modelName = name.substr 0, name.length - 6
+					model = mongoose.model modelName, loadedValue
+					if global[modelName]? || global[modelName + 'Model']?
+						throw modelName + ' model already token'
+					global[modelName] = model
+					global[modelName + 'Model'] = model
 
 		# When no more directory need to be loaded
 		unless --pending

@@ -1,10 +1,13 @@
 'use strict'
 
 # Dependancies to load
-'kraken-js extend glob express path connect fs mongodb'.split(/\s+/).forEach (dependancy) ->
+'kraken-js child_process extend glob express path connect fs mongoose'.split(/\s+/).forEach (dependancy) ->
 	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
 
-exec = require('child_process').exec
+# Get shortcuts from dependancies
+'child_process.exec mongoose.Schema'.split(/\s+/).forEach (shortcut) ->
+	shortcut = shortcut.split('.')
+	global[shortcut[1]] = global[shortcut[0]][shortcut[1]]
 
 # Available everywhere
 extend global,

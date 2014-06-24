@@ -12,6 +12,12 @@ module.exports =
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
 	,
+	strtolower: (str) ->
+		str.toLowerCase()
+	,
+	strtoupper: (str) ->
+		str.toUpperCase()
+	,
 	delay: (ms, cb) ->
 		setTimeout cb, m
 	,

@@ -55,4 +55,8 @@ module.exports = (port) ->
 			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console.log 'setup/git/' + file + ' >>> .git/' + file
+
+		# Initialize DB
+		mongoose.connect 'mongodb://localhost/' + config.wornet.db.basename
+
 		next null, localConfig

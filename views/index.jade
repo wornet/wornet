@@ -6,6 +6,34 @@ block body
 	section
 		input.btn.btn-primary(type="button", value=s("If I am blue, Bootstrap works !"))
 		input.btn.btn-primary(type="button", value="{{isAngularWorking}}")
+	if err
+		.alert.alert-danger
+			=err
+	if saved
+		.alert.alert-success
+			=s("Utilisateur enregistré.")
+	unless users.length
+		p
+			=s("Aucun utilisateur inscrit.")
+	else
+		ul
+			each user in users
+				li
+					=user.name.full
+					!=' &nbsp;-&nbsp; '
+					=user.email
+	form(action="", method="POST")
+		.input-group
+			.input-group-addon
+				span.glyphicon.glyphicon-user
+			input.form-control(type="text", placeholder=s("Prénom Nom"))
+		.input-group
+			.input-group-addon
+				span.glyphicon.glyphicon-envelope
+			input.form-control(type="text", placeholder=s("Adresse e-mail"))
+		.input-group
+			input.btn.btn-primary(type="submit")
+
 	- for(var i = 0; i < 1000; i++)
 		p.
 			Bla bla

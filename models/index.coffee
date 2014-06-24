@@ -3,7 +3,8 @@
 module.exports = `function IndexModel() {`
 
 return (
-	name: 'index'
+	users: User.find().sort
+		registerDate: -1
 )
 
 `}`

@@ -5,7 +5,10 @@
         "autoloadDirectories": [
             "models",
             "core/utils"
-        ]
+        ],
+        "db": {
+            "basename": "wornet"
+        }
     },
 
     "view engines": {
