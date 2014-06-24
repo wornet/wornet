@@ -6,6 +6,8 @@ autoloadDirectories = config.wornet.autoloadDirectories
 
 extend = require 'extend'
 glob = require 'glob'
+mongoose = require 'mongoose'
+Schema = mongoose.Schema
 
 # Get functions
 functions = require root + 'core/utils/functions'
