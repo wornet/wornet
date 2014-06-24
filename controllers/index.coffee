@@ -18,10 +18,8 @@ listUsers = (err, req, res) ->
 				model.err = findErr
 			else
 				model.saved = true
-			try
-				res.render 'index', model
-			catch e
-				console.error e
+
+			res.render 'index', model
 
 module.exports = (router) ->
 

@@ -46,17 +46,24 @@ module.exports = (port) ->
 		if port is 8000 && config.env.development
 			[
 				'config',
-				'hooks/post-receive',
-				'hooks/post-receive.bat',
 				'hooks/pre-commit',
 				'hooks/pre-commit.bat',
 				'hooks/pre-push',
-				'hooks/pre-push.bat'
+				'hooks/pre-push.bat',
+				'hooks/post-receive',
+				'hooks/post-receive.bat',
+				'hooks/post-merge',
+				'hooks/post-merge.bat'
 			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console.log 'setup/git/' + file + ' >>> .git/' + file
 
 		# Initialize DB
-		mongoose.connect 'mongodb://localhost/' + config.wornet.db.basename
+		try
+			mongoose.connect 'mongodb://localhost/' + config.wornet.db.basename
+		catch e
+			console.warn '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
+			console.warn e
+		
 
 		next null, localConfig
