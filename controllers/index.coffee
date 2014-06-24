@@ -2,7 +2,7 @@
 
 model = new IndexModel()
 
-listUsers = (err, req, res) ->
+listUsers = (err, req, res, fromSave) ->
 
 	User.find({},
 			'name.first': 1
@@ -16,7 +16,7 @@ listUsers = (err, req, res) ->
 				model.err = err
 			else if findErr
 				model.err = findErr
-			else
+			else if fromSave
 				model.saved = true
 
 			res.render 'index', model
@@ -28,13 +28,16 @@ module.exports = (router) ->
 		data = req.body
 		console.log data
 
-		kyle = new User
-			name:
-				full: data.name.full
-			registerDate: new Date
-			email: data.email
-		kyle.save (saveErr) ->
-			listUsers saveErr, req, res
+		if data.name.full.indexOf(' ') is -1
+			listUsers 'Full name must contain at least 2 words', req, res, true
+		else
+			user = new User
+				name:
+					full: data.name.full
+				registerDate: new Date
+				email: data.email
+			user.save (saveErr) ->
+				listUsers saveErr, req, res, true
 
 	router.get '/', (req, res) ->
 

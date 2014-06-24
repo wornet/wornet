@@ -9,6 +9,14 @@ module.exports =
 		n = parseFloat(n)
 		if isNaN(n) then 0 else n
 	,
+	pattern: (name, method) ->
+		method = method || 'trim'
+		RegExpString[method] name
+	,
+	regex: (name, method) ->
+		method = method || 'is'
+		RegExp[method] name
+	,
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
 	,
