@@ -1,25 +1,25 @@
 'use strict'
 
-model = new IndexModel()
+model = {}
 
 listUsers = (err, req, res, fromSave) ->
 
 	User.find({},
-			'name.first': 1
-			'name.last': 1
-			email: 1
-		).sort(
-			registerDate: -1
-		).exec (findErr, users) ->
-			model.users = users
-			if err
-				model.err = err
-			else if findErr
-				model.err = findErr
-			else if fromSave
-				model.saved = true
+		'name.first': 1
+		'name.last': 1
+		email: 1
+	).sort(
+		registerDate: -1
+	).exec (findErr, users) ->
+		model.users = users
+		if err
+			model.err = err
+		else if findErr
+			model.err = findErr
+		else if fromSave
+			model.saved = true
 
-			res.render 'index', model
+		res.render 'index', model
 
 module.exports = (router) ->
 

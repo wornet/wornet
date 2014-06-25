@@ -1,0 +1,7 @@
+extends layouts/wornet
+
+block body
+	h1
+		=s("Vos événements.")
+
+	.span8.calendar(ui-calendar="uiConfig.calendar", ng-model="eventSources")
