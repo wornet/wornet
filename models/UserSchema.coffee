@@ -4,11 +4,11 @@ userSchema = new Schema
 	name:
 		first:
 			type: String
-			validate: [regex('simple-text'), 'invalid name']
+			validate: [regex('simple-text'), 'invalid first name']
 			trim: true
 		last:
 			type: String
-			validate: [regex('simple-text'), 'invalid name']
+			validate: [regex('simple-text'), 'invalid last name']
 			trim: true
 	registerDate: Date
 	lastLoginDate: Date

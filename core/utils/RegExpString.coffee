@@ -10,7 +10,7 @@ RegExpString =
 	email: '[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.+_-]+\\.[a-zA-Z]{2,}'
 
 	get: (name) ->
-		name = name.replace /-([a-z])/g, (m) -> m.toUpperCase()
+		name = name.replace /-([a-z])/g, (m) -> m[1].toUpperCase()
 		@[name]
 
 	is: (name) ->

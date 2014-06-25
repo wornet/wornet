@@ -45,7 +45,7 @@ module.exports = (port) ->
 		extend config, localConfig._store
 		if port is 8000 && config.env.development
 			[
-				'config',
+				#'config',
 				'hooks/pre-commit',
 				'hooks/pre-commit.bat',
 				'hooks/pre-push',

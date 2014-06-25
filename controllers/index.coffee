@@ -26,7 +26,6 @@ module.exports = (router) ->
 	router.post '/', (req, res) ->
 
 		data = req.body
-		console.log data
 
 		if data.name.full.indexOf(' ') is -1
 			listUsers 'Full name must contain at least 2 words', req, res, true

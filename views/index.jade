@@ -26,12 +26,13 @@ block body
 		.input-group
 			.input-group-addon
 				span.glyphicon.glyphicon-user
-			input.form-control(type="text", required, pattern=pattern('fullname') placeholder=s("Prénom Nom"))
+			input.form-control(type="text", name="name[full]", required, pattern=pattern('fullname') placeholder=s("Prénom Nom"))
 		.input-group
 			.input-group-addon
 				span.glyphicon.glyphicon-envelope
-			input.form-control(type="email", required, pattern=pattern('email') placeholder=s("Adresse e-mail"))
+			input.form-control(type="email", name="email", required, pattern=pattern('email') placeholder=s("Adresse e-mail"))
 		.input-group
+			input(type="hidden", name="_csrf", value=_csrf)
 			input.btn.btn-primary(type="submit")
 
 	- for(var i = 0; i < 1000; i++)
