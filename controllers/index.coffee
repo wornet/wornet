@@ -41,3 +41,16 @@ module.exports = (router) ->
 	router.get '/', (req, res) ->
 
 		listUsers null, req, res
+
+
+	alias =
+		login: 'user/login'
+		signin: 'user/signin'
+		logout: 'user/logout'
+		'forgotten-password': 'user/forgotten-password'
+
+	for as, route of alias
+		((as, route) ->
+			router.get '/' + as, (req, res) ->
+				res.redirect '/' + route
+		)(as, route)

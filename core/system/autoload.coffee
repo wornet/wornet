@@ -8,6 +8,7 @@ extend = require 'extend'
 glob = require 'glob'
 mongoose = require 'mongoose'
 global.Schema = mongoose.Schema
+global.ObjectId = Schema.ObjectId
 
 # Get functions
 functions = require root + 'core/utils/functions'

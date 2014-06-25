@@ -4,7 +4,7 @@ model = {}
 
 module.exports = (router) ->
 
-	router.get '/agenda', (req, res) ->
+	router.get '/', (req, res) ->
 
 		User.find(
 			'name.first': 'Kyle'
@@ -21,5 +21,6 @@ module.exports = (router) ->
 					if err
 						model.err = err
 					else
-						mdel.events = events
+						model.events = events
 					res.render 'agenda', model
+		)

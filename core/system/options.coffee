@@ -29,6 +29,7 @@ module.exports = (port) ->
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js",
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js",
+				"/components/angular/js/calendar.js",
 				script("app")
 			]
 		else
@@ -38,10 +39,12 @@ module.exports = (port) ->
 				"/components/bootstrap/js/bootstrap.min.js",
 				"/components/angular/js/angular.js",
 				"/components/angular/js/angular-animate.js",
+				"/components/angular/js/calendar.js",
 				script("app")
 			]
 
 	onconfig: (localConfig, next) ->
+		app.set 'views', __dirname + '/../../views'
 		extend config, localConfig._store
 		if port is 8000 && config.env.development
 			[

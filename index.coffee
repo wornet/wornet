@@ -16,11 +16,11 @@ extend global,
 	fs: fs
 	path: path
 
-path.exists 'mongod.lnk', (exists) ->
+fs.exists 'mongod.lnk', (exists) ->
 	if exists
 		exec 'mongod.lnk'
 
-app = express()
+global.app = express()
 
 # Config load
 config = {}
