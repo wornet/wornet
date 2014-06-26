@@ -1,5 +1,52 @@
 extends ../layouts/wornet
+doctype html
+html(lang="en")
 
-block body
-	h1
-		=s("Connexion")
+	head
+		meta(name="description" content="Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
+		meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+		meta(http-equiv="Content-Language" content="fr-EU")
+		meta(name="keywords" content="réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+		meta(name="generator" content="Wornet v1")
+		meta(name="author" content="Manuel Costes")
+		meta(name="copyright" content="© Wornet")
+		title.
+			Wornet
+		link(rel="SHORTCUT ICON" href="favicon.png")
+		link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+		link(rel="" href="../../node_modules/bootstrap-stylus/lib/bootstrap")
+		link(rel="stylesheet" href="../../public/css/app.styl")
+	body
+		section(class="row")
+		div(id="header" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
+			div(class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="logo_content")
+				img(src="")
+			div(class="col-lg-8 col-md-8 col-sm-8 none-mobile" id="connexion_content")
+				form(method="post" action="login_check.jade")
+					input(type="text" name="login_email" class="login_textbox" placeholder="Votre e-mail")
+					input(type="password" name="login_password" class="login_textbox" placeholder="Mot de passe")
+					input(type="submit" class="login_button" value="Se connecter")
+		div(id="container_left" class="col-lg-4 col-md-4 col-sm-6 none-mobile")
+
+		div(id="container_center" class="col-lg-4 col-md-4 col-sm-6 col-xs-12")
+			span(id="slogan").
+				Devenez-vous méme!
+			form(method="post" action="register.jade" id="register")
+				// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register_email, register_email_check, register_password
+				input(type="text" name="register_email" class="register_textbox" placeholder="Votre e-mail")
+				input(type="text" name="register_email_check" class="register_textbox" placeholder="Verifier votre e-mail")
+				input(type="password" name="register_password" class="register_textbox" placeholder="Votre e-mail")
+				input(type="submit" class="register_button" value="INSCRIPTION")
+		div(id="container_right" class="col-lg-4 col-md-4 none-tablette none-mobile")
+
+		div(id="footer" class="col-lg-12")
+			a(class="link").
+				À propos
+			a(class="link").
+				Newsroom (blog)
+			a(class="link").
+				Offres d'emplois
+			a(class="link").
+				Dévelopeurs
+			a(class="link").
+				Ressources

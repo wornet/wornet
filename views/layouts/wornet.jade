@@ -36,8 +36,8 @@ html.no-js(lang=lang())
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top.
-			Abc
+		nav.navbar-fixed-top
+			
 
 		#wrap
 			+ie('if IE lt 7')
@@ -52,7 +52,7 @@ html.no-js(lang=lang())
 				block body
 
 		footer
-			=s("Wornet")
+			
 
 		block js
 			each script in options.js().main
