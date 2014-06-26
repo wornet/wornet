@@ -67,6 +67,5 @@ module.exports = (port) ->
 		catch e
 			console.warn '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
 			console.warn e
-		
 
 		next null, localConfig
