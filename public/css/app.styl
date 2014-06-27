@@ -53,6 +53,8 @@ a.link
 	padding-left 10px
 	padding-right 10px
 	color $linkcolor
+a.link:hover
+	text-decoration none
 div[id=header]
 	height 150px
 div[id="connexion_content"]
@@ -69,12 +71,12 @@ div[id=container_center]
 div[class=contentbox]
 	background-color: #fff;
 	padding 20px
-	padding-top 50px
+	padding-top 20px
 	margin auto
 	border-radius 4px
 	border 1px #eee
 	box-shadow inset 0px 3px 12px 0px #9C9C9C
-	color #969696
+	color #808080
 div[id=container_right]
 	height 500px
 	text-align center
@@ -123,6 +125,7 @@ span[id=slogan]
 	margin 15px
 	display block
 	font-size 20px
+	text-align center
 img[id=logo]
 	width 350px
 	-webkit-touch-callout none
@@ -132,7 +135,7 @@ img[id=logo]
 	-ms-user-select none
 	user-select none
 span[class=save]
-	color #969696
+	color $linkcolor
 	padding-left 20px
 p[id=article]
 	color $linkcolor
@@ -140,6 +143,8 @@ p[id=article]
 .boldlink
 	font-weight bold
 form[id=register]
+	margin auto
+	width 445px
 option
 	padding 5px
 div[id=register_border]
