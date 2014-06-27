@@ -1,4 +1,4 @@
-$baseColor = #dfa954
+$baseColor = #fff
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
 $darkColor = darken($baseColor, 35%)
@@ -7,9 +7,8 @@ $grayColor = desaturate($baseColor, 35%)
 $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
-$fonts = helvetica, arial, sans-serif
-
-
+$fonts = Average, helvetica, arial, sans-serif
+$linkcolor = #fff
 //@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
@@ -25,10 +24,20 @@ box-shadow()
 	-moz-box-shadow arguments
 	box-shadow arguments
 
+background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	background-color startColor
+	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 
 body 
 	font 14px/1.4 $fonts
-	background #fff
+	background-color #000
+	background-image url("/img/background.jpg")
+	background-repeat no-repeat
+	background-size 100%
 
 h1
 	background $lightColor
@@ -39,4 +48,112 @@ h1
 	border-radius(3px)
 	box-shadow(0 0 1px $darkColor)
 a.link
+	margin 30px
+	display inline-block
+	padding-left 10px
+	padding-right 10px
+	color $linkcolor
+div[id=header]
+	height 150px
+div[id="connexion_content"]
+	padding-top 30px
+	padding-bottom 30px
+div[id=footer]
+	height 65px
+	text-align center
+div[id=container_left]
+	height 500px
+	text-align center
+div[id=container_center]
+	height 500px
+div[class=contentbox]
+	background-color: rgba(255, 255, 255, 0.2);
+	padding 20px
+	padding-top 50px
+	margin 10px
+	border-radius 2px
+	border 1px solid #fff
+div[id=container_right]
+	height 500px
+	text-align center
+input[type=date]
+	padding 4px
+	background #fff
+	border 1px solid #eee
+	font-family $fonts
+	border-radius 5px
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+.register_textbox,select,.login_textbox,.date
+	padding 4px
+	background #fff
+	border 1px solid #9C9C9C
+	width 200px
+	font-family $fonts
+	border-radius 5px
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+	box-shadow inset 0px 1px 6px 0px #9C9C9C
+.register_textbox:focus,select:focus,.login_textbox:focus,.date:focus
+	outline: none
+	box-shadow 0px 0px 5px 2px #F7852E
+.register_button,.login_button
+	padding 8px
+	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
+	border-radius 4px
+	border 0px solid #000
+	font-weight bold
+	margin 5px
+
+copytag
+	color $linkcolor
+span[id=slogan]
+	color $linkcolor
+	font-weight bold
+	margin 15px
+	display block
+	font-size 20px
+img[id=logo]
+	width 350px
+	-webkit-touch-callout none
+	-webkit-user-select none
+	-khtml-user-select none
+	-moz-user-select none
+	-ms-user-select none
+	user-select none
+span[class=save]
+	color #fff
+	padding-left 20px
+p[id=article]
+	color $linkcolor
+	text-align justify
+.boldlink
+	font-weight bold
+form[id=register]
+	opacity 1
+	filter alpha opacity=100
+option
+	padding 5px
+div[id=register_border]
+	border-left 1px solid #cdcdcd
+.bigtextbox
+	width 420px
+div[id=check_all]
 	padding 10px
+.date
+	width 70px
+@media (max-width: 450px)
+	.none-mobile
+		display none
+	@media  (max-width: 769px)
+		.none-tablette
+			display none
+		img[id=logo]
+			width 250px
+@font-face 
+	font-family Average
+	src url(/fonts/pakenham.regular.ttf)
