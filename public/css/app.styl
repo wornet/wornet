@@ -8,7 +8,7 @@ $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
 $fonts = Average, helvetica, arial, sans-serif
-$linkcolor = #fff
+$linkcolor = #5f5f5f
 //@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
@@ -53,6 +53,7 @@ a.link
 	padding-left 10px
 	padding-right 10px
 	color $linkcolor
+	font-weight bold
 a.link:hover
 	text-decoration none
 div[id=header]
@@ -61,13 +62,16 @@ div[id="connexion_content"]
 	padding-top 30px
 	padding-bottom 30px
 div[id=footer]
-	height 65px
+	height 90px
 	text-align center
+	background #fff
+	background-color rgba(255, 255, 255, 0.5)
 div[id=container_left]
 	height 500px
 	text-align center
 div[id=container_center]
-	height 500px
+	height 550px
+	text-align center
 div[class=contentbox]
 	background-color: #fff;
 	padding 20px
@@ -105,7 +109,7 @@ input[type=date]
 select
 	padding-left 0px
 .register_textbox:focus,select:focus,.login_textbox:focus,.date:focus
-	outline: none
+	outline none
 	box-shadow 0px 0px 5px 2px #F7852E
 .register_button,.login_button
 	padding 8px
@@ -120,7 +124,7 @@ select
 copytag
 	color $linkcolor
 span[id=slogan]
-	color #969696
+	color #5f5f5f
 	font-weight bold
 	margin 15px
 	display block
@@ -137,6 +141,7 @@ img[id=logo]
 span[class=save]
 	color $linkcolor
 	padding-left 20px
+
 p[id=article]
 	color $linkcolor
 	text-align justify
@@ -149,8 +154,6 @@ option
 	padding 5px
 div[id=register_border]
 	border-left 1px solid #cdcdcd
-.bigtextbox
-	width 420px
 div[id=check_all]
 	padding 10px
 .date
@@ -168,3 +171,5 @@ div[id=check_all]
 	src url(/fonts/pakenham.regular.ttf)
 label
 	padding 10px
+input[type=checkbox]
+	padding-left 10px
