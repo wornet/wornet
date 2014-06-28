@@ -1,4 +1,5 @@
 $baseColor = #fff
+$orange = #ffa500
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
 $darkColor = darken($baseColor, 35%)
@@ -31,6 +32,10 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+html, body 
+	height 100%
+	margin 0px
+	padding 0px
 
 body 
 	font 14px/1.4 $fonts
@@ -38,7 +43,11 @@ body
 	background-image url("/img/background.jpg")
 	background-repeat no-repeat
 	background-size 100%
-
+	display table
+	width 100%
+footer
+	display table-row
+	height 100px
 h1
 	background $lightColor
 	color $darkColor
@@ -72,6 +81,7 @@ div[id=container_left]
 div[id=container_center]
 	height 550px
 	text-align center
+	padding-top 50px
 div[class=contentbox]
 	background-color: #fff;
 	padding 20px
@@ -79,7 +89,7 @@ div[class=contentbox]
 	margin auto
 	border-radius 4px
 	border 1px #eee
-	box-shadow inset 0px 3px 12px 0px #9C9C9C
+	  box-shadow: inset 0px 2px 2px 0px rgba(156, 156, 156, 0.35);
 	color #808080
 div[id=container_right]
 	height 500px
@@ -97,7 +107,7 @@ input[type=date]
 .register_textbox,select,.login_textbox,.date
 	padding 4px
 	background #fff
-	border 1px solid #9C9C9C
+	border 1px solid rgba(156, 156, 156, 0.35)
 	width 200px
 	font-family $fonts
 	border-radius 5px
@@ -105,12 +115,13 @@ input[type=date]
 	margin-right 10px
 	margin-top 5px
 	margin-bottom 5px
-	box-shadow inset 0px 1px 6px 0px #9C9C9C
+	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
+	padding-left 8px
 select
 	padding-left 0px
 .register_textbox:focus,select:focus,.login_textbox:focus,.date:focus
 	outline none
-	box-shadow 0px 0px 5px 2px #F7852E
+	box-shadow 0px 0px 3px 1px #F7852E
 .register_button,.login_button
 	padding 8px
 	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
@@ -172,4 +183,10 @@ div[id=check_all]
 label
 	padding 10px
 input[type=checkbox]
-	padding-left 10px
+	margin-left 10px
+a[id=forget_it]
+	padding-left 85px
+	color $orange
+a[id=forget_it]:hover
+	text-decoration none
+	cursor pointer

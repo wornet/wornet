@@ -10,6 +10,7 @@ html(lang="en")
 			meta(name="generator" content="Wornet v1")
 			meta(name="author" content="Manuel Costes")
 			meta(name="copyright" content="© 2014 Wornet")
+			meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
 		title.
 			Wornet
 		block link
@@ -21,17 +22,19 @@ html(lang="en")
 		div(class="container")
 			div(id="header" class="content col-lg-12 col-md-12 col-sm-12 col-xs-12")
 				div(class="col-lg-5 col-md-5 col-sm-5 col-xs-12" id="logo_content")
-					img(type="image/png" src="/img/logo.png" id="logo")
+					img(type="image/png" class="img-responsive" src="/img/logo.png" id="logo")
 				div(class="col-lg-7 col-md-7 col-sm-7 none-mobile" id="connexion_content")
 					form(method="post" action="login_check.jade")
-						input(type="text" name="login_email" class="login_textbox" placeholder="Votre e-mail")
-						input(type="password" name="login_password" class="login_textbox" placeholder="Mot de passe")
+						input(type="text" spellcheck="false" name="login_email" class="login_textbox" placeholder="Votre e-mail")
+						input(type="password" spellcheck="false" name="login_password" class="login_textbox" placeholder="Mot de passe")
 						input(type="submit" class="login_button" value="Se connecter")
 						span(class="none-mobile none-tablette")
 							br
 						input(type="checkbox" value="Se souvenir de moi" name="save")
 						span(class="save")
 							=s("Se souvenir de moi")
+						a(id="forget_it")
+							=s("Oublié ?")
 			div(class="content col-lg-12 col-md-12 col-sm-12 col-xs-12" id="container")
 				div(id="container_left" class="col-lg-3 col-md-2 col-sm-1 none-mobile")
 				div(id="container_center" class="col-lg-6 col-md-8 col-sm-10 col-xs-12")
@@ -41,16 +44,17 @@ html(lang="en")
 						form(method="post" action="register.jade" id="register")
 							// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register_email, register_password, register_password_check
 							br
-							input(type="text" w name="register_email" class="register_textbox bigtextbox" placeholder="Votre e-mail")
+							input(type="text" spellcheck="false" name="register_email" class="register_textbox bigtextbox" placeholder="Votre e-mail")
 							br
-							input(type="password"  name="register_password" class="register_textbox bigtextbox" placeholder="Votre mot de passe")
+							input(type="password" spellcheck="false" name="register_password" class="register_textbox bigtextbox" placeholder="Votre mot de passe")
 							br
-							input(type="password"  name="register_password_check" class="register_textbox bigtextbox" placeholder="Vérifier votre mot de passe")
+							input(type="password" spellcheck="false" name="register_password_check" class="register_textbox bigtextbox" placeholder="Vérifier votre mot de passe")
 							br
 							div(id="check_all")
 								
 								input(type="submit" class="register_button" value="Je m'inscris")
 				div(id="container_left" class="col-lg-3 col-md-2 col-sm-1 none-mobile")
+	footer
 		div(id="footer" class="col-lg-12")
 			a(class="link" href="#")
 				=s("À propos")
