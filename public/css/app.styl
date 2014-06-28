@@ -36,7 +36,12 @@ html, body
 	height 100%
 	margin 0px
 	padding 0px
-
+	-webkit-touch-callout none
+	-webkit-user-select none
+	-khtml-user-select none
+	-moz-user-select none
+	-ms-user-select none
+	user-select none
 body 
 	font 14px/1.4 $fonts
 	background-color #000
@@ -47,7 +52,7 @@ body
 	width 100%
 footer
 	display table-row
-	height 100px
+	height 90px
 h1
 	background $lightColor
 	color $darkColor
@@ -71,10 +76,13 @@ div[id="connexion_content"]
 	padding-top 30px
 	padding-bottom 30px
 div[id=footer]
-	height 90px
+	height 80px
 	text-align center
 	background #fff
 	background-color rgba(255, 255, 255, 0.5)
+	position fixed
+	left 0px
+	bottom 0px
 div[id=container_left]
 	height 500px
 	text-align center
@@ -123,7 +131,7 @@ select
 	outline none
 	box-shadow 0px 0px 3px 1px #F7852E
 .register_button,.login_button
-	padding 8px
+	padding 5px
 	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
 	border-radius 4px
 	border 0px solid #000
@@ -131,7 +139,6 @@ select
 	margin 5px
 	margin-left 0px
 	color #000
-
 copytag
 	color $linkcolor
 span[id=slogan]
@@ -161,6 +168,8 @@ p[id=article]
 form[id=register]
 	margin auto
 	width 445px
+form[id=login]
+	padding-left 70px
 option
 	padding 5px
 div[id=register_border]
@@ -172,11 +181,9 @@ div[id=check_all]
 @media (max-width: 450px)
 	.none-mobile
 		display none
-	@media  (max-width: 769px)
-		.none-tablette
-			display none
-		img[id=logo]
-			width 250px
+@media (max-width: 769px)
+	.none-tablette
+		display none
 @font-face 
 	font-family Average
 	src url(/fonts/pakenham.regular.ttf)
@@ -190,3 +197,12 @@ a[id=forget_it]
 a[id=forget_it]:hover
 	text-decoration none
 	cursor pointer
+.description
+	padding-top 50px
+
+.cite
+	padding-top 10px
+	padding-bottom 10px
+	cursor default
+.sign_in
+	width 200px
