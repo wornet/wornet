@@ -13,3 +13,23 @@ mixin meta(name, content)
 
 mixin link(href, name)
 	a(class!=attributes.class, href=href)= name
+
+mixin data(name, value)
+	!=data(name, value)
+
+mixin csrf()
+	input(type="hidden", name="_csrf", value=_csrf)
+
+mixin form(url, method)
+
+	- var method
+	unless method
+		- method = "POST"
+	if method == "FILE"
+		- enctype = "multipart/form-data"
+		- method = "POST"
+
+	form(id=attributes.id, class=attributes.class, action=url, method=method, enctype=enctype)
+		div
+			+csrf()
+		block

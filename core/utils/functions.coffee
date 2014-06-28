@@ -65,6 +65,17 @@ module.exports =
 		jadeRender = require('jade').render
 		jadeRender(code)
 	,
+	data: (name, value) ->
+		name = name.replace(/(\\|")/g, '\\$1')
+		value = JSON.stringify value.replace(/(\\|")/g, '\\$1')
+		jd 'div(data-data, data-name="' + name + '", data-value="' + value + '")'
+	,
+	shareData: (name, value) ->
+		if typeof(value) is 'undefined'
+			extend app.locals, name
+		else
+			app.locals[name] = value
+	,
 	assetUrl: (file, directory, extension) ->
 		if config.env.development
 			version = fs.statSync('public/' + directory + '/' + file + '.' + extension).mtime.getTime()

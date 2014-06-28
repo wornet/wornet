@@ -9,6 +9,8 @@ module.exports = (port) ->
 			main: [
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css",
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css",
+				"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css",
+				"//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.0.2/fullcalendar.css",
 				style("app")
 			]
 		else
@@ -16,6 +18,8 @@ module.exports = (port) ->
 			main: [
 				"/components/bootstrap/css/bootstrap.min.css",
 				"/components/bootstrap/css/bootstrap-theme.min.css",
+				"/components/jquery/css/jquery-ui.css",
+				"/components/jquery/css/fullcalendar.css",
 				style("app")
 			]
 
@@ -23,25 +27,44 @@ module.exports = (port) ->
 		if useCdn
 			# CDN resources
 			main: [
-				['if IE lte 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"],
-				['if IE gt 9', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"],
+				['if lte IE 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"],
+				['if gt IE 9', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"],
 				['non-ie', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"],
-				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
+				#"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
+				"//angular-ui.github.io/ui-calendar/bower_components/jquery-ui/ui/jquery-ui.js",
+				#"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js",
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js",
+				#"//angular-ui.github.io/ui-calendar/bower_components/angular/angular.js",
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js",
-				"/components/angular/js/calendar.js",
+				"//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.9.0.js",
+				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js",
+				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js",
+				"//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment-with-langs.min.js",
+				#"//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js",
+				"//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.0.2/fullcalendar.min.js",
+				#"//arshaw.com/js/fullcalendar-1.5.3/fullcalendar/gcal.js",
+				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js",
 				script("app")
 			]
 		else
 			# locales resources
 			main: [
 				"/components/jquery/js/jquery.js",
-				"/components/bootstrap/js/bootstrap.min.js",
+				"/components/jquery/js/jquery-ui.min.js",
+				#"/components/bootstrap/js/bootstrap.min.js",
 				"/components/angular/js/angular.js",
 				"/components/angular/js/angular-animate.js",
+				"/components/bootstrap/js/ui-bootstrap.js",
+				"/components/moment/js/moment-with-langs.min.js",
+				"/components/jquery/js/fullcalendar.min.js",
+				"/components/jquery/js/fullcalendar-gcal.js",
 				"/components/angular/js/calendar.js",
 				script("app")
 			]
+
+	onrequest: ->
+		console.log "####################"
+		console.log arguments
 
 	onconfig: (localConfig, next) ->
 		app.set 'views', __dirname + '/../../views'

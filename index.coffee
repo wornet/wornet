@@ -53,9 +53,21 @@ onready ->
 	app.use kraken options
 
 	app.on 'start', ->
+
 		console.log 'Wornet is ready'
 		defer.forEach (done) ->
 			done app
+
+		glob __dirname + "/core/global/start/**/*.coffee", (er, files) ->
+			files.forEach (file) ->
+				require __dirname + file
+
+	app.on 'request', ->
+
+		console.log "REQUEST ######################################"
+		glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
+			files.forEach (file) ->
+				require __dirname + file
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

@@ -16,6 +16,7 @@ functions = require root + 'core/utils/functions'
 # Make functions and config usables in controllers and other stuff
 extend global, functions
 
+defer = []
 
 # Load all files contained in autoloadDirectories
 pending = autoloadDirectories.length
@@ -43,8 +44,6 @@ autoloadDirectories.forEach (directory) ->
 		unless --pending
 			defer.forEach (callback) ->
 				callback autoloadDirectories
-
-defer = []
 
 module.exports = (callback) ->
 
