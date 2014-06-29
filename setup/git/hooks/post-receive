@@ -1,3 +1,2 @@
 #!/bin/sh
 npm i > /dev/null
-npm update > /dev/null
