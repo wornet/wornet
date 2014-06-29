@@ -42,12 +42,14 @@ html, body
 	-moz-user-select none
 	-ms-user-select none
 	user-select none
+	background url(/img/background.jpg) no-repeat center fixed
+	-webkit-background-size cover /* pour Chrome et Safari */
+	-moz-background-size cover /* pour Firefox */
+	-o-background-size cover /* pour Opera */
+	background-size cover /* version standardisée */
 body 
 	font 14px/1.4 $fonts
 	background-color #000
-	background-image url("/img/background.jpg")
-	background-repeat no-repeat
-	background-size 100%
 	display table
 	width 100%
 footer
@@ -80,14 +82,11 @@ div[id=footer]
 	text-align center
 	background #fff
 	background-color rgba(255, 255, 255, 0.5)
-	position fixed
-	left 0px
-	bottom 0px
 div[id=container_left]
-	height 500px
+	
 	text-align center
 div[id=container_center]
-	height 550px
+	padding-bottom 30px
 	text-align center
 	padding-top 50px
 div[class=contentbox]
@@ -100,7 +99,7 @@ div[class=contentbox]
 	  box-shadow: inset 0px 2px 2px 0px rgba(156, 156, 156, 0.35);
 	color #808080
 div[id=container_right]
-	height 500px
+	
 	text-align center
 input[type=date]
 	padding 4px
@@ -167,7 +166,7 @@ p[id=article]
 	font-weight bold
 form[id=register]
 	margin auto
-	width 445px
+	
 form[id=login]
 	padding-left 70px
 option
@@ -178,11 +177,17 @@ div[id=check_all]
 	padding 10px
 .date
 	width 70px
-@media (max-width: 450px)
+@media (max-width: 768px)
 	.none-mobile
 		display none
-@media (max-width: 769px)
+@media (max-width: 992px)
 	.none-tablette
+		display none
+@media (min-width: 768px)
+	.just-mobile
+		display none
+@media (min-width: 992px) and (max-width: 768px)
+	.just-tablette
 		display none
 @font-face 
 	font-family Average
@@ -206,3 +211,9 @@ a[id=forget_it]:hover
 	cursor default
 .sign_in
 	width 200px
+@media(max-width: 450px) 
+	body
+		font-size: 10px
+@media(max-width: 768px) 
+	body
+		font-size: 14px
