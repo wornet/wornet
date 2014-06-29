@@ -1,4 +1,5 @@
-$baseColor = #dfa954
+$baseColor = #fff
+$orange = #ffa500
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
 $darkColor = darken($baseColor, 35%)
@@ -7,9 +8,8 @@ $grayColor = desaturate($baseColor, 35%)
 $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
-$fonts = helvetica, arial, sans-serif
-
-
+$fonts = Average, helvetica, arial, sans-serif
+$linkcolor = #5f5f5f
 //@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
@@ -25,10 +25,39 @@ box-shadow()
 	-moz-box-shadow arguments
 	box-shadow arguments
 
+background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	background-color startColor
+	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+
+html, body
+	height 100%
+	margin 0px
+	padding 0px
+	-webkit-touch-callout none
+	-webkit-user-select none
+	-khtml-user-select none
+	-moz-user-select none
+	-ms-user-select none
+	user-select none
+	background url(/img/background.jpg) no-repeat center fixed
+	-webkit-background-size cover /* pour Chrome et Safari */
+	-moz-background-size cover /* pour Firefox */
+	-o-background-size cover /* pour Opera */
+	background-size cover /* version standardisée */
 
 body 
 	font 14px/1.4 $fonts
-	background #fff
+	background-color #000
+	display table
+	width 100%
+
+footer
+	display table-row
+	height 90px
 
 h1
 	background $lightColor
@@ -38,5 +67,195 @@ h1
 	text-shadow 0 1px 1px $highlightColor
 	border-radius(3px)
 	box-shadow(0 0 1px $darkColor)
+
 a.link
+	margin 30px
+	display inline-block
+	padding-left 10px
+	padding-right 10px
+	color $linkcolor
+	font-weight bold
+
+a.link:hover
+	text-decoration none
+
+div#header
+	height 150px
+
+div#login-content
+	padding-top 30px
+	padding-bottom 30px
+
+div#footer
+	height 80px
+	text-align center
+	background #fff
+	background-color rgba(255, 255, 255, 0.5)
+
+div#container-left
+	text-align center
+
+div#container-center
+	padding-bottom 30px
+	text-align center
+	padding-top 50px
+
+div.content-box
+	background-color #fff
+	padding 20px
+	padding-top 20px
+	margin auto
+	border-radius 4px
+	border 1px #eee
+	box-shadow inset 0px 2px 2px 0px rgba(156, 156, 156, 0.35)
+	color #808080
+
+div#container-right
+	text-align center
+
+input[type=date]
+	padding 4px
+	background #fff
+	border 1px solid #eee
+	font-family $fonts
+	border-radius 5px
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+
+.register_textbox
+select
+.login_textbox
+.date
+	padding 4px
+	background #fff
+	border 1px solid rgba(156, 156, 156, 0.35)
+	width 200px
+	font-family $fonts
+	border-radius 5px
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
+	padding-left 8px
+
+select
+	padding-left 0px
+
+.register_textbox:focus
+select:focus
+.login_textbox:focus
+.date:focus
+	outline none
+	box-shadow 0px 0px 3px 1px #F7852E
+
+.register_button
+.login_button
+	padding 5px
+	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
+	border-radius 4px
+	border 0px solid #000
+	font-weight bold
+	margin 5px
+	margin-left 0px
+	color #000
+
+copytag
+	color $linkcolor
+
+span#slogan
+	color #5f5f5f
+	font-weight bold
+	margin 15px
+	display block
+	font-size 20px
+	text-align center
+
+img#logo
+	width 350px
+	-webkit-touch-callout none
+	-webkit-user-select none
+	-khtml-user-select none
+	-moz-user-select none
+	-ms-user-select none
+	user-select none
+
+span.save
+	color $linkcolor
+	padding-left 20px
+
+p#article
+	color $linkcolor
+	text-align justify
+
+.boldlink
+	font-weight bold
+
+form#register
+	margin auto
+
+form#login
+	padding-left 70px
+
+option
+	padding 5px
+
+div#register-border
+	border-left 1px solid #cdcdcd
+
+div#check-all
 	padding 10px
+
+.date
+	width 70px
+
+@media (max-width: 768px)
+	.none-mobile
+		display none
+@media (max-width: 992px)
+	.none-tablette
+		display none
+@media (min-width: 768px)
+	.just-mobile
+		display none
+@media (min-width: 992px) and (max-width: 768px)
+	.just-tablette
+		display none
+
+@font-face
+	font-family Average
+	src url(/fonts/pakenham.regular.ttf)
+
+label
+	padding 10px
+
+input[type=checkbox]
+	margin-left 10px
+
+a#forget-it
+	padding-left 85px
+	color $orange
+
+a#forget-it:hover
+	text-decoration none
+	cursor pointer
+
+.description
+	padding-top 50px
+
+.cite
+	padding-top 10px
+	padding-bottom 10px
+	cursor default
+
+.sign-in
+	width 200px
+
+@media(max-width: 450px)
+	body
+		font-size: 10px
+@media(max-width: 768px)
+	body
+		font-size: 14px
