@@ -8,19 +8,17 @@ Controllers =
 		d = date.getDate()
 		m = date.getMonth()
 		y = date.getFullYear()
-		$scope.changeTo = "Hungarian"
 		
-		# event source that pulls from google.com 
+		# event source that pulls from google.com
 		$scope.eventSource =
 			url: "http://www.google.com/calendar/feeds/usa_en%40holiday.calendar.google.com/public/basic"
-			className: "gcal-event" # an option!
-			currentTimezone: data('timezone') # an option!
-
+			className: "gcal-event"
+			currentTimezone: data('timezone')
 		
-		# event source that contains custom events on the scope 
+		# event source that contains custom events on the scope
 		$scope.events = data('events')
 		
-		# event source that calls a function on every view switch 
+		# event source that calls a function on every view switch
 		$scope.eventsF = (start, end, callback) ->
 			s = new Date(start).getTime() / 1000
 			e = new Date(end).getTime() / 1000
@@ -35,53 +33,26 @@ Controllers =
 			callback events
 			return
 
-		$scope.calEventsExt =
-			color: "#f00"
-			textColor: "yellow"
-			events: [
-				{
-					type: "party"
-					title: "Lunch"
-					start: new Date(y, m, d, 12, 0)
-					end: new Date(y, m, d, 14, 0)
-					allDay: false
-				}
-				{
-					type: "party"
-					title: "Lunch 2"
-					start: new Date(y, m, d, 12, 0)
-					end: new Date(y, m, d, 14, 0)
-					allDay: false
-				}
-				{
-					type: "party"
-					title: "Click for Google"
-					start: new Date(y, m, 28)
-					end: new Date(y, m, 29)
-					url: "http://google.com/"
-				}
-			]
-
 		
-		# alert on eventClick 
+		# alert on eventClick
 		$scope.alertOnEventClick = (event, allDay, jsEvent, view) ->
 			$scope.alertMessage = (event.title + " was clicked ")
 			return
 
 		
-		# alert on Drop 
+		# alert on Drop
 		$scope.alertOnDrop = (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) ->
 			$scope.alertMessage = ("Event Droped to make dayDelta " + dayDelta)
 			return
 
 		
-		# alert on Resize 
+		# alert on Resize
 		$scope.alertOnResize = (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) ->
 			$scope.alertMessage = ("Event Resized to make dayDelta " + minuteDelta)
 			return
 
 		
-		# add and removes an event source of choice 
+		# add and removes an event source of choice
 		$scope.addRemoveEventSource = (sources, source) ->
 			canAdd = 0
 			angular.forEach sources, (value, key) ->
@@ -97,99 +68,57 @@ Controllers =
 		# add custom event
 		$scope.addEvent = ->
 			$scope.events.push
-				title: "Open Sesame"
-				start: new Date(y, m, 28)
-				end: new Date(y, m, 29)
+				title: ""
+				start: new Date(y, m, d + 1)
+				end: new Date(y, m, d + 2)
 				className: ["openSesame"]
+			delay 50, ->
+				$('ul.events input[ng-model="e.title"]:last').focus()
 
 			return
 
 		
-		# remove event 
+		# remove event
 		$scope.remove = (index) ->
 			$scope.events.splice index, 1
 			return
 
 		
-		# Change View 
+		# Change View
 		$scope.changeView = (view, calendar) ->
 			calendar.fullCalendar "changeView", view
 			return
 
 		
-		# Change View 
+		# Change View
 		$scope.renderCalender = (calendar) ->
 			calendar.fullCalendar "render"
 			return
 
 		
-		# config object 
-		$scope.uiConfig = calendar:
-			height: 450
-			editable: true
-			header:
-				left: "title"
-				center: ""
-				right: "today prev,next"
-
-			eventClick: $scope.alertOnEventClick
-			eventDrop: $scope.alertOnDrop
-			eventResize: $scope.alertOnResize
-
-		$scope.changeLang = ->
-			if $scope.changeTo is "Hungarian"
-				$scope.uiConfig.calendar.dayNames = [
-					"Vasárnap"
-					"Hétfő"
-					"Kedd"
-					"Szerda"
-					"Csütörtök"
-					"Péntek"
-					"Szombat"
-				]
-				$scope.uiConfig.calendar.dayNamesShort = [
-					"Vas"
-					"Hét"
-					"Kedd"
-					"Sze"
-					"Csüt"
-					"Pén"
-					"Szo"
-				]
-				$scope.changeTo = "English"
-			else
-				$scope.uiConfig.calendar.dayNames = [
-					"Sunday"
-					"Monday"
-					"Tuesday"
-					"Wednesday"
-					"Thursday"
-					"Friday"
-					"Saturday"
-				]
-				$scope.uiConfig.calendar.dayNamesShort = [
-					"Sun"
-					"Mon"
-					"Tue"
-					"Wed"
-					"Thu"
-					"Fri"
-					"Sat"
-				]
-				$scope.changeTo = "Hungarian"
-			return
-
+		# config object
+		$scope.uiConfig = calendar: $.extend(
+			{
+				lang: "fr"
+				height: 450
+				editable: true
+				header:
+					left: "title"
+					center: ""
+					right: "today prev,next"
+	
+				eventClick: $scope.alertOnEventClick
+				eventDrop: $scope.alertOnDrop
+				eventResize: $scope.alertOnResize
+			}
+			data('dateTexts')
+		)
 		
 		# event sources array
 		$scope.eventSources = [
 			$scope.events
-			$scope.eventSource
-			$scope.eventsF
-		]
-		$scope.eventSources2 = [
-			$scope.calEventsExt
-			$scope.eventsF
-			$scope.events
+			#$scope.eventSource
+			#$scope.eventsF
 		]
 		return
 
@@ -226,6 +155,9 @@ objectResolve = (value) ->
 data = (name) ->
 	name = name.replace(/(\\|")/g, '\\$1')
 	objectResolve $('[data-data][data-name="' + name + '"]').data('value')
+
+delay = (ms, cb) ->
+	setTimeout cb, ms
 
 Wornet = angular.module 'Wornet', [
 	"ui.calendar"

@@ -18,3 +18,7 @@ module.exports = new Schema
 		type: String
 		required: true
 		trim: true
+	allDay:
+		type: Boolean
+		default: false
+	url: String

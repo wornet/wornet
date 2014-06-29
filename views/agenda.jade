@@ -5,77 +5,28 @@ block body
 		section#directives-calendar(ng-controller='CalendarCtrl')
 			.well
 				.row-fluid
-					.col-sm-4
+					.col-sm-5
 						.btn-group.calTools
-							button.btn(ng-click='changeLang()')
-								| {{changeTo}}
-							button.btn(ng-click='addRemoveEventSource(eventSources,eventSource)')
-								=s("Toggle Source")
 							button.btn.btn-primary(type='button', ng-click='addEvent()')
-								=s("Add Event")
+								=s("Ajouter un événement")
 						ul.events
 							li(ng-repeat='e in events')
 								.alert.alert-info
 									a.close(ng-click='remove($index)')
 										i.icon-remove
 									b
-										input(ng-model='e.title')
-									| {{e.start | date:"MMM dd"}} - {{e.end | date:"MMM dd"}}
-					.col-sm-8
-						tabset
-							tab(select='renderCalender(myCalendar1);')
-								tab-heading
-									i.glyphicon.glyphicon-bell
-									=s("Calendar One")
-								.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
-									h4 {{alertMessage}}
-								.btn-toolbar
-									p.pull-right.lead
-										=s("Calendar One View Options")
-									.btn-group
-										button.btn.btn-success(ng-click='changeView("agendaDay", myCalendar1)')
-											=s("AgendaDay")
-										button.btn.btn-success(ng-click='changeView("agendaWeek", myCalendar1)')
-											=s("AgendaWeek")
-										button.btn.btn-success(ng-click='changeView("month", myCalendar1)')
-											=s("Month")
-								.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
-							tab(select='renderCalender(myCalendar2);')
-								tab-heading
-									i.glyphicon.glyphicon-bell
-									=s("Calendar Two")
-								.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
-									h4
-										| {{alertMessage}}
-								.btn-toolbar
-									p.pull-right.lead
-										=s("Calendar Two View Options")
-									.btn-group
-										button.btn.btn-success(ng-click='changeView("agendaDay", myCalendar2)')
-											=s("AgendaDay")
-										button.btn.btn-success(ng-click='changeView("agendaWeek", myCalendar2)')
-											=s("AgendaWeek")
-										button.btn.btn-success(ng-click='changeView("month", myCalendar2)')
-											=s("Month")
-								.calendar(ng-model='eventSources', calendar='myCalendar2', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
-							tab(select='renderCalender(myCalendar3);')
-								tab-heading
-									i.glyphicon.glyphicon-bell
-									=s("Calendar Three")
-								.alert-success.calAlert
-									h4
-										=s("This calendar uses the extended form")
-								.btn-toolbar
-									p.pull-right.lead
-										=s("Calendar Three View Options")
-									.btn-group
-										button.btn.btn-success(ng-click='changeView("agendaDay", myCalendar3)')
-											=s("AgendaDay")
-										button.btn.btn-success(ng-click='changeView("agendaWeek", myCalendar3)')
-											=s("AgendaWeek")
-										button.btn.btn-success(ng-click='changeView("month", myCalendar3)')
-											=s("Month")
-								.calendar(ng-model='eventSources2', calendar='myCalendar3', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
+										input.form-control(ng-model='e.title', placeholder=s("Titre de l'événement"))
+									| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
+					.col-sm-7
+						.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
+							h4 {{alertMessage}}
+						.btn-toolbar
+							.btn-group
+								button.btn.btn-default(ng-click='changeView("agendaDay", myCalendar1)')
+									=s("Jour")
+								button.btn.btn-default(ng-click='changeView("agendaWeek", myCalendar1)')
+									=s("Semaine")
+								button.btn.btn-default(ng-click='changeView("month", myCalendar1)')
+									=s("Mois")
+						.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
 					.cb
-	//- +data('timezone', 'America/Chicago')
-	+data('timezone', 'France/Paris')
