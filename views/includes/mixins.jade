@@ -12,7 +12,8 @@ mixin meta(name, content)
 	meta(name=name, content=content)
 
 mixin link(href, name)
-	a(class!=attributes.class, href=href)= name
+	a(id!=attributes.id, class!=attributes.class, href=href)
+		=name
 
 mixin data(name, value)
 	!=data(name, value)
@@ -22,14 +23,14 @@ mixin csrf()
 
 mixin form(url, method)
 
-	- var method
+	- var enctype
 	unless method
 		- method = "POST"
 	if method == "FILE"
 		- enctype = "multipart/form-data"
 		- method = "POST"
 
-	form(id=attributes.id, class=attributes.class, action=url, method=method, enctype=enctype)
+	form(id!=attributes.id, class!=attributes.class, action=url, method=method, enctype=enctype)
 		div
 			+csrf()
 		block

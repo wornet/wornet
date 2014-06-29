@@ -62,12 +62,25 @@ onready ->
 			files.forEach (file) ->
 				require __dirname + file
 
-	app.on 'request', ->
+	app.use (req, res, next) ->
 
-		console.log "REQUEST ######################################"
-		glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
-			files.forEach (file) ->
-				require __dirname + file
+		if ! /^\/((img|js|css|components)\/|favicon\.ico)/.test(req.originalUrl)
+			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
+				pendingFiles = files.length
+				if pendingFiles
+					files.forEach (file) ->
+						value = require __dirname + file
+						if typeof(value) is 'function'
+							value ->
+								unless --pendingFiles
+									next()
+						else
+							unless --pendingFiles
+								next()
+				else
+					next()
+		else
+			next()
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

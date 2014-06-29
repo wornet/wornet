@@ -53,8 +53,9 @@ html.no-js(lang=lang())
 
 		footer
 			=s("Wornet")
-			- for(var name in datas)
-				+data(name, datas[name])
+			if datas
+				each value, name in datas
+					+data(name, value)
 
 		block js
 			each script in options.js().main

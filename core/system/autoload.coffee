@@ -19,35 +19,43 @@ extend global, functions
 defer = []
 
 # Load all files contained in autoloadDirectories
-pending = autoloadDirectories.length
+pendingDirectories = autoloadDirectories.length
+next = ->
+	# When no more directory need to be loaded
+	defer.forEach (callback) ->
+		callback autoloadDirectories
 autoloadDirectories.forEach (directory) ->
 	glob directory + "/**/*.coffee", (er, files) ->
-		files.forEach (file) ->
-			loadedValue = require root + file
-			if typeof(loadedValue.name) is 'undefined' || empty(loadedValue.name)
-				name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
-			else
-				name = loadedValue.name
-			if global[name]?
-				console.warn name + ' variable already declared'
-			else
-				global[name] = loadedValue
-				if name.length > 6 && name.substr(-6) is 'Schema'
-					modelName = name.substr 0, name.length - 6
-					model = mongoose.model modelName, loadedValue
-					if global[modelName]? || global[modelName + 'Model']?
-						throw modelName + ' model already token'
-					global[modelName] = model
-					global[modelName + 'Model'] = model
+		pendingFiles = files.length
+		if pendingFiles
+			files.forEach (file) ->
+				loadedValue = require root + file
+				if typeof(loadedValue.name) is 'undefined' || empty(loadedValue.name)
+					name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
+				else
+					name = loadedValue.name
+				if global[name]?
+					console.warn name + ' variable already declared'
+				else
+					global[name] = loadedValue
+					if name.length > 6 && name.substr(-6) is 'Schema'
+						modelName = name.substr 0, name.length - 6
+						model = mongoose.model modelName, loadedValue
+						if global[modelName]? || global[modelName + 'Model']?
+							throw modelName + ' model already token'
+						global[modelName] = model
+						global[modelName + 'Model'] = model
 
-		# When no more directory need to be loaded
-		unless --pending
-			defer.forEach (callback) ->
-				callback autoloadDirectories
+				unless --pendingFiles
+					unless --pendingDirectories
+						next()
+		else
+			unless --pendingDirectories
+				next()
 
 module.exports = (callback) ->
 
-	if pending
+	if pendingDirectories
 		defer.push callback
 	else
 		callback autoloadDirectories

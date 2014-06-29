@@ -193,9 +193,39 @@ Controllers =
 		]
 		return
 
+objectResolve = (value) ->
+
+	key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
+
+	enter = (value) ->
+		switch typeof(value)
+			when 'object'
+				unless value[key]
+					for v, i in value
+						value[i] = enter value[i]
+					value[key] = true
+			when 'string'
+				if /^[0-9-]+T[0-9:.]+Z$/.test value
+					date = new Date value
+					if `date != 'Invalid Date'`
+						value = date
+		value
+
+	leave = (value) ->
+		key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
+		switch typeof(value)
+			when 'object'
+				if value[key]
+					delete value[key]
+					for v, i in value
+						value[i] = leave value[i]
+		value
+
+	leave enter value
+
 data = (name) ->
 	name = name.replace(/(\\|")/g, '\\$1')
-	JSON.parse $('[data-data][data-name="' + name + '"]').data('value')
+	objectResolve $('[data-data][data-name="' + name + '"]').data('value')
 
 Wornet = angular.module 'Wornet', [
 	"ui.calendar"

@@ -66,9 +66,14 @@ module.exports =
 		jadeRender(code)
 	,
 	data: (name, value) ->
-		name = name.replace(/(\\|")/g, '\\$1')
-		value = JSON.stringify value.replace(/(\\|")/g, '\\$1')
-		jd 'div(data-data, data-name="' + name + '", data-value="' + value + '")'
+		try
+			name = name.replace(/(\\|")/g, '\\$1')
+			value = JSON.stringify(value).replace(/(\\|")/g, '\\$1')
+			jd 'div(data-data, data-name="' + name + '", data-value="' + value + '")'
+		catch e
+			console.error e
+			console.trace()
+			"Error (see conole)"
 	,
 	shareData: (name, value) ->
 		if typeof(value) is 'undefined'
