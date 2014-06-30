@@ -21,10 +21,6 @@ module.exports = (router) ->
 						model.err = err
 					else
 						model.events = events
-					date = new Date()
-					d = date.getDate()
-					m = date.getMonth()
-					y = date.getFullYear()
 					model.datas = 
 						events: events
 						dateTexts: require(__dirname + '/../core/utils/dateTexts')()

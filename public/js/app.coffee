@@ -31,6 +31,8 @@ Controllers =
 			data = {}
 			for key in 'id title content url start end allDay'.split /\s/g
 				if event[key]?
+					if event[key] instanceof Date
+						event[key] = (new Date(event[key].getTime() - (event[key].getTimezoneOffset() * 60000))).toISOString()
 					data[key] = event[key]
 			data
 
