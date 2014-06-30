@@ -13,7 +13,7 @@ module.exports = (router) ->
 				res.render 'agenda', model
 			else
 				Event.find(
-					user: kyle
+					user: kyle.id
 				).sort(
 					registerDate: -1
 				).exec (err, events) ->
@@ -26,48 +26,88 @@ module.exports = (router) ->
 					m = date.getMonth()
 					y = date.getFullYear()
 					model.datas = 
-						events: [
-							{
-								title: "All Day Event"
-								start: new Date(y, m, 1)
-							}
-							{
-								title: "Long Event"
-								start: new Date(y, m, d - 5)
-								end: new Date(y, m, d - 2)
-							}
-							{
-								id: 999
-								title: "Repeating Event"
-								start: new Date(y, m, d - 3, 16, 0)
-								allDay: false
-							}
-							{
-								id: 999
-								title: "Repeating Event"
-								start: new Date(y, m, d + 4, 16, 0)
-								allDay: false
-							}
-							{
-								title: "Birthday Party"
-								start: new Date(y, m, d + 1, 19, 0)
-								end: new Date(y, m, d + 1, 22, 30)
-								allDay: false
-							}
-							{
-								title: "Click for Google"
-								start: new Date(y, m, 28)
-								end: new Date(y, m, 29)
-								url: "http://google.com/"
-							}
-						]
+						events: events
 						dateTexts: require(__dirname + '/../core/utils/dateTexts')()
 					res.render 'agenda', model
 		)
 
 	router.post '/add', (req, res) ->
-		res.json
-			id: "A"
+		model = {}
+		User.find
+			'name.first': 'Kyle'
+		, (err, kyle) ->
+			if err
+				res.json
+					err: err
+			else
+				eventData = req.body.event
+				event = new Event
+					user: kyle.id
+					start: eventData.start
+					end: eventData.end
+				unless empty(eventData.title)
+					event.title = eventData.title
+				event.save (err) ->
+					if err
+						res.json
+							err: err
+					else
+						res.json event
+
+	router.post '/edit', (req, res) ->
+		model = {}
+		User.find
+			'name.first': 'Kyle'
+		, (err, kyle) ->
+			if err
+				res.json
+					err: err
+			else
+				eventData = req.body.event
+				Event.findById eventData.id, (err, event) ->
+					if err
+						res.json
+							err: err
+					else if event is null
+						res.json
+							err: s("L'événement [" + eventData.id + "] est introuvable.")
+					else if event.user isnt kyle.id
+						res.json
+							err: s("Vous n'êtes pas propriétaire de cet événement.")
+					else
+						for key, value of eventData
+							if key isnt 'id'
+								if key in ['start', 'end']
+									eventData[key] = new Date eventData[key]
+								event[key] = eventData[key]
+						if typeof(event.allDay) is 'string'
+							event.allDay = event.allDay is 'true'
+						event.save (err) ->
+							if err
+								res.json
+									err: err
+							else
+								res.json event
+
+	router.post '/remove', (req, res) ->
+		model = {}
+		User.find
+			'name.first': 'Kyle'
+		, (err, kyle) ->
+			if err
+				res.json
+					err: err
+			else
+				eventData = req.body.event
+				Event.remove
+					_id: eventData.id
+					user: kyle.id
+				, (err) ->
+					if err
+						res.json
+							err: err
+					else
+						res.json {}
 
 	router.get '/calendar/feeds', (req, res) ->
 

@@ -11,14 +11,17 @@ module.exports = new Schema
 	end: Date
 	title:
 		type: String
-		required: true
 		validate: [regex('simple-text'), 'invalid title']
 		trim: true
 	content:
 		type: String
-		required: true
 		trim: true
 	allDay:
 		type: Boolean
 		default: false
 	url: String
+
+.pre 'save', (next) ->
+	unless @registerDate
+		@registerDate = new Date
+	next()

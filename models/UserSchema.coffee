@@ -33,5 +33,9 @@ userSchema.virtual('name.full').set (name) ->
 	@name.last = split[1]
 	return
 
+userSchema.pre 'save', (next) ->
+	unless @registerDate
+		@registerDate = new Date
+	next()
 
 module.exports = userSchema

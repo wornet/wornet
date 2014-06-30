@@ -1,32 +1,36 @@
 extends layouts/wornet
 
 block body
-	.container
-		section#directives-calendar(ng-controller='CalendarCtrl')
-			.well
-				.row-fluid
-					.col-sm-5
-						.btn-group.calTools
-							button.btn.btn-primary(type='button', ng-click='addEvent()')
-								=s("Ajouter un événement")
-						ul.events
-							li(ng-repeat='e in events')
-								.alert.alert-info
-									a.close(ng-click='remove($index)')
-										.glyphicon.glyphicon-trash
-									b
-										input.form-control(ng-model='e.title', placeholder=s("Titre de l'événement"))
-									| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
-					.col-sm-7
-						.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
-							h4 {{alertMessage}}
-						.btn-toolbar
-							.btn-group
-								button.btn.btn-default(ng-click='changeView("agendaDay", myCalendar1)')
-									=s("Jour")
-								button.btn.btn-default(ng-click='changeView("agendaWeek", myCalendar1)')
-									=s("Semaine")
-								button.btn.btn-default(ng-click='changeView("month", myCalendar1)')
-									=s("Mois")
-						.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
-					.cb
+	if err
+		.alert.alert-danger
+			=err
+	else
+		.container
+			section#directives-calendar(ng-controller='CalendarCtrl')
+				.well
+					.row-fluid
+						.col-sm-5
+							.btn-group.calTools
+								button.btn.btn-primary(type='button', ng-click='addEvent()')
+									=s("Ajouter un événement")
+							ul.events
+								li(ng-repeat='e in events')
+									.alert.alert-info
+										a.close(ng-click='remove($index)')
+											.glyphicon.glyphicon-trash
+										b
+											input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))
+										| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
+						.col-sm-7
+							.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
+								h4 {{alertMessage}}
+							.btn-toolbar
+								.btn-group
+									button.btn.btn-default(ng-click='changeView("agendaDay", myCalendar1)')
+										=s("Jour")
+									button.btn.btn-default(ng-click='changeView("agendaWeek", myCalendar1)')
+										=s("Semaine")
+									button.btn.btn-default(ng-click='changeView("month", myCalendar1)')
+										=s("Mois")
+							.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
+						.cb
