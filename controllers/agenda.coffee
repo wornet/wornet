@@ -65,6 +65,10 @@ module.exports = (router) ->
 					res.render 'agenda', model
 		)
 
+	router.post '/add', (req, res) ->
+		res.json
+			id: "A"
+
 	router.get '/calendar/feeds', (req, res) ->
 
 		http = require 'http'

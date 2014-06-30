@@ -25,9 +25,6 @@ port = process.env.PORT || 8000
 
 options = (require './core/system/options')(port)
 
-# Build coffee scripts
-exec 'coffee -b -o .build/js -wc public/js'
-
 # Make config usables everywhere
 extend global,
 	config: config,
@@ -64,7 +61,7 @@ onready ->
 
 	app.use (req, res, next) ->
 
-		if ! /^\/((img|js|css|components)\/|favicon\.ico)/.test(req.originalUrl)
+		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test(req.originalUrl)
 			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
 				pendingFiles = files.length
 				if pendingFiles

@@ -56,22 +56,22 @@ module.exports = (port) ->
 				"/components/jquery/js/jquery-ui.min.js",
 				#"/components/bootstrap/js/bootstrap.min.js",
 				"/components/angular/js/angular.js",
-				"//cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.2.15/angular-locale_fr-fr.js",
+				"/components/angular/js/angular-locale_fr-fr.js",
 				"/components/angular/js/angular-animate.js",
 				"/components/bootstrap/js/ui-bootstrap.js",
 				"/components/moment/js/moment-with-langs.min.js",
+				script("app"),
 				"/components/jquery/js/fullcalendar.min.js",
-				"/components/jquery/js/fullcalendar-gcal.js",
+				#"/components/jquery/js/fullcalendar-gcal.js",
 				"/components/angular/js/calendar-fr.js",
-				"/components/angular/js/calendar.js",
-				script("app")
+				"/components/angular/js/calendar.js"
 			]
 
-	onrequest: ->
-		console.log "####################"
-		console.log arguments
-
 	onconfig: (localConfig, next) ->
+		app.response.json = (data) ->
+			data._csrf = data._csrf || @locals._csrf
+			@setHeader 'Content-Type', 'application/json'
+			@end JSON.stringify data
 		app.set 'views', __dirname + '/../../views'
 		extend config, localConfig._store
 		if port is 8000 && config.env.development

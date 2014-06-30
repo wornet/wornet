@@ -13,7 +13,7 @@ block body
 							li(ng-repeat='e in events')
 								.alert.alert-info
 									a.close(ng-click='remove($index)')
-										i.icon-remove
+										.glyphicon.glyphicon-trash
 									b
 										input.form-control(ng-model='e.title', placeholder=s("Titre de l'événement"))
 									| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}

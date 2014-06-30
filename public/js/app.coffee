@@ -10,68 +10,89 @@ Controllers =
 		y = date.getFullYear()
 		
 		# event source that pulls from google.com
-		$scope.eventSource =
-			url: "http://www.google.com/calendar/feeds/usa_en%40holiday.calendar.google.com/public/basic"
-			className: "gcal-event"
-			currentTimezone: data('timezone')
+		# $scope.eventSource =
+		# 	url: "http://www.google.com/calendar/feeds/usa_en%40holiday.calendar.google.com/public/basic"
+		# 	className: "gcal-event"
+		# 	currentTimezone: data('timezone')
 		
 		# event source that contains custom events on the scope
 		$scope.events = data('events')
+
 		
 		# event source that calls a function on every view switch
-		$scope.eventsF = (start, end, callback) ->
-			s = new Date(start).getTime() / 1000
-			e = new Date(end).getTime() / 1000
-			m = new Date(start).getMonth()
-			events = [
-				title: "Feed Me " + m
-				start: s + (50000)
-				end: s + (100000)
-				allDay: false
-				className: ["customFeed"]
-			]
-			callback events
-			return
+		# $scope.eventsF = (start, end, callback) ->
+		# 	s = new Date(start).getTime() / 1000
+		# 	e = new Date(end).getTime() / 1000
+		# 	m = new Date(start).getMonth()
+		# 	events = [
+		# 		title: "Feed Me " + m
+		# 		start: s + (50000)
+		# 		end: s + (100000)
+		# 		allDay: false
+		# 		className: ["customFeed"]
+		# 	]
+		# 	callback events
+		# 	return
 
 		
 		# alert on eventClick
 		$scope.alertOnEventClick = (event, allDay, jsEvent, view) ->
-			$scope.alertMessage = (event.title + " was clicked ")
+			console.log event
+			console.log allDay
+			console.log jsEvent
+			console.log view
 			return
 
 		
 		# alert on Drop
 		$scope.alertOnDrop = (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) ->
-			$scope.alertMessage = ("Event Droped to make dayDelta " + dayDelta)
+			console.log event
+			console.log dayDelta
+			console.log minuteDelta
+			console.log allDay
+			console.log revertFunc
+			console.log jsEvent
+			console.log ui
+			console.log view
 			return
 
 		
 		# alert on Resize
 		$scope.alertOnResize = (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) ->
-			$scope.alertMessage = ("Event Resized to make dayDelta " + minuteDelta)
+			console.log event
+			console.log dayDelta
+			console.log minuteDelta
+			console.log allDay
+			console.log revertFunc
+			console.log jsEvent
+			console.log ui
+			console.log view
 			return
 
 		
 		# add and removes an event source of choice
 		$scope.addRemoveEventSource = (sources, source) ->
-			canAdd = 0
+			canAdd = false
 			angular.forEach sources, (value, key) ->
 				if sources[key] is source
 					sources.splice key, 1
-					canAdd = 1
+					canAdd = true
 				return
 
-			sources.push source	if canAdd is 0
+			sources.push source	if canAdd
 			return
 
 		
 		# add custom event
 		$scope.addEvent = ->
-			$scope.events.push
+			event =
 				title: ""
 				start: new Date(y, m, d + 1)
 				end: new Date(y, m, d + 2)
-				className: ["openSesame"]
+			$scope.events.push event
+			post '/agenda/add', (data) ->
+				console.log data
+				event.id = data.id
 			delay 50, ->
 				$('ul.events input[ng-model="e.title"]:last').focus()
 
@@ -106,12 +127,12 @@ Controllers =
 					left: "title"
 					center: ""
 					right: "today prev,next"
-	
+
 				eventClick: $scope.alertOnEventClick
 				eventDrop: $scope.alertOnDrop
 				eventResize: $scope.alertOnResize
 			}
-			data('dateTexts')
+			dateTexts
 		)
 		
 		# event sources array
@@ -153,11 +174,46 @@ objectResolve = (value) ->
 	leave enter value
 
 data = (name) ->
-	name = name.replace(/(\\|")/g, '\\$1')
-	objectResolve $('[data-data][data-name="' + name + '"]').data('value')
+	name = name.replace /(\\|")/g, '\\$1'
+	$data = $ '[data-data][data-name="' + name + '"]'
+	unless $data.length
+		console.warn name + " data not found."
+		console.trace()
+	objectResolve $data.data 'value'
 
 delay = (ms, cb) ->
 	setTimeout cb, ms
+
+post = (url, settings) ->
+	if typeof(settings) is 'function'
+		settings =
+			success: settings
+	settings.type = settings.type || "POST"
+	settings.dataType = settings.dataType || "json"
+	settings.data = settings.data || {}
+	settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
+	$.ajax url, settings
+	# .complete (data) ->
+	# 	$('meta[name="_csrf"]').attr('content')
+
+$(document).ajaxComplete (event, xhr, settings) ->
+	if settings.type is "POST"
+		console.log xhr
+		if settings.dataType.toLowerCase() is "json"
+			_csrf = xhr.responseJSON._csrf
+		else
+			_csrf = $(xhr.responseHTML).find('meta[name="_csrf"]').attr 'content'
+	$('head meta[name="_csrf"]').attr 'content', _csrf
+
+dateTexts = data('dateTexts')
+calendarGetText = (name) ->
+	if typeof(dateTexts[name]) is 'undefined'
+		console.warn name + " calendar text not found."
+		console.trace()
+	dateTexts[name]
+
+lang = $('html').attr 'lang'
+shortLang = lang.split(/[^a-zA-Z]/)[0]
 
 Wornet = angular.module 'Wornet', [
 	"ui.calendar"

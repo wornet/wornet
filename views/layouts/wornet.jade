@@ -12,6 +12,7 @@ html.no-js(lang=lang())
 			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
+			+meta("_csrf", _csrf)
 		block css
 			each style in options.css().main
 				if typeof(style) === 'object'
