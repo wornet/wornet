@@ -1,22 +1,22 @@
 /* <--- Feuille de style (app.styl) correspondant à la page login.jade ---> */
 
 // Variables de l'entête de page.
-$footer_height = 150px
+$footer-height = 150px
 // Variables du corps de page.
 $background = url(/img/background.jpg)
 $baseColor = #fff
 $orange = #ffa500
 // Variables du pied de page.
-$footer_height = 80px
-$footer_background = rgba(255, 255, 255, 0.5)
+$footer-height = 80px
+$footer-background = rgba(255, 255, 255, 0.5)
 // Variables des liens.
-$link_color = #5f5f5f
-$link_weight = bold
+$link-color = #5f5f5f
+$link-weight = bold
 // Variables du bloc contenant le formulaire d'inscrition (centre).
-$register_container_topspacing = 50px
-$register_container_botspacing = 30px
-$register_container_buttonwidth = 200px
-$register_container_textbox_background = #ffffff
+$register-container-topspacing = 50px
+$register-container-botspacing = 30px
+$register-container-buttonwidth = 200px
+$register-container-textbox-background = #ffffff
 // Autres variables.
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
@@ -27,7 +27,7 @@ $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
 $fonts = Average, helvetica, arial, sans-serif
-//@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
+//@import "../../node-modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
 
@@ -85,7 +85,7 @@ html, body
 	-o-background-size cover /* pour Opera */
 	background-size cover /* version standardisée */
 header
-	height $header_height
+	height $header-height
 
 body
 	// Police de charactères.
@@ -94,7 +94,7 @@ body
 footer
 	// Tailles du pied de page.
 	width 100%
-	height $footer_height
+	height $footer-height
 
 	// Positions du pied de page.
 	position absolute
@@ -105,7 +105,7 @@ footer
 	text-align center
 
 	// Fond du pied de page.
-	background-color $footer_background
+	background-color $footer-background
 
 h1
 	// Fond, Couleurs, marges interne et externe des titres de taille 1.
@@ -131,8 +131,8 @@ a.link
 	display inline-block
 
 	// Paramètres relatif au texte.
-	color $link_color
-	font-weight $link_weight
+	color $link-color
+	font-weight $link-weight
 
 // Liens du pied de page au passage de la souris.
 a.link:hover
@@ -142,25 +142,25 @@ a.link:hover
 // Conteneurs de structure du design.
 
 // Bloc contenant le formulaire de connexion.
-div#connexion_content
+div#connexion-content
 	padding-top 30px
 	padding-bottom 30px
 
 // Bloc gauche.
-div#container_left
+div#container-left
 	text-align center
 
 // Bloc contenant le formulaire d'inscription.
-div#container_center
+div#container-center
 	// Marges internes
-	padding-bottom $register_container_botspacing
-	padding-top $register_container_topspacing
+	padding-bottom $register-container-botspacing
+	padding-top $register-container-topspacing
 
 	// Paramètres relatif au texte (Hérite de body).
 	text-align center
 
 // Bloc droit.
-div#container_right
+div#container-right
 	text-align center
 
 // Champs de type date.
@@ -181,7 +181,7 @@ input[type=date]
 	font-family $fonts
 
 // Champs de texte.
-.register_textbox,select,.login_textbox,.date
+.register-textbox,select,.login-textbox,.date
 	// Tailles.
 	width 200px
 
@@ -198,7 +198,7 @@ input[type=date]
 	border-radius 5px
 
 	// Fond, police de charactères et ombres.
-	background $register_container_textbox_background
+	background $register-container-textbox-background
 	font-family $fonts
 	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
 
@@ -207,12 +207,12 @@ select
 	padding-left 0px
 
 // Champs de texte au focus.
-.register_textbox:focus,select:focus,.login_textbox:focus,.date:focus
+.register-textbox:focus,select:focus,.login-textbox:focus,.date:focus
 	// Correcteur d'orthographe et ombres.
 	outline none
 	box-shadow 0px 0px 3px 1px #F7852E
 
-.register_button,.login_button
+.register-button,.login-button
 	// Marges internes et externes.
 	margin 5px
 	margin-left 0px
@@ -231,7 +231,7 @@ select
 
 // Elément XHTML contenant le COPYRIGHT de Wornet.
 copytag
-	color $link_color
+	color $link-color
 
 // Elément contenant le slogan.
 span#slogan
@@ -267,13 +267,13 @@ input[type=checkbox]
 	margin-left 10px
 
 // Lien d'oublie du mot de passe.
-a#forget_it
+a#forget-it
 	padding-left 85px
 	color $orange
 	cursor pointer
 
 // Lien d'oublie du mot de passe au passage de la souris.
-a#forget_it:hover
+a#forget-it:hover
 	text-decoration none
 
 // Bloc d'espacement vertical.
@@ -290,8 +290,8 @@ div.space-block
 	cursor default
 
 // Bouton d'inscription.
-input#sign_in
-	width $register_container_buttonwidth
+input#sign-in
+	width $register-container-buttonwidth
 
 // Police de charactères non-standard.
 @font-face 
@@ -302,7 +302,7 @@ input#sign_in
 @media (max-width: 768px)
 	.none-mobile
 		display none
-	div[id=logo_content]
+	div[id=logo-content]
 		text-align center
 @media (max-width: 992px)
 	.none-tablette
