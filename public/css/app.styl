@@ -1,5 +1,23 @@
+/* <--- Feuille de style (app.styl) correspondant à la page login.jade ---> */
+
+// Variables de l'entête de page.
+$footer_height = 150px
+// Variables du corps de page.
+$background = url(/img/background.jpg)
 $baseColor = #fff
 $orange = #ffa500
+// Variables du pied de page.
+$footer_height = 80px
+$footer_background = rgba(255, 255, 255, 0.5)
+// Variables des liens.
+$link_color = #5f5f5f
+$link_weight = bold
+// Variables du bloc contenant le formulaire d'inscrition (centre).
+$register_container_topspacing = 50px
+$register_container_botspacing = 30px
+$register_container_buttonwidth = 200px
+$register_container_textbox_background = #ffffff
+// Autres variables.
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
 $darkColor = darken($baseColor, 35%)
@@ -9,211 +27,283 @@ $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
 $fonts = Average, helvetica, arial, sans-serif
-$linkcolor = #5f5f5f
 //@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
 
 border-radius()
+	// Fonction pour arondir les bordures d'une boite.
 	-webkit-border-radius arguments
 	-moz-border-radius arguments
 	border-radius arguments
 
-
 box-shadow()
+	// Fonction pour créer des ombres sur une boite.
 	-webkit-box-shadow arguments
 	-moz-box-shadow arguments
 	box-shadow arguments
 
 background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	// Fonction pour créer des fonds linéaire.
 	background-color startColor
 	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+
+// Raccourci
+
+// Bloc de type inline-block.
+.inline-block
+	display inline-block
+
+// Lien en gras.
+.boldlink
+	font-weight bold
+
 html, body 
-	height 100%
+	// Tailles, marges interne et externe.
+	min-height 100%
+	width 100%
 	margin 0px
 	padding 0px
-	-webkit-touch-callout none
-	-webkit-user-select none
-	-khtml-user-select none
-	-moz-user-select none
+
+	// Bloquage de la séléction sur tous les navigateurs.
+	-webkit-touch-callout none /* pour Chrome et Safari */
+	-webkit-user-select none /* pour Chrome et Safari */
+	-khtml-user-select none 
+	-moz-user-select none /* pour Mozilla Firefox */
 	-ms-user-select none
-	user-select none
-	background url(/img/background.jpg) no-repeat center fixed
+	-o-user-select none /* pour Opera */
+	user-select none /* version standarisée */
+
+	// Paramètres du fond de la page.
+	background $background no-repeat center fixed
 	-webkit-background-size cover /* pour Chrome et Safari */
 	-moz-background-size cover /* pour Firefox */
 	-o-background-size cover /* pour Opera */
 	background-size cover /* version standardisée */
-body 
+header
+	height $header_height
+
+body
+	// Police de charactères.
 	font 14px/1.4 $fonts
-	background-color #000
-	display table
-	width 100%
+
 footer
-	display table-row
-	height 90px
+	// Tailles du pied de page.
+	width 100%
+	height $footer_height
+
+	// Positions du pied de page.
+	position absolute
+	bottom 0px
+	left 0px
+
+	// Paramètres relatif au texte. (Hérite de body)
+	text-align center
+
+	// Fond du pied de page.
+	background-color $footer_background
+
 h1
+	// Fond, Couleurs, marges interne et externe des titres de taille 1.
 	background $lightColor
 	color $darkColor
 	margin $bigPadding
 	padding $mainPadding
+
+	// Ombres du texte et de la boite.
 	text-shadow 0 1px 1px $highlightColor
-	border-radius(3px)
 	box-shadow(0 0 1px $darkColor)
+
+	// Bordures
+	border-radius(3px)
+
 a.link
+	// Marges interne et externe des liens du pied de page (footer)
 	margin 30px
-	display inline-block
 	padding-left 10px
 	padding-right 10px
-	color $linkcolor
-	font-weight bold
+
+	// Type de container
+	display inline-block
+
+	// Paramètres relatif au texte.
+	color $link_color
+	font-weight $link_weight
+
+// Liens du pied de page au passage de la souris.
 a.link:hover
+	// Paramètres relatif au texte.
 	text-decoration none
-div[id=header]
-	height 150px
-div[id="connexion_content"]
+
+// Conteneurs de structure du design.
+
+// Bloc contenant le formulaire de connexion.
+div#connexion_content
 	padding-top 30px
 	padding-bottom 30px
-div[id=footer]
-	height 80px
+
+// Bloc gauche.
+div#container_left
 	text-align center
-	background #fff
-	background-color rgba(255, 255, 255, 0.5)
-div[id=container_left]
-	
+
+// Bloc contenant le formulaire d'inscription.
+div#container_center
+	// Marges internes
+	padding-bottom $register_container_botspacing
+	padding-top $register_container_topspacing
+
+	// Paramètres relatif au texte (Hérite de body).
 	text-align center
-div[id=container_center]
-	padding-bottom 30px
+
+// Bloc droit.
+div#container_right
 	text-align center
-	padding-top 50px
-div[class=contentbox]
-	background-color: #fff;
-	padding 20px
-	padding-top 20px
-	margin auto
-	border-radius 4px
-	border 1px #eee
-	  box-shadow: inset 0px 2px 2px 0px rgba(156, 156, 156, 0.35);
-	color #808080
-div[id=container_right]
-	
-	text-align center
+
+// Champs de type date.
 input[type=date]
+	// Marges internes et externes.
 	padding 4px
-	background #fff
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+
+	// Bordures.
 	border 1px solid #eee
-	font-family $fonts
 	border-radius 5px
-	margin-left 10px
-	margin-right 10px
-	margin-top 5px
-	margin-bottom 5px
-.register_textbox,select,.login_textbox,.date
-	padding 4px
+
+	// Fond et police de charactères.
 	background #fff
-	border 1px solid rgba(156, 156, 156, 0.35)
-	width 200px
 	font-family $fonts
-	border-radius 5px
+
+// Champs de texte.
+.register_textbox,select,.login_textbox,.date
+	// Tailles.
+	width 200px
+
+	// Marges internes et externes.
+	padding 4px
+	padding-left 8px
 	margin-left 10px
 	margin-right 10px
 	margin-top 5px
 	margin-bottom 5px
+
+	// Bordures.
+	border 1px solid rgba(156, 156, 156, 0.35)
+	border-radius 5px
+
+	// Fond, police de charactères et ombres.
+	background $register_container_textbox_background
+	font-family $fonts
 	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
-	padding-left 8px
+
+// Barre de sélection.
 select
 	padding-left 0px
+
+// Champs de texte au focus.
 .register_textbox:focus,select:focus,.login_textbox:focus,.date:focus
+	// Correcteur d'orthographe et ombres.
 	outline none
 	box-shadow 0px 0px 3px 1px #F7852E
+
 .register_button,.login_button
-	padding 5px
-	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
-	border-radius 4px
-	border 0px solid #000
-	font-weight bold
+	// Marges internes et externes.
 	margin 5px
 	margin-left 0px
+	padding 5px
+
+	// Bordures.
+	border-radius 4px
+	border 0px solid #000
+
+	// Paramètres relatif au texte.
+	font-weight bold
 	color #000
+
+	// Fond
+	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
+
+// Elément XHTML contenant le COPYRIGHT de Wornet.
 copytag
-	color $linkcolor
-span[id=slogan]
+	color $link_color
+
+// Elément contenant le slogan.
+span#slogan
+	// Paramètres relatif au texte. (Hérite de body)
 	color #5f5f5f
 	font-weight bold
-	margin 15px
-	display block
 	font-size 20px
 	text-align center
-img[id=logo]
+
+	// Marges externes et type d'élément.
+	margin 15px
+	display block
+
+// Image logo.
+img#logo
 	width 350px
-	-webkit-touch-callout none
-	-webkit-user-select none
-	-khtml-user-select none
-	-moz-user-select none
-	-ms-user-select none
-	user-select none
-span[class=save]
+
+// Elément contenant le texte à checker (Se souvenir de moi).
+span.save
 	color $linkcolor
 	padding-left 20px
 
-p[id=article]
-	color $linkcolor
-	text-align justify
-.boldlink
-	font-weight bold
-form[id=register]
+// Formulaire d'inscription.
+form#register
 	margin auto
-	
-form[id=login]
+
+// Formulaire de connexion.	
+form#login
 	padding-left 70px
-option
-	padding 5px
-div[id=register_border]
-	border-left 1px solid #cdcdcd
-div[id=check_all]
-	padding 10px
-.date
-	width 70px
-@media (max-width: 768px)
-	.none-mobile
-		display none
-@media (max-width: 992px)
-	.none-tablette
-		display none
-@media (min-width: 768px)
-	.just-mobile
-		display none
-@media (min-width: 992px) and (max-width: 768px)
-	.just-tablette
-		display none
+
+// Case à cocher.
+input[type=checkbox]
+	margin-left 10px
+
+// Lien d'oublie du mot de passe.
+a#forget_it
+	padding-left 85px
+	color $orange
+	cursor pointer
+
+// Lien d'oublie du mot de passe au passage de la souris.
+a#forget_it:hover
+	text-decoration none
+
+// Bloc d'espacement vertical.
+div.space-block
+	padding-top 50px
+
+// Citations
+.cite
+	// Marges interne
+	padding-top 10px
+	padding-bottom 10px
+
+	// Curseur
+	cursor default
+
+// Bouton d'inscription.
+input#sign_in
+	width $register_container_buttonwidth
+
+// Police de charactères non-standard.
 @font-face 
 	font-family Average
 	src url(/fonts/pakenham.regular.ttf)
-label
-	padding 10px
-input[type=checkbox]
-	margin-left 10px
-a[id=forget_it]
-	padding-left 85px
-	color $orange
-a[id=forget_it]:hover
-	text-decoration none
-	cursor pointer
-.description
-	padding-top 50px
 
-.cite
-	padding-top 10px
-	padding-bottom 10px
-	cursor default
-.sign_in
-	width 200px
-@media(max-width: 450px) 
-	body
-		font-size: 10px
-@media(max-width: 768px) 
-	body
-		font-size: 14px
+// Media Queries.
+@media (max-width: 768px)
+	.none-mobile
+		display none
+	div[id=logo_content]
+		text-align center
+@media (max-width: 992px)
+	.none-tablette
+		display none
