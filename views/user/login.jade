@@ -1,79 +1,48 @@
 doctype html
-html(lang="en")
+extends ../layouts/wornet
 
-	head
-		block meta
-			meta(name="description" content="Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
-			meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
-			meta(http-equiv="Content-Language" content="fr-EU")
-			meta(name="keywords" content="réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
-			meta(name="generator" content="Wornet v1")
-			meta(name="author" content="Manuel Costes")
-			meta(name="copyright" content="© 2014 Wornet")
-			meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
-		title.
-			Wornet
-		block link
-			link(rel="SHORTCUT ICON" href="favicon.png")
-			link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
-			link(rel="" href="../../node-modules/bootstrap-stylus/lib/bootstrap")
-			link(rel="stylesheet" href="/css/app.css" media="screen")
-	body
-		div(class="container")
-			header(class="content col-lg-12 col-md-12 col-sm-12 col-xs-12")
-				div(class="col-lg-5 col-md-5 col-sm-4 col-xs-12" id="logo-content")
-					img(type="image/png" class="img-responsive" src="/img/logo.png" id="logo")
-				div(class="col-lg-7 col-md-7 col-sm-8 none-mobile" id="connexion-content")
-					form(method="post" id="login" action="login-check.jade")
-						input(type="text" spellcheck="false" name="login-email" class="login-textbox" placeholder="Votre e-mail")
-						input(type="password" spellcheck="false" name="login-password" class="login-textbox" placeholder="Mot de passe")
-						input(type="submit" class="login-button" value="Se connecter")
-						span(class="none-mobile")
-							br
-						input(type="checkbox" value="Se souvenir de moi" name="save")
-						span(class="save")
-							=s("Se souvenir de moi")
-						a(id="forget-it")
-							=s("Oublié ?")
-			div(class="content col-lg-12 col-md-12 col-sm-12 col-xs-12" id="container")
-				div(id="container-left" class="col-lg-3 col-md-2 col-sm-1 none-mobile")
-				div(id="container-center" class="col-lg-6 col-md-7 col-sm-7 col-xs-12 col-middle")
-					
-						span(id="slogan")
-							=s("Ouvrez un compte, c'est")
-							br
-							=s("gratuit.")
-						form(method="post" action="register.jade" id="register")
-							// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
-							br
-							input(type="text" spellcheck="false" name="register-email" class="register-textbox bigtextbox" placeholder="Votre e-mail")
-							br
-							input(type="password" spellcheck="false" name="register-password" class="register-textbox bigtextbox" placeholder="Votre mot de passe")
-							br
-							input(type="password" spellcheck="false" name="register-password-check" class="register-textbox bigtextbox" placeholder="Vérifier votre mot de passe")
-							br
-							div(id="check-all")
-								input(type="submit" class="register-button" id="sign-in" value="Je m'inscris")
-				div(id="container-right" class="col-lg-3 col-md-3 col-sm-3 none-mobile")
-					div(class="space-block")
-					p(class="cite")
-						=s("\" Wornet est un réseau social français totalement repensé pour vous – et vos amis. \"")
-					p(class="cite")
-						=s("\" Contrôlez la portée de vos informations. \"")
-					p(class="cite")
-						=s("\"  Bénéficiez d'outils innovants et intuitif. \"")
-	footer
-		div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
-			a(class="link" href="#")
-				=s("À propos")
-			a(class="link" href="#")
-				=s("Newsroom (blog)")
-			a(class="link" href="#")
-				=s("Offres d'emplois")
-			div(class="none-tablette none-mobile inline-block")
-				a(class="link" href="#")
-					=s("Dévelopeurs")
-				a(class="link" href="#")
-					=s("Ressources")
-			copytag(data="right").
-				&#169; 2014 Wornet 
+block body
+	html(lang="en")
+		body
+			div.container
+				header.content.col-lg-12.col-md-12.col-sm-12.col-xs-12
+					div.col-lg-5.col-md-5.col-sm-4.col-xs-12#logo-content
+						img(type="image/png" src="/img/logo.png").img-responsive#logo
+					div.col-lg-7.col-md-7.col-sm-8.none-mobile#connexion-content
+						form(method="post" action="login-check.jade")#login
+							input(type="text" spellcheck="false" name="login-email" placeholder="Votre e-mail").login-textbox
+							input(type="password" spellcheck="false" name="login-password" placeholder="Mot de passe").login-textbox
+							input(type="submit" value="Se connecter").login-button
+							span.none-mobile
+								br
+							input(type="checkbox" value="Se souvenir de moi" name="save")
+							span.save
+								=s("Se souvenir de moi")
+							a#forget-it
+								=s("Oublié ?")
+				div.content.col-lg-12.col-md-12.col-sm-12.col-xs-12#container
+					div.col-lg-3.col-md-2.col-sm-1.none-mobile#container-left
+					div.col-lg-6.col-md-7.col-sm-7.col-xs-12.col-middle#container-center
+							span#slogan
+								=s("Ouvrez un compte, c'est")
+								br
+								=s("gratuit.")
+							form(method="post" action="register.jade")#register
+								// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
+								br
+								input(type="text" spellcheck="false" name="register-email" placeholder="Votre e-mail").register-textbox
+								br
+								input(type="password" spellcheck="false" name="register-password" placeholder="Votre mot de passe").register-textbox
+								br
+								input(type="password" spellcheck="false" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
+								br
+								div#check-all
+									input(type="submit" value="Je m'inscris").register-button#sign-in
+					div.col-lg-3.col-md-3.col-sm-3.none-mobile#container-right
+						div.space-block
+						p.cite
+							=s("\" Wornet est un réseau social français totalement repensé pour vous – et vos amis. \"")
+						p.cite
+							=s("\" Contrôlez la portée de vos informations. \"")
+						p.cite
+							=s("\"  Bénéficiez d'outils innovants et intuitif. \"")
