@@ -3,6 +3,9 @@ doctype html
 html.no-js(lang=lang())
 	head
 		meta(charset="UTF-8")
+		title
+			block title
+				=s("Wornet")
 		base(href="/")
 		block meta
 			meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
@@ -37,12 +40,11 @@ html.no-js(lang=lang())
 						document.createElement 'pane'
 						document.createElement 'ng-pluralize'
 		block head
-				title.
-					Wornet
+
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top
-			
+		nav.navbar-fixed-top.
+			Abc pour test
 
 		#wrap
 			+ie('if IE lt 7')
