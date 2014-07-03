@@ -54,21 +54,22 @@ html.no-js(lang=lang())
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
 
 			div(ng-controller="AppCtrl")
-					footer
-						div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
-							a(class="link" href="#")
-								=s("À propos")
-							a(class="link" href="#")
-								=s("Newsroom (blog)")
-							a(class="link" href="#")
-								=s("Offres d'emplois")
-							div(class="none-tablette none-mobile inline-block")
-								a(class="link" href="#")
-									=s("Dévelopeurs")
-								a(class="link" href="#")
-									=s("Ressources")
-							copytag(data="right").
-								&#169; 2014 Wornet 
+			
+		footer
+			div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
+				a(class="link" href="#")
+					=s("À propos")
+				a(class="link" href="#")
+					=s("Newsroom (blog)")
+				a(class="link" href="#")
+					=s("Offres d'emplois")
+				div(class="none-tablette none-mobile inline-block")
+					a(class="link" href="#")
+						=s("Dévelopeurs")
+					a(class="link" href="#")
+						=s("Ressources")
+				copytag(data="right").
+					&#169; 2014 Wornet 
 		block js
 			each script in options.js().main
 				if typeof(script) === 'object'
