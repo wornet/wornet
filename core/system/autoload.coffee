@@ -4,9 +4,9 @@ root = __dirname + '/../../'
 config = require root + 'config/config.json'
 autoloadDirectories = config.wornet.autoloadDirectories
 
-extend = require 'extend'
-glob = require 'glob'
-mongoose = require 'mongoose'
+global.extend = require 'extend'
+global.glob = require 'glob'
+global.mongoose = require 'mongoose'
 global.Schema = mongoose.Schema
 global.ObjectId = Schema.ObjectId
 
