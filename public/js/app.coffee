@@ -11,7 +11,7 @@ Controllers =
 		y = date.getFullYear()
 
 
-		events = getData('events')
+		events = getData 'events'
 		eventsTitles = {}
 		for event in events
 			if event._id?
@@ -44,12 +44,17 @@ Controllers =
 							cb(data)
 
 
-		$scope.alertOnEventClick = (event, allDay, jsEvent, view) ->
-			console.log event
-			console.log allDay
-			console.log jsEvent
-			console.log view
-			return
+		$scope.editContent = (event, allDay, jsEvent, view) ->
+			$scope.eventToEdit = $.extend {}, event
+			$('#eventContent').modal()
+
+
+		$scope.saveContent = (event, allDay, jsEvent, view) ->
+			for ev, index in $scope.events
+				if ev.id is event.id
+					ev.content = event.content
+					$scope.saveEvent ev
+					break
 
 
 		$scope.rename = (event) ->
@@ -57,16 +62,6 @@ Controllers =
 				$scope.saveEvent event, (data) ->
 					if typeof(data) is 'object' && typeof(data.err) is 'undefined'
 						eventsTitles[event.id] = event.title
-
-
-		$scope.addRemoveEventSource = (sources, source) ->
-			canAdd = false
-			angular.forEach sources, (value, key) ->
-				if sources[key] is source
-					sources.splice key, 1
-					canAdd = true
-
-			sources.push source	if canAdd
 
 
 		$scope.addEvent = ->
@@ -90,11 +85,10 @@ Controllers =
 
 
 		$scope.remove = (event) ->
-			events = []
-			for ev in $scope.events
-				if ev.id isnt event.id
-					events.push ev
-			$scope.events = events
+			for ev, index in $scope.events
+				if ev.id is event.id
+					$scope.events.splice index, 1
+					break
 			agenda.delete
 				data:
 					event: getEvent event
@@ -118,7 +112,8 @@ Controllers =
 					center: ""
 					right: "today prev,next"
 
-				eventClick: ->
+				eventClick: (event) ->
+					$scope.editContent event
 				eventDrop: (event) ->
 					$scope.saveEvent event
 				eventResize: (event) ->
@@ -176,11 +171,11 @@ delay = (ms, cb) ->
 
 
 Ajax = 
-	get: (url, settings, _method, defaultType) ->
+	get: (url, settings, _method, defaultType = "GET") ->
 		if typeof(settings) is 'function'
 			settings =
 				success: settings
-		settings.type = settings.type || (defaultType || "GET")
+		settings.type = settings.type || defaultType
 		settings.dataType = settings.dataType || "json"
 		settings.data = settings.data || {}
 		settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
@@ -199,23 +194,23 @@ Ajax =
 
 
 class Crud
-	constructor: (url) ->
-		@baseUrl = url
+	constructor: (url = '/') ->
+		@url = url
 
-	url: (url) ->
-		new Crud @baseUrl + url
+	url: (url = '/') ->
+		new Crud @url + url
 
 	get: (settings, _method, defaultType) ->
-		Ajax.get @baseUrl, settings, _method, defaultType
+		Ajax.get @url, settings, _method, defaultType
 
 	post: (settings, _method) ->
-		Ajax.post @baseUrl, settings, _method
+		Ajax.post @url, settings, _method
 
 	put: (settings) ->
-		Ajax.put @baseUrl, settings
+		Ajax.put @url, settings
 
 	delete: (settings) ->
-		Ajax.delete @baseUrl, settings
+		Ajax.delete @url, settings
 
 
 $(document).ajaxComplete (event, xhr, settings) ->

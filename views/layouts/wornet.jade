@@ -30,9 +30,11 @@ html.no-js(lang=lang())
 			+ie('if lte IE 8')
 				script
 					:coffee
-						document.createElement 'tabs'
-						document.createElement 'pane'
-						document.createElement 'ng-pluralize'
+						((f) ->
+							f 'tabs'
+							f 'pane'
+							f 'ng-pluralize'
+						)(document.createElement)
 		block head
 
 	body(ng-app="Wornet")

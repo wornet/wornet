@@ -24,12 +24,10 @@ module.exports =
 		n = parseFloat(n)
 		if isNaN(n) then 0 else n
 	,
-	pattern: (name, method) ->
-		method = method || 'trim'
+	pattern: (name, method = 'trim') ->
 		RegExpString[method] name
 	,
-	regex: (name, method) ->
-		method = method || 'is'
+	regex: (name, method = 'is') ->
 		RegExp[method] name
 	,
 	trim: (str) ->
