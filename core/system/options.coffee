@@ -72,6 +72,18 @@ module.exports = (port) ->
 			data._csrf = data._csrf || @locals._csrf
 			@setHeader 'Content-Type', 'application/json'
 			@end JSON.stringify data
+		app.response.notFound = (model) ->
+			@status 404
+			@render 'errors/404', model || {}
+		app.response.serverError = (model) ->
+			@status 500
+			@render 'errors/500', model || {}
+		app.response.forbidden = (model) ->
+			@status 403
+			@render 'errors/403', model || {}
+		app.response.unautorized = (model) ->
+			@status 401
+			@render 'errors/401', model || {}
 		app.set 'views', __dirname + '/../../views'
 		extend config, localConfig._store
 		if port is 8000 && config.env.development
@@ -91,7 +103,7 @@ module.exports = (port) ->
 
 		# Initialize DB
 		try
-			mongoose.connect 'mongodb://localhost/' + config.wornet.db.basename
+			mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename
 		catch e
 			console.warn '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
 			console.warn e

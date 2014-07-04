@@ -16,7 +16,7 @@ block body
 							ul.events
 								li(ng-repeat='e in events')
 									.alert.alert-info
-										a.close(ng-click='remove($index)')
+										a.close(ng-click='remove(e)')
 											.glyphicon.glyphicon-trash
 										b
 											input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))

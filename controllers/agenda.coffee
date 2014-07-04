@@ -3,7 +3,7 @@
 module.exports = (router) ->
 
 	router.get '/', (req, res) ->
-
+		log "GET"
 		model = {}
 		User.find(
 			'name.first': 'Kyle'
@@ -27,7 +27,8 @@ module.exports = (router) ->
 					res.render 'agenda', model
 		)
 
-	router.post '/add', (req, res) ->
+	router.put '/', (req, res) ->
+		log "PUT"
 		model = {}
 		User.find
 			'name.first': 'Kyle'
@@ -50,7 +51,8 @@ module.exports = (router) ->
 					else
 						res.json event
 
-	router.post '/edit', (req, res) ->
+	router.delete '/', (req, res) ->
+		log "DELETE"
 		model = {}
 		User.find
 			'name.first': 'Kyle'
@@ -60,6 +62,27 @@ module.exports = (router) ->
 					err: err
 			else
 				eventData = req.body.event
+				Event.remove
+					_id: eventData.id
+					user: kyle.id
+				, (err) ->
+					if err
+						res.json
+							err: err
+					else
+						res.json {}
+
+	router.post '/', (req, res) ->
+		log "POST"
+		model = {}
+		User.find
+			'name.first': 'Kyle'
+		, (err, kyle) ->
+			if err
+				res.json
+					err: err
+			else
+				eventData = req.body.event 
 				Event.findById eventData.id, (err, event) ->
 					if err
 						res.json
@@ -84,42 +107,3 @@ module.exports = (router) ->
 									err: err
 							else
 								res.json event
-
-	router.post '/remove', (req, res) ->
-		model = {}
-		User.find
-			'name.first': 'Kyle'
-		, (err, kyle) ->
-			if err
-				res.json
-					err: err
-			else
-				eventData = req.body.event
-				Event.remove
-					_id: eventData.id
-					user: kyle.id
-				, (err) ->
-					if err
-						res.json
-							err: err
-					else
-						res.json {}
-
-	router.get '/calendar/feeds', (req, res) ->
-
-		http = require 'http'
-
-		model = {}
-		http.get
-			host: 'www.google.com'
-			port: 80
-			path: '/calendar/feeds/' + (if lang() is 'fr' then 'fr_fr' else 'usa__en') + '%40holiday.calendar.google.com/public/basic?start=' + req.body.start + '&end=' + req.body.end
-		, (resp) ->
-			response = ''
-			resp.on 'data', (chunk) ->
-				response += chunk
-			resp.on 'end', () ->
-				res.end response
-		.on "error", (e) ->
-			model.err = e.message
-			res.render 'agenda', model
