@@ -12,13 +12,13 @@ html.no-js(lang=lang())
 			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
+			+meta("_csrf", _csrf)
 			meta(name="description" content="Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
 			meta(http-equiv="Content-Language" content="fr-EU")
 			meta(name="keywords" content="réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
 			meta(name="generator" content="Wornet v1")
 			meta(name="author" content="Manuel Costes")
 			meta(name="copyright" content="© 2014 Wornet")
-			meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
 		block css
 			each style in options.css().main
 				if typeof(style) === 'object'
@@ -33,21 +33,22 @@ html.no-js(lang=lang())
 		block link
 			link(rel="shortcut icon", href="/favicon.ico")
 		block id
-			+ie('if IE lte 8')
+			+ie('if lte IE 8')
 				script
 					:coffee
-						document.createElement 'tabs'
-						document.createElement 'pane'
-						document.createElement 'ng-pluralize'
+						((f) ->
+							f 'tabs'
+							f 'pane'
+							f 'ng-pluralize'
+						)(document.createElement)
 		block head
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top.
-			Abc pour test
+		nav.navbar-fixed-top
 
 		#wrap
-			+ie('if IE lt 7')
+			+ie('if lte IE 7')
 				.alert.alert-danger
 					- var upgradeUrl = "http://browsehappy.com/"
 					- var ieFrameUrl = "http://www.google.com/chromeframe/?redirect=true"
@@ -55,8 +56,9 @@ html.no-js(lang=lang())
 					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
 
-			div(ng-controller="AppCtrl")
-			
+			div(role="main", ng-controller="AppCtrl")
+				block body
+
 		footer
 			div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
 				a(class="link" href="#")
@@ -72,6 +74,7 @@ html.no-js(lang=lang())
 						=s("Ressources")
 				copytag(data="right").
 					&#169; 2014 Wornet 
+
 		block js
 			each script in options.js().main
 				if typeof(script) === 'object'

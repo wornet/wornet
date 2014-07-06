@@ -1,7 +1,6 @@
-/* <--- Feuille de style (app.styl) correspondant à la page login.jade ---> */
-
+/* <--- Feuille de style (app.styl) ---> */
 // Variables de l'entête de page.
-$footer-height = 150px
+$header-height = 200px
 // Variables du corps de page.
 $background = url(/img/background.jpg)
 $baseColor = #fff
@@ -12,8 +11,10 @@ $footer-background = rgba(255, 255, 255, 0.5)
 // Variables des liens.
 $link-color = #5f5f5f
 $link-weight = bold
+$link-spacing-left = 12px
+$link-spacing-right = 12px
 // Variables du bloc contenant le formulaire d'inscrition (centre).
-$register-container-topspacing = 50px
+$register-container-topspacing = 0px
 $register-container-botspacing = 30px
 $register-container-buttonwidth = 200px
 $register-container-textbox-background = #ffffff
@@ -30,6 +31,10 @@ $fonts = Average, helvetica, arial, sans-serif
 //@import "../../node-modules/bootstrap-stylus/lib/bootstrap"
 //@import "lib/bootstrap-theme"
 
+*
+	-moz-box-sizing border-box
+	-webkit-box-sizing border-box
+	box-sizing border-box
 
 border-radius()
 	// Fonction pour arondir les bordures d'une boite.
@@ -90,6 +95,7 @@ header
 body
 	// Police de charactères.
 	font 14px/1.4 $fonts
+	padding-bottom $footer-height
 
 footer
 	// Tailles du pied de page.
@@ -124,6 +130,8 @@ h1
 a.link
 	// Marges interne et externe des liens du pied de page (footer)
 	margin 30px
+	margin-left $link-spacing-left
+	margin-right $link-spacing-right
 	padding-left 10px
 	padding-right 10px
 
@@ -286,8 +294,8 @@ div.space-block
 // Citations
 .cite
 	// Marges interne
-	padding-top 10px
-	padding-bottom 10px
+	padding-top 18px
+	padding-bottom 2px
 
 	// Curseur
 	cursor default
@@ -305,8 +313,15 @@ input#sign-in
 @media (max-width: 768px)
 	.none-mobile
 		display none
-	div[id=logo-content]
-		text-align center
+	img#logo
+		margin auto
+	header
+		height 150px
 @media (max-width: 992px)
 	.none-tablette
 		display none
+	img#logo
+		margin-top 25px
+		margin-bottom 25px
+	header
+		height 150px
