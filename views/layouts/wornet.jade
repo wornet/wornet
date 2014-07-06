@@ -62,18 +62,13 @@ html.no-js(lang=lang())
 		footer
 			div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
 				a(class="link" href="#")
-					=s("À propos")
-				a(class="link" href="#")
-					=s("Newsroom (blog)")
+					=s("Newsroom")
 				a(class="link" href="#")
 					=s("Offres d'emplois")
-				div(class="none-tablette none-mobile inline-block")
-					a(class="link" href="#")
-						=s("Dévelopeurs")
-					a(class="link" href="#")
-						=s("Ressources")
+				a(class="link" href="#")
+					=s("Mentions légales")
 				copytag(data="right").
-					&#169; 2014 Wornet 
+					&#169; 2014 Wornet
 
 		block js
 			each script in options.js().main

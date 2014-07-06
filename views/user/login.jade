@@ -27,18 +27,18 @@ block body
 					form(method="post" action="register.jade")#register
 						// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
 						br
-						input(type="text" spellcheck="false" name="register-email" placeholder="Votre e-mail").register-textbox
+						input(type="text" spellcheck="false" title="Votre e-mail" name="register-email" placeholder="Votre e-mail").register-textbox
 						br
-						input(type="password" spellcheck="false" name="register-password" placeholder="Votre mot de passe").register-textbox
+						input(type="password" spellcheck="false" title="Votre mot de passe" name="register-password" placeholder="Votre mot de passe").register-textbox
 						br
-						input(type="password" spellcheck="false" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
+						input(type="password" spellcheck="false" title="Vérifier votre mot de passe" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
 						br
 						div#check-all
 							input(type="submit" value="Je m'inscris").register-button#sign-in
 			div.col-lg-3.col-md-3.col-sm-3.none-mobile#container-right
 				p.cite
-					=s("\" Wornet est un réseau social français totalement repensé pour vous – et vos amis. \"")
+					=s("\" Wornet est un réseau social français totalement pensé pour vous – et vos amis. \"")
 				p.cite
 					=s("\" Contrôlez la portée de vos informations. \"")
 				p.cite
-					=s("\"  Bénéficiez d'outils innovants et intuitif. \"")
+					=s("\"  Bénéficiez d'outils innovants et intuitifs. \"")
