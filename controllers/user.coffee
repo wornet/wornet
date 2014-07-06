@@ -10,6 +10,10 @@ module.exports = (router) ->
 
 		res.render templateFolder + '/login', model
 
+	router.get '/login/check', (req, res) ->
+
+		res.render templateFolder + '/login/check', model
+
 	router.post '/login', (req, res) ->
 
 		res.render templateFolder + '/login', model

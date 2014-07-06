@@ -1,0 +1,32 @@
+extends ../../layouts/wornet
+
+block body
+	form(method="post" action="register.jade" id="register")
+		//- FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register_email, register_email_check, register_password
+		select
+			option.
+				Créer un compte
+			option.
+				Créer une place
+		br
+		input(type="password" name="first_name" class="register_textbox" placeholder="Prénom")
+		input(type="password" name="last_name" class="register_textbox" placeholder="Nom")
+		br
+		label.
+			Date de naissance
+		input(type="number" name="day" class="date" min="1" max="31" value="01")
+		input(type="number" name="month" class="date" min="1" max="12" value="01")
+		input(type="number" name="year" class="date"  min="0" max="2014" value="01")
+		span(class="glyphicon glyphicon-plus-sign")
+		br
+		input(type="text" w name="register_email" class="register_textbox bigtextbox" placeholder="Votre e-mail")
+		input(type="password"  name="register_password" class="register_textbox bigtextbox" placeholder="Votre mot de passe")
+		input(type="password"  name="register_password_check" class="register_textbox bigtextbox" placeholder="Vérifier votre mot de passe")
+		br
+		div(id="check_all")
+			input(type="checkbox")
+			span(class="save")
+				=s("J'accepte les [Conditions d'utilisation] et les [Règles de confidentialité] de Wornet")
+			br
+			center
+			input(type="submit" class="register_button" value="Je m'inscris")

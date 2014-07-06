@@ -6,7 +6,7 @@ block body
 			div.col-lg-5.col-md-5.col-sm-4.col-xs-12#logo-content
 				img(type="image/png" src="/img/logo.png").img-responsive#logo
 			div.col-lg-7.col-md-7.col-sm-8.none-mobile#connexion-content
-				form(method="post" action="login-check.jade")#login
+				form(method="post" action="/user/login/check")#login
 					input(type="text" spellcheck="false" name="login-email" placeholder="Votre e-mail").login-textbox
 					input(type="password" spellcheck="false" name="login-password" placeholder="Mot de passe").login-textbox
 					input(type="submit" value="Se connecter").login-button
