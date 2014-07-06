@@ -28,8 +28,6 @@ $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
 $fonts = Average, helvetica, arial, sans-serif
-//@import "../../node-modules/bootstrap-stylus/lib/bootstrap"
-//@import "lib/bootstrap-theme"
 
 *
 	-moz-box-sizing border-box
@@ -67,7 +65,8 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 .boldlink
 	font-weight bold
 
-html, body 
+html
+body 
 	// Tailles, marges interne et externe.
 	min-height 100%
 	width 100%
@@ -89,6 +88,7 @@ html, body
 	-moz-background-size cover /* pour Firefox */
 	-o-background-size cover /* pour Opera */
 	background-size cover /* version standardisée */
+
 header
 	height $header-height
 
@@ -124,8 +124,11 @@ h1
 	text-shadow 0 1px 1px $highlightColor
 	box-shadow(0 0 1px $darkColor)
 
-	// Bordures
-	border-radius(3px)
+// KO la class link est trop générale pour lui donner un style aussi spécifique
+// KO les margin et padding peuvent être renseignés en une ligne ainsi :
+//      margin top right bottom left (margin 1px 2px 3px 4px)
+//      margin top left&right bottom (margin 10px 5px 20px)
+//      margin top&bottom left&right (margin 8px 16px)
 
 a.link
 	// Marges interne et externe des liens du pied de page (footer)
@@ -153,16 +156,16 @@ a.link:hover
 // Conteneurs de structure du design.
 
 // Bloc contenant le formulaire de connexion.
-div#connexion-content
+#connexion-content
 	padding-top 30px
 	padding-bottom 30px
 
 // Bloc gauche.
-div#container-left
+#container-left
 	text-align center
 
 // Bloc contenant le formulaire d'inscription.
-div#container-center
+#container-center
 	// Marges internes
 	padding-bottom $register-container-botspacing
 	padding-top $register-container-topspacing
@@ -171,20 +174,21 @@ div#container-center
 	text-align center
 
 // Bloc droit.
-div#container-right
+#container-right
 	text-align center
 
 // Champs de type date.
+// KO Attention, le style va être appliqué à tous les champs de type date
+// KO Il n'y a aucun champ de type date dans les templates
+// KO D'une manière générale sur les champs, il va falloir leur trouver un style commun et partir du .form-control de bootstrap
 input[type=date]
 	// Marges internes et externes.
 	padding 4px
-	margin-left 10px
-	margin-right 10px
-	margin-top 5px
-	margin-bottom 5px
+	margin 5px 10px
 
 	// Bordures.
 	border 1px solid #eee
+	// KO il faut utiliser la fonction pour une plus grande compatibilité
 	border-radius 5px
 
 	// Fond et police de charactères.
@@ -192,11 +196,18 @@ input[type=date]
 	font-family $fonts
 
 // Champs de texte.
-.register-textbox,select,.login-textbox,.date
+// KO, si le style est commun à tout le monde,
+// il faut plutôt donner une class commune aux balises, en l'occurence .form-control de bootstrap
+// est fait pour ça
+.register-textbox
+select // KO je ne trouve pas de select
+.login-textbox
+.date // KO je ne trouve pas de .date
 	// Tailles.
 	width 200px
 
 	// Marges internes et externes.
+	// KO, voir ci-dessus
 	padding 4px
 	padding-left 8px
 	margin-left 10px
@@ -206,6 +217,7 @@ input[type=date]
 
 	// Bordures.
 	border 1px solid rgba(156, 156, 156, 0.35)
+	// KO, voir ci-dessus
 	border-radius 5px
 
 	// Fond, police de charactères et ombres.
@@ -218,12 +230,16 @@ select
 	padding-left 0px
 
 // Champs de texte au focus.
-.register-textbox:focus,select:focus,.login-textbox:focus,.date:focus
+.register-textbox:focus
+select:focus
+.login-textbox:focus
+.date:focus
 	// Correcteur d'orthographe et ombres.
 	outline none
 	box-shadow 0px 0px 3px 1px #F7852E
 
-.register-button,.login-button
+.register-button
+.login-button
 	// Marges internes et externes.
 	margin 5px
 	margin-left 0px
@@ -238,7 +254,7 @@ select
 	color #000
 
 	// Fond
-	background-linear-gradient(top,#ffda00,10%,#ff7500,90%)
+	background-linear-gradient(top, #ffda00, 10%, #ff7500, 90%)
 
 // Elément XHTML contenant le COPYRIGHT de Wornet.
 copytag
@@ -274,6 +290,8 @@ form#login
 	padding-left 70px
 
 // Case à cocher.
+// KO, toutes les cases à cocher n'auront pas forcément de marge à gauche.
+// KO, regarde également ce que bootstrap permet de faire pour les cases à cocher.
 input[type=checkbox]
 	margin-left 10px
 
@@ -288,10 +306,12 @@ a#forget-it:hover
 	text-decoration none
 
 // Bloc d'espacement vertical.
+// KO où ce style est-il utiliser ?
 div.space-block
 	padding-top 50px
 
 // Citations
+// KO, class en français, utilise la balise blockquote
 .cite
 	// Marges interne
 	padding-top 18px
@@ -325,3 +345,11 @@ input#sign-in
 		margin-bottom 25px
 	header
 		height 150px
+
+.cb
+	clear both
+
+#eventContent textarea
+	height 300px
+
+@import "agenda"

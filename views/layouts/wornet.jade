@@ -12,13 +12,18 @@ html.no-js(lang=lang())
 			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
+			+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
+			+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+			//- KO
+				J'aimerais qu'on vérifie la pertinence de ces balises qui a priori ne sont lues
+				ni par les robots ni par les utilisateurs :
+				+meta("generator", "Wornet v1")
+				+meta("author", "Manuel Costes")
+				+meta("copyright", "© 2014 Wornet")
+
+				J'ai supprimé la balise de langue (car elle fait doublon avec la ligne 3 et de
+				plus, Wornet sera peut-être trauits en plusieurs langues)
 			+meta("_csrf", _csrf)
-			meta(name="description" content="Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
-			meta(http-equiv="Content-Language" content="fr-EU")
-			meta(name="keywords" content="réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
-			meta(name="generator" content="Wornet v1")
-			meta(name="author" content="Manuel Costes")
-			meta(name="copyright" content="© 2014 Wornet")
 		block css
 			each style in options.css().main
 				if typeof(style) === 'object'
@@ -46,6 +51,9 @@ html.no-js(lang=lang())
 	body(ng-app="Wornet")
 
 		nav.navbar-fixed-top
+			+link("/", s("Accueil"))
+			!=" &nbsp; "
+			+link("/agenda", s("Agenda"))
 
 		#wrap
 			+ie('if lte IE 7')
@@ -60,15 +68,20 @@ html.no-js(lang=lang())
 				block body
 
 		footer
-			div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
-				a(class="link" href="#")
-					=s("Newsroom")
-				a(class="link" href="#")
-					=s("Offres d'emplois")
-				a(class="link" href="#")
-					=s("Mentions légales")
-				copytag(data="right").
-					&#169; 2014 Wornet
+			//- KO
+				div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
+					a(class="link" href="#")
+						=s("Newsroom")
+					a(class="link" href="#")
+						=s("Offres d'emplois")
+					a(class="link" href="#")
+						=s("Mentions légales")
+					copytag(data="right").
+						&#169; 2014 Wornet
+			=s("Wornet")
+			if datas
+				each value, name in datas
+					+data(name, value)
 
 		block js
 			each script in options.js().main

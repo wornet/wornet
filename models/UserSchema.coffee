@@ -10,7 +10,18 @@ userSchema = new Schema
 			type: String
 			validate: [regex('simple-text'), 'invalid last name']
 			trim: true
-	registerDate: Date
+	password: String
+	token:
+		type: String
+		default: ->
+			generateSalt 50
+	registerDate:
+		type: Date
+		default: Date.now
+	role:
+		type: String
+		default: 'user'
+		enum: ['user', 'admin']
 	lastLoginDate: Date
 	phone:
 		type: String
@@ -32,6 +43,17 @@ userSchema.virtual('name.full').set (name) ->
 	@name.first = split[0]
 	@name.last = split[1]
 	return
+
+userSchema.methods.encryptPassword = (plainText) ->
+	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')
+
+userSchema.methods.passwordMatches = (plainText) ->
+	@password is @encryptPassword(plainText)
+
+userSchema.pre 'save', (next) ->
+	if @isModified 'password'
+		@password = @encryptPassword()
+	next()
 
 
 module.exports = userSchema
