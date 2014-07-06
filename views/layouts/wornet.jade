@@ -39,8 +39,10 @@ html.no-js(lang=lang())
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top.
-			Abc pour test
+		nav.navbar-fixed-top
+			+link("/", s("Accueil"))
+			!=" &nbsp; "
+			+link("/agenda", s("Agenda"))
 
 		#wrap
 			+ie('if lte IE 7')

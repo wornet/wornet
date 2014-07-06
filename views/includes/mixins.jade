@@ -12,7 +12,7 @@ mixin meta(name, content)
 	meta(name=name, content=content)
 
 mixin link(href, name)
-	a(id!=attributes.id, class!=attributes.class, href=href)
+	a(id!=attributes.id, class!="link" + (attributes.class ? " " + attributes.class : ""), href=href)
 		=name
 
 mixin data(name, value)

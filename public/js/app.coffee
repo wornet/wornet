@@ -229,6 +229,11 @@ $(document).ajaxComplete (event, xhr, settings) ->
 	$('head meta[name="_csrf"]').attr 'content', _csrf
 	throw err if err?
 
+.on 'click', '.link', (event) ->
+	selector = '[role="main"]'
+	$page = $ selector
+	$page.load $(@).attr('href') + ' ' + selector
+	false
 
 dateTexts = getData('dateTexts')
 
