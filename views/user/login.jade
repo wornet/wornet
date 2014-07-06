@@ -1,45 +1,45 @@
 extends ../layouts/wornet
 
 block body
-			div.container
-				header.content.col-lg-12.col-md-12.col-sm-12.col-xs-12
-					div.col-lg-5.col-md-5.col-sm-4.col-xs-12#logo-content
-						img(type="image/png" src="/img/logo.png").img-responsive#logo
-					div.col-lg-7.col-md-7.col-sm-8.none-mobile#connexion-content
-						form(method="post" action="login-check.jade")#login
-							input(type="text" spellcheck="false" name="login-email" placeholder="Votre e-mail").login-textbox
-							input(type="password" spellcheck="false" name="login-password" placeholder="Mot de passe").login-textbox
-							input(type="submit" value="Se connecter").login-button
-							span.none-mobile
-								br
-							input(type="checkbox" value="Se souvenir de moi" name="save")
-							span.save
-								=s("Se souvenir de moi")
-							a#forget-it
-								=s("Oublié ?")
-				div.content.col-lg-12.col-md-12.col-sm-12.col-xs-12#container
-					div.col-lg-3.col-md-2.col-sm-1.none-mobile#container-left
-					div.col-lg-6.col-md-7.col-sm-7.col-xs-12.col-middle#container-center
-							span#slogan
-								=s("Ouvrez un compte, c'est")
-								br
-								=s("gratuit.")
-							form(method="post" action="register.jade")#register
-								// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
-								br
-								input(type="text" spellcheck="false" name="register-email" placeholder="Votre e-mail").register-textbox
-								br
-								input(type="password" spellcheck="false" name="register-password" placeholder="Votre mot de passe").register-textbox
-								br
-								input(type="password" spellcheck="false" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
-								br
-								div#check-all
-									input(type="submit" value="Je m'inscris").register-button#sign-in
-					div.col-lg-3.col-md-3.col-sm-3.none-mobile#container-right
-						div.space-block
-						p.cite
-							=s("\" Wornet est un réseau social français totalement repensé pour vous – et vos amis. \"")
-						p.cite
-							=s("\" Contrôlez la portée de vos informations. \"")
-						p.cite
-							=s("\"  Bénéficiez d'outils innovants et intuitif. \"")
+	div.container
+		header.content.col-lg-12.col-md-12.col-sm-12.col-xs-12
+			div.col-lg-5.col-md-5.col-sm-4.col-xs-12#logo-content
+				img(type="image/png" src="/img/logo.png").img-responsive#logo
+			div.col-lg-7.col-md-7.col-sm-8.none-mobile#connexion-content
+				form(method="post" action="login-check.jade")#login
+					input(type="text" spellcheck="false" name="login-email" placeholder="Votre e-mail").login-textbox
+					input(type="password" spellcheck="false" name="login-password" placeholder="Mot de passe").login-textbox
+					input(type="submit" value="Se connecter").login-button
+					span.none-mobile
+						br
+					input(type="checkbox" value="Se souvenir de moi" name="save")
+					span.save
+						=s("Se souvenir de moi")
+					a#forget-it
+						=s("Oublié ?")
+		div.content.col-lg-12.col-md-12.col-sm-12.col-xs-12#container
+			div.col-lg-3.col-md-2.col-sm-1.none-mobile#container-left
+			div.col-lg-6.col-md-7.col-sm-7.col-xs-12.col-middle#container-center
+					span#slogan
+						=s("Ouvrez un compte, c'est")
+						br
+						=s("gratuit.")
+					form(method="post" action="register.jade")#register
+						// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
+						br
+						input(type="text" spellcheck="false" name="register-email" placeholder="Votre e-mail").register-textbox
+						br
+						input(type="password" spellcheck="false" name="register-password" placeholder="Votre mot de passe").register-textbox
+						br
+						input(type="password" spellcheck="false" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
+						br
+						div#check-all
+							input(type="submit" value="Je m'inscris").register-button#sign-in
+			div.col-lg-3.col-md-3.col-sm-3.none-mobile#container-right
+				div.space-block
+				p.cite
+					=s("\" Wornet est un réseau social français totalement repensé pour vous – et vos amis. \"")
+				p.cite
+					=s("\" Contrôlez la portée de vos informations. \"")
+				p.cite
+					=s("\"  Bénéficiez d'outils innovants et intuitif. \"")
