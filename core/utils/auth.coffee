@@ -15,11 +15,11 @@ A helper method to retrieve a user from a local DB and ensure that the provided 
 @param next
 ###
 exports.localStrategy = ->
-	new LocalStrategy((username, password, done) ->
+	new LocalStrategy((email, password, done) ->
 		
 		#Retrieve the user from the database by login
 		User.findOne
-			login: username
+			email: email
 		, (err, user) ->
 			
 			#If something weird happens, abort.
@@ -57,6 +57,7 @@ exports.isAuthenticated = ->
 		auth =
 			"/admin": true
 			"/profile": true
+			"/user/profile": true
 
 		blacklist = user:
 			"/admin": true
@@ -71,7 +72,7 @@ exports.isAuthenticated = ->
 			#If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
 			req.session.goingTo = req.url
 			req.flash "error", "Please log in to view this page"
-			res.redirect "/login"
+			res.redirect "/user/login"
 		
 		#Check blacklist for this user's role
 		else if blacklist[role] and blacklist[role][route] is true

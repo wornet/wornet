@@ -26,6 +26,7 @@ port = process.env.PORT || 8000
 options = (require './core/system/options')(port)
 methodOverride = (require 'method-override')()
 bodyParser = (require 'body-parser')()
+flash = require 'connect-flash'
 
 # Make config usables everywhere
 extend global,
@@ -99,6 +100,7 @@ onready ->
 				done null, user
 		app.use passport.initialize()
 		app.use passport.session()
+		app.use flash()
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

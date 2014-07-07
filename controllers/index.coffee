@@ -48,6 +48,7 @@ module.exports = (router) ->
 		signin: 'user/signin'
 		logout: 'user/logout'
 		'forgotten-password': 'user/forgotten-password'
+		profile: 'user/profile'
 
 	for as, route of alias
 		((as, route) ->
