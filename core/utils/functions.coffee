@@ -1,6 +1,21 @@
 'use strict'
 
 module.exports =
+	log: (message) ->
+		if config.env.development
+			console.log '=========================='
+			console.log message
+			console.log '--------------------------'
+			console.trace()
+			console.log '=========================='
+	,
+	generateSalt: (length) ->
+		SALTCHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+		r = ''
+		for i in [1..length]
+			r += SALTCHARS[Math.floor(Math.random() * SALTCHARS.length)]
+		r
+	,
 	intval: (n) ->
 		n = parseInt(n)
 		if isNaN(n) then 0 else n
@@ -9,22 +24,33 @@ module.exports =
 		n = parseFloat(n)
 		if isNaN(n) then 0 else n
 	,
-	pattern: (name, method) ->
-		method = method || 'trim'
+	pattern: (name, method = 'trim') ->
 		RegExpString[method] name
 	,
-	regex: (name, method) ->
-		method = method || 'is'
+	regex: (name, method = 'is') ->
 		RegExp[method] name
 	,
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
+	,
+	model: (name, schema) ->
+		if global[name]? || global[name + 'Model']?
+			console.warn name + ' model already token'
+			global[name] || global[name + 'Model']
+		else
+			schema = schema || require(__dirname + '/../../models/' + ucfirst(name) + 'Schema')
+			model = mongoose.model name, schema
+			global[name] = model
+			global[name + 'Model'] = model
 	,
 	strtolower: (str) ->
 		str.toLowerCase()
 	,
 	strtoupper: (str) ->
 		str.toUpperCase()
+	,
+	ucfirst: (str) ->
+		str.charAt(0).toUpperCase() + str.substr(1)
 	,
 	delay: (ms, cb) ->
 		setTimeout cb, m

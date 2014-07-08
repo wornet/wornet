@@ -16,7 +16,7 @@ block body
 							ul.events
 								li(ng-repeat='e in events')
 									.alert.alert-info
-										a.close(ng-click='remove($index)')
+										a.close(ng-click='remove(e)')
 											.glyphicon.glyphicon-trash
 										b
 											input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))
@@ -34,3 +34,22 @@ block body
 										=s("Mois")
 							.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
 						.cb
+
+				#eventContent.modal.fade
+					.modal-dialog
+						.modal-content
+							.modal-header
+								button.close(type='button', data-dismiss='modal')
+									span(aria-hidden='true') ×
+									span.sr-only
+										=s("Fermer")
+								h4.modal-title
+									| {{eventToEdit.title}}
+							.modal-body
+								p
+									textarea.form-control(ng-model='eventToEdit.content', placeholder=s("Description de l'événement"))
+							.modal-footer
+								button.btn.btn-default(type='button', data-dismiss='modal')
+									=s("Fermer")
+								button.btn.btn-primary(type='button', data-dismiss='modal', ng-click='saveContent(eventToEdit)')
+									=s("Enregistrer les modifications ")

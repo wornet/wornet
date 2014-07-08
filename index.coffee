@@ -1,12 +1,12 @@
 'use strict'
 
 # Dependancies to load
-'kraken-js child_process extend glob express path connect fs mongoose'.split(/\s+/).forEach (dependancy) ->
+'kraken-js child_process extend glob express path connect fs mongoose crypto passport'.split(/\s+/).forEach (dependancy) ->
 	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
 
 # Get shortcuts from dependancies
 'child_process.exec mongoose.Schema'.split(/\s+/).forEach (shortcut) ->
-	shortcut = shortcut.split('.')
+	shortcut = shortcut.split '.'
 	global[shortcut[1]] = global[shortcut[0]][shortcut[1]]
 
 # Available everywhere
@@ -24,6 +24,9 @@ config = {}
 port = process.env.PORT || 8000
 
 options = (require './core/system/options')(port)
+methodOverride = (require 'method-override')()
+bodyParser = (require 'body-parser')()
+flash = require 'connect-flash'
 
 # Make config usables everywhere
 extend global,
@@ -46,6 +49,33 @@ onready ->
 		config: config
 		options: options
 
+	# Before each request
+	app.use (req, res, done) ->
+
+		next = ->
+			# Parse body from requests
+			bodyParser req, res, ->
+				# Available PUT and DELETE on old browsers
+				methodOverride req, res, done
+
+		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
+			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
+				pendingFiles = files.length
+				if pendingFiles
+					files.forEach (file) ->
+						value = require file
+						if typeof(value) is 'function'
+							value req, res, ->
+								unless --pendingFiles
+									next()
+						else
+							unless --pendingFiles
+								next()
+				else
+					next()
+		else
+			next()
+
 	# Launch Kraken
 	app.use kraken options
 
@@ -57,27 +87,20 @@ onready ->
 
 		glob __dirname + "/core/global/start/**/*.coffee", (er, files) ->
 			files.forEach (file) ->
-				require __dirname + file
+				require file
 
-	app.use (req, res, next) ->
-
-		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test(req.originalUrl)
-			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
-				pendingFiles = files.length
-				if pendingFiles
-					files.forEach (file) ->
-						value = require __dirname + file
-						if typeof(value) is 'function'
-							value ->
-								unless --pendingFiles
-									next()
-						else
-							unless --pendingFiles
-								next()
-				else
-					next()
-		else
-			next()
+	app.on 'middleware:after:session', (eventargs) ->
+		passport.use auth.localStrategy()
+		passport.serializeUser (user, done) ->
+			done null, user.id
+		passport.deserializeUser (id, done) ->
+			User.findOne
+				_id: id
+			, (err, user) ->
+				done null, user
+		app.use passport.initialize()
+		app.use passport.session()
+		app.use flash()
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

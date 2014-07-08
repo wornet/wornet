@@ -4,21 +4,14 @@ Controllers =
 		$scope.isAngularWorking = "Angular is working"
 
 	Calendar:($scope) ->
+		agenda = new Crud '/agenda'
 		date = new Date()
 		d = date.getDate()
 		m = date.getMonth()
 		y = date.getFullYear()
 
 
-		# event source that pulls from google.com
-		# $scope.eventSource =
-		# 	url: "http://www.google.com/calendar/feeds/usa_en%40holiday.calendar.google.com/public/basic"
-		# 	className: "gcal-event"
-		# 	currentTimezone: data('timezone')
-
-
-		# event source that contains custom events on the scope
-		events = data('events')
+		events = getData 'events'
 		eventsTitles = {}
 		for event in events
 			if event._id?
@@ -31,18 +24,18 @@ Controllers =
 			data = {}
 			for key in 'id title content url start end allDay'.split /\s/g
 				if event[key]?
-					if event[key] instanceof Date
-						event[key] = (new Date(event[key].getTime() - (event[key].getTimezoneOffset() * 60000))).toISOString()
 					data[key] = event[key]
+					if data[key] instanceof Date
+						data[key] = (new Date(data[key].getTime() - (data[key].getTimezoneOffset() * 60000))).toISOString()
 			data
 
 
 		saveDelays = {}
-		saveEvent = (event, cb) ->
+		$scope.saveEvent = (event, cb) ->
 			if saveDelays[event.id]?
 				clearTimeout saveDelays[event.id]
 			saveDelays[event.id] = delay 500, ->
-				post '/agenda/edit',
+				agenda.post
 					data:
 						event: getEvent event
 					success: (data) ->
@@ -51,67 +44,38 @@ Controllers =
 							cb(data)
 
 
-		# event source that calls a function on every view switch
-		# $scope.eventsF = (start, end, callback) ->
-		# 	s = new Date(start).getTime() / 1000
-		# 	e = new Date(end).getTime() / 1000
-		# 	m = new Date(start).getMonth()
-		# 	events = [
-		# 		title: "Feed Me " + m
-		# 		start: s + (50000)
-		# 		end: s + (100000)
-		# 		allDay: false
-		# 		className: ["customFeed"]
-		# 	]
-		# 	callback events
-		# 	return
+		$scope.editContent = (event, allDay, jsEvent, view) ->
+			$scope.eventToEdit = $.extend {}, event
+			$('#eventContent').modal()
 
 
-		$scope.alertOnEventClick = (event, allDay, jsEvent, view) ->
-			console.log event
-			console.log allDay
-			console.log jsEvent
-			console.log view
-			return
-
-
-		$scope.alertOnDrop = (event, dayDelta, minuteDelta, allDay, revertFunc, jsEvent, ui, view) ->
-			saveEvent event
-			return
-
-
-		$scope.alertOnResize = (event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) ->
-			saveEvent event
-			return
+		$scope.saveContent = (event, allDay, jsEvent, view) ->
+			for ev, index in $scope.events
+				if ev.id is event.id
+					ev.content = event.content
+					$scope.saveEvent ev
+					break
 
 
 		$scope.rename = (event) ->
 			if event.title isnt eventsTitles[event.id]
-				saveEvent event, (data) ->
+				$scope.saveEvent event, (data) ->
 					if typeof(data) is 'object' && typeof(data.err) is 'undefined'
-						event.title = eventsTitles[event.id]
-			return
-
-
-		$scope.addRemoveEventSource = (sources, source) ->
-			canAdd = false
-			angular.forEach sources, (value, key) ->
-				if sources[key] is source
-					sources.splice key, 1
-					canAdd = true
-				return
-
-			sources.push source	if canAdd
-			return
+						eventsTitles[event.id] = event.title
 
 
 		$scope.addEvent = ->
+			start = new Date(y, m, d + 1)
+			start.setHours(14)
+			end = new Date(y, m, d + 1)
+			end.setHours(16)
 			event =
 				title: ""
-				start: new Date(y, m, d + 1)
-				end: new Date(y, m, d + 2)
+				start: start
+				end: end
+				allDay: false
 			$scope.events.push event
-			post '/agenda/add',
+			agenda.put
 				data:
 					event: getEvent event
 				success: (data) ->
@@ -119,25 +83,23 @@ Controllers =
 			delay 50, ->
 				$('ul.events input[ng-model="e.title"]:last').focus()
 
-			return
 
-
-		$scope.remove = (index) ->
-			$scope.events.splice index, 1
-			post '/agenda/remove',
+		$scope.remove = (event) ->
+			for ev, index in $scope.events
+				if ev.id is event.id
+					$scope.events.splice index, 1
+					break
+			agenda.delete
 				data:
 					event: getEvent event
-			return
 
 
 		$scope.changeView = (view, calendar) ->
 			calendar.fullCalendar "changeView", view
-			return
 
 
 		$scope.renderCalender = (calendar) ->
 			calendar.fullCalendar "render"
-			return
 
 
 		$scope.uiConfig = calendar: $.extend(
@@ -150,20 +112,18 @@ Controllers =
 					center: ""
 					right: "today prev,next"
 
-				eventClick: $scope.alertOnEventClick
-				eventDrop: $scope.alertOnDrop
-				eventResize: $scope.alertOnResize
+				eventClick: (event) ->
+					$scope.editContent event
+				eventDrop: (event) ->
+					$scope.saveEvent event
+				eventResize: (event) ->
+					$scope.saveEvent event
 			}
 			dateTexts
 		)
 
 
-		$scope.eventSources = [
-			$scope.events
-			#$scope.eventSource
-			#$scope.eventsF
-		]
-		return
+		$scope.eventSources = [$scope.events]
 
 
 objectResolve = (value) ->
@@ -197,7 +157,7 @@ objectResolve = (value) ->
 	leave enter value
 
 
-data = (name) ->
+getData = (name) ->
 	name = name.replace /(\\|")/g, '\\$1'
 	$data = $ '[data-data][data-name="' + name + '"]'
 	unless $data.length
@@ -210,17 +170,47 @@ delay = (ms, cb) ->
 	setTimeout cb, ms
 
 
-post = (url, settings) ->
-	if typeof(settings) is 'function'
-		settings =
-			success: settings
-	settings.type = settings.type || "POST"
-	settings.dataType = settings.dataType || "json"
-	settings.data = settings.data || {}
-	settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
-	$.ajax url, settings
-	# .complete (data) ->
-	# 	$('meta[name="_csrf"]').attr('content')
+Ajax = 
+	get: (url, settings, _method, defaultType = "GET") ->
+		if typeof(settings) is 'function'
+			settings =
+				success: settings
+		settings.type = settings.type || defaultType
+		settings.dataType = settings.dataType || "json"
+		settings.data = settings.data || {}
+		settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
+		if _method?
+			settings.data._method = _method
+		$.ajax url, settings
+
+	post: (url, settings, _method) ->
+		@get url, settings, _method, "POST"
+
+	put: (url, settings) ->
+		@post url, settings, "PUT"
+
+	delete: (url, settings) ->
+		@post url, settings, "DELETE"
+
+
+class Crud
+	constructor: (url = '/') ->
+		@url = url
+
+	url: (url = '/') ->
+		new Crud @url + url
+
+	get: (settings, _method, defaultType) ->
+		Ajax.get @url, settings, _method, defaultType
+
+	post: (settings, _method) ->
+		Ajax.post @url, settings, _method
+
+	put: (settings) ->
+		Ajax.put @url, settings
+
+	delete: (settings) ->
+		Ajax.delete @url, settings
 
 
 $(document).ajaxComplete (event, xhr, settings) ->
@@ -239,8 +229,13 @@ $(document).ajaxComplete (event, xhr, settings) ->
 	$('head meta[name="_csrf"]').attr 'content', _csrf
 	throw err if err?
 
+.on 'click', '.link', (event) ->
+	selector = '[role="main"]'
+	$page = $ selector
+	$page.load $(@).attr('href') + ' ' + selector
+	false
 
-dateTexts = data('dateTexts')
+dateTexts = getData('dateTexts')
 
 calendarGetText = (name) ->
 	if typeof(dateTexts[name]) is 'undefined'

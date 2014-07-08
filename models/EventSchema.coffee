@@ -4,7 +4,9 @@ module.exports = new Schema
 	user:
 		type: ObjectId
 		ref: 'UserSchema'
-	registerDate: Date
+	registerDate:
+		type: Date
+		default: Date.now
 	start:
 		type: Date
 		required: true
@@ -20,8 +22,3 @@ module.exports = new Schema
 		type: Boolean
 		default: false
 	url: String
-
-.pre 'save', (next) ->
-	unless @registerDate
-		@registerDate = new Date
-	next()

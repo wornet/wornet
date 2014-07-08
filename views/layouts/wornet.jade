@@ -12,6 +12,17 @@ html.no-js(lang=lang())
 			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
+			+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
+			+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+			//- KO
+				J'aimerais qu'on vérifie la pertinence de ces balises qui a priori ne sont lues
+				ni par les robots ni par les utilisateurs :
+				+meta("generator", "Wornet v1")
+				+meta("author", "Manuel Costes")
+				+meta("copyright", "© 2014 Wornet")
+
+				J'ai supprimé la balise de langue (car elle fait doublon avec la ligne 3 et de
+				plus, Wornet sera peut-être trauits en plusieurs langues)
 			+meta("_csrf", _csrf)
 		block css
 			each style in options.css().main
@@ -30,15 +41,19 @@ html.no-js(lang=lang())
 			+ie('if lte IE 8')
 				script
 					:coffee
-						document.createElement 'tabs'
-						document.createElement 'pane'
-						document.createElement 'ng-pluralize'
+						((f) ->
+							f 'tabs'
+							f 'pane'
+							f 'ng-pluralize'
+						)(document.createElement)
 		block head
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top.
-			Abc pour test
+		nav.navbar-fixed-top
+			+link("/", s("Accueil"))
+			!=" &nbsp; "
+			+link("/agenda", s("Agenda"))
 
 		#wrap
 			+ie('if lte IE 7')
@@ -53,6 +68,16 @@ html.no-js(lang=lang())
 				block body
 
 		footer
+			//- KO
+				div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
+					a(class="link" href="#")
+						=s("Newsroom")
+					a(class="link" href="#")
+						=s("Offres d'emplois")
+					a(class="link" href="#")
+						=s("Mentions légales")
+					copytag(data="right").
+						&#169; 2014 Wornet
 			=s("Wornet")
 			if datas
 				each value, name in datas

@@ -1,4 +1,24 @@
-$baseColor = #dfa954
+/* <--- Feuille de style (app.styl) ---> */
+// Variables de l'entête de page.
+$header-height = 200px
+// Variables du corps de page.
+$background = url(/img/background.jpg)
+$baseColor = #fff
+$orange = #ffa500
+// Variables du pied de page.
+$footer-height = 80px
+$footer-background = rgba(255, 255, 255, 0.5)
+// Variables des liens.
+$link-color = #5f5f5f
+$link-weight = bold
+$link-spacing-left = 12px
+$link-spacing-right = 12px
+// Variables du bloc contenant le formulaire d'inscrition (centre).
+$register-container-topspacing = 0px
+$register-container-botspacing = 30px
+$register-container-buttonwidth = 200px
+$register-container-textbox-background = #ffffff
+// Autres variables.
 $highlightColor = lighten($baseColor, 60%)
 $lightColor = lighten($baseColor, 35%)
 $darkColor = darken($baseColor, 35%)
@@ -7,39 +27,329 @@ $grayColor = desaturate($baseColor, 35%)
 $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
-$fonts = helvetica, arial, sans-serif
+$fonts = Average, helvetica, arial, sans-serif
 
-
-//@import "../../node_modules/bootstrap-stylus/lib/bootstrap"
-//@import "lib/bootstrap-theme"
-
+*
+	-moz-box-sizing border-box
+	-webkit-box-sizing border-box
+	box-sizing border-box
 
 border-radius()
+	// Fonction pour arondir les bordures d'une boite.
 	-webkit-border-radius arguments
 	-moz-border-radius arguments
 	border-radius arguments
 
-
 box-shadow()
+	// Fonction pour créer des ombres sur une boite.
 	-webkit-box-shadow arguments
 	-moz-box-shadow arguments
 	box-shadow arguments
 
+background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	// Fonction pour créer des fonds linéaire.
+	background-color startColor
+	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 
+// Raccourci
+
+// Bloc de type inline-block.
+.inline-block
+	display inline-block
+
+// Lien en gras.
+.boldlink
+	font-weight bold
+
+html
 body 
+	// Tailles, marges interne et externe.
+	min-height 100%
+	width 100%
+	margin 0px
+	padding 0px
+
+	// Bloquage de la séléction sur tous les navigateurs.
+	-webkit-touch-callout none /* pour Chrome et Safari */
+	-webkit-user-select none /* pour Chrome et Safari */
+	-khtml-user-select none 
+	-moz-user-select none /* pour Mozilla Firefox */
+	-ms-user-select none
+	-o-user-select none /* pour Opera */
+	user-select none /* version standarisée */
+
+	// Paramètres du fond de la page.
+	background $background no-repeat center fixed
+	-webkit-background-size cover /* pour Chrome et Safari */
+	-moz-background-size cover /* pour Firefox */
+	-o-background-size cover /* pour Opera */
+	background-size cover /* version standardisée */
+
+header
+	height $header-height
+
+body
+	// Police de charactères.
 	font 14px/1.4 $fonts
-	background $baseColor
+	padding-bottom $footer-height
+
+footer
+	// Tailles du pied de page.
+	width 100%
+	height $footer-height
+
+	// Positions du pied de page.
+	position absolute
+	bottom 0px
+	left 0px
+
+	// Paramètres relatif au texte. (Hérite de body)
+	text-align center
+
+	// Fond du pied de page.
+	background-color $footer-background
 
 h1
+	// Fond, Couleurs, marges interne et externe des titres de taille 1.
 	background $lightColor
 	color $darkColor
 	margin $bigPadding
 	padding $mainPadding
+
+	// Ombres du texte et de la boite.
 	text-shadow 0 1px 1px $highlightColor
-	border-radius(3px)
 	box-shadow(0 0 1px $darkColor)
+
+// KO la class link est trop générale pour lui donner un style aussi spécifique
+// KO les margin et padding peuvent être renseignés en une ligne ainsi :
+//      margin top right bottom left (margin 1px 2px 3px 4px)
+//      margin top left&right bottom (margin 10px 5px 20px)
+//      margin top&bottom left&right (margin 8px 16px)
+
+a.link
+	// Marges interne et externe des liens du pied de page (footer)
+	margin 30px
+	margin-left $link-spacing-left
+	margin-right $link-spacing-right
+	padding-left 10px
+	padding-right 10px
+
+	// Type de container
+	display inline-block
+
+	// Paramètres relatif au texte.
+	color $link-color
+	font-weight $link-weight
+
+	// Curseur.
+	cursor pointer
+
+// Liens du pied de page au passage de la souris.
+a.link:hover
+	// Paramètres relatif au texte.
+	text-decoration none
+
+// Conteneurs de structure du design.
+
+// Bloc contenant le formulaire de connexion.
+#connexion-content
+	padding-top 30px
+	padding-bottom 30px
+
+// Bloc gauche.
+#container-left
+	text-align center
+
+// Bloc contenant le formulaire d'inscription.
+#container-center
+	// Marges internes
+	padding-bottom $register-container-botspacing
+	padding-top $register-container-topspacing
+
+	// Paramètres relatif au texte (Hérite de body).
+	text-align center
+
+// Bloc droit.
+#container-right
+	text-align center
+
+// Champs de type date.
+// KO Attention, le style va être appliqué à tous les champs de type date
+// KO Il n'y a aucun champ de type date dans les templates
+// KO D'une manière générale sur les champs, il va falloir leur trouver un style commun et partir du .form-control de bootstrap
+input[type=date]
+	// Marges internes et externes.
+	padding 4px
+	margin 5px 10px
+
+	// Bordures.
+	border 1px solid #eee
+	// KO il faut utiliser la fonction pour une plus grande compatibilité
+	border-radius 5px
+
+	// Fond et police de charactères.
+	background #fff
+	font-family $fonts
+
+// Champs de texte.
+// KO, si le style est commun à tout le monde,
+// il faut plutôt donner une class commune aux balises, en l'occurence .form-control de bootstrap
+// est fait pour ça
+.register-textbox
+select // KO je ne trouve pas de select
+.login-textbox
+.date // KO je ne trouve pas de .date
+	// Tailles.
+	width 200px
+
+	// Marges internes et externes.
+	// KO, voir ci-dessus
+	padding 4px
+	padding-left 8px
+	margin-left 10px
+	margin-right 10px
+	margin-top 5px
+	margin-bottom 5px
+
+	// Bordures.
+	border 1px solid rgba(156, 156, 156, 0.35)
+	// KO, voir ci-dessus
+	border-radius 5px
+
+	// Fond, police de charactères et ombres.
+	background $register-container-textbox-background
+	font-family $fonts
+	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
+
+// Barre de sélection.
+select
+	padding-left 0px
+
+// Champs de texte au focus.
+.register-textbox:focus
+select:focus
+.login-textbox:focus
+.date:focus
+	// Correcteur d'orthographe et ombres.
+	outline none
+	box-shadow 0px 0px 3px 1px #F7852E
+
+.register-button
+.login-button
+	// Marges internes et externes.
+	margin 5px
+	margin-left 0px
+	padding 5px
+
+	// Bordures.
+	border-radius 4px
+	border 0px solid #000
+
+	// Paramètres relatif au texte.
+	font-weight bold
+	color #000
+
+	// Fond
+	background-linear-gradient(top, #ffda00, 10%, #ff7500, 90%)
+
+// Elément XHTML contenant le COPYRIGHT de Wornet.
+copytag
+	color $link-color
+
+// Elément contenant le slogan.
+span#slogan
+	// Paramètres relatif au texte. (Hérite de body)
+	color #5f5f5f
+	font-weight bold
+	font-size 20px
+	text-align center
+
+	// Marges externes et type d'élément.
+	margin 15px
+	display block
+
+// Image logo.
+img#logo
+	width 350px
+
+// Elément contenant le texte à checker (Se souvenir de moi).
+span.save
+	color $linkcolor
+	padding-left 20px
+
+// Formulaire d'inscription.
+form#register
+	margin auto
+
+// Formulaire de connexion.	
+form#login
+	padding-left 70px
+
+// Case à cocher.
+// KO, toutes les cases à cocher n'auront pas forcément de marge à gauche.
+// KO, regarde également ce que bootstrap permet de faire pour les cases à cocher.
+input[type=checkbox]
+	margin-left 10px
+
+// Lien d'oublie du mot de passe.
+a#forget-it
+	padding-left 85px
+	color $orange
+	cursor pointer
+
+// Lien d'oublie du mot de passe au passage de la souris.
+a#forget-it:hover
+	text-decoration none
+
+// Bloc d'espacement vertical.
+// KO où ce style est-il utiliser ?
+div.space-block
+	padding-top 50px
+
+// Citations
+// KO, class en français, utilise la balise blockquote
+.cite
+	// Marges interne
+	padding-top 18px
+	padding-bottom 2px
+
+	// Curseur
+	cursor default
+
+// Bouton d'inscription.
+input#sign-in
+	width $register-container-buttonwidth
+
+// Police de charactères non-standard.
+@font-face 
+	font-family Average
+	src url(/fonts/pakenham.regular.ttf)
+
+// Media Queries.
+@media (max-width: 768px)
+	.none-mobile
+		display none
+	img#logo
+		margin auto
+	header
+		height 150px
+@media (max-width: 992px)
+	.none-tablette
+		display none
+	img#logo
+		margin-top 25px
+		margin-bottom 25px
+	header
+		height 150px
 
 .cb
 	clear both
+
+#eventContent textarea
+	height 300px
 
 @import "agenda"
