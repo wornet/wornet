@@ -65,6 +65,10 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 .boldlink
 	font-weight bold
 
+// Clear both
+.cb
+	clear both
+
 html
 body 
 	// Tailles, marges interne et externe.
@@ -98,6 +102,8 @@ body
 	padding-bottom $footer-height
 
 footer
+	// Type
+	display block
 	// Tailles du pied de page.
 	width 100%
 	height $footer-height
@@ -195,59 +201,42 @@ input[type=date]
 	background #fff
 	font-family $fonts
 
-// Champs de texte.
-// KO, si le style est commun à tout le monde,
-// il faut plutôt donner une class commune aux balises, en l'occurence .form-control de bootstrap
-// est fait pour ça
-.register-textbox
-select // KO je ne trouve pas de select
-.login-textbox
-.date // KO je ne trouve pas de .date
-	// Tailles.
-	width 200px
-
+.btn
+.form-control
 	// Marges internes et externes.
-	// KO, voir ci-dessus
-	padding 4px
-	padding-left 8px
-	margin-left 10px
-	margin-right 10px
-	margin-top 5px
-	margin-bottom 5px
+	padding 4px 8px
+	margin $smallPadding 0
+	-moz-transition all .2s
+	-webkit-transition all .2s
+	transition all .2s
 
+// Champs de texte.
+.form-control
 	// Bordures.
 	border 1px solid rgba(156, 156, 156, 0.35)
-	// KO, voir ci-dessus
-	border-radius 5px
 
 	// Fond, police de charactères et ombres.
 	background $register-container-textbox-background
 	font-family $fonts
-	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
+	box-shadow inset 0px 2px 6px -2px rgba(156, 156, 156, 0.35)
 
 // Barre de sélection.
-select
+select.form-control
 	padding-left 0px
 
 // Champs de texte au focus.
-.register-textbox:focus
-select:focus
-.login-textbox:focus
-.date:focus
+.btn:focus
+.form-control:focus
 	// Correcteur d'orthographe et ombres.
+	-moz-outline none
+	-webkit-outline none
 	outline none
+	border-color #D7752E
 	box-shadow 0px 0px 3px 1px #F7852E
 
-.register-button
-.login-button
-	// Marges internes et externes.
-	margin 5px
-	margin-left 0px
-	padding 5px
-
+.btn
 	// Bordures.
-	border-radius 4px
-	border 0px solid #000
+	border none
 
 	// Paramètres relatif au texte.
 	font-weight bold
@@ -255,6 +244,9 @@ select:focus
 
 	// Fond
 	background-linear-gradient(top, #ffda00, 10%, #ff7500, 90%)
+
+	&.btn-plain
+		width 100%
 
 // Elément XHTML contenant le COPYRIGHT de Wornet.
 copytag
@@ -275,6 +267,14 @@ span#slogan
 // Image logo.
 img#logo
 	width 350px
+
+label
+	font-weight normal
+	vertical-align top
+	line-height 20px
+	input[type="checkbox"]
+		margin-top 3px
+		margin-right $smallPadding
 
 // Elément contenant le texte à checker (Se souvenir de moi).
 span.save
@@ -306,23 +306,23 @@ a#forget-it:hover
 	text-decoration none
 
 // Bloc d'espacement vertical.
-// KO où ce style est-il utiliser ?
-div.space-block
-	padding-top 50px
 
 // Citations
-// KO, class en français, utilise la balise blockquote
-.cite
-	// Marges interne
-	padding-top 18px
-	padding-bottom 2px
+#quotes
+	blockquote
+		// Marges interne
+		padding-top 18px
+		padding-bottom 2px
 
-	// Curseur
-	cursor default
+		// Bordures
+		border-left none
 
-// Bouton d'inscription.
-input#sign-in
-	width $register-container-buttonwidth
+		// Curseur
+		cursor default
+
+// Textarea eventContent.
+#eventContent textarea
+	height 300px
 
 // Police de charactères non-standard.
 @font-face 
@@ -346,10 +346,6 @@ input#sign-in
 	header
 		height 150px
 
-.cb
-	clear both
-
-#eventContent textarea
-	height 300px
+// Importations.
 
 @import "agenda"

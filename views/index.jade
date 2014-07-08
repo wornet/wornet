@@ -4,8 +4,8 @@ block body
 	h1
 		=s("Respirez, vous êtes sur Wornet.")
 	section
-		input.btn.btn-primary(type="button", value=s("If I am blue, Bootstrap works !"))
-		input.btn.btn-primary(type="button", value="{{isAngularWorking}}")
+		input.btn.btn-primary(type="button" value=s("If I am blue, Bootstrap works !"))
+		input.btn.btn-primary(type="button" value="{{isAngularWorking}}")
 	if err
 		.alert.alert-danger
 			=err
@@ -26,11 +26,11 @@ block body
 		.input-group
 			.input-group-addon
 				span.glyphicon.glyphicon-user
-			input.form-control(type="text", name="name[full]", required, pattern=pattern('fullname') placeholder=s("Prénom Nom"))
+			input.form-control(type="text" name="name[full]" required pattern=pattern('fullname') placeholder=s("Prénom Nom"))
 		.input-group
 			.input-group-addon
 				span.glyphicon.glyphicon-envelope
-			input.form-control(type="email", name="email", required, pattern=pattern('email') placeholder=s("Adresse e-mail"))
+			input.form-control(type="email" name="email" required pattern=pattern('email') placeholder=s("Adresse e-mail"))
 		.input-group
 			input.btn.btn-primary(type="submit")
 

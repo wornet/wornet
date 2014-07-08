@@ -9,17 +9,17 @@ mixin non-ie()
 	| <!--<![endif]-->
 
 mixin meta(name, content)
-	meta(name=name, content=content)
+	meta(name=name content=content)
 
 mixin link(href, name)
-	a(id!=attributes.id, class!="link" + (attributes.class ? " " + attributes.class : ""), href=href)
+	a.link&attributes(attributes)(href=href)
 		=name
 
 mixin data(name, value)
 	!=data(name, value)
 
 mixin csrf()
-	input(type="hidden", name="_csrf", value=_csrf)
+	input(type="hidden" name="_csrf" value=_csrf)
 
 mixin form(url, method)
 
@@ -34,9 +34,12 @@ mixin form(url, method)
 		- enctype = "multipart/form-data"
 		- method = "POST"
 
-	form(id!=attributes.id, class!=attributes.class, action=url, method=method, enctype=enctype)
+	form&attributes(attributes)(action=url method=method enctype=enctype)
 		div
 			+csrf()
 			if _method
-				input(type="hidden", name="_method", value=_method)
+				input(type="hidden" name="_method" value=_method)
 		block
+
+mixin formControl(type)
+	input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
