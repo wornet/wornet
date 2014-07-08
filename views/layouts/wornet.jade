@@ -51,9 +51,6 @@ html.no-js(lang=lang())
 	body(ng-app="Wornet")
 
 		nav.navbar-fixed-top
-			+link("/", s("Accueil"))
-			!=" &nbsp; "
-			+link("/agenda", s("Agenda"))
 
 		#wrap
 			+ie('if lte IE 7')
@@ -67,18 +64,17 @@ html.no-js(lang=lang())
 			div(role="main", ng-controller="AppCtrl")
 				block body
 
-		footer
-			//- KO
-				div(id="footer" class="col-lg-12 col-md-12 col-sm-12 col-xs-12")
-					a(class="link" href="#")
+		footer 
+				//- Un footer ne peut pas être en position absolute. On laisse le div
+				div.col-lg-12.col-md-12.col-sm-12.col-xs-12#footer
+					a(href="#").link
 						=s("Newsroom")
-					a(class="link" href="#")
+					a(href="#").link
 						=s("Offres d'emplois")
-					a(class="link" href="#")
+					a(href="#").link
 						=s("Mentions légales")
 					copytag(data="right").
 						&#169; 2014 Wornet
-			=s("Wornet")
 			if datas
 				each value, name in datas
 					+data(name, value)

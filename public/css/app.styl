@@ -65,6 +65,10 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 .boldlink
 	font-weight bold
 
+// Clear both
+.cb
+	clear both
+
 html
 body 
 	// Tailles, marges interne et externe.
@@ -98,6 +102,8 @@ body
 	padding-bottom $footer-height
 
 footer
+	// Type
+	display block
 	// Tailles du pied de page.
 	width 100%
 	height $footer-height
@@ -199,10 +205,9 @@ input[type=date]
 // KO, si le style est commun à tout le monde,
 // il faut plutôt donner une class commune aux balises, en l'occurence .form-control de bootstrap
 // est fait pour ça
-.register-textbox
-select // KO je ne trouve pas de select
-.login-textbox
-.date // KO je ne trouve pas de .date
+.textbox
+select
+.date
 	// Tailles.
 	width 200px
 
@@ -223,14 +228,14 @@ select // KO je ne trouve pas de select
 	// Fond, police de charactères et ombres.
 	background $register-container-textbox-background
 	font-family $fonts
-	box-shadow inset 0px 1px 6px 0px rgba(156, 156, 156, 0.35)
+	box-shadow inset 0px 2px 6px -2px rgba(156, 156, 156, 0.35)
 
 // Barre de sélection.
 select
 	padding-left 0px
 
 // Champs de texte au focus.
-.register-textbox:focus
+.textbox:focus
 select:focus
 .login-textbox:focus
 .date:focus
@@ -238,8 +243,7 @@ select:focus
 	outline none
 	box-shadow 0px 0px 3px 1px #F7852E
 
-.register-button
-.login-button
+.button
 	// Marges internes et externes.
 	margin 5px
 	margin-left 0px
@@ -306,16 +310,15 @@ a#forget-it:hover
 	text-decoration none
 
 // Bloc d'espacement vertical.
-// KO où ce style est-il utiliser ?
-div.space-block
-	padding-top 50px
 
 // Citations
-// KO, class en français, utilise la balise blockquote
-.cite
+blockquote.cite
 	// Marges interne
 	padding-top 18px
 	padding-bottom 2px
+
+	// Bordures
+	border 0px solid #000
 
 	// Curseur
 	cursor default
@@ -323,6 +326,10 @@ div.space-block
 // Bouton d'inscription.
 input#sign-in
 	width $register-container-buttonwidth
+
+// Textarea eventContent.
+#eventContent textarea
+	height 300px
 
 // Police de charactères non-standard.
 @font-face 
@@ -346,10 +353,6 @@ input#sign-in
 	header
 		height 150px
 
-.cb
-	clear both
-
-#eventContent textarea
-	height 300px
+// Importations.
 
 @import "agenda"

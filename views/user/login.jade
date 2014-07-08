@@ -1,45 +1,44 @@
 extends ../layouts/wornet
 
 block body
-	div.container
-		header.content.col-lg-12.col-md-12.col-sm-12.col-xs-12
-			div.col-lg-5.col-md-5.col-sm-4.col-xs-12#logo-content
-				img(type="image/png" src="/img/logo.png").img-responsive#logo
-			div.col-lg-7.col-md-7.col-sm-8.none-mobile#connexion-content
+	.container
+		header.content.col-lg-12
+			#logo-content.col-lg-5.col-md-5.col-sm-4.col-xs-12
+				img(type="image/png" src="/img/logo.png")#logo.img-responsive
+			#connexion-content.col-lg-7.col-md-7.col-sm-8.none-mobile
 				form(method="post" action="login-check.jade")#login
-					input(type="text" spellcheck="false" name="login-email" placeholder="Votre e-mail").login-textbox
-					input(type="password" spellcheck="false" name="login-password" placeholder="Mot de passe").login-textbox
-					input(type="submit" value="Se connecter").login-button
+					input(type="text" spellcheck="false" autocomplete="off" name="login-email" placeholder=s("Votre e-mail")).textbox
+					input(type="password" spellcheck="false" autocomplete="off" name="login-password" placeholder=s("Mot de passe")).textbox
+					input(type="submit" value=s("Se connecter")).button
 					span.none-mobile
 						br
-					input(type="checkbox" value="Se souvenir de moi" name="save")
+					input(type="checkbox" value=s("Se souvenir de moi") name="save")
 					span.save
 						=s("Se souvenir de moi")
 					a#forget-it
 						=s("Oublié ?")
-		div.content.col-lg-12.col-md-12.col-sm-12.col-xs-12#container
-			div.col-lg-3.col-md-2.col-sm-1.none-mobile#container-left
-			div.col-lg-6.col-md-7.col-sm-7.col-xs-12.col-middle#container-center
+		#container.content.col-lg-12
+			#container-left.col-lg-3.col-md-2.col-sm-1.none-mobile
+			#container-center.col-lg-6.col-md-7.col-sm-7.col-xs-12.col-middle
 					span#slogan
 						=s("Ouvrez un compte, c'est")
 						br
 						=s("gratuit.")
 					form(method="post" action="register.jade")#register
-						// FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
+						//- FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
 						br
-						input(type="text" spellcheck="false" title="Votre e-mail" name="register-email" placeholder="Votre e-mail").register-textbox
+						input(type="text" spellcheck="false" autocomplete="off" title=s("Votre e-mail") name="register-email" placeholder=s("Votre e-mail")).textbox
 						br
-						input(type="password" spellcheck="false" title="Votre mot de passe" name="register-password" placeholder="Votre mot de passe").register-textbox
+						input(type="password" spellcheck="false" autocomplete="off" title=s("Votre mot de passe") name="register-password" placeholder=s("Votre mot de passe")).textbox
 						br
-						input(type="password" spellcheck="false" title="Vérifier votre mot de passe" name="register-password-check" placeholder="Vérifier votre mot de passe").register-textbox
+						input(type="password" spellcheck="false" autocomplete="off" title=s("Vérifier votre mot de passe") name="register-password-check" placeholder=s("Vérifier votre mot de passe")).textbox
 						br
-						div#check-all
-							input(type="submit" value="Je m'inscris").register-button#sign-in
-			div.col-lg-3.col-md-3.col-sm-3.none-mobile#container-right
-				//- KO, class en français, utilise la balise blockquote
-				p.cite
+						#check-all
+							input(type="submit" value=s("Je m'inscris"))#sign-in.button
+			#container-right.col-lg-3.none-mobile
+				blockquote.cite
 					=s("\" Wornet est un réseau social français totalement pensé pour vous – et vos amis. \"")
-				p.cite
+				blockquote.cite
 					=s("\" Contrôlez la portée de vos informations. \"")
-				p.cite
+				blockquote.cite
 					=s("\"  Bénéficiez d'outils innovants et intuitifs. \"")
