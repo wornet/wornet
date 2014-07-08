@@ -205,7 +205,7 @@ input[type=date]
 .form-control
 	// Marges internes et externes.
 	padding 4px 8px
-	margin $smallPadding 0
+	margin $mainPadding 0
 	-moz-transition all .2s
 	-webkit-transition all .2s
 	transition all .2s
@@ -289,17 +289,9 @@ form#register
 form#login
 	padding-left 70px
 
-// Case à cocher.
-// KO, toutes les cases à cocher n'auront pas forcément de marge à gauche.
-// KO, regarde également ce que bootstrap permet de faire pour les cases à cocher.
-input[type=checkbox]
-	margin-left 10px
-
 // Lien d'oublie du mot de passe.
 a#forget-it
-	padding-left 85px
 	color $orange
-	cursor pointer
 
 // Lien d'oublie du mot de passe au passage de la souris.
 a#forget-it:hover
@@ -310,15 +302,13 @@ a#forget-it:hover
 // Citations
 #quotes
 	blockquote
+		text-align center
 		// Marges interne
 		padding-top 18px
 		padding-bottom 2px
 
 		// Bordures
 		border-left none
-
-		// Curseur
-		cursor default
 
 // Textarea eventContent.
 #eventContent textarea
