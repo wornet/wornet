@@ -1,16 +1,16 @@
 /* <--- Feuille de style (app.styl) ---> */
 // Variables de l'entête de page.
-$header-height = 200px
+$headerHeight = 200px
 // Variables du corps de page.
 $background = url(/img/background.jpg)
 $baseColor = #fff
 $orange = #ffa500
 // Variables du pied de page.
-$footer-height = 80px
-$footer-background = rgba(255, 255, 255, 0.5)
+$footerHeight = 80px
+$footerBackground = rgba(255, 255, 255, 0.5)
 // Variables des liens.
-$link-color = #5f5f5f
-$link-weight = bold
+$linkColor = #5f5f5f
+$linkWeight = bold
 $link-spacing-left = 12px
 $link-spacing-right = 12px
 // Variables du bloc contenant le formulaire d'inscrition (centre).
@@ -27,6 +27,9 @@ $grayColor = desaturate($baseColor, 35%)
 $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
+$fieldVPadding = 4px
+$fieldHPadding = 8px
+$fieldLineHeight = 20px
 $fonts = Average, helvetica, arial, sans-serif
 
 *
@@ -57,10 +60,12 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 
 // Raccourci
 
+// KO : Utilisé où ?
 // Bloc de type inline-block.
 .inline-block
 	display inline-block
 
+// KO : Utilisé où ?
 // Lien en gras.
 .boldlink
 	font-weight bold
@@ -72,7 +77,7 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 html
 body 
 	// Tailles, marges interne et externe.
-	min-height 100%
+	height 100%
 	width 100%
 	margin 0px
 	padding 0px
@@ -94,30 +99,32 @@ body
 	background-size cover /* version standardisée */
 
 header
-	height $header-height
+	height $headerHeight
 
 body
 	// Police de charactères.
 	font 14px/1.4 $fonts
-	padding-bottom $footer-height
+	padding-bottom $footerHeight
+
+#wrap
+	min-height 100%
+	height auto !important
+	height 100%
+	margin 0 auto -$footerHeight
+	padding 0 0 $footerHeight
 
 footer
 	// Type
 	display block
 	// Tailles du pied de page.
 	width 100%
-	height $footer-height
-
-	// Positions du pied de page.
-	position absolute
-	bottom 0px
-	left 0px
+	height $footerHeight
 
 	// Paramètres relatif au texte. (Hérite de body)
 	text-align center
 
 	// Fond du pied de page.
-	background-color $footer-background
+	background-color $footerBackground
 
 h1
 	// Fond, Couleurs, marges interne et externe des titres de taille 1.
@@ -148,8 +155,8 @@ a.link
 	display inline-block
 
 	// Paramètres relatif au texte.
-	color $link-color
-	font-weight $link-weight
+	color $linkColor
+	font-weight $linkWeight
 
 	// Curseur.
 	cursor pointer
@@ -158,30 +165,6 @@ a.link
 a.link:hover
 	// Paramètres relatif au texte.
 	text-decoration none
-
-// Conteneurs de structure du design.
-
-// Bloc contenant le formulaire de connexion.
-#connexion-content
-	padding-top 30px
-	padding-bottom 30px
-
-// Bloc gauche.
-#container-left
-	text-align center
-
-// Bloc contenant le formulaire d'inscription.
-#container-center
-	// Marges internes
-	padding-bottom $register-container-botspacing
-	padding-top $register-container-topspacing
-
-	// Paramètres relatif au texte (Hérite de body).
-	text-align center
-
-// Bloc droit.
-#container-right
-	text-align center
 
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
@@ -204,21 +187,27 @@ input[type=date]
 .btn
 .form-control
 	// Marges internes et externes.
-	padding 4px 8px
+	padding $fieldVPadding $fieldHPadding
 	margin $mainPadding 0
+	line-height $fieldLineHeight
 	-moz-transition all .2s
 	-webkit-transition all .2s
 	transition all .2s
+
+input.form-control
+	height $fieldLineHeight + 2 * $fieldVPadding + 2 !important
+	height $fieldLineHeight
 
 // Champs de texte.
 .form-control
 	// Bordures.
 	border 1px solid rgba(156, 156, 156, 0.35)
 
+	// Réduction de padding due au border
+	padding $fieldVPadding - 1 $fieldHPadding - 1
+
 	// Fond, police de charactères et ombres.
-	background $register-container-textbox-background
 	font-family $fonts
-	box-shadow inset 0px 2px 6px -2px rgba(156, 156, 156, 0.35)
 
 // Barre de sélection.
 select.form-control
@@ -250,10 +239,10 @@ select.form-control
 
 // Elément XHTML contenant le COPYRIGHT de Wornet.
 copytag
-	color $link-color
+	color $linkColor
 
 // Elément contenant le slogan.
-span#slogan
+#slogan
 	// Paramètres relatif au texte. (Hérite de body)
 	color #5f5f5f
 	font-weight bold
@@ -271,7 +260,7 @@ img#logo
 label
 	font-weight normal
 	vertical-align top
-	line-height 20px
+	line-height $fieldLineHeight
 	input[type="checkbox"]
 		margin-top 3px
 		margin-right $smallPadding
@@ -287,7 +276,9 @@ form#register
 
 // Formulaire de connexion.	
 form#login
-	padding-left 70px
+	padding 30px 0
+	.narrow
+		padding 0 $smallPadding
 
 // Lien d'oublie du mot de passe.
 a#forget-it
@@ -300,15 +291,14 @@ a#forget-it:hover
 // Bloc d'espacement vertical.
 
 // Citations
-#quotes
-	blockquote
-		text-align center
-		// Marges interne
-		padding-top 18px
-		padding-bottom 2px
+#quotes blockquote
+	text-align center
+	// Marges interne
+	padding-top 18px
+	padding-bottom 2px
 
-		// Bordures
-		border-left none
+	// Bordures
+	border-left none
 
 // Textarea eventContent.
 #eventContent textarea
@@ -325,16 +315,21 @@ a#forget-it:hover
 		display none
 	img#logo
 		margin auto
-	header
-		height 150px
+	#slogan
+		margin-top $bigPadding * 2
+	.mobile-field
+		padding $fieldVPadding $fieldHPadding
+		margin $mainPadding 0
+		line-height $fieldLineHeight
+		display block
+		background rgba(255, 255, 255, 0.8)
+		border-radius(4px)
+
 @media (max-width: 992px)
 	.none-tablette
 		display none
 	img#logo
-		margin-top 25px
-		margin-bottom 25px
-	header
-		height 150px
+		margin $bigPadding auto
 
 // Importations.
 

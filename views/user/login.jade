@@ -3,34 +3,34 @@ extends ../layouts/wornet
 block body
 	- var commonOptions = { spellcheck: "false", autocomplete: "off" }
 	.container
-		header.content.col-lg-12
-			.col-sm-4
+		header.content
+			.col-md-5.col-sm-4.col-xs-12
 				img#logo.img-responsive(src="/img/logo.png")
-			#connexion-content.col-sm-8.none-mobile
+			.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
 				+form#login("/user/login/check")
-					.col-sm-4
+					.narrow.col-sm-4.col-xs-12
 						+formControl()(required pattern=pattern('email') name="email" placeholder=s("Votre e-mail"))
-						label
+						label.mobile-field
 							input(type="checkbox" value=s("Se souvenir de moi") name="save")
 							=s("Se souvenir de moi")
-					.col-sm-4
+					.narrow.col-sm-4.col-xs-12
 						+formControl("password")(required name="password" placeholder=s("Mot de passe"))
-						a#forget-it(href="/user/forgotten-password")
+						a#forget-it.mobile-field(href="/user/forgotten-password")
 							=s("Oublié ?")
-					input.btn.btn-plain(type="submit" value="Se connecter")
-		#container.content.col-lg-12
-			.col-sm-4.none-mobile
-			.col-sm-4
-					.col-sm-8.col-sm-offset-2
-						span#slogan
-							=s("Ouvrez un compte, c'est gratuit.")
-						+form#register("/user/signin")
-							//- FORM METHOD POST,GO TO register.jade, ID OF TEXTBOX: register-email, register-password, register-password-check
-							+formControl()(spellcheck="false" autocomplete="off" title=s("Votre e-mail") name="email" placeholder=s("Votre e-mail"))
-							+formControl("password")(spellcheck="false" autocomplete="off" title=s("Votre mot de passe") name="password" placeholder=s("Votre mot de passe"))
-							+formControl("password")(title=s("Vérifier votre mot de passe") name="password-check" placeholder=s("Vérifier votre mot de passe"))
-							input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
-			#quotes.col-sm-3.none-mobile
+					.narrow.col-sm-4.col-xs-12
+						input.btn.btn-plain(type="submit" value="Se connecter")
+			.cb
+		.cb.content
+			.col-sm-4.col-sm-offset-4.col-xs-12
+				.col-md-8.col-md-offset-2.col-sm-12
+					#slogan
+						=s("Ouvrez un compte, c'est gratuit.")
+					+form#register("/user/signin")
+						+formControl()(spellcheck="false" autocomplete="off" title=s("Votre e-mail") name="email" placeholder=s("Votre e-mail"))
+						+formControl("password")(spellcheck="false" autocomplete="off" title=s("Votre mot de passe") name="password" placeholder=s("Votre mot de passe"))
+						+formControl("password")(title=s("Vérifier votre mot de passe") name="password-check" placeholder=s("Vérifier votre mot de passe"))
+						input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
+			#quotes.col-sm-3.col-xs-12
 				blockquote
 					=s("\" Wornet est un réseau social français totalement pensé pour vous – et vos amis. \"")
 				blockquote
