@@ -5,7 +5,7 @@ block body
 		.alert.alert-danger
 			=err
 	else
-		.container
+		.container(ng-app)
 			section#directives-calendar(ng-controller='CalendarCtrl')
 				.well
 					.row-fluid

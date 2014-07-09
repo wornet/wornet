@@ -95,6 +95,17 @@ body
 	font 14px/1.4 $fonts
 	padding-bottom $footerHeight
 
+.loader
+	position fixed
+	top 0
+	left 0
+	width 100%
+	height 100%
+	overflow hidden
+	background url(/img/loader.gif) center center no-repeat
+	.hidden
+		height 0
+
 #wrap
 	min-height 100%
 	height auto !important
@@ -163,12 +174,13 @@ input[type=date]
 	// Marges internes et externes.
 	padding $fieldVPadding $fieldHPadding
 	margin $mainPadding 0
-	line-height $fieldLineHeight
+	line-height $fieldLineHeight * 0.7
 	-moz-transition all .2s
 	-webkit-transition all .2s
 	transition all .2s
 
 input.form-control
+input.btn
 	height $fieldLineHeight + 2 * $fieldVPadding + 2 !important
 	height $fieldLineHeight
 

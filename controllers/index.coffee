@@ -1,7 +1,5 @@
 'use strict'
 
-model = {}
-
 listUsers = (err, req, res, fromSave) ->
 
 	User.find({},
@@ -11,6 +9,7 @@ listUsers = (err, req, res, fromSave) ->
 	).sort(
 		registerDate: -1
 	).exec (findErr, users) ->
+		model = {}
 		model.users = users
 		if err
 			model.err = err
@@ -41,6 +40,24 @@ module.exports = (router) ->
 	router.get '/', (req, res) ->
 
 		listUsers null, req, res
+
+
+	router.get '/news', (req, res) ->
+
+		model = {}
+		res.render 'news', model
+
+
+	router.get '/jobs', (req, res) ->
+
+		model = {}
+		res.render 'jobs', model
+
+
+	router.get '/legals', (req, res) ->
+
+		model = {}
+		res.render 'legals', model
 
 
 	alias =

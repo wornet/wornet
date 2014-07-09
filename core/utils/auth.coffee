@@ -27,6 +27,7 @@ exports.localStrategy = ->
 			
 			#If we couldn't find a matching user, flash a message explaining what happened
 			unless user
+				log "Login not found"
 				return done(null, false,
 					message: "Login not found"
 				)
@@ -39,9 +40,6 @@ exports.localStrategy = ->
 			
 			#If everything passes, return the retrieved user object.
 			done null, user
-			return
-
-		return
 	)
 
 
@@ -83,7 +81,6 @@ exports.isAuthenticated = ->
 			res.unautorized model
 		else
 			next()
-		return
 
 
 ###
@@ -96,4 +93,3 @@ exports.injectUser = ->
 	injectUser = (req, res, next) ->
 		res.locals.user = req.user	if req.isAuthenticated()
 		next()
-		return

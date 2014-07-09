@@ -57,6 +57,9 @@ onready ->
 			bodyParser req, res, ->
 				# Available PUT and DELETE on old browsers
 				methodOverride req, res, done
+				# To simulate a slow bandwith add a delay like this :
+				# methodOverride req, res, ->
+				#	delay 3000, done
 
 		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->

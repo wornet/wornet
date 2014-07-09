@@ -61,13 +61,13 @@ html.no-js(lang=lang())
 					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
 
-			div(role="main" ng-controller="AppCtrl")
+			div(role="main")
 				block body
 
 		footer 
 				//- Un footer ne peut pas être en position absolute. On laisse le div
 				#footer.row.col-sm-8.col-sm-offset-2
-					a.link.col-sm-3.col-xs-6(href="/news")
+					a.link.col-sm-3.col-xs-6(href="/agenda")
 						=s("Newsroom")
 					a.link.col-sm-3.col-xs-6(href="/jobs")
 						=s("Offres d'emplois")
@@ -78,6 +78,8 @@ html.no-js(lang=lang())
 			if datas
 				each value, name in datas
 					+data(name, value)
+
+		.loader.hidden
 
 		block js
 			each script in options.js().main

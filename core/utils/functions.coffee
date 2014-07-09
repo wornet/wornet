@@ -53,7 +53,7 @@ module.exports =
 		str.charAt(0).toUpperCase() + str.substr(1)
 	,
 	delay: (ms, cb) ->
-		setTimeout cb, m
+		setTimeout cb, ms
 	,
 	empty: (value) ->
 		type = typeof(value)

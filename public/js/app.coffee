@@ -1,7 +1,29 @@
 Controllers =
 
-	App: ($scope) ->
-		$scope.isAngularWorking = "Angular is working"
+	Login: ($scope) ->
+		$scope.submit = (user) ->
+			Ajax.page (done, cancel) ->
+				user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
+				$.post '/user/login', user, (data) ->
+					$errors = $(data).find '#loginErrors .alert'
+					if $errors.length
+						cancel data
+						$('#loginErrors').append $errors
+					else
+						done data
+
+	Signin: ($scope) ->
+		$scope.submit = (user) ->
+			Ajax.page (done, cancel) ->
+				user._method = "PUT"
+				user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
+				$.post '/user/signin', user, (data) ->
+					$errors = $(data).find('#signinErrors .alert')
+					if $errors.length
+						cancel data
+						$('#signinErrors').append $errors
+					else
+						done data
 
 	Calendar:($scope) ->
 		agenda = new Crud '/agenda'
@@ -192,6 +214,28 @@ Ajax =
 	delete: (url, settings) ->
 		@post url, settings, "DELETE"
 
+	page: (param) ->
+		selector = '[role="main"]'
+		$page = $ selector
+		$children = $page.find('> *').detach()
+		$page.html '<div class="loader"></div>'
+		get$data = (data) ->
+			$data = $ data
+			$csrf = $data.find 'head meta[name="_csrf"]'
+			if $csrf.length
+				$('head meta[name="_csrf"]').attr 'content', $csrf.attr('content')
+			$data
+		if typeof(param) is 'function'
+			param.call @, (data) ->
+				data = get$data(data).find selector
+				$page.html(data).fadeOut(0).fadeIn()
+			, (data) ->
+				get$data data
+				$page.html('').append $children
+		else
+			$page.load param + ' ' + selector
+		false
+
 
 class Crud
 	constructor: (url = '/') ->
@@ -216,7 +260,7 @@ class Crud
 $(document).ajaxComplete (event, xhr, settings) ->
 	if settings.type is "POST"
 		data = xhr.responseText
-		if settings.dataType.toLowerCase() is "json"
+		if settings.dataType? && settings.dataType.toLowerCase() is "json"
 			data = $.parseJSON data
 			if typeof(data) isnt 'object'
 				console.warn 'JSON data response is not an object'
@@ -230,10 +274,8 @@ $(document).ajaxComplete (event, xhr, settings) ->
 	throw err if err?
 
 .on 'click', '.link', (event) ->
-	selector = '[role="main"]'
-	$page = $ selector
-	$page.load $(@).attr('href') + ' ' + selector
-	false
+	Ajax.page $(@).attr('href')
+
 
 dateTexts = getData('dateTexts')
 
