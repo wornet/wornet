@@ -11,7 +11,7 @@ block body
 					.narrow.col-sm-4.col-xs-12
 						+formControl()(required pattern=pattern('email') name="email" placeholder=s("Votre e-mail"))
 						label.mobile-field
-							input(type="checkbox" value=s("Se souvenir de moi") name="save")
+							input(type="checkbox" name="remember")
 							=s("Se souvenir de moi")
 					.narrow.col-sm-4.col-xs-12
 						+formControl("password")(required name="password" placeholder=s("Mot de passe"))

@@ -66,14 +66,14 @@ html.no-js(lang=lang())
 
 		footer 
 				//- Un footer ne peut pas être en position absolute. On laisse le div
-				#footer.col-lg-12.col-md-12.col-sm-12.col-xs-12
-					a.link(href="#")
+				#footer.row.col-sm-8.col-sm-offset-2
+					a.link.col-sm-3.col-xs-6(href="/news")
 						=s("Newsroom")
-					a.link(href="#")
+					a.link.col-sm-3.col-xs-6(href="/jobs")
 						=s("Offres d'emplois")
-					a.link(href="#")
+					a.link.col-sm-3.col-xs-6(href="/legals")
 						=s("Mentions légales")
-					copytag(data="right")
+					copytag.col-sm-3.col-xs-6(data="right")
 						!=s("{c} 2014 Wornet", { c: "&#169;" })
 			if datas
 				each value, name in datas

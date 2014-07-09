@@ -1,9 +1,9 @@
-/* <--- Feuille de style (app.styl) ---> */
+/* <--- Feuille de style générale ---> */
+
 // Variables de l'entête de page.
 $headerHeight = 200px
 // Variables du corps de page.
 $background = url(/img/background.jpg)
-$baseColor = #fff
 $orange = #ffa500
 // Variables du pied de page.
 $footerHeight = 80px
@@ -11,19 +11,8 @@ $footerBackground = rgba(255, 255, 255, 0.5)
 // Variables des liens.
 $linkColor = #5f5f5f
 $linkWeight = bold
-$link-spacing-left = 12px
-$link-spacing-right = 12px
-// Variables du bloc contenant le formulaire d'inscrition (centre).
-$register-container-topspacing = 0px
-$register-container-botspacing = 30px
-$register-container-buttonwidth = 200px
-$register-container-textbox-background = #ffffff
+
 // Autres variables.
-$highlightColor = lighten($baseColor, 60%)
-$lightColor = lighten($baseColor, 35%)
-$darkColor = darken($baseColor, 35%)
-$satColor = saturate($baseColor, 35%)
-$grayColor = desaturate($baseColor, 35%)
 $mainPadding = 10px
 $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
@@ -126,45 +115,30 @@ footer
 	// Fond du pied de page.
 	background-color $footerBackground
 
-h1
-	// Fond, Couleurs, marges interne et externe des titres de taille 1.
-	background $lightColor
-	color $darkColor
-	margin $bigPadding
-	padding $mainPadding
+	a.link
+	copytag
+		// Marges interne et externe des liens du pied de page (footer)
+		display block
+		margin-top $bigPadding
+		padding $mainPadding
+		color $linkColor
 
-	// Ombres du texte et de la boite.
-	text-shadow 0 1px 1px $highlightColor
-	box-shadow(0 0 1px $darkColor)
+	a.link
+		// Marges interne et externe des liens du pied de page (footer)
+		display block
+		padding $mainPadding
 
-// KO la class link est trop générale pour lui donner un style aussi spécifique
-// KO les margin et padding peuvent être renseignés en une ligne ainsi :
-//      margin top right bottom left (margin 1px 2px 3px 4px)
-//      margin top left&right bottom (margin 10px 5px 20px)
-//      margin top&bottom left&right (margin 8px 16px)
+		// Type de container
+		display inline-block
 
-a.link
-	// Marges interne et externe des liens du pied de page (footer)
-	margin 30px
-	margin-left $link-spacing-left
-	margin-right $link-spacing-right
-	padding-left 10px
-	padding-right 10px
+		// Paramètres relatif au texte.
+		font-weight $linkWeight
 
-	// Type de container
-	display inline-block
+	// Liens du pied de page au passage de la souris.
+	a.link:hover
+		// Paramètres relatif au texte.
+		text-decoration underline
 
-	// Paramètres relatif au texte.
-	color $linkColor
-	font-weight $linkWeight
-
-	// Curseur.
-	cursor pointer
-
-// Liens du pied de page au passage de la souris.
-a.link:hover
-	// Paramètres relatif au texte.
-	text-decoration none
 
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
@@ -237,22 +211,6 @@ select.form-control
 	&.btn-plain
 		width 100%
 
-// Elément XHTML contenant le COPYRIGHT de Wornet.
-copytag
-	color $linkColor
-
-// Elément contenant le slogan.
-#slogan
-	// Paramètres relatif au texte. (Hérite de body)
-	color #5f5f5f
-	font-weight bold
-	font-size 20px
-	text-align center
-
-	// Marges externes et type d'élément.
-	margin 15px
-	display block
-
 // Image logo.
 img#logo
 	width 350px
@@ -261,18 +219,10 @@ label
 	font-weight normal
 	vertical-align top
 	line-height $fieldLineHeight
+	color $linkcolor
 	input[type="checkbox"]
 		margin-top 3px
 		margin-right $smallPadding
-
-// Elément contenant le texte à checker (Se souvenir de moi).
-span.save
-	color $linkcolor
-	padding-left 20px
-
-// Formulaire d'inscription.
-form#register
-	margin auto
 
 // Formulaire de connexion.	
 form#login
@@ -288,49 +238,11 @@ a#forget-it
 a#forget-it:hover
 	text-decoration none
 
-// Bloc d'espacement vertical.
-
-// Citations
-#quotes blockquote
-	text-align center
-	// Marges interne
-	padding-top 18px
-	padding-bottom 2px
-
-	// Bordures
-	border-left none
-
-// Textarea eventContent.
-#eventContent textarea
-	height 300px
-
 // Police de charactères non-standard.
 @font-face 
 	font-family Average
 	src url(/fonts/pakenham.regular.ttf)
 
-// Media Queries.
-@media (max-width: 768px)
-	.none-mobile
-		display none
-	img#logo
-		margin auto
-	#slogan
-		margin-top $bigPadding * 2
-	.mobile-field
-		padding $fieldVPadding $fieldHPadding
-		margin $mainPadding 0
-		line-height $fieldLineHeight
-		display block
-		background rgba(255, 255, 255, 0.8)
-		border-radius(4px)
-
-@media (max-width: 992px)
-	.none-tablette
-		display none
-	img#logo
-		margin $bigPadding auto
-
-// Importations.
-
+// Imports.
+@import "login"
 @import "agenda"
