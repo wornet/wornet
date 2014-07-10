@@ -18,7 +18,7 @@ $bigPadding = $mainPadding * 2
 $smallPadding = $mainPadding / 2
 $fieldVPadding = 4px
 $fieldHPadding = 8px
-$fieldLineHeight = 20px
+$fieldLineHeight = 18px
 $fonts = Average, helvetica, arial, sans-serif
 
 *
@@ -194,6 +194,18 @@ input.btn
 
 	// Fond, police de charactères et ombres.
 	font-family $fonts
+
+::-webkit-input-placeholder
+	line-height $fieldLineHeight
+
+:-moz-placeholder
+	line-height $fieldLineHeight
+
+::-moz-placeholder
+	line-height $fieldLineHeight
+
+:-ms-input-placeholder
+	line-height $fieldLineHeight
 
 // Barre de sélection.
 select.form-control

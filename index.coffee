@@ -92,7 +92,7 @@ onready ->
 			files.forEach (file) ->
 				require file
 
-	# app.on 'middleware:after:session', (eventargs) ->
+	app.on 'middleware:after:session', (eventargs) ->
 	# 	passport.use auth.localStrategy()
 	# 	passport.serializeUser (user, done) ->
 	# 		done null, user.id
@@ -103,7 +103,7 @@ onready ->
 	# 			done null, user
 	# 	app.use passport.initialize()
 	# 	app.use passport.session()
-	# 	app.use flash()
+	 	app.use flash()
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

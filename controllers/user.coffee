@@ -19,17 +19,15 @@ module.exports = (router) ->
 		else
 			model.signinErrors = req.flash 'error'
 			model.loginErrors.push 'req.session.loginForm : NO'
+		console.log model
 		res.render templateFolder + '/login/check', model
 
 	router.post '/login', (req, res) ->
 
 		req.session.loginForm = true
+		req.flash 'error', 'Not implemented'
+		console.log req.flash('error')
 		res.redirect '/user/login'
-		# passport.authenticate('local',
-		# 	successRedirect: req.session.goingTo || '/user/profile'
-		# 	failureRedirect: '/user/login'
-		# 	failureFlash: true
-		# )(req, res)
 
 	router.get '/logout', (req, res) ->
 
