@@ -24,11 +24,12 @@ module.exports = (router) ->
 	router.post '/login', (req, res) ->
 
 		req.session.loginForm = true
-		passport.authenticate('local',
-			successRedirect: req.session.goingTo || '/user/profile'
-			failureRedirect: '/user/login'
-			failureFlash: true
-		)(req, res)
+		res.redirect '/user/login'
+		# passport.authenticate('local',
+		# 	successRedirect: req.session.goingTo || '/user/profile'
+		# 	failureRedirect: '/user/login'
+		# 	failureFlash: true
+		# )(req, res)
 
 	router.get '/logout', (req, res) ->
 
@@ -55,7 +56,7 @@ module.exports = (router) ->
 		model = {}
 		res.render templateFolder + '/forgotten-password', model
 
-	router.get '/profile', auth.isAuthenticated(), auth.injectUser(), (req, res) ->
+	router.get '/profile', (req, res) ->
 
 		model = {}
 		res.render templateFolder + '/profile', model

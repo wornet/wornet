@@ -2,7 +2,7 @@ extends ../layouts/wornet
 
 block body
 	- var commonOptions = { spellcheck: "false", autocomplete: "off" }
-	.container(ng-app)
+	.container
 		header
 			.col-md-5.col-sm-4.col-xs-12
 				img#logo.img-responsive(src="/img/logo.png")
@@ -12,7 +12,7 @@ block body
 						each error in loginErrors
 							.alert.alert-danger
 								=error
-				+form#login()(ng-submit="submit(user)" ng-controller="LoginCtrl")
+				+form#login()(ng-submit="submit()" ng-controller="LoginCtrl")
 					.narrow.col-sm-4.col-xs-12
 						+formControl()(required pattern=pattern('email') ng-model="user.email" placeholder=s("Votre e-mail"))
 						label.mobile-field
@@ -34,7 +34,7 @@ block body
 							each error in signinErrors
 								.alert.alert-danger
 									=error
-					+form()(ng-submit="submit(user)" ng-controller="SigninCtrl")
+					+form()(ng-submit="submit()" ng-controller="SigninCtrl")
 						+formControl()(title=s("Votre e-mail") ng-model="user.email" placeholder=s("Votre e-mail"))
 						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" placeholder=s("Votre mot de passe"))
 						+formControl("password")(title=s("Vérifier votre mot de passe") ng-model="user.passwordCheck" placeholder=s("Vérifier votre mot de passe"))

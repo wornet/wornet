@@ -37,6 +37,7 @@ module.exports = (port) ->
 				"//cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.2.15/angular-locale_fr-fr.js"
 				#"//angular-ui.github.io/ui-calendar/bower_components/angular/angular.js"
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-animate.min.js"
+				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-route.js"
 				"//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.9.0.js"
 				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js"
 				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js"
@@ -58,6 +59,7 @@ module.exports = (port) ->
 				"/components/angular/js/angular.js"
 				"/components/angular/js/angular-locale_fr-fr.js"
 				"/components/angular/js/angular-animate.js"
+				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-route.js"
 				"/components/bootstrap/js/ui-bootstrap.js"
 				"/components/moment/js/moment-with-langs.min.js"
 				script("app")

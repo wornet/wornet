@@ -5,4 +5,4 @@ block body
 		=s("Erreur interne")
 	if config.env.development
 		pre
-			=err.stack
+			!=err.stack.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/([^\n\r]+[\/\\][^\/\\]+\.coffee[^\n\r]*)/g, '<b style="color: blue;">$1</b>')

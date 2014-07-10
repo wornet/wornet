@@ -1,31 +1,34 @@
 Controllers =
 
-	Login: ($scope) ->
-		$scope.submit = (user) ->
-			Ajax.page (done, cancel) ->
-				user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
-				$.post '/user/login', user, (data) ->
-					$errors = $(data).find '#loginErrors .alert'
-					if $errors.length
-						cancel data
-						$('#loginErrors').append $errors
-					else
-						done data
+	# Login: ($scope) ->
+	# 	$scope.submit = (user) ->
+	# 		Ajax.page (done, cancel) ->
+	# 			user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
+	# 			$.post '/user/login', user, (data) ->
+	# 				$errors = $(data).find '#loginErrors .alert'
+	# 				if $errors.length
+	# 					cancel data
+	# 					$('#loginErrors').append $errors
+	# 				else
+	# 					done data
 
-	Signin: ($scope) ->
-		$scope.submit = (user) ->
-			Ajax.page (done, cancel) ->
-				user._method = "PUT"
-				user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
-				$.post '/user/signin', user, (data) ->
-					$errors = $(data).find('#signinErrors .alert')
-					if $errors.length
-						cancel data
-						$('#signinErrors').append $errors
-					else
-						done data
+	# Signin: ($scope) ->
+	# 	$scope.submit = (user) ->
+	# 		Ajax.page (done, cancel) ->
+	# 			user._method = "PUT"
+	# 			user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
+	# 			$.post '/user/signin', user, (data) ->
+	# 				$errors = $(data).find('#signinErrors .alert')
+	# 				if $errors.length
+	# 					cancel data
+	# 					$('#signinErrors').append $errors
+	# 				else
+	# 					done data
 
-	Calendar:($scope) ->
+	Calendar: ($scope, $route) ->
+		$page.load ->
+			window.$scope = $scope
+			console.log $scope
 		agenda = new Crud '/agenda'
 		date = new Date()
 		d = date.getDate()
@@ -192,7 +195,8 @@ delay = (ms, cb) ->
 	setTimeout cb, ms
 
 
-Ajax = 
+Ajax =
+	contentSelector: '[role="main"]'
 	get: (url, settings, _method, defaultType = "GET") ->
 		if typeof(settings) is 'function'
 			settings =
@@ -215,8 +219,7 @@ Ajax =
 		@post url, settings, "DELETE"
 
 	page: (param) ->
-		selector = '[role="main"]'
-		$page = $ selector
+		selector = @contentSelector
 		$children = $page.find('> *').detach()
 		$page.html '<div class="loader"></div>'
 		get$data = (data) ->
@@ -229,12 +232,18 @@ Ajax =
 			param.call @, (data) ->
 				data = get$data(data).find selector
 				$page.html(data).fadeOut(0).fadeIn()
+				$page.trigger 'load'
 			, (data) ->
 				get$data data
 				$page.html('').append $children
+				$page.trigger 'load'
 		else
-			$page.load param + ' ' + selector
+			$page.load param + ' ' + selector, ->
+				$page.trigger 'load'
 		false
+
+
+$page = $ Ajax.contentSelector
 
 
 class Crud
@@ -291,10 +300,11 @@ shortLang = lang.split(/[^a-zA-Z]/)[0]
 
 
 Wornet = angular.module 'Wornet', [
-	"ui.calendar"
-	"ui.bootstrap"
+	'ui.calendar'
+	'ui.bootstrap'
+	'ngRoute'
 ]
 
 
 for controller, method of Controllers
-	Wornet.controller controller + 'Ctrl', ['$scope', method]
+	Wornet.controller controller + 'Ctrl', ['$scope', '$route', method]
