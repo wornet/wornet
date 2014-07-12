@@ -27,7 +27,7 @@ mixin form(url, method)
 	unless method
 		- method = "POST"
 	- method = strtoupper(method)
-	if method in ["PUT", "DELETE"]
+	if ["PUT", "DELETE"].indexOf(method) !== -1
 		- _method = method
 		- method = "POST"
 	if method == "FILE"

@@ -70,6 +70,24 @@ module.exports = (port) ->
 			]
 
 	onconfig: (localConfig, next) ->
+		extend app.request,
+			cookie: (name) ->
+				if @cookies[name]?
+					@cookies[name]
+				else
+					null
+			# flash: (name, value) ->
+			# 	if typeof(@session.flash) is 'undefined'
+			# 		@session.flash = {}
+			# 	list = @session.flash[name] || []
+			# 	if typeof(value) is 'undefined'
+			# 		@session.flash[name] = []
+			# 		list
+			# 	else
+			# 		n = list.push value
+			# 		@session.flash[name] = list
+			# 		n
+		_redirect = app.response.redirect
 		extend app.response,
 			json: (data) ->
 				data._csrf = data._csrf || @locals._csrf
@@ -87,6 +105,14 @@ module.exports = (port) ->
 			unautorized: (model = {}) ->
 				@status 401
 				@render 'errors/401', model
+			redirect: (url) ->
+				if @stack?
+					console.error 'First redirect already sent at:'
+					console.log @stack
+					throw new Error('Second redirect sent at:')
+				else
+					@stack = (new Error).stack
+				_redirect.call @, url
 		app.set 'views', __dirname + '/../../views'
 		extend config, localConfig._store
 		if port is 8000 && config.env.development

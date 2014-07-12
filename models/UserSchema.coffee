@@ -10,7 +10,9 @@ userSchema = new Schema
 			type: String
 			validate: [regex('simple-text'), 'invalid last name']
 			trim: true
-	password: String
+	password:
+		type: String
+		required: true
 	token:
 		type: String
 		default: ->
@@ -39,7 +41,10 @@ userSchema.virtual('name.full').get ->
 	@name.first + ' ' + @name.last
 
 userSchema.virtual('name.full').set (name) ->
-	split = name.split ' '
+	if name?
+		split = name.split ' '
+	else
+		split = [null, null]
 	@name.first = split[0]
 	@name.last = split[1]
 	return

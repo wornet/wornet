@@ -27,6 +27,7 @@ options = (require './core/system/options')(port)
 methodOverride = (require 'method-override')()
 bodyParser = (require 'body-parser')()
 flash = require 'connect-flash'
+cookieParser = require 'cookie-parser'
 
 # Make config usables everywhere
 extend global,
@@ -93,17 +94,9 @@ onready ->
 				require file
 
 	app.on 'middleware:after:session', (eventargs) ->
-	# 	passport.use auth.localStrategy()
-	# 	passport.serializeUser (user, done) ->
-	# 		done null, user.id
-	# 	passport.deserializeUser (id, done) ->
-	# 		User.findOne
-	# 			_id: id
-	# 		, (err, user) ->
-	# 			done null, user
-	# 	app.use passport.initialize()
-	# 	app.use passport.session()
 	 	app.use flash()
+	 	app.use auth.isAuthenticated
+	 	app.use cookieParser('kjsqdJL7KSU9DEU78_Zjsq0KJD23LKSQ_lkjdzij1sqodqZE325dZDKJP-QD')
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->

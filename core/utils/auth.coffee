@@ -4,53 +4,87 @@ Module that will handle our authentication tasks
 "use strict"
 
 model 'User'
-LocalStrategy = require("passport-local").Strategy
-exports.config = (settings) ->
 
+exports.remember = (res, id) ->
+	res.cookie 'remember', id,
+		maxAge: 6 * 30 * 24 * 60 * 60
+		httpOnly: true
 
-###
-A helper method to retrieve a user from a local DB and ensure that the provided password matches.
-@param req
-@param res
-@param next
-###
-exports.localStrategy = ->
-	new LocalStrategy((email, password, done) ->
-		
-		#Retrieve the user from the database by login
+exports.remembered = (req, done) ->
+	id = req.cookie 'remember'
+	if id
 		User.findOne
-			email: email
+			_id: id
 		, (err, user) ->
-			
-			#If something weird happens, abort.
-			return done(err)	if err
-			
-			#If we couldn't find a matching user, flash a message explaining what happened
-			unless user
-				log "Login not found"
-				return done(null, false,
-					message: "Login not found"
-				)
-			
-			#Make sure that the provided password matches what's in the DB.
-			unless user.passwordMatches(password)
-				return done(null, false,
-					message: "Incorrect Password"
-				)
-			
-			#If everything passes, return the retrieved user object.
-			done null, user
-	)
+			if err
+				done false, err
+			else
+				done user
+	else
+		done false
 
+
+exports.logout = (req, res) ->
+	delete res.locals.user
+	delete req.user
+	delete req.session.user
+	if req.cookie 'remember'
+		res.clearCookie 'remember'
+
+exports.auth = (req, res, user) ->
+	res.locals.user = user
+	req.user = user
+	req.session.user = user
+
+exports.login = (req, res, done) ->
+	#Retrieve the user from the database by login
+	User.findOne
+		email: req.body.email
+	, (err, user) ->
+
+		#If something weird happens, abort.
+		if err
+			req.flash "loginErrors", err
+			return done err
+
+		#If we couldn't find a matching user, flash a message explaining what happened
+		unless user
+			req.flash "loginErrors", "Login not found"
+			return done "emailNotFound", false
+
+		#Make sure that the provided password matches what's in the DB.
+		unless user.passwordMatches req.body.password
+			req.flash "loginErrors", "Incorrect Password"
+			return done "incorrectPassword", false
+
+		#If everything passes, return the retrieved user object.
+		if req.body.remember
+			exports.remember res, user._id
+		exports.auth req, res, user
+		done null, user
+
+
+exports.tryLogin = (req, res, next) ->
+	if req.url is '/user/login' && typeof(req.body.email) isnt 'undefined' && typeof(req.body.pass) isnt 'undefined'
+		exports.login req, res, next
+	else if req.session.user?
+		res.locals.user = req.session.user
+		req.user = req.session.user
+		next()
+	else
+		exports.remembered req, (user, err) ->
+			if user
+				exports.auth req, res, user
+			next()
 
 ###
 A helper method to determine if a user has been authenticated, and if they have the right role.
 If the user is not known, redirect to the login page. If the role doesn't match, show a 403 page.
 @param role The role that a user should have to pass authentication.
 ###
-exports.isAuthenticated = ->
-	(req, res, next) ->
-		
+exports.isAuthenticated = (req, res, next) ->
+	exports.tryLogin req, res, ->
+
 		#access map
 		auth =
 			"/admin": true
@@ -65,11 +99,11 @@ exports.isAuthenticated = ->
 		unless auth[route]
 			next()
 			return
+
 		else unless req.isAuthenticated()
-			
 			#If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
 			req.session.goingTo = req.url
-			req.flash "error", "Please log in to view this page"
+			req.flash "loginErrors", "Please log in to view this page"
 			res.redirect "/user/login"
 		
 		#Check blacklist for this user's role
@@ -79,17 +113,4 @@ exports.isAuthenticated = ->
 			#pop the user into the response
 			res.locals.user = req.user
 			res.unautorized model
-		else
-			next()
-
-
-###
-A helper method to add the user to the response context so we don't have to manually do it.
-@param req
-@param res
-@param next
-###
-exports.injectUser = ->
-	injectUser = (req, res, next) ->
-		res.locals.user = req.user	if req.isAuthenticated()
 		next()

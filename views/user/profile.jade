@@ -1,4 +1,8 @@
 extends ../layouts/wornet
 
 block body
-	=s("Profil utilisateur")
+	p
+		a(href="/user/logout")
+			=s("Déconnexion")
+	p
+		=s("Profil utilisateur")
