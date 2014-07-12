@@ -47,7 +47,7 @@ Controllers =
 
 		getEvent = (event) ->
 			data = {}
-			for key in 'id title content url start end allDay'.split /\s/g
+			for key in 'id user title content url start end allDay'.split /\s/g
 				if event[key]?
 					data[key] = event[key]
 					if data[key] instanceof Date

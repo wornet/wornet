@@ -47,14 +47,15 @@ exports.login = (req, res, done) ->
 			req.flash "loginErrors", err
 			return done err
 
+		incorrectLoginMessage = s("Veuillez vérifier votre e-mail et votre mot de passe.")
 		#If we couldn't find a matching user, flash a message explaining what happened
 		unless user
-			req.flash "loginErrors", "Login not found"
+			req.flash "loginErrors", incorrectLoginMessage
 			return done "emailNotFound", false
 
 		#Make sure that the provided password matches what's in the DB.
 		unless user.passwordMatches req.body.password
-			req.flash "loginErrors", "Incorrect Password"
+			req.flash "loginErrors", incorrectLoginMessage
 			return done "incorrectPassword", false
 
 		#If everything passes, return the retrieved user object.
@@ -89,6 +90,7 @@ exports.isAuthenticated = (req, res, next) ->
 		auth =
 			"/admin": true
 			"/profile": true
+			"/agenda": true
 			"/user/profile": true
 
 		blacklist = user:
@@ -103,7 +105,7 @@ exports.isAuthenticated = (req, res, next) ->
 		else unless req.isAuthenticated()
 			#If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
 			req.session.goingTo = req.url
-			req.flash "loginErrors", "Please log in to view this page"
+			req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
 			res.redirect "/user/login"
 		
 		#Check blacklist for this user's role

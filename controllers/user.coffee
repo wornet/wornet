@@ -45,26 +45,26 @@ module.exports = (router) ->
 
 		model = {}
 		if req.body.name? and req.body.name.full.indexOf(' ') is -1
-			req.flash 'signinErrors', 'Full name must contain at least 2 words'
+			req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
 			res.redirect loginUrl
 		else if req.body.password isnt req.body.passwordCheck
-			req.flash 'signinErrors', 'Passwords must be identic'
+			req.flash 'signinErrors', s("Veuillez entrer des mots de passe identiques.")
 			res.redirect loginUrl
 		else
-			user = new User
+			User.create
 				name:
 					full: if req.body.name? and req.body.name.full? then req.body.name.full else null
 				registerDate: new Date
 				email: req.body.email
 				password: req.body.password
-			user.save (saveErr) ->
+			, (saveErr, user) ->
 				if saveErr
 					req.flash 'signinErrors', saveErr
 					res.redirect loginUrl
 				else
 					if req.body.remember?
 						auth.remember res, user._id
-						auth.auth req, res, user
+					auth.auth req, res, user
 					url = '/'
 					if user
 						if req.session.goingTo?
