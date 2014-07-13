@@ -171,7 +171,53 @@ footer
 		// Paramètres relatif au texte.
 		text-decoration underline
 
+.tooltip.fade.left.in
+	position relative
+	width 0
 
+.tooltip-focus
+	position absolute
+	display none
+	text-align left
+	padding 0px 0px 0px 0px
+	width 300px
+
+.tooltip-inner
+	padding 0px 0px 0px 0px
+	background white
+	border 1px solid gray
+	border-radius(5px 5px 5px 5px)
+	border-right 1px solid gray
+	box-shadow(0 0 1px $darkOrange)
+
+.tooltip-focus p
+	padding 4px
+	text-align left
+	padding-left 8px
+	color #000
+
+.tooltip-focus h4
+	padding 0
+	margin 0
+	border 0
+	color #000
+	text-align left
+	padding 2px
+	padding-top 3px
+	padding-bottom 1px
+	padding-left 24px
+	font-family $fonts
+	font-weight bold
+	font-size 18px
+	background-color #eee
+	background-image url("/img/i.png")
+	background-repeat no-repeat
+	background-size 20px 20px
+	background-position 3px center
+	margin-bottom 2px
+	border-bottom 1px solid gray
+	border-radius(5px 5px 1px 1px)
+	width 100%
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
 // KO Il n'y a aucun champ de type date dans les templates
