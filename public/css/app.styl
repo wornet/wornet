@@ -19,6 +19,7 @@ $smallPadding = $mainPadding / 2
 $fieldVPadding = 4px
 $fieldHPadding = 8px
 $fieldLineHeight = 18px
+$tooltipWidth = 240px
 $fonts = Average, helvetica, arial, sans-serif
 
 *
@@ -31,6 +32,17 @@ border-radius()
 	-webkit-border-radius arguments
 	-moz-border-radius arguments
 	border-radius arguments
+
+transition()
+	-webkit-transition arguments
+	-moz-transition arguments
+	transition arguments
+
+opacity(n)
+	-webkit-opacity n
+	-moz-opacity n
+	opacity n
+	filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
 
 box-shadow()
 	// Fonction pour créer des ombres sur une boite.
@@ -114,8 +126,6 @@ body
 	padding 0 0 $footerHeight
 
 footer
-	// Type
-	display block
 	// Tailles du pied de page.
 	width 100%
 	height $footerHeight
@@ -175,9 +185,7 @@ input[type=date]
 	padding $fieldVPadding $fieldHPadding
 	margin $mainPadding 0
 	line-height $fieldLineHeight * 0.7
-	-moz-transition all .2s
-	-webkit-transition all .2s
-	transition all .2s
+	transition(all .2s)
 
 input.form-control
 input.btn
