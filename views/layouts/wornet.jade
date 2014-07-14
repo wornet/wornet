@@ -50,9 +50,9 @@ html.no-js(lang=lang())
 
 	body(ng-app="Wornet")
 
-		nav.navbar-fixed-top
-
 		#wrap
+			nav.navbar-fixed-top
+
 			+ie('if lte IE 7')
 				.alert.alert-danger
 					- var upgradeUrl = "http://browsehappy.com/"
@@ -64,10 +64,10 @@ html.no-js(lang=lang())
 			div(role="main")
 				block body
 
-		footer 
-				//- Un footer ne peut pas être en position absolute. On laisse le div
-				#footer.row.col-sm-8.col-sm-offset-2
-					a.link.col-sm-3.col-xs-6(href="/agenda")
+		footer
+			block footer
+				.row.col-sm-8.col-sm-offset-2
+					a.link.col-sm-3.col-xs-6(href="/news")
 						=s("Newsroom")
 					a.link.col-sm-3.col-xs-6(href="/jobs")
 						=s("Offres d'emplois")

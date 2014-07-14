@@ -31,6 +31,7 @@
 		"mongodb": "^1.4.7",
 		"mongoose": "3.8",
 		"crypto": "^0.0.3",
+		"passport": "^0.2.0",
 		"method-override": "~1.0.0",
 		"body-parser": "~1.0.0",
 		"connect-flash": "~0.1.1",

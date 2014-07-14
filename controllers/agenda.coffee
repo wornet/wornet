@@ -7,6 +7,7 @@ module.exports = (router) ->
 		switch method
 
 			when "GET"
+				# List all events owned by the logged user
 				Event.find(
 					user: req.user._id
 				).sort(
@@ -22,6 +23,7 @@ module.exports = (router) ->
 					res.render 'agenda', model
 
 			when "PUT"
+				# Create new event on the logged user agenda
 				eventData = req.body.event
 				event = new Event
 					user: req.user._id
@@ -36,6 +38,7 @@ module.exports = (router) ->
 						res.json event
 
 			when "POST"
+				# Modify event (changes of dates, hours or name)
 				eventData = req.body.event 
 				Event.findById eventData.id, (err, event) ->
 					if err
@@ -63,6 +66,7 @@ module.exports = (router) ->
 								res.json event
 
 			when "DELETE"
+				# Remove an event
 				eventData = req.body.event
 				Event.remove
 					_id: eventData.id
