@@ -42,4 +42,13 @@ mixin form(url, method)
 		block
 
 mixin formControl(type)
+	if attributes.tooltip
+		.tooltip.left.tooltip-focus
+			.tooltip-arrow
+			.tooltip-inner
+				h4
+					=attributes.tooltip[0]
+				p
+					=attributes.tooltip[1]
+		- delete attributes.tooltip
 	input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))

@@ -266,21 +266,34 @@ class Crud
 		Ajax.delete @url, settings
 
 
-$(document).ajaxComplete (event, xhr, settings) ->
-	if settings.type is "POST"
-		data = xhr.responseText
-		if settings.dataType? && settings.dataType.toLowerCase() is "json"
-			data = $.parseJSON data
-			if typeof(data) isnt 'object'
-				console.warn 'JSON data response is not an object'
-				console.trace()
-			else if typeof(data.err) isnt 'undefined'
-				err = data.err
-			_csrf = data._csrf
-		else
-			_csrf = $(data).find('meta[name="_csrf"]').attr 'content'
-	$('head meta[name="_csrf"]').attr 'content', _csrf
-	throw err if err?
+$.fn.readyToFade = ->
+	if @.css('opacity') is '0'
+		@.css('opacity', '1').fadeOut(0)
+	@
+
+
+$(document)
+	.ajaxComplete (event, xhr, settings) ->
+		if settings.type is "POST"
+			data = xhr.responseText
+			if settings.dataType? && settings.dataType.toLowerCase() is "json"
+				data = $.parseJSON data
+				if typeof(data) isnt 'object'
+					console.warn 'JSON data response is not an object'
+					console.trace()
+				else if typeof(data.err) isnt 'undefined'
+					err = data.err
+				_csrf = data._csrf
+			else
+				_csrf = $(data).find('meta[name="_csrf"]').attr 'content'
+		$('head meta[name="_csrf"]').attr 'content', _csrf
+		throw err if err?
+
+	.on 'focus', '.form-control', ->
+		$(@).prev('.tooltip').readyToFade().fadeIn('fast')
+
+	.on 'blur', '.form-control', ->
+		$(@).prev('.tooltip').fadeOut('fast')
 
 # AJAX Navigation
 # .on 'click', '.link', (event) ->

@@ -118,6 +118,17 @@ body
 	.hidden
 		height 0
 
+.tooltip-focus.left
+	width $tooltipWidth
+	margin-left - $tooltipWidth - $mainPadding
+	.tooltip-inner
+		width $tooltipWidth
+		max-width $tooltipWidth - 5
+
+.tooltip.left.tooltip-focus .tooltip-arrow
+	top 15px
+	margin-right -5px
+
 #wrap
 	min-height 100%
 	height auto !important
