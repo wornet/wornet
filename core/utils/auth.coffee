@@ -44,19 +44,19 @@ exports.login = (req, res, done) ->
 
 		#If something weird happens, abort.
 		if err
-			req.flash "loginErrors", err
+			req.flash "loginErrors", err unless req.xhr
 			return done err
 
 		incorrectLoginMessage = s("Veuillez vérifier votre e-mail et votre mot de passe.")
 		#If we couldn't find a matching user, flash a message explaining what happened
 		unless user
-			req.flash "loginErrors", incorrectLoginMessage
-			return done "emailNotFound", false
+			req.flash "loginErrors", incorrectLoginMessage unless req.xhr
+			return done incorrectLoginMessage, false
 
 		#Make sure that the provided password matches what's in the DB.
 		unless user.passwordMatches req.body.password
-			req.flash "loginErrors", incorrectLoginMessage
-			return done "incorrectPassword", false
+			req.flash "loginErrors", incorrectLoginMessage unless req.xhr
+			return done incorrectLoginMessage, false
 
 		#If everything passes, return the retrieved user object.
 		if req.body.remember

@@ -1,16 +1,20 @@
 Controllers =
 
-	# Login: ($scope) ->
-	# 	$scope.submit = (user) ->
-	# 		Ajax.page (done, cancel) ->
-	# 			user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
-	# 			$.post '/user/login', user, (data) ->
-	# 				$errors = $(data).find '#loginErrors .alert'
-	# 				if $errors.length
-	# 					cancel data
-	# 					$('#loginErrors').append $errors
-	# 				else
-	# 					done data
+	Login: ($scope) ->
+		$scope.submit = (user) ->
+			Ajax.post '/user/login',
+				data: user
+				success: (data) ->
+					if data.goingTo
+						location.href = data.goingTo
+					else
+						errors = data.err || "Erreur"
+						if typeof(errors) isnt 'object'
+							errors = [errors]
+						$errors = $('#loginErrors').html('')
+						for error in errors
+							$errors.append('<div class="alert alert-danger">' + error + '</div>')
+						$errors.slideUp(0).slideDown()
 
 	# Signin: ($scope) ->
 	# 	$scope.submit = (user) ->
@@ -196,7 +200,6 @@ delay = (ms, cb) ->
 
 
 Ajax =
-	contentSelector: '[role="main"]'
 	get: (url, settings, _method, defaultType = "GET") ->
 		if typeof(settings) is 'function'
 			settings =
@@ -218,6 +221,7 @@ Ajax =
 	delete: (url, settings) ->
 		@post url, settings, "DELETE"
 
+	contentSelector: '[role="main"]'
 	page: (param) ->
 		selector = @contentSelector
 		$children = $page.find('> *').detach()

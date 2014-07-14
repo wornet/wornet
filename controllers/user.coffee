@@ -26,7 +26,13 @@ module.exports = (router) ->
 					url = req.session.goingTo
 			else
 				url = loginUrl
-			res.redirect url
+			if req.xhr
+				if err
+					res.json err: err
+				else
+					res.json goingTo: url
+			else
+				res.redirect url
 
 	router.get '/logout', (req, res) ->
 
