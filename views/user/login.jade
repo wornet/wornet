@@ -34,9 +34,9 @@ block body
 								.alert.alert-danger
 									=error
 					+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninCtrl")
-						+formControl()(title=s("Votre e-mail") ng-model="user.email" name="email" placeholder=s("Votre e-mail") tooltip=[s("Titre"), s("Contenu")])
-						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" name="password" placeholder=s("Votre mot de passe"))
-						+formControl("password")(title=s("Vérifier votre mot de passe") ng-model="user.passwordCheck" name="passwordCheck" placeholder=s("Vérifier votre mot de passe"))
+						+formControl()(title=s("Votre e-mail") ng-model="user.email" name="email" placeholder=s("Votre e-mail") tooltip=[s("Adresse Electronique"), s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet.")])
+						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" name="password" placeholder=s("Votre mot de passe") tooltip=[s("Mot de passe"), s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage.")])
+						+formControl("password")(title=s("Vérifier votre mot de passe") ng-model="user.passwordCheck" name="passwordCheck" placeholder=s("Vérifier votre mot de passe") tooltip=[s("Confirmer le mot de passe"), s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")])
 						input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
 			#quotes.col-sm-3.col-xs-12
 				blockquote
