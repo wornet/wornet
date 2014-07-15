@@ -51,8 +51,10 @@ html.no-js(lang=lang())
 	body(ng-app="Wornet")
 
 		#wrap
-			nav.navbar-fixed-top
-
+			block nav
+				nav#navbar.navbar.navbar-fixed-top
+					img(src="img/logo.png") 
+					//- Chercher sur app.styl: .navbar img
 			+ie('if lte IE 7')
 				.alert.alert-danger
 					- var upgradeUrl = "http://browsehappy.com/"

@@ -3,26 +3,29 @@ extends ../layouts/wornet
 block body
 	.container
 		header
-			.col-md-5.col-sm-4.col-xs-12
-				img#logo.img-responsive(src="/img/logo.png")
-			.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
-				#loginErrors
-					if loginErrors
-						each error in loginErrors
-							.alert.alert-danger
-								=error
-				+form#login("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")
-					.narrow.col-sm-4.col-xs-12
-						+formControl()(required pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
-						label.mobile-field
-							input(type="checkbox" name="remember")
-							=s("Se souvenir de moi")
-					.narrow.col-sm-4.col-xs-12
-						+formControl("password")(required ng-model="user.password" name="password" placeholder=s("Mot de passe"))
-						a#forget-it.mobile-field(href="/user/forgotten-password")
-							=s("Oublié ?")
-					.narrow.col-sm-4.col-xs-12
-						input.btn.btn-plain(type="submit" value=s("Se connecter"))
+			block nav
+				nav
+					.container
+						.col-md-5.col-sm-4.col-xs-12
+							img#logo.img-responsive(src="/img/logo.png")
+						.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
+							#loginErrors
+								if loginErrors
+									each error in loginErrors
+										.alert.alert-danger
+											=error
+							+form#login("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")
+								.narrow.col-sm-4.col-xs-12
+									+formControl()(required pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
+									label.mobile-field
+										input(type="checkbox" name="remember")
+										=s("Se souvenir de moi")
+								.narrow.col-sm-4.col-xs-12
+									+formControl("password")(required ng-model="user.password" name="password" placeholder=s("Mot de passe"))
+									a#forget-it.mobile-field(href="/user/forgotten-password")
+										=s("Oublié ?")
+								.narrow.col-sm-4.col-xs-12
+									input.btn.btn-plain(type="submit" value=s("Se connecter"))
 		section
 			.col-sm-4.col-sm-offset-4.col-xs-12
 				.col-md-8.col-md-offset-2.col-sm-12
@@ -35,7 +38,7 @@ block body
 									=error
 					+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninCtrl")
 						+formControl()(title=s("Votre e-mail") ng-model="user.email" name="email" placeholder=s("Votre e-mail") tooltip=[s("Adresse Electronique"), s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet.")])
-						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" name="password" placeholder=s("Votre mot de passe") tooltip=[s("Mot de passe"), s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage.")])
+						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" name="password" placeholder=s("Votre mot de passe") tooltip=[s("Mot de passe"), s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules et des chiffres.")])
 						+formControl("password")(title=s("Vérifier votre mot de passe") ng-model="user.passwordCheck" name="passwordCheck" placeholder=s("Vérifier votre mot de passe") tooltip=[s("Confirmer le mot de passe"), s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")])
 						input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
 			#quotes.col-sm-3.col-xs-12

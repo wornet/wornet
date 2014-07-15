@@ -3,7 +3,8 @@
 // Variables de l'entête de page.
 $headerHeight = 200px
 // Variables du corps de page.
-$background = url(/img/background.jpg)
+$background-image = url(/img/background.jpg)
+$background-color = #F3F5F8
 $orange = #ffa500
 // Variables du pied de page.
 $footerHeight = 80px
@@ -171,6 +172,20 @@ footer
 		// Paramètres relatif au texte.
 		text-decoration underline
 
+.navbar
+	color #000
+	width 100%
+	padding 2px 0px 2px 0px
+	background-color #ffffff
+	border-bottom 1px solid #C1C1C1
+	box-shadow(0px 0px 3px 1px #DADADA)
+
+.navbar img
+	width 120px
+	display block
+	margin auto
+
+// Infobulles (tooltip)
 .tooltip.fade.left.in
 	position relative
 	width 0
@@ -187,22 +202,18 @@ footer
 	background white
 	border 1px solid gray
 	border-radius(5px)
+	border-right 1px solid gray
 
 .tooltip-focus p
-	padding 4px
+	padding 4px 8px
 	text-align left
-	padding-left 8px
 	color #000
 
 .tooltip-focus h4
-	padding 2px
+	padding 3px 2px 1px 24px
 	margin 0
-	border 0
 	color #000
 	text-align left
-	padding-top 3px
-	padding-bottom 1px
-	padding-left 24px
 	font-family $fonts
 	font-weight bold
 	font-size 18px
@@ -214,6 +225,36 @@ footer
 	margin-bottom 2px
 	border-bottom 1px solid gray
 	border-radius(5px 5px 1px 1px)
+
+// Class pour la sécurité du mot de passe
+.pass-security
+	display inline-block
+	color #141414
+	border-radius 5px
+	border 1px solid #141414
+	padding 3px
+	font-weight bold
+
+.pass-security.verylow
+	color #ff0000
+	border 1px solid #ff0000
+
+.pass-security.low
+	color #ff7d00
+	border 1px solid #ff7d00
+
+.pass-security.medium
+	color #ffe600
+	border 1px solid #ffe600
+
+.pass-security.high
+	color #abe600
+	border 1px solid #abe600
+
+.pass-security.veryhigh
+	color #00b400
+	border 1px solid #00b400
+
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
 // KO Il n'y a aucun champ de type date dans les templates
@@ -280,7 +321,7 @@ select.form-control
 	-webkit-outline none
 	outline none
 	border-color #D7752E
-	box-shadow 0px 0px 3px 1px #F7852E
+	box-shadow(0px 0px 3px 1px #F7852E)
 
 .btn
 	// Bordures.
