@@ -94,3 +94,8 @@ module.exports = (router) ->
 
 		model = {}
 		res.render templateFolder + '/profile', model
+
+	router.get '/newsroom', (req, res) ->
+
+		model = {}
+		res.render templateFolder + '/newsroom', model
