@@ -14,7 +14,7 @@ Controllers =
 						$errors = $('#loginErrors').html('')
 						for error in errors
 							$errors.append('<div class="alert alert-danger">' + error + '</div>')
-						$errors.slideUp(0).slideDown()
+						$errors.slideUp(0).slideDown('fast')
 
 	# Signin: ($scope) ->
 	# 	$scope.submit = (user) ->
@@ -30,6 +30,7 @@ Controllers =
 	# 					done data
 
 	Calendar: ($scope, $route) ->
+		window.$scope = $scope
 		$page.load ->
 			window.$scope = $scope
 			console.log $scope
@@ -300,8 +301,8 @@ $(document)
 		$(@).prev('.tooltip').fadeOut('fast')
 
 # AJAX Navigation
-# .on 'click', '.link', (event) ->
-# 	Ajax.page $(@).attr('href')
+.on 'click', '.link', (event) ->
+	Ajax.page $(@).attr('href')
 
 
 dateTexts = getData('dateTexts')
@@ -315,6 +316,66 @@ calendarGetText = (name) ->
 
 lang = $('html').attr 'lang'
 shortLang = lang.split(/[^a-zA-Z]/)[0]
+
+
+passwordStrongness = (mdp) ->
+
+	#
+	#	Les types de mot de passe sont classés du plus résistant au plus fragile.
+	#	Un facteur est alors déterminé en fonction du nombre de possibilités à
+	#	tester pour un robot et ce facteur est élevé à la puissance mdp.length
+	#	correspondant au nombre de caractères à cracker.
+	#	La fonction retourne donc une approximation très proche du nombre de tests
+	#	que doit lancer une attaque de force brute pour essayer toutes les
+	#	combinaisons pour un type de mot de passe donné.
+	#
+	#	*mono-casse : tout en majuscules ou tout en minuscules
+	#
+
+	switch
+		# Mot de passe vide
+		when mdp is ""
+			0
+	
+		# Mot de passe numérique
+		when mdp.match(/^[0-9]+$/g)
+			Math.pow(10, mdp.length)
+	
+		# Mot de passe alphabétique mono-casse*
+		when mdp.match(/^[a-z]+$/g) or mdp.match(/^[A-Z]+$/g)
+			Math.pow(26, mdp.length)
+	
+		# Casses courantes :
+		when mdp.match(/^[A-Z][a-z]+$/g) or mdp.match(/^[a-z]+[A-Z]$/g) or mdp.match(/^[a-z][A-Z]+$/g) or mdp.match(/^[A-Z]+[a-z]$/g)
+			4 * Math.pow(26, mdp.length)
+	
+		# Mot de passe dont seule le premier caractère n'est pas une lettre et ou le reste est mono-casse*
+		when mdp.match(/^.[a-z]+$/g) or mdp.match(/^.[A-Z]+$/g) or mdp.match(/^[a-z]+.$/g) or mdp.match(/^[A-Z]+.$/g)
+			50 * Math.pow(26, mdp.length - 1)
+	
+		# Mot de passe alpha-numérique mono-casse*
+		when mdp.match(/^[0-9a-z]+$/g) or mdp.match(/^[0-9A-Z]+$/g)
+			Math.pow(36, mdp.length)
+	
+		# Mot de passe sans lettre
+		when mdp.match(/^[^A-Za-z]+$/g)
+			Math.pow(42, mdp.length)
+	
+		# Mot de passe sans nombre ni minuscule ou sans nombre ni majuscule
+		when mdp.match(/^[^0-9a-z]+$/g) or mdp.match(/^[^0-9A-Z]+$/g)
+			Math.pow(50, mdp.length)
+	
+		# Mot de passe alphabétique
+		when mdp.match(/^[a-zA-Z\s]+$/g)
+			Math.pow(52, mdp.length)
+	
+		# Mot de passe sans nombre ou sans minuscule ou sans majuscule
+		when mdp.match(/^[^0-9]+$/g) or mdp.match(/^[^A-Z]+$/g) or mdp.match(/^[^a-z]+$/g)
+			Math.pow(68, mdp.length)
+	
+		# Mot de passe complexe
+		else
+			Math.pow 100, mdp.length
 
 
 Wornet = angular.module 'Wornet', [

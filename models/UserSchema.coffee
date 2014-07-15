@@ -49,6 +49,9 @@ userSchema.virtual('name.full').set (name) ->
 	@name.last = split[1]
 	return
 
+userSchema.virtual('createdAt').get ->
+	new Date parseInt(@_id.toString().slice(0,8), 16)*1000
+
 userSchema.methods.encryptPassword = (plainText) ->
 	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')
 
