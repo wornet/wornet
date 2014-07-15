@@ -22,3 +22,6 @@ module.exports = new Schema
 		type: Boolean
 		default: false
 	url: String
+
+module.exports.virtual('createdAt').get ->
+	new Date parseInt(@_id.toString().slice(0,8), 16)*1000

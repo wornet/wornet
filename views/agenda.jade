@@ -22,8 +22,10 @@ block body
 										b
 											input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))
 										| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
+										br
+										| {{e.createdAt | date:"dd MMM HH:ii"}}
 						.col-sm-7
-							.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
+							.alert.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
 								h4 {{alertMessage}}
 							.btn-toolbar
 								.btn-group

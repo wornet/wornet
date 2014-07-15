@@ -105,7 +105,8 @@ exports.isAuthenticated = (req, res, next) ->
 		else unless req.isAuthenticated()
 			#If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
 			req.session.goingTo = req.url
-			req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+			if ['/', '/user/profile', '/profile'].indexOf route is -1 
+				req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
 			res.redirect "/user/login"
 		
 		#Check blacklist for this user's role
