@@ -3,7 +3,6 @@
 // Variables de l'entête de page.
 $headerHeight = 200px
 // Variables du corps de page.
-$background-image = url(/img/background.jpg)
 $background-color = #F3F5F8
 $orange = #ffa500
 $darkOrange = darken($orange, 50%)
@@ -95,7 +94,7 @@ body
 	user-select none /* version standarisée */
 
 	// Paramètres du fond de la page.
-	background $background no-repeat center fixed
+	background url(/img/background-image.jpeg) no-repeat center fixed
 	-webkit-background-size cover /* pour Chrome et Safari */
 	-moz-background-size cover /* pour Firefox */
 	-o-background-size cover /* pour Opera */
@@ -108,6 +107,9 @@ body
 	// Police de charactères.
 	font 14px/1.4 $fonts
 	padding-bottom $footerHeight
+
+#logo-content
+	padding 10px
 
 .loader
 	position fixed
@@ -138,7 +140,7 @@ body
 	margin 0 auto -$footerHeight
 	padding 0 0 $footerHeight
 
-footer
+body>footer
 	// Tailles du pied de page.
 	width 100%
 	height $footerHeight
@@ -176,20 +178,46 @@ footer
 .navbar
 	color #000
 	width 100%
-	padding 2px 0px 2px 0px
 	background-color #ffffff
-	border-bottom 1px solid #C1C1C1
-	box-shadow(0px 0px 3px 1px #DADADA)
+	border-bottom 1px solid #eee
+	box-shadow(0px 0px 4px 2px #DADADA)
+	height 50px
 
-.navbar img
-	width 120px
-	display block
-	margin auto
 
 // Infobulles (tooltip)
 .tooltip.fade.left.in
 	position relative
 	width 0
+
+.navbar #navbar-logo-content
+	display inline-block
+	background url("/img/logo.png") no-repeat center
+
+	margin auto
+	height 50px
+
+
+#navbar-right-menu
+	display inline-block
+
+	height 50px
+	padding 12px
+
+#navbar-left-menu
+	display inline-block
+
+	height 50px
+	padding 12px
+
+.navbar a
+	color #C0C0C0
+	padding 20px
+	text-decoration none
+	display inline
+	&:hover
+		color #FCA000
+
+		
 
 .tooltip-focus
 	position absolute
@@ -274,6 +302,8 @@ input[type=date]
 	background #fff
 	font-family $fonts
 
+blockquote
+	font-size 14px
 .btn
 .form-control
 	// Marges internes et externes.
@@ -366,6 +396,7 @@ a#forget-it:hover
 	text-decoration none
 
 // Police de charactères non-standard.
+
 @font-face 
 	font-family Average
 	src url(/fonts/pakenham.regular.ttf)

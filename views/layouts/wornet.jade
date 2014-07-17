@@ -53,12 +53,13 @@ html.no-js(lang=lang())
 		#wrap
 			block nav
 				nav#navbar.navbar.navbar-fixed-top
-					img(src="img/logo.png") 
-					//- Chercher sur app.styl: .navbar img
+					#navbar-left-menu
+					#navbar-logo-content
+					#navbar-right-menu
 			+ie('if lte IE 7')
 				.alert.alert-danger
-					- var upgradeUrl = "http://browsehappy.com/"
-					- var ieFrameUrl = "http://www.google.com/chromeframe/?redirect=true"
+					- var upgradeUrl = "http://rowsehappy.com/"
+					- var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"
 					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
 					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
