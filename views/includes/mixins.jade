@@ -47,8 +47,8 @@ mixin formControl(type)
 			.tooltip-arrow
 			.tooltip-inner
 				h4
-					=attributes.tooltip[0]
+					!=attributes.tooltip[0]
 				p
-					=attributes.tooltip[1]
+					!=attributes.tooltip[1]
 		- delete attributes.tooltip
 	input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))

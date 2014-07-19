@@ -17,9 +17,6 @@ userSchema = new Schema
 		type: String
 		default: ->
 			generateSalt 50
-	registerDate:
-		type: Date
-		default: Date.now
 	role:
 		type: String
 		default: 'user'
@@ -36,6 +33,11 @@ userSchema = new Schema
 		trim: true
 		set: strtolower
 		unique: true
+,
+	toObject:
+		virtuals: true
+	toJSON:
+		virtuals: true
 
 userSchema.virtual('name.full').get ->
 	@name.first + ' ' + @name.last

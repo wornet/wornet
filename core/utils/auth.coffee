@@ -5,11 +5,13 @@ Module that will handle our authentication tasks
 
 model 'User'
 
+# Set the remember cookie to recognize the users who checked the remember option
 exports.remember = (res, id) ->
 	res.cookie 'remember', id,
 		maxAge: 6 * 30 * 24 * 60 * 60
 		httpOnly: true
 
+# Get user id remembered with cookie
 exports.remembered = (req, done) ->
 	id = req.cookie 'remember'
 	if id
@@ -23,7 +25,7 @@ exports.remembered = (req, done) ->
 	else
 		done false
 
-
+# Delete user session and cookie
 exports.logout = (req, res) ->
 	delete res.locals.user
 	delete req.user
@@ -31,6 +33,7 @@ exports.logout = (req, res) ->
 	if req.cookie 'remember'
 		res.clearCookie 'remember'
 
+# Store user in session, and append to the request object
 exports.auth = (req, res, user) ->
 	res.locals.user = user
 	req.user = user
@@ -42,33 +45,34 @@ exports.login = (req, res, done) ->
 		email: req.body.email
 	, (err, user) ->
 
-		#If something weird happens, abort.
+		# If something weird happens, abort.
 		if err
 			req.flash "loginErrors", err unless req.xhr
 			return done err
 
 		incorrectLoginMessage = s("Veuillez vérifier votre e-mail et votre mot de passe.")
-		#If we couldn't find a matching user, flash a message explaining what happened
+		# If we couldn't find a matching user, flash a message explaining what happened
 		unless user
 			req.flash "loginErrors", incorrectLoginMessage unless req.xhr
 			return done incorrectLoginMessage, false
 
-		#Make sure that the provided password matches what's in the DB.
+		# Make sure that the provided password matches what's in the DB.
 		unless user.passwordMatches req.body.password
 			req.flash "loginErrors", incorrectLoginMessage unless req.xhr
 			return done incorrectLoginMessage, false
 
-		#If everything passes, return the retrieved user object.
+		# If user ask for remember him
 		if req.body.remember
 			exports.remember res, user._id
+
+		# If everything passes, return the retrieved user object.
 		exports.auth req, res, user
 		done null, user
 
 
+# Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
-	if req.url is '/user/login' && typeof(req.body.email) isnt 'undefined' && typeof(req.body.pass) isnt 'undefined'
-		exports.login req, res, next
-	else if req.session.user?
+	if req.session.user?
 		res.locals.user = req.session.user
 		req.user = req.session.user
 		next()
@@ -86,7 +90,7 @@ If the user is not known, redirect to the login page. If the role doesn't match,
 exports.isAuthenticated = (req, res, next) ->
 	exports.tryLogin req, res, ->
 
-		#access map
+		# Access map
 		auth =
 			"/admin": true
 			"/profile": true
@@ -97,23 +101,25 @@ exports.isAuthenticated = (req, res, next) ->
 			"/admin": true
 
 		route = req.url
+		# Get user role (in any user connected : empty string)
 		role = (if (req.user and req.user.role) then req.user.role else "")
-		unless auth[route]
-			next()
-			return
+		# If the URL is in the access restricted list
+		if auth[route]
+			# If any user are connected
+			unless req.user
+				# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
+				req.session.goingTo = req.url
+				if ['/', '/user/profile', '/profile'].indexOf route is -1
+					req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+				res.redirect "/user/login"
 
-		else unless req.isAuthenticated()
-			#If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-			req.session.goingTo = req.url
-			if ['/', '/user/profile', '/profile'].indexOf route is -1 
-				req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
-			res.redirect "/user/login"
-		
-		#Check blacklist for this user's role
-		else if blacklist[role] and blacklist[role][route] is true
-			model = url: route
-			
-			#pop the user into the response
-			res.locals.user = req.user
-			res.unautorized model
-		next()
+			# Check blacklist for this user's role
+			else if blacklist[role] and blacklist[role][route] is true
+				model = url: route
+				# Pop the user into the response
+				res.locals.user = req.user
+				res.unautorized model
+			else
+				next()
+		else
+			next()

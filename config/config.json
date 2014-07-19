@@ -84,6 +84,28 @@
                 "name": "kraken-js/middleware/500",
                 "arguments": [ "errors/500" ]
             }
+        },
+
+        "session": {
+            "enabled": true,
+            "priority": 100,
+            "module": {
+                "name": "express-session",
+                "arguments": [
+                    {
+                        "key": "w",
+                        "secret": "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU",
+                        "cookie": {
+                            "path": "/",
+                            "httpOnly": true,
+                            "maxAge": null
+                        },
+                        "resave": true,
+                        "saveUninitialized": true,
+                        "proxy": null
+                    }
+                ]
+            }
         }
 
     }
