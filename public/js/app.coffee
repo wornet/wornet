@@ -1,8 +1,13 @@
 Controllers =
 
 	Login: ($scope) ->
+		# Get remember preference of the user if previously saved (default: true)
+		$scope.user.remember = (if localStorage then !!localStorage['user.remember'] else true)
 		# When the form is submitted
 		$scope.submit = (user) ->
+			# Save remember preference of the user
+			if localStorage
+				localStorage['user.remember'] = user.remember
 			# send a POST request to /user/login with user.email and user.password
 			Ajax.post '/user/login',
 				data: user

@@ -21,7 +21,7 @@ exports.remembered = (req, done) ->
 			if err
 				done false, err
 			else
-				done user
+				done user, null, id
 	else
 		done false
 
@@ -77,9 +77,10 @@ exports.tryLogin = (req, res, next) ->
 		req.user = req.session.user
 		next()
 	else
-		exports.remembered req, (user, err) ->
+		exports.remembered req, (user, err, id) ->
 			if user
 				exports.auth req, res, user
+				exports.remember res, id
 			next()
 
 ###

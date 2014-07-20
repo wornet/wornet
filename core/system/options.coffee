@@ -70,12 +70,14 @@ module.exports = (port) ->
 			]
 
 	onconfig: (localConfig, next) ->
+		# Available shorthand methods to all request objects in controllers
 		extend app.request,
 			cookie: (name) ->
 				if @cookies[name]?
 					@cookies[name]
 				else
 					null
+		# Available shorthand methods to all response objects in controllers
 		extend app.response,
 			json: (data) ->
 				data._csrf = data._csrf || @locals._csrf
