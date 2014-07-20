@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = new Schema
+eventSchema = new Schema
 	user:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -22,6 +22,13 @@ module.exports = new Schema
 		type: Boolean
 		default: false
 	url: String
+,
+	toObject:
+		virtuals: true
+	toJSON:
+		virtuals: true
 
-module.exports.virtual('createdAt').get ->
+eventSchema.virtual('createdAt').get ->
 	new Date parseInt(@_id.toString().slice(0,8), 16)*1000
+
+module.exports = eventSchema

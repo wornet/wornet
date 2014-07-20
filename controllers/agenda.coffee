@@ -13,7 +13,6 @@ module.exports = (router) ->
 				).sort(
 					registerDate: -1
 				).exec (err, events) ->
-					log events
 					if err
 						model.err = err
 					else

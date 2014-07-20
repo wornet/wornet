@@ -63,6 +63,7 @@ onready ->
 				#	delay 3000, done
 
 		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
+			# Load all scripts in core/global/request directory
 			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
 				pendingFiles = files.length
 				if pendingFiles
@@ -94,8 +95,11 @@ onready ->
 				require file
 
 	app.on 'middleware:after:session', (eventargs) ->
+		# Flash session (store data in sessions to the next page only)
 	 	app.use flash()
+		# Check if user is authentificated and is allowed to access the requested URL
 	 	app.use auth.isAuthenticated
+		# Allow to set and get cookies in routes methods
 	 	app.use cookieParser('kjsqdJL7KSU9DEU78_Zjsq0KJD23LKSQ_lkjdzij1sqodqZE325dZDKJP-QD')
 
 	# Handle errors and print in the console

@@ -22,7 +22,7 @@ module.exports = (router) ->
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
 
-		# 
+		# Log in user
 		auth.login req, res, (err, user) ->
 			url = '/'
 			if user

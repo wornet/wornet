@@ -38,7 +38,9 @@ autoloadDirectories.forEach (directory) ->
 					console.warn name + ' variable already declared'
 				else
 					global[name] = loadedValue
+					# If the file is a Schema
 					if name.length > 6 && name.substr(-6) is 'Schema'
+						# Create the corresponding Model
 						model name.substr 0, name.length - 6, loadedValue
 
 				unless --pendingFiles
