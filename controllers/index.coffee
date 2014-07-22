@@ -42,10 +42,10 @@ module.exports = (router) ->
 		listUsers null, req, res
 
 
-	router.get '/news', (req, res) ->
+	router.get '/newsroom', (req, res) ->
 
 		model = {}
-		res.render 'news', model
+		res.render 'newsroom', model
 
 
 	router.get '/jobs', (req, res) ->
