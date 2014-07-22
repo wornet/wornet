@@ -248,12 +248,14 @@ module.exports =
 
 	@return assert URL
 	###
-	assetUrl: (file, directory, extension) ->
+	assetUrl: (file, directory, extension, keepExtension) ->
 		if config.env.development
 			version = fs.statSync('public/' + directory + '/' + file + '.' + extension).mtime.getTime()
 		else
 			version = config.wornet.version
-		'/' + directory + '/' + file + '.' + directory + '?' + version
+		unless keepExtension
+			extension = directory
+		'/' + directory + '/' + file + '.' + extension + '?' + version
 	,
 	###
 	Generate an style URL (automaticaly compiled with stylus)
@@ -274,3 +276,33 @@ module.exports =
 	###
 	script: (file) ->
 		assetUrl file, 'js', 'coffee'
+
+	###
+	Generate an PNG URL
+	"login" > "/img/login.png?123"
+	@param string file name
+
+	@return assert URL
+	###
+	png: (file) ->
+		assetUrl file, 'img', 'png', true
+
+	###
+	Generate an JPEG URL
+	"login" > "/img/login.jpg?123"
+	@param string file name
+
+	@return assert URL
+	###
+	jpg: (file) ->
+		assetUrl file, 'img', 'jpg', true
+
+	###
+	Generate an GIF URL
+	"login" > "/img/login.gif?123"
+	@param string file name
+
+	@return assert URL
+	###
+	gif: (file) ->
+		assetUrl file, 'img', 'gif', true
