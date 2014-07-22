@@ -1,5 +1,7 @@
 /* <--- Feuille de style de /user/login ---> */
 
+$passSecurityWidth = 200px
+
 // Elément contenant le slogan.
 #slogan
 	// Paramètres relatif au texte. (Hérite de body)
@@ -16,26 +18,26 @@
 
 .pass-security
 	margin -3px $mainPadding
-	width 210px
+	width $passSecurityWidth + 8
 	background silver
 	div
 		height 13px
 		width 0
 		transition(all .2s)
 	&.verylow div
-		width 42px
+		width $passSecurityWidth * 0.2
 		background #FF0000
 	&.low div
-		width 84px
+		width $passSecurityWidth * 0.4
 		background #FF8800
 	&.medium div
-		width 126px
+		width $passSecurityWidth * 0.6
 		background #FFFF00
 	&.high div
-		width 168px
+		width $passSecurityWidth * 0.8
 		background #88FF00
 	&.veryhigh div
-		width 210px
+		width $passSecurityWidth
 		background #00FF00
 
 

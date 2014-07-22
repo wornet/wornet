@@ -41,10 +41,6 @@ Controllers =
 	# 					done data
 
 	Calendar: ($scope, $route) ->
-		window.$scope = $scope
-		$page.load ->
-			window.$scope = $scope
-			console.log $scope
 		# Crud handle create, remove, update and get utils for /agenda URL
 		agenda = new Crud '/agenda'
 		date = new Date()
@@ -385,7 +381,6 @@ $(document)
 			data = xhr.responseText
 			# In JSON format
 			if settings.dataType? && settings.dataType.toLowerCase() is "json"
-				window.xhr = xhr
 				data = $.parseJSON data
 				if typeof(data) isnt 'object'
 					console.warn 'JSON data response is not an object'
