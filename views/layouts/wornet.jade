@@ -63,7 +63,7 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
 					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
-			noscript()
+			noscript
 				.alert.alert-danger
 					=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
 

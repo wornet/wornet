@@ -52,12 +52,6 @@ onready ->
 		options: options
 
 
-	# Filter asset images
-	stylus().define 'jpg', jpg
-	stylus().define 'png', png
-	stylus().define 'gif', gif
-
-
 	# Before each request
 	app.use (req, res, done) ->
 
