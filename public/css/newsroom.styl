@@ -1,14 +1,16 @@
-$fonts = Average, helvetica, arial, sans-serif
-box-shadow()
-	// Fonction pour créer des ombres sur une boite.
-	-webkit-box-shadow arguments
-	-moz-box-shadow arguments
-	box-shadow arguments
+/* <--- Feuille de style de /user/newsroom ---> */
+
+// Variables de configuration
+@import "includes/config"
+
+// Fonctions stylus
+@import "includes/mixins"
+
+
 html
 body
 	background-image url(/img/background-newsroom-image.png)
 	background-attachment fixed
-	padding-top 35px
 
 body>footer
 	background-color #25262B
@@ -19,7 +21,10 @@ body>footer
 	width 900px
 	box-shadow(0px 0px 4px 1px #DADADA)
 
-.jssora03l, .jssora03r, .jssora03ldn, .jssora03rdn
+.jssora03l
+.jssora03r
+.jssora03ldn
+.jssora03rdn
 	position absolute
 	cursor pointer
 	display block
@@ -42,21 +47,21 @@ body>footer
 	background-color #fff
 	height 300px
 
-#partenariat h2
-	text-align center
-	color #808080
-	margin 0
-	padding 10px
+	h2
+		text-align center
+		color #808080
+		margin 0
+		padding $mainPadding
 
-#partenariat img
-	display inline-block
-	width 120px
-	padding 10px
-	margin 40px
+	img
+		display inline-block
+		width 120px
+		padding $mainPadding
+		margin 40px
 
 .content
 	display block
-	padding 10px
+	padding $mainPadding
 	margin 0px
 	background-color #eee
 
@@ -66,7 +71,7 @@ body>footer
 		padding 5px
 
 	h3
-		margin 10px 0
+		margin $mainPadding 0
 
 	img
 		display block
@@ -79,7 +84,7 @@ body>footer
 
 .dialog
 	display inline-block
-	padding 10px
+	padding $mainPadding
 
 	div
 	article
@@ -94,13 +99,11 @@ body>footer
 		width 20px
 		height 100px
 		background-size 20px 20px
-		background-image url(/img/arrow.png)
-		background-repeat no-repeat
-		background-position center
+		background url(/img/arrow.png) no-repeat center center
 
 article
 	width 460px
-	padding 10px
+	padding $mainPadding
 	margin 0
 	font-size 14px
 	background-color #fff
@@ -110,7 +113,7 @@ article
 .articles-content
 .articles-content #articles
 	display inline-block
-	padding 10px
+	padding $mainPadding
 	a
 		display block
 		padding 2px
