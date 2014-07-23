@@ -46,7 +46,7 @@ module.exports = (router) ->
 							err: err
 					else if event is null
 						res.json
-							err: s("L'événement [" + eventData.id + "] est introuvable.")
+							err: s("L'événement est introuvable.")
 					else if event.user + '' isnt req.user._id + ''
 						res.json
 							err: s("Vous n'êtes pas propriétaire de cet événement.")
