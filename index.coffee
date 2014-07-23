@@ -52,6 +52,14 @@ onready ->
 		options: options
 
 
+	# Assets images in stylus code
+	['png', 'jpg', 'gif'].forEach (ext) ->
+		stylus.functions[ext] = (url) ->
+			#"data:" + response.headers["content-type"] + ";base64,"
+			#.toString('base64')
+			functions[ext](url)
+
+
 	# Before each request
 	app.use (req, res, done) ->
 
