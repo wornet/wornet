@@ -1,7 +1,7 @@
 'use strict'
 
 # Dependancies to load
-'kraken-js child_process extend glob express path connect fs mongoose crypto passport'.split(/\s+/).forEach (dependancy) ->
+'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus'.split(/\s+/).forEach (dependancy) ->
 	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
 
 # Get shortcuts from dependancies
@@ -15,6 +15,7 @@ extend global,
 	glob: glob
 	fs: fs
 	path: path
+
 
 global.app = express()
 
@@ -49,6 +50,13 @@ onready ->
 	extend app.locals,
 		config: config
 		options: options
+
+
+	# Filter asset images
+	stylus().define 'jpg', jpg
+	stylus().define 'png', png
+	stylus().define 'gif', gif
+
 
 	# Before each request
 	app.use (req, res, done) ->
