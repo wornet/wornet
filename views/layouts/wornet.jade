@@ -1,6 +1,6 @@
 include ../includes/mixins
 doctype html
-html.no-js(lang=lang())
+html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 	head
 		meta(charset="UTF-8")
 		title
@@ -63,8 +63,11 @@ html.no-js(lang=lang())
 					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
 					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
 					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+			noscript()
+				.alert.alert-danger
+					=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
 
-			div(role="main")
+			div(role="main" ng-bind-html="angular.html")
 				block body
 
 		footer

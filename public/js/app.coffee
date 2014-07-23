@@ -417,10 +417,6 @@ $(document)
 			else
 				$security.addClass('verylow')
 
-# AJAX Navigation
-.on 'click', '.link', (event) ->
-	Ajax.page $(@).attr('href')
-
 
 dateTexts = getData('dateTexts')
 
@@ -500,6 +496,23 @@ Wornet = angular.module 'Wornet', [
 	'ui.bootstrap'
 ]
 
-
 for controller, method of Controllers
 	Wornet.controller controller + 'Ctrl', ['$scope', method]
+
+
+
+# AJAX Navigation
+# $(document).on 'click', '.link', (event) ->
+# 	selector = Ajax.contentSelector
+# 	$children = $page.find('> *').detach()
+# 	$page.html '<div class="loader"></div>'
+# 	$page.load @href + '  ' + selector, ->
+# 		Wornet = angular.module 'Wornet', [
+# 			'ui.calendar'
+# 			'ui.bootstrap'
+# 		]
+
+# 		for controller, method of Controllers
+# 			Wornet.controller controller + 'Ctrl', ['$scope', method]
+
+# 	false
