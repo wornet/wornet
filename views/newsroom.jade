@@ -23,7 +23,7 @@ block body
 			//- Slides Container
 			div(u="slides" style="position: absolute; left: 0px; top: 0px;  width:900px; height: 350px; overflow: hidden;")
 				div
-					img(u="image" src="/img/slider-1.png")
+					img(u="image" src=png("slider-1"))
 				div
 					img(u="image" src="/components/jssor/img/photography/003.jpg")
 				div
@@ -48,22 +48,21 @@ block body
 				h3
 					=s("Message du directeur")
 				.profile-content
-					img(src="/img/mcostes.jpg")
+					img(src=jpg("mcostes") alt="Manuel Costes")
 					cite
 						=s("Manuel Costes")
-				.arrow-content
-				blockquote.message-content
+				#arrow
+				article
 					p
 						=s("Wornet vous donnera la possibilité de contrôler la porter de vos informations. Nous voulons imposer auprès des différents acteurs  du marché une certaine éthique dans l'utilisation des données personnelles. Nous ne souhaitons pas freiner l'innovation, au contraire, nous souhaitons simplement lui donner un cadre plus protecteur vis-à-vis des consommateurs.")
 					footer
 						cite(title="Manuel Costes est le fondateur de Wornet")
 							=s("Manuel Costes")
 						=s(", directeur, Wornet")
-			.articles.col-lg-4
+			.articles-content.col-lg-4
 				h3
 					=s("Actualité")
-
-				.articles-content
+				#articles
 					a(href="#")
 						=s("ARTICLE 1")
 					a(href="#")
@@ -78,13 +77,13 @@ block body
 			h2
 				=s("Nos partenaires")
 			center
-					img(src="/img/partenariat/logo1.png")
+					img(src=png("partenariat/logo1"))
 
-					img(src="/img/partenariat/logo2.jpg")
+					img(src=jpg("partenariat/logo2"))
 
-					img(src="/img/partenariat/logo3.jpg")
+					img(src=jpg("partenariat/logo3"))
 
-					img(src="/img/partenariat/logo4.jpg")
+					img(src=jpg("partenariat/logo4"))
 block append js
 	script(type="text/javascript" src="/components/jssor/js/jquery-1.9.1.min.js")
 	//- use jssor.slider.mini.js (39KB) or jssor.sliderc.mini.js (31KB, with caption, no slideshow) or jssor.sliders.mini.js (26KB, no caption, no slideshow) instead for release -->
