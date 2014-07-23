@@ -181,15 +181,15 @@ body>footer
 
 	p
 		padding 4px 8px
-		color #000
+		color $darkOrange
 
 	h4
-		padding 3px 2px 1px 24px
+		padding 3px 10px 1px 35px
 		margin 0 0 2px
-		color #000
+		color #fff
 		fonts $fonts 18px bold
-		background #eee url(/img/i.png) no-repeat 3px center
-		background-size 20px 20px
+		background $orange url(png(i)) no-repeat 0px center
+		background-size 40px 40px
 		border-bottom 1px solid gray
 		border-radius(5px 5px 1px 1px)
 
@@ -197,10 +197,9 @@ body>footer
 .pass-security
 	display inline-block
 	color #141414
-	border-radius 2px
 	border 1px solid #141414
-	padding 3px
 	font-weight bold
+	height 20px
 
 	&.verylow
 		color #ff0000
@@ -223,20 +222,23 @@ body>footer
 	&.high
 		color #abe600
 		border 1px solid #abe600
+		
 		div::after
 			content "Fort"
 
 	&.veryhigh
 		color #00b400
-		border 1px solid #00b400
+		border 1px solid #2a94ff
+		div
+			background-color #2a94ff !important
 		div::after
-			content "Trés Fort"
+			content "Trés Fort : Maximum"
 
 	div
 		text-align center
 		color #333
-		border-radius 2px
-		height 15px
+		padding 2px
+		height 18px !important
 
 			
 
