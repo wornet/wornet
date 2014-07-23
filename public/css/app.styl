@@ -152,7 +152,7 @@ body>footer
 	background-color $footerBackground
 
 	a.link
-	copytag
+	.copytag
 		// Marges interne et externe des liens du pied de page (footer)
 		display block
 		margin-top $bigPadding
@@ -170,10 +170,9 @@ body>footer
 		// Paramètres relatif au texte.
 		font-weight $linkWeight
 
-	// Liens du pied de page au passage de la souris.
-	a.link:hover
-		// Paramètres relatif au texte.
-		text-decoration underline
+		// Liens du pied de page au passage de la souris.
+		&:hover
+			text-decoration underline
 
 .navbar
 	color #000
@@ -226,53 +225,66 @@ body>footer
 	border-radius(5px)
 	border-right 1px solid gray
 
-.tooltip-focus p
-	padding 4px 8px
-	color #000
+	p
+		padding 4px 8px
+		color #000
 
-.tooltip-focus h4
-	padding 3px 2px 1px 24px
-	margin 0 0 2px
-	color #000
-	font-family $fonts
-	font-weight bold
-	font-size 18px
-	background-color #eee
-	background-image url(/img/i.png)
-	background-repeat no-repeat
-	background-size 20px 20px
-	background-position 3px center
-	border-bottom 1px solid gray
-	border-radius(5px 5px 1px 1px)
+	h4
+		padding 3px 2px 1px 24px
+		margin 0 0 2px
+		color #000
+		fonts $fonts 18px bold
+		background #eee url(/img/i.png) no-repeat 3px center
+		background-size 20px 20px
+		border-bottom 1px solid gray
+		border-radius(5px 5px 1px 1px)
 
 // Class pour la sécurité du mot de passe
 .pass-security
 	display inline-block
 	color #141414
-	border-radius 5px
+	border-radius 2px
 	border 1px solid #141414
 	padding 3px
 	font-weight bold
 
-.pass-security.verylow
-	color #ff0000
-	border 1px solid #ff0000
+	&.verylow
+		color #ff0000
+		border 1px solid #ff0000
+		div::after
+			content "Faible"
 
-.pass-security.low
-	color #ff7d00
-	border 1px solid #ff7d00
+	&.low
+		color #ff7d00
+		border 1px solid #ff7d00
+		div::after
+			content "Assé Faible"
 
-.pass-security.medium
-	color #ffe600
-	border 1px solid #ffe600
+	&.medium
+		color #ffe600
+		border 1px solid #ffe600
+		div::after
+			content "Moyen"
 
-.pass-security.high
-	color #abe600
-	border 1px solid #abe600
+	&.high
+		color #abe600
+		border 1px solid #abe600
+		div::after
+			content "Fort"
 
-.pass-security.veryhigh
-	color #00b400
-	border 1px solid #00b400
+	&.veryhigh
+		color #00b400
+		border 1px solid #00b400
+		div::after
+			content "Trés Fort"
+
+	div
+		text-align center
+		color #333
+		border-radius 2px
+		height 15px
+
+			
 
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
@@ -380,10 +392,9 @@ form#login
 // Lien d'oublie du mot de passe.
 a#forget-it
 	color $orange
-
-// Lien d'oublie du mot de passe au passage de la souris.
-a#forget-it:hover
-	text-decoration none
+	// Lien d'oublie du mot de passe au passage de la souris.
+	&:hover
+		text-decoration none
 
 // Police de charactères non-standard.
 
