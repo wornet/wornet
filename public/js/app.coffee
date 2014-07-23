@@ -312,36 +312,6 @@ Ajax =
 	delete: (url, settings) ->
 		@post url, settings, "DELETE"
 
-	contentSelector: '[role="main"]'
-###
-	page: (param) ->
-		selector = @contentSelector
-		$children = $page.find('> *').detach()
-		$page.html '<div class="loader"></div>'
-		get$data = (data) ->
-			$data = $ data
-			$csrf = $data.find 'head meta[name="_csrf"]'
-			if $csrf.length
-				$('head meta[name="_csrf"]').attr 'content', $csrf.attr('content')
-			$data
-		if typeof(param) is 'function'
-			param.call @, (data) ->
-				data = get$data(data).find selector
-				$page.html(data).fadeOut(0).fadeIn()
-				$page.trigger 'load'
-			, (data) ->
-				get$data data
-				$page.html('').append $children
-				$page.trigger 'load'
-		else
-			$page.load param + ' ' + selector, ->
-				$page.trigger 'load'
-		false
-###
-
-
-$page = $ Ajax.contentSelector
-
 
 ###
 Crud can send request to its member URL
@@ -498,21 +468,3 @@ Wornet = angular.module 'Wornet', [
 
 for controller, method of Controllers
 	Wornet.controller controller + 'Ctrl', ['$scope', method]
-
-
-
-# AJAX Navigation
-# $(document).on 'click', '.link', (event) ->
-# 	selector = Ajax.contentSelector
-# 	$children = $page.find('> *').detach()
-# 	$page.html '<div class="loader"></div>'
-# 	$page.load @href + '  ' + selector, ->
-# 		Wornet = angular.module 'Wornet', [
-# 			'ui.calendar'
-# 			'ui.bootstrap'
-# 		]
-
-# 		for controller, method of Controllers
-# 			Wornet.controller controller + 'Ctrl', ['$scope', method]
-
-# 	false
