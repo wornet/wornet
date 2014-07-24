@@ -15,30 +15,60 @@ $passSecurityWidth = 200px
 	margin 5px
 	display block
 
-
+// Class pour la sécurité du mot de passe
 .pass-security
 	margin -3px $mainPadding
-	width $passSecurityWidth + 8
-	background silver
+	width $passSecurityWidth
+	display inline-block
+	color #141414
+	border 1px solid #141414
+	font-weight bold
+	height 20px
 	div
 		height 13px
 		width 0
 		transition(all .2s)
+		text-align center
+		color #333
+		padding 2px
+		height 18px
+
 	&.verylow div
 		width $passSecurityWidth * 0.2
 		background #FF0000
+		color #ff0000
+		border 1px solid #ff0000
+		&::after
+			content "Faible"
 	&.low div
 		width $passSecurityWidth * 0.4
 		background #FF8800
+		color #ff7d00
+		border 1px solid #ff7d00
+		&::after
+			content "Assez Faible"
 	&.medium div
 		width $passSecurityWidth * 0.6
 		background #FFFF00
+		color #ffe600
+		border 1px solid #ffe600
+		&::after
+			content "Moyen"
 	&.high div
 		width $passSecurityWidth * 0.8
 		background #88FF00
+		color #abe600
+		border 1px solid #abe600
+		&::after
+			content "Fort"
 	&.veryhigh div
 		width $passSecurityWidth
 		background #00FF00
+		color #00b400
+		border 1px solid #2a94ff
+		background-color #2a94ff
+		&::after
+			content "Trés Fort : Maximum"
 
 
 // Citations
