@@ -1,63 +1,15 @@
 /* <--- Feuille de style générale ---> */
 
-// Variables de l'entête de page.
-$headerHeight = 200px
-// Variables du corps de page.
-$background-color = #F3F5F8
-$orange = #ffa500
-// Variables du pied de page.
-$footerHeight = 80px
-$footerBackground = rgba(255, 255, 255, 0.5)
-// Variables des liens.
-$linkColor = #5f5f5f
-$linkWeight = bold
+// Variables de configuration
+@import "includes/config"
 
-// Autres variables.
-$mainPadding = 10px
-$bigPadding = $mainPadding * 2
-$smallPadding = $mainPadding / 2
-$fieldVPadding = 4px
-$fieldHPadding = 8px
-$fieldLineHeight = 18px
-$tooltipWidth = 240px
-$fonts = Average, helvetica, arial, sans-serif
+// Fonctions stylus
+@import "includes/mixins"
 
 *
 	-moz-box-sizing border-box
 	-webkit-box-sizing border-box
 	box-sizing border-box
-
-border-radius()
-	// Fonction pour arondir les bordures d'une boite.
-	-webkit-border-radius arguments
-	-moz-border-radius arguments
-	border-radius arguments
-
-transition()
-	-webkit-transition arguments
-	-moz-transition arguments
-	transition arguments
-
-opacity(n)
-	-webkit-opacity n
-	-moz-opacity n
-	opacity n
-	filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
-
-box-shadow()
-	// Fonction pour créer des ombres sur une boite.
-	-webkit-box-shadow arguments
-	-moz-box-shadow arguments
-	box-shadow arguments
-
-background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
-	// Fonction pour créer des fonds linéaire.
-	background-color startColor
-	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 
 // Raccourci
 
@@ -385,11 +337,6 @@ a#forget-it
 a#forget-it:hover
 	text-decoration none
 
-// Police de charactères non-standard.
-
-@font-face 
-	font-family Average
-	src url(/fonts/pakenham.regular.ttf)
 
 // Imports.
 @import "login"

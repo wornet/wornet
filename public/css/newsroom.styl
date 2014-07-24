@@ -1,10 +1,13 @@
-$fonts = Average, helvetica, arial, sans-serif
-box-shadow()
-	// Fonction pour créer des ombres sur une boite.
-	-webkit-box-shadow arguments
-	-moz-box-shadow arguments
-	box-shadow arguments
-html, body
+/* <--- Feuille de style de /user/newsroom ---> */
+
+// Variables de configuration
+@import "includes/config"
+
+// Fonctions stylus
+@import "includes/mixins"
+
+html
+body
 	background-image url(/img/background-newsroom-image.png)
 	background-attachment fixed
 	padding-top 35px
