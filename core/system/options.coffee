@@ -77,6 +77,7 @@ module.exports = (port) ->
 					@cookies[name]
 				else
 					null
+
 		# Available shorthand methods to all response objects in controllers
 		extend app.response,
 			json: (data) ->
@@ -95,8 +96,19 @@ module.exports = (port) ->
 			unautorized: (model = {}) ->
 				@status 401
 				@render 'errors/401', model
+
+		# Templates directory
 		app.set 'views', __dirname + '/../../views'
+
+		# Add config.json configuration
 		extend config, localConfig._store
+
+		# Assets images in stylus code
+		['png', 'jpg', 'gif'].forEach (ext) ->
+			stylus.functions[ext] = (url) ->
+				functions[ext](url, config.wornet.asset.image.base64Limit)
+
+		# Copy hooks
 		if port is 8000 && config.env.development
 			[
 				#'config'

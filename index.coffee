@@ -52,12 +52,6 @@ onready ->
 		options: options
 
 
-	# Assets images in stylus code
-	['png', 'jpg', 'gif'].forEach (ext) ->
-		stylus.functions[ext] = (url) ->
-			functions[ext](url, 30000)
-
-
 	# Before each request
 	app.use (req, res, done) ->
 

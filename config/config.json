@@ -9,6 +9,11 @@
         "db": {
             "host": "localhost",
             "basename": "wornet"
+        },
+        "asset": {
+            "image": {
+                "base64Limit": 30000
+            }
         }
     },
 
