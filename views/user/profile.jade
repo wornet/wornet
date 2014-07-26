@@ -1,8 +1,10 @@
 extends ../layouts/wornet
 
 block body
-	p
+	p(style="margin-top: 50px;")
 		a(href="/user/logout")
 			=s("Déconnexion")
-	p
-		=s("Profil utilisateur")
+
+	+form#profile-photo("", "POST")(ng-submit="submit(user)" ng-controller="ProfilePhotoCtrl")
+		img(src=user.photo alt=user.name.full)
+		input.hidden(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")

@@ -13,6 +13,8 @@ userSchema = new Schema
 	password:
 		type: String
 		required: true
+	photoId:
+		type: ObjectId
 	token:
 		type: String
 		default: ->
@@ -53,6 +55,21 @@ userSchema.virtual('name.full').set (name) ->
 
 userSchema.virtual('createdAt').get ->
 	new Date parseInt(@_id.toString().slice(0,8), 16)*1000
+
+userSchema.virtual('photoUpdateAt').get ->
+	if @photoId?
+		new Date parseInt(@photoId._id.toString().slice(0,8), 16)*1000
+	else
+		null
+
+userSchema.virtual('photo').get ->
+	'/img/profile/' +(
+		if @photoId?
+			@photoId._id
+		else
+			'default'
+	) +
+	'/' + @name.full.replace(/[^a-zA-Z0-9-]/g, '-') + '.jpg'
 
 userSchema.methods.encryptPassword = (plainText) ->
 	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')

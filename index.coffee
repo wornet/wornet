@@ -81,6 +81,8 @@ onready ->
 				else
 					next()
 		else
+			if req.url.indexOf('/img/profile/') is 0
+				req.url = req.url.replace(/^(\/img\/profile\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg')
 			next()
 
 	# Launch Kraken

@@ -14,11 +14,6 @@ module.exports = (router) ->
 		model.signinErrors = req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
 		res.render templateFolder + '/login', model
 
-	router.get '/login/check', (req, res) ->
-
-		model = {}
-		res.render templateFolder + '/login/check', model
-
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
 
@@ -106,7 +101,8 @@ module.exports = (router) ->
 
 	router.get '/profile', (req, res) ->
 
-		model = {}
+		model =
+			user: req.user
 		res.render templateFolder + '/profile', model
 
 	router.get '/newsroom', (req, res) ->
