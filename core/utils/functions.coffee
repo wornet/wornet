@@ -248,14 +248,28 @@ module.exports =
 
 	@return assert URL
 	###
-	assetUrl: (file, directory, extension, keepExtension) ->
-		if config.env.development
-			version = fs.statSync('public/' + directory + '/' + file + '.' + extension).mtime.getTime()
-		else
-			version = config.wornet.version
+	assetUrl: (file, directory, extension, keepExtension, limit) ->
+		# assetUrl use sync functions
+		# we can do it here because assetUrl is only in use in development
+		# but always prefer async functions to accelerate page load
+		# and defer treatments
+		source = 'public/' + directory + '/' + file + '.' + extension
 		unless keepExtension
 			extension = directory
-		'/' + directory + '/' + file + '.' + extension + '?' + version
+		if config.env.development || limit
+			stat = fs.statSync(source)
+		if limit && limit > stat.size
+			switch extension
+				when 'js' then type = 'text/javascript'
+				when 'js' then type = 'text/style'
+				else type = 'image/' + extension.replace('jpg', 'jpeg')
+			"data:" + type + ";base64," + fs.readFileSync(source).toString('base64')
+		else
+			if config.env.development
+				version = stat.mtime.getTime()
+			else
+				version = config.wornet.version
+			'/' + directory + '/' + file + '.' + extension + '?' + version
 	,
 	###
 	Generate an style URL (automaticaly compiled with stylus)
@@ -284,8 +298,8 @@ module.exports =
 
 	@return assert URL
 	###
-	png: (file) ->
-		assetUrl file, 'img', 'png', true
+	png: (file, limit) ->
+		assetUrl file, 'img', 'png', true, limit
 
 	###
 	Generate an JPEG URL
@@ -294,8 +308,8 @@ module.exports =
 
 	@return assert URL
 	###
-	jpg: (file) ->
-		assetUrl file, 'img', 'jpg', true
+	jpg: (file, limit) ->
+		assetUrl file, 'img', 'jpg', true, limit
 
 	###
 	Generate an GIF URL
@@ -304,5 +318,5 @@ module.exports =
 
 	@return assert URL
 	###
-	gif: (file) ->
-		assetUrl file, 'img', 'gif', true
+	gif: (file, limit) ->
+		assetUrl file, 'img', 'gif', true, limit
