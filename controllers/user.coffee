@@ -25,6 +25,9 @@ module.exports = (router) ->
 					url = req.session.goingTo
 			else
 				url = loginUrl
+			# Direct redirect to profile if ask for root
+			if url is '/'
+				url = '/user/profile'
 			# With AJAX, send JSON
 			if req.xhr
 				if err

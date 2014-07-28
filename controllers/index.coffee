@@ -1,5 +1,6 @@
 'use strict'
 
+###
 listUsers = (err, req, res, fromSave) ->
 
 	User.find({},
@@ -19,9 +20,11 @@ listUsers = (err, req, res, fromSave) ->
 			model.saved = true
 
 		res.render 'index', model
+###
 
 module.exports = (router) ->
 
+	###
 	router.post '/', (req, res) ->
 
 		data = req.body
@@ -40,6 +43,7 @@ module.exports = (router) ->
 	router.get '/', (req, res) ->
 
 		listUsers null, req, res
+	###
 
 
 	router.get '/newsroom', (req, res) ->
@@ -61,6 +65,7 @@ module.exports = (router) ->
 
 
 	alias =
+		'': 'user/profile'
 		login: 'user/login'
 		signin: 'user/signin'
 		logout: 'user/logout'
