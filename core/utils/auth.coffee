@@ -35,6 +35,8 @@ exports.logout = (req, res) ->
 
 # Store user in session, and append to the request object
 exports.auth = (req, res, user) ->
+	unless user instanceof User
+		user = new User(user)
 	res.locals.user = user
 	req.user = user
 	req.session.user = user
@@ -73,8 +75,7 @@ exports.login = (req, res, done) ->
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
 	if req.session.user?
-		res.locals.user = req.session.user
-		req.user = req.session.user
+		exports.auth req, res, req.session.user
 		next()
 	else
 		exports.remembered req, (user, err, id) ->
@@ -89,39 +90,40 @@ If the user is not known, redirect to the login page. If the role doesn't match,
 @param role The role that a user should have to pass authentication.
 ###
 exports.isAuthenticated = (req, res, next) ->
-	exports.tryLogin req, res, ->
+	if req.isStatic?
+		next()
+	else
+		exports.tryLogin req, res, ->
 
-		# Access map
-		auth =
-			"/": true
-			"/admin": true
-			"/profile": true
-			"/agenda": true
-			"/user/profile": true
+			# Access map
+			auth =
+				"/": true
+				"/admin": true
+				"/profile": true
+				"/agenda": true
+				"/user/profile": true
 
-		blacklist = user:
-			"/admin": true
+			blacklist = user:
+				"/admin": true
 
-		route = req.url
-		# Get user role (in any user connected : empty string)
-		role = (if (req.user and req.user.role) then req.user.role else "")
-		# If the URL is in the access restricted list
-		if auth[route]
-			# If any user are connected
-			unless req.user
-				# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-				req.session.goingTo = req.url
-				if ['/', '/user/profile', '/profile'].indexOf(route) is -1
-					req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
-				res.redirect "/user/login"
+			route = req.url
+			# Get user role (in any user connected : empty string)
+			role = (if (req.user and req.user.role) then req.user.role else "")
+			# If the URL is in the access restricted list
+			if auth[route]
+				# If any user are connected
+				unless req.user
+					# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
+					req.session.goingTo = req.url
+					if ['/', '/user/profile', '/profile'].indexOf(route) is -1
+						req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+					res.redirect "/user/login"
 
-			# Check blacklist for this user's role
-			else if blacklist[role] and blacklist[role][route] is true
-				model = url: route
-				# Pop the user into the response
-				res.locals.user = req.user
-				res.unautorized model
+				# Check blacklist for this user's role
+				else if blacklist[role] and blacklist[role][route] is true
+					model = url: route
+					res.unautorized model
+				else
+					next()
 			else
 				next()
-		else
-			next()

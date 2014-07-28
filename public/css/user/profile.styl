@@ -1,27 +1,39 @@
 $photoWidth = 90px
 $photoHeight = 90px
+$photoRadius = 100%
+$progressRadialWidth = 4px
 
 #profile-photo
-	width $photoWidth
-	height $photoHeight
+	width $photoWidth + 2 * $progressRadialWidth
+	height $photoHeight + 2 * $progressRadialWidth
 	position relative
 	margin $mainPadding auto
 
-	img
-	input.hidden
+	.progress-radial
+	.progress-radial .overlay
+	img.upload-thumb
+	input.upload
+	.loader
 		position absolute
 		width 100%
 		height 100%
 
-	input.hidden
-		//visibility hidden
-		border 1px soldi red
+	input.upload
 		cursor pointer
+		opacity(0)
 
-	img
-		border-radius($photoWidth)
-		border 3px solid #a9c7ff
+	.progress-radial
+	.progress-radial .overlay
+	img.upload-thumb
+		border-radius($photoRadius)
 		transition(all .2s)
+
+	.progress-radial
+		padding $progressRadialWidth
+		background-color $darkOrange
+		.overlay
+			position relative
+			background-color white
 
 	&:hover img
 		border-width 0

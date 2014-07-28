@@ -23,7 +23,7 @@ mixin csrf()
 
 mixin form(url, method)
 
-	- var enctype, _method
+	- var enctype, _method, maxsize = -1
 	unless method
 		- method = "POST"
 	- method = strtoupper(method)
@@ -34,11 +34,19 @@ mixin form(url, method)
 		- enctype = "multipart/form-data"
 		- method = "POST"
 
+	if attributes.maxsize
+		- maxsize = intval(attributes.maxsize)
+		- delete attributes.maxsize
+	else if enctype == "multipart/form-data"
+		- maxsize = config.wornet.upload.maxsize
+
 	form&attributes(attributes)(action=url method=method enctype=enctype)
 		div
 			+csrf()
 			if _method
 				input(type="hidden" name="_method" value=_method)
+			if maxsize > 0
+				input(type="hidden" name="MAX_FILE_SIZE" value=maxsize)
 		block
 
 mixin formControl(type)

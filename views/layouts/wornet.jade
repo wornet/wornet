@@ -85,7 +85,9 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 				each value, name in datas
 					+data(name, value)
 
-		.loader.hidden
+		//- .loader sera utilisé si je parviens à faire un système de navigation
+		//- AJAX compatible Angular
+		.loader.preload
 
 		block js
 			each script in options.js().main

@@ -13,6 +13,9 @@ global.ObjectId = Schema.ObjectId
 # Get functions
 functions = require root + 'core/utils/functions'
 
+# Extends RegExp class
+require root + 'core/utils/RegExpString'
+
 # Make functions and config usables in controllers and other stuff
 extend global, functions
 

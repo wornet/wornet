@@ -2,7 +2,7 @@ Controllers =
 
 	Login: ($scope) ->
 		# Get remember preference of the user if previously saved (default: true)
-		$scope.user.remember = (if localStorage then !!localStorage['user.remember'] else true)
+		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
 		# When the form is submitted
 		$scope.submit = (user) ->
 			# Save remember preference of the user
@@ -17,15 +17,7 @@ Controllers =
 						location.href = data.goingTo
 					# Else : an error occured
 					else
-						errors = data.err || "Erreur"
-						if typeof(errors) isnt 'object'
-							errors = [errors]
-						$errors = $('#loginErrors').html('') # Get and empty the #loginErrors block
-						# Append each error
-						for error in errors
-							$errors.append('<div class="alert alert-danger">' + error + '</div>')
-						# Close (instantanly) the error block
-						$errors.slideUp(0).slideDown('fast')
+						$('#loginErrors').errors data.err
 
 	Signin: ($scope) ->
 	# 	$scope.submit = (user) ->
@@ -40,7 +32,7 @@ Controllers =
 	# 				else
 	# 					done data
 
-	Calendar: ($scope, $route) ->
+	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
 		agenda = new Crud '/agenda'
 		date = new Date()
@@ -336,11 +328,32 @@ class Crud
 		Ajax.delete @url, settings
 
 
-# To permit to a 0 opacity HTML element to fade
-$.fn.readyToFade = ->
-	if @.css('opacity') is '0'
-		@.css('opacity', '1').fadeOut(0)
-	@
+$.fn.extend
+	# Append errors to the given jQuery block
+	# Then slide them out
+	errors: (errors) ->
+		errors = errors || "Erreur"
+		if typeof(errors) isnt 'object'
+			errors = [errors]
+		@.html('') # Get and empty the #loginErrors block
+		# Append each error
+		for error in errors
+			@.append('<div class="alert alert-danger">' + error + '</div>')
+		# Close (instantanly) the error block
+		@.slideUp(0).slideDown('fast')
+	# To permit to a 0 opacity HTML element to fade
+	readyToFade: ->
+		if @.css('opacity') is '0'
+			@.css('opacity', '1').fadeOut(0)
+		@
+	# Circular progress load animation
+	circularProgress: (ratio, color) ->
+		color = color || ($('<div class="ref-color"></div>').css('color') || '#ff8800')
+		bgCol = @.css('background-color')
+		if ratio < 0.5
+			@.css('background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')')
+		else
+			@.css('background-image', 'linear-gradient(' + Math.round(90 + 360 * ratio) + 'deg, ' + color + ' 50%, transparent 50%, transparent), linear-gradient(270deg, ' + color + ' 50%, transparent 50%, transparent)')
 
 
 $(document)
@@ -386,6 +399,81 @@ $(document)
 				$security.addClass('low')
 			else
 				$security.addClass('verylow')
+
+	.on 'error', 'img.upload-thumb', ->
+		$thumb = $(@)
+		$input = $thumb.parent().find('input.upload')
+		$('.errors').errors $input.data('error')
+
+	.on 'error load', 'img.upload-thumb', ->
+		$(@).parent().find('.loader').remove()
+
+	.on 'change', 'input.upload', ->
+		$input = $ @
+		$parent = $input.parent()
+		$thumb = $parent.find 'img.upload-thumb'
+		#$thumb.prop 'src', $input.val()
+		$('<div class="loader"></div>').appendTo($parent).fadeOut(0).fadeIn('fast')
+		$input.parents('form').submit()
+
+	.on 'load', 'iframe', ->
+		$iframe = $ @
+		name = $iframe.attr 'name'
+		$form = $ 'form[target="' + name + '"]'
+		$img = []
+		$loader = $form.find '.loader'
+		$loader.fadeOut 'fast', $loader.remove
+		if $form.length
+			$img = $('img', $iframe.prop('contentWindow'))
+		if $img.length && $img[0].width > 0
+			$form.find('img.upload-thumb').prop 'src', $img.prop('src')
+		else
+			$('.errors').errors $form.find('input.upload').data('error')
+
+	.on 'submit', '#profile-photo', (evt) ->
+		$form = $ @
+		$img = $form.find 'img.upload-thumb'
+		$img.fadeOut('fast')
+		if typeof(FormData) is 'function'
+			$progress = $form.find '.progress-radial'
+			evt.preventDefault()
+			formData = new FormData()
+			file = $form.find('input[type="file"]')[0].files[0]
+			formData.append 'photo', file
+			formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
+
+			xhr = new XMLHttpRequest()
+			xhr.open 'POST', $form.prop('action'), true
+
+			xhr.upload.onprogress = (e) ->
+				if e.lengthComputable
+					$progress.circularProgress e.loaded / e.total
+
+			xhr.onerror = ->
+				$error = $(@responseText)
+				unless $error.is('.error')
+					$error = $error.find '.error'
+				$loader = $form.find '.loader'
+				$loader.fadeOut 'fast', $loader.remove
+				$('.errors').errors $error.html()
+
+			xhr.onload = ->
+				$newImg = $(@responseText)
+				unless $newImg.is('.error') || $newImg.is('img')
+					$newImg = $newImg.find 'img'
+				if $newImg.is('img')
+					newSource = $newImg.attr('src')
+					$img.fadeOut 'fast', ->
+						$loader = $form.find '.loader'
+						$loader.fadeOut 'fast', $loader.remove
+						$img.attr('src', newSource).fadeIn('fast')
+				else
+					@onerror()
+
+			xhr.send formData
+			false
+		else
+			true
 
 
 dateTexts = getData('dateTexts')

@@ -1,11 +1,13 @@
 'use strict'
 
 # Dependancies to load
-'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus'.split(/\s+/).forEach (dependancy) ->
+'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus imagemagick'
+.split(/\s+/).forEach (dependancy) ->
 	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
 
 # Get shortcuts from dependancies
-'child_process.exec mongoose.Schema'.split(/\s+/).forEach (shortcut) ->
+'child_process.exec mongoose.Schema'
+.split(/\s+/).forEach (shortcut) ->
 	shortcut = shortcut.split '.'
 	global[shortcut[1]] = global[shortcut[0]][shortcut[1]]
 
@@ -51,7 +53,6 @@ onready ->
 		config: config
 		options: options
 
-
 	# Before each request
 	app.use (req, res, done) ->
 
@@ -81,9 +82,10 @@ onready ->
 				else
 					next()
 		else
-			if req.url.indexOf('/img/profile/') is 0
-				req.url = req.url.replace(/^(\/img\/profile\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg')
-			next()
+			req.isStatic = true
+			if req.url.indexOf('/img/photo/') is 0
+				req.url = req.url.replace(/^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg')
+			done()
 
 	# Launch Kraken
 	app.use kraken options

@@ -105,6 +105,25 @@ module.exports = (router) ->
 			user: req.user
 		res.render templateFolder + '/profile', model
 
+	router.post '/photo', (req, res) ->
+
+		model = {}
+		done = ->
+			res.render templateFolder + '/upload-photo', model
+		if req.files.photo.size > config.wornet.upload.maxsize
+			model.error = "size-exceeded"
+			done()
+		else if (['image/png', 'image/jpeg']).indexOf(req.files.photo.type) is -1
+			model.error = "wrong-format"
+			done()
+		else
+			addPhoto req, 0, (err) ->
+				if err
+					model.error = err
+				else
+					model.src = req.user.thumb
+				done()
+
 	router.get '/newsroom', (req, res) ->
 
 		model = {}

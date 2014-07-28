@@ -64,6 +64,13 @@ body
 #logo-content
 	padding 10px
 
+iframe
+	height 0
+	width 100%
+	border none
+
+// .loader sera utilisé si je parviens à faire un système de
+// navigation AJAX compatible Angular
 .loader
 	position fixed
 	top 0
@@ -72,7 +79,7 @@ body
 	height 100%
 	overflow hidden
 	background url(gif(loader)) center center no-repeat
-	.hidden
+	&.preload
 		height 0
 
 .tooltip-focus.left
@@ -191,7 +198,9 @@ body>footer
 		background-size 40px 40px
 		border-bottom 1px solid gray
 		border-radius(5px 5px 1px 1px)
-	
+
+.ref-color
+	color $orange
 
 // Champs de type date.
 // KO Attention, le style va être appliqué à tous les champs de type date
@@ -305,5 +314,6 @@ a#forget-it
 
 
 // Imports.
-@import "login"
+@import "user/login"
+@import "user/profile"
 @import "agenda"

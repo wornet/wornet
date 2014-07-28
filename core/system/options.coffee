@@ -108,6 +108,9 @@ module.exports = (port) ->
 			stylus.functions[ext] = (url) ->
 				functions[ext](url, config.wornet.asset.image.base64Limit)
 
+		# Available s() in stylus files
+		stylus.functions.s = functions.s
+
 		# Copy hooks
 		if port is 8000 && config.env.development
 			[

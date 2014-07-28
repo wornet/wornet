@@ -58,18 +58,24 @@ userSchema.virtual('createdAt').get ->
 
 userSchema.virtual('photoUpdateAt').get ->
 	if @photoId?
-		new Date parseInt(@photoId._id.toString().slice(0,8), 16)*1000
+		new Date parseInt(@photoId.toString().slice(0,8), 16)*1000
 	else
 		null
 
-userSchema.virtual('photo').get ->
-	'/img/profile/' +(
+photoSrc = (prefix) ->
+	'/img/' +(
 		if @photoId?
-			@photoId._id
+			'photo/' + (prefix || '') + @photoId + '/' + @name.full.replace(/[^a-zA-Z0-9-]/g, '-')
 		else
-			'default'
+			'default-photo'
 	) +
-	'/' + @name.full.replace(/[^a-zA-Z0-9-]/g, '-') + '.jpg'
+	'.jpg'
+
+userSchema.virtual('photo').get ->
+	photoSrc.call @
+
+userSchema.virtual('thumb').get ->
+	photoSrc.call @, '90x'
 
 userSchema.methods.encryptPassword = (plainText) ->
 	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')

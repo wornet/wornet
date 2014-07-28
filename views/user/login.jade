@@ -35,10 +35,41 @@ block body
 							.alert.alert-danger
 								=error
 				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninCtrl")
-					+formControl()(title=s("Votre e-mail") ng-model="user.email" name="email" placeholder=s("Votre e-mail") tooltip!=[s("Adresse Electronique"), s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet.")])
+					+formControl()(
+						title=s("Votre e-mail")
+						ng-model="user.email"
+						name="email"
+						placeholder=s("Votre e-mail")
+						tooltip!=[
+							s("Adresse électronique"),
+							s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet.")
+						])
 					.check-pass
-						+formControl("password")(title=s("Votre mot de passe") ng-model="user.password" name="password" placeholder=s("Votre mot de passe") tooltip!=[s("Mot de passe"), s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules et des chiffres.") + jd('.pass-security\n\tdiv')])
-					+formControl("password")(title=s("Vérifier votre mot de passe") ng-model="user.passwordCheck" name="passwordCheck" placeholder=s("Vérifier votre mot de passe") tooltip!=[s("Confirmer le mot de passe"), s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")])
+						+formControl("password")(
+							title=s("Votre mot de passe")
+							ng-model="user.password"
+							name="password"
+							placeholder=s("Votre mot de passe")
+							tooltip!=[
+								s("Mot de passe"),
+								s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
+								jd('.pass-security\n\t.bar'
+									+ '\n\t\t.inner.verylow ' + s("Faible")
+									+ '\n\t\t.inner.low ' + s("Assez faible")
+									+ '\n\t\t.inner.medium ' + s("Moyen")
+									+ '\n\t\t.inner.high ' + s("Fort")
+									+ '\n\t\t.inner.veryhigh ' + s("Très fort")
+								)
+							])
+					+formControl("password")(
+						title=s("Confirmez votre mot de passe")
+						ng-model="user.passwordCheck"
+						name="passwordCheck"
+						placeholder=s("Confirmez votre mot de passe")
+						tooltip!=[
+							s("Confirmer le mot de passe"),
+							s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")
+						])
 					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
 		#quotes.col-sm-3.col-xs-12
 			blockquote

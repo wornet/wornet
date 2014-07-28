@@ -103,6 +103,52 @@ module.exports =
 			global[name + 'Model'] = model
 	,
 	###
+	Update user attributes
+	@param HTTPRequest|User user model or request containing a user
+	@param object update key-value list of updated attributes
+	@param callback executed when everything is done
+	###
+	updateUser: (user, update, done) ->
+		unless user instanceof User
+			user = user.user
+		for key, val of update
+			user[key] = val
+		User.update _id: user._id, update, multi: false, (updateErr) ->
+			done updateErr
+	,
+	###
+	Add an uploaded photo to user album
+	@param HTTPRequest request containing files object (uploaded)
+	@param integer album number (0 = profile photo)
+	@param callback executed when everything is done
+	###
+	addPhoto: (req, album, done) ->
+		Photo.create
+			name: req.files.photo.name
+			album: album
+		, (createErr, photo) ->
+			if createErr
+				done createErr
+			else
+				id = photo.id
+				photoDirectory = __dirname + '/../../public/img/photo/'
+				dst = photoDirectory + id + '.jpg'
+				thumb = photoDirectory + '90x' + id + '.jpg'
+				copy req.files.photo.path, dst
+				if album is 0
+					imagemagick.resize
+						srcPath: req.files.photo.path
+						dstPath: thumb
+						width: 90
+					, (resizeErr) ->
+						if resizeErr
+							done resizeErr
+						else
+							updateUser req, photoId: id, done
+				else
+					done()
+	,
+	###
 	Return a string in lower case
 	@param string text in any case
 

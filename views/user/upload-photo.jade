@@ -1,0 +1,13 @@
+doctype html
+html
+	body
+		case error
+			when "size-exceeded"
+				.error= s("Veuillez télécharger une image de moins de 5 Mo")
+			when "wrong-format"
+				.error= s("Veuillez entrer une image au format PNG ou JPEG")
+			default
+				if error
+					.error= error
+				else
+					img(src=src alt="uploaded")

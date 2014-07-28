@@ -14,6 +14,9 @@
             "image": {
                 "base64Limit": 30000
             }
+        },
+        "upload": {
+            "maxsize": 5000000
         }
     },
 

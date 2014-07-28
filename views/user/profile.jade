@@ -5,6 +5,10 @@ block body
 		a(href="/user/logout")
 			=s("Déconnexion")
 
-	+form#profile-photo("", "POST")(ng-submit="submit(user)" ng-controller="ProfilePhotoCtrl")
-		img(src=user.photo alt=user.name.full)
-		input.hidden(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
+	.errors
+
+	iframe(name="upload")
+	+form("/user/photo", "FILE")#profile-photo(target="upload")
+		.progress-radial: .overlay
+			img.upload-thumb(src=user.thumb alt=user.name.full)
+			input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
