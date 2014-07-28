@@ -475,6 +475,10 @@ $(document)
 		else
 			true
 
+	.on 'click', '[data-toggle="lightbox"]', (e) ->
+		e.preventDefault()
+		$(@).ekkoLightbox()
+		false
 
 dateTexts = getData('dateTexts')
 

@@ -3,6 +3,17 @@ extends layouts/wornet
 block append css
 	link(rel="stylesheet" href=style("newsroom"))
 
+block append js
+	script(type="text/javascript" src="/components/jssor/js/jquery-1.9.1.min.js")
+	//- use jssor.slider.mini.js (39KB) or jssor.sliderc.mini.js (31KB, with caption, no slideshow) or jssor.sliders.mini.js (26KB, no caption, no slideshow) instead for release -->
+	//- jssor.slider.mini.js = jssor.sliderc.mini.js = jssor.sliders.mini.js = (jssor.core.js + jssor.utils.js + jssor.slider.js) -->
+	script(type="text/javascript" src="/components/jssor/js/jssor.core.js")
+	script(type="text/javascript" src="/components/jssor/js/jssor.utils.js")
+	script(type="text/javascript" src="/components/jssor/js/jssor.slider.js")
+	script(type="text/javascript" src="/components/jssor/newsroom-slider.js")
+	//- Jssor Slider Begin
+	//- You can move inline styles to css file or css block.
+
 block nav
 	nav#navbar.navbar.navbar-fixed-top
 		#navbar-left-menu.col-sm-3.col-xs-3
@@ -84,13 +95,3 @@ block body
 					img(src=jpg("partenariat/logo3"))
 
 					img(src=jpg("partenariat/logo4"))
-block append js
-	script(type="text/javascript" src="/components/jssor/js/jquery-1.9.1.min.js")
-	//- use jssor.slider.mini.js (39KB) or jssor.sliderc.mini.js (31KB, with caption, no slideshow) or jssor.sliders.mini.js (26KB, no caption, no slideshow) instead for release -->
-	//- jssor.slider.mini.js = jssor.sliderc.mini.js = jssor.sliders.mini.js = (jssor.core.js + jssor.utils.js + jssor.slider.js) -->
-	script(type="text/javascript" src="/components/jssor/js/jssor.core.js")
-	script(type="text/javascript" src="/components/jssor/js/jssor.utils.js")
-	script(type="text/javascript" src="/components/jssor/js/jssor.slider.js")
-	script(type="text/javascript" src="/components/jssor/newsroom-slider.js")
-	//- Jssor Slider Begin
-	//- You can move inline styles to css file or css block.

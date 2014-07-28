@@ -102,6 +102,7 @@ exports.isAuthenticated = (req, res, next) ->
 				"/profile": true
 				"/agenda": true
 				"/user/profile": true
+				"/photos": true
 
 			blacklist = user:
 				"/admin": true

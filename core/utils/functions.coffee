@@ -124,6 +124,7 @@ module.exports =
 	###
 	addPhoto: (req, album, done) ->
 		Photo.create
+			user: req.user.id
 			name: req.files.photo.name
 			album: album
 		, (createErr, photo) ->
