@@ -5,14 +5,14 @@ module.exports = (router) ->
 	templateFolder = 'user'
 	loginUrl = '/user/login'
 
-	# When login/signin page displays
-	router.get '/login', (req, res) ->
+	pm = new PagesManager(router, templateFolder)
 
-		model = {}
+	# When login/signin page displays
+	pm.page '/login', (req) ->
 		# Get errors in flash memory (any if AJAX is used and works on client device)
-		model.loginErrors = req.flash 'loginErrors'
-		model.signinErrors = req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
-		res.render templateFolder + '/login', model
+		loginErrors: req.flash 'loginErrors'
+		signinErrors: req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
+
 
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
@@ -92,21 +92,14 @@ module.exports = (router) ->
 					res.redirect url
 		# res.render templateFolder + '/signin', model
 
-	router.get '/forgotten-password', (req, res) ->
+	pm.page '/forgotten-password'
 
-		model = {}
-		res.render templateFolder + '/forgotten-password', model
+	pm.page '/forgotten-password', null, 'post'
 
-	router.post '/forgotten-password', (req, res) ->
+	pm.page '/newsroom'
 
-		model = {}
-		res.render templateFolder + '/forgotten-password', model
-
-	router.get '/profile', (req, res) ->
-
-		model =
-			user: req.user
-		res.render templateFolder + '/profile', model
+	pm.page '/profile', (req) ->
+		user: req.user
 
 	router.post '/photo', (req, res) ->
 
@@ -126,8 +119,3 @@ module.exports = (router) ->
 				else
 					model.src = req.user.thumb
 				done()
-
-	router.get '/newsroom', (req, res) ->
-
-		model = {}
-		res.render templateFolder + '/newsroom', model

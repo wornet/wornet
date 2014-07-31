@@ -83,9 +83,41 @@ onready ->
 					next()
 		else
 			req.isStatic = true
-			if req.url.indexOf('/img/photo/') is 0
-				req.url = req.url.replace(/^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg')
-			done()
+			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)
+			if ie
+				ie = intval ie.substr(5)
+			else
+				ie = 0
+			req.ie = ie
+			switch req.url
+				when '/js/all.js'
+					file = __dirname + '/.build/js/all-ie-' + req.ie + '.js'
+					fs.readFile file, (err, content) ->
+						if err
+							concatCallback '', options.mainJs(), uglifyJs, (content) ->
+								res.end content
+								fs.writeFile file, content
+							,
+								ie: req.ie
+						else
+							res.end content
+				when '/css/all.css'
+					file = __dirname + '/.build/css/all-ie-' + req.ie + '.css'
+					fs.readFile file, (err, content) ->
+						if err
+							concatCallback '', options.mainCss(), (str) ->
+								str.replace /[\r\n\t]/g, ''
+							, (content) ->
+								res.end content
+								fs.writeFile file, content
+							,
+								ie: req.ie
+						else
+							res.end content
+				else
+					if req.url.indexOf('/img/photo/') is 0
+						req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
+					done()
 
 	# Launch Kraken
 	app.use kraken options

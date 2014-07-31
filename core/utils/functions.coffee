@@ -2,6 +2,70 @@
 
 module.exports =
 	###
+	Compress JS code
+	@param string intial code
+
+	@return string compressed code
+	###
+	uglifyJs: (code) ->
+		jsp = require("uglify-js").parser
+		pro = require("uglify-js").uglify
+		ast = jsp.parse('try{' + code + '}catch(e){console.warn(e);}')
+		ast = pro.ast_mangle(ast)
+		ast = pro.ast_squeeze(ast)
+		pro.gen_code(ast)
+	,
+	###
+	Get files contents, proceed callback of each content and concat all
+	@param string intial code
+
+	@return string compressed code
+	###
+	concatCallback: (content, lst, proceed, end, options) ->
+		proceed = proceed || ((s) -> s)
+		options = options || {}
+		i = options.i || 0
+		ie = options.ie || 0
+		if i >= lst.length
+			end(content)
+		else
+			file = lst[i]
+			# Internet Explorer condition
+			if typeof(file) is 'object'
+				if file[0] is 'non-ie'
+					file = (if ie then false else file[1])
+				else
+					version = 1
+					symbol = file[0].replace(/if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
+						version = intval v
+						s
+					)
+					switch symbol
+						when 'gt'
+							file = (if ie > version then file[1] else false)
+						when 'gte'
+							file = (if ie >= version then file[1] else false)
+						when 'lt'
+							file = (if ie < version then file[1] else false)
+						when 'lte'
+							file = (if ie <= version then file[1] else false)
+						else
+							file = (if ie is version then file[1] else false)
+			if file
+				if file.indexOf('?') isnt -1
+					file = file.replace(/^(.+)\?.*$/g, (m, start) ->
+						__dirname + '/../../.build' + start
+					)
+				else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
+					file = __dirname + '/../../public' + file
+				fs.readFile file, (err, data) ->
+					unless err
+						content += proceed(data + '') + '\n'
+					concatCallback content, lst, proceed, end,
+						i: i + 1
+						ie: ie
+	,
+	###
 	Display a message or variable and stack trace if on a development environment
 	@param mixed message or vairbale to print in console log
 
@@ -141,6 +205,7 @@ module.exports =
 						srcPath: req.files.photo.path
 						dstPath: thumb
 						width: 90
+						height: 90
 					, (resizeErr) ->
 						if resizeErr
 							done resizeErr

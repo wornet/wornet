@@ -3,10 +3,11 @@
 useCdn = false
 
 module.exports = (port) ->
-	css: ->
+
+	mainCss: ->
 		if useCdn
 			# CDN resources
-			main: [
+			[
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"
 				"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"
@@ -15,7 +16,7 @@ module.exports = (port) ->
 			]
 		else
 			# locales resources
-			main: [
+			[
 				"/components/bootstrap/css/bootstrap.min.css"
 				"/components/bootstrap/css/bootstrap-theme.min.css"
 				"/components/jquery/css/jquery-ui.css"
@@ -23,10 +24,16 @@ module.exports = (port) ->
 				style("app")
 			]
 
-	js: ->
+	css: ->
+		if config.env.development
+			main: @mainCss()
+		else
+			main: ['/css/all.css']
+
+	mainJs: ->
 		if useCdn
 			# CDN resources
-			main: [
+			[
 				['if lte IE 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"]
 				['if gt IE 9', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"]
 				['non-ie', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"]
@@ -52,7 +59,7 @@ module.exports = (port) ->
 			]
 		else
 			# locales resources
-			main: [
+			[
 				"/components/jquery/js/jquery.js"
 				"/components/jquery/js/jquery-ui.min.js"
 				"/components/bootstrap/js/bootstrap.min.js"
@@ -68,6 +75,12 @@ module.exports = (port) ->
 				"/components/angular/js/calendar-fr.js"
 				"/components/angular/js/calendar.js"
 			]
+
+	js: ->
+		if config.env.development
+			main: @mainJs()
+		else
+			main: ['/js/all.js']
 
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
