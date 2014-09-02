@@ -4,7 +4,12 @@ SERVICE = (process.env.SERVICE || 'wornetint');
 exec = require("child_process").exec;
 
 exec('wget http://' + HOST + '/git-status', function (err, data, errm) {
+	console.log([err, data, errm]);
 	if(data !== 'OK') {
-		exec('service ' + SERVICE + ' update');
+		var cmd = 'service ' + SERVICE + ' update';
+		console.log(cmd);
+		exec(cmd, function (err, data, errm) {
+			console.log(data);
+		});
 	}
 });
