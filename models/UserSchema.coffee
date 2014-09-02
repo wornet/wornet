@@ -24,6 +24,7 @@ userSchema = new Schema
 		default: 'user'
 		enum: ['user', 'admin']
 	lastLoginDate: Date
+	birthDate: Date
 	phone:
 		type: String
 		validate: [regex('phone'), 'invalid phone number']

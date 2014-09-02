@@ -51,7 +51,7 @@ mixin form(url, method)
 
 mixin formControl(type)
 	if attributes.tooltip
-		.tooltip.left.tooltip-focus
+		.tooltip.tooltip-focus(class=(attributes.tooltip[2] || "left"))
 			.tooltip-arrow
 			.tooltip-inner
 				h4

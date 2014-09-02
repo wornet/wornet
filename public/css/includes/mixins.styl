@@ -1,32 +1,75 @@
 
+css3-prefix(prop, value)
+	if $supportWebkit
+		{"-webkit-" + prop} value
+	if $supportKhtml
+		{"-khtml-" + prop} value
+	if $supportMoz
+		{"-moz-" + prop} value
+	if $supportMS
+		{"-ms-" + prop} value
+	if $supportOpera
+		{"-o-" + prop} value
+	{prop} value
+
+pos(top, left)
+	if left
+		left left
+	if top
+		top top
+
+fix(top, left)
+	position fixed
+	pos(top, left)
+
+rel(top, left)
+	position relative
+	pos(top, left)
+
+abs(top, left)
+	position absolute
+	pos(top, left)
+
+size(width, height)
+	width width
+	height height
+
 border-radius()
 	// Fonction pour arondir les bordures d'une boite.
-	-webkit-border-radius arguments
-	-moz-border-radius arguments
-	border-radius arguments
+	css3-prefix("border-radius", arguments)
+
+box-sizing()
+	css3-prefix("box-sizing", arguments)
 
 transition()
-	-webkit-transition arguments
-	-moz-transition arguments
-	transition arguments
+	css3-prefix("transition", arguments)
+
+background-size()
+	css3-prefix("background-size", arguments)
+
+outline()
+	css3-prefix("outline", arguments)
+
+user-select()
+	css3-prefix("user-select", arguments)
 
 opacity(n)
-	-webkit-opacity n
-	-moz-opacity n
-	opacity n
+	css3-prefix("opacity", n)
 	filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
 
 box-shadow()
 	// Fonction pour créer des ombres sur une boite.
-	-webkit-box-shadow arguments
-	-moz-box-shadow arguments
-	box-shadow arguments
+	css3-prefix("box-shadow", arguments)
 
 background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
 	// Fonction pour créer des fonds linéaire.
 	background-color startColor
-	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
-	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	if $supportWebkit
+		background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	if $supportMoz
+		background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	if $supportMS
+		background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	if $supportOpera
+		background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)

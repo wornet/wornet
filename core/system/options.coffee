@@ -1,8 +1,20 @@
 'use strict'
 
 useCdn = false
+piwik = true
+googleAnalytics = false
 
 module.exports = (port) ->
+
+	trackers: ->
+		trackers = {}
+		if piwik
+			trackers.piwik =
+				id: 1
+		if googleAnalytics
+			trackers.googleAnalytics =
+				id: ''
+		trackers
 
 	mainCss: ->
 		if useCdn

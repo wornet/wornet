@@ -4,14 +4,14 @@ module.exports = (router) ->
 
 	templateFolder = 'user'
 	loginUrl = '/user/login'
+	signinUrl = '/user/signin'
 
 	pm = new PagesManager(router, templateFolder)
 
 	# When login/signin page displays
 	pm.page '/login', (req) ->
 		# Get errors in flash memory (any if AJAX is used and works on client device)
-		loginErrors: req.flash 'loginErrors'
-		signinErrors: req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
+		loginErrors: req.flash 'loginErrors' # Will be removed when errors will be displayed on the next step
 
 
 	# When user submit his e-mail and password to log in
@@ -48,10 +48,11 @@ module.exports = (router) ->
 			req.session.goingTo = req.body.goingTo
 		res.redirect loginUrl
 
-	# Any sign in page does not yet exists
-	router.get '/signin', (req, res) ->
 
-		res.redirect loginUrl
+	# When signin step 2 page displays
+	pm.page '/signin', (req) ->
+		# Get errors in flash memory (any if AJAX is used and works on client device)
+		signinErrors: req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
 
 	# When user submit his e-mail and password to sign in
 	router.put '/signin', (req, res) ->
@@ -60,11 +61,11 @@ module.exports = (router) ->
 		# A full name must contains a space but is not needed at the first step
 		if req.body.name? and req.body.name.full.indexOf(' ') is -1
 			req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
-			res.redirect loginUrl
+			res.redirect signinUrl
 		# Passwords must be identic
 		else if req.body.password isnt req.body.passwordCheck
 			req.flash 'signinErrors', s("Veuillez entrer des mots de passe identiques.")
-			res.redirect loginUrl # Will be removed when errors will be displayed at the second step
+			res.redirect signinUrl # Will be removed when errors will be displayed at the second step
 		# If no error
 		else
 			User.create
@@ -75,8 +76,12 @@ module.exports = (router) ->
 				password: req.body.password
 			, (saveErr, user) ->
 				if saveErr
-					req.flash 'signinErrors', saveErr
-					res.redirect loginUrl
+					switch (saveErr.code || 0)
+						when Errors.DUPLICATE_KEY
+							req.flash 'signinErrors', s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
+						else
+							req.flash 'signinErrors', saveErr.err
+					res.redirect signinUrl
 				else
 					# if "Se souvenir de moi" est coché
 					if req.body.remember?
@@ -88,7 +93,7 @@ module.exports = (router) ->
 						if req.session.goingTo?
 							url = req.session.goingTo
 					else
-						url = loginUrl
+						url = signinUrl
 					res.redirect url
 		# res.render templateFolder + '/signin', model
 

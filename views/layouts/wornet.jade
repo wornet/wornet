@@ -12,17 +12,8 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 			+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
 			+meta("apple-mobile-web-app-capable", "yes")
 			+meta("format-detection", "telephone=no")
-			+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture) ainsi que …")
+			+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture)…")
 			+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
-			//- KO
-				J'aimerais qu'on vérifie la pertinence de ces balises qui a priori ne sont lues
-				ni par les robots ni par les utilisateurs :
-				+meta("generator", "Wornet v1")
-				+meta("author", "Manuel Costes")
-				+meta("copyright", "© 2014 Wornet")
-
-				J'ai supprimé la balise de langue (car elle fait doublon avec la ligne 3 et de
-				plus, Wornet sera peut-être trauits en plusieurs langues)
 			+meta("_csrf", _csrf)
 		block css
 			each style in options.css().main
@@ -84,6 +75,12 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 			if datas
 				each value, name in datas
 					+data(name, value)
+			- var trackers = options.trackers()
+			if trackers.piwik
+				noscript: p: img(src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+				+data("piwik", trackers.piwik)
+			if trackers.googleAnalytics
+				+data("googleAnalytics", trackers.googleAnalytics)
 
 		//- .loader sera utilisé si je parviens à faire un système de navigation
 		//- AJAX compatible Angular

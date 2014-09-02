@@ -10,7 +10,7 @@ module.exports =
 	uglifyJs: (code) ->
 		jsp = require("uglify-js").parser
 		pro = require("uglify-js").uglify
-		ast = jsp.parse('try{' + code + '}catch(e){console.warn(e);}')
+		ast = jsp.parse('try{' + code.replace(/^['"]use strict['"];/g, '') + '}catch(e){console.warn(e);}')
 		ast = pro.ast_mangle(ast)
 		ast = pro.ast_squeeze(ast)
 		pro.gen_code(ast)
@@ -76,6 +76,7 @@ module.exports =
 			console.log '=========================='
 			console.log message
 			console.log '--------------------------'
+			console.log Date.log()
 			console.trace()
 			console.log '=========================='
 	,
