@@ -1,4 +1,4 @@
-var HOST, SERVICE command;
+var HOST, SERVICE, exec;
 HOST = (process.env.HOST || 'int.wornet.com');
 SERVICE = (process.env.SERVICE || 'wornetint');
 exec = require("child_process").exec;
