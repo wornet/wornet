@@ -2,7 +2,7 @@
 
 useCdn = false
 piwik = true
-googleAnalytics = false
+googleAnalytics = true
 
 module.exports = (port) ->
 
@@ -10,10 +10,11 @@ module.exports = (port) ->
 		trackers = {}
 		if piwik
 			trackers.piwik =
-				id: 1
+				id: 8
+				host: 'piwik.selfbuild.fr'
 		if googleAnalytics
 			trackers.googleAnalytics =
-				id: ''
+				id: 'UA-54493690-1'
 		trackers
 
 	mainCss: ->
