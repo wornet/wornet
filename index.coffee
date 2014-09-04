@@ -115,7 +115,7 @@ onready ->
 			And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
 			###
 			for lang, method of methods
-				if req.url is '/' + lang + '/all.' + lang
+				if (req._parseUrl || {}).pathname || req.url is '/' + lang + '/all.' + lang
 					file = __dirname + '/.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
