@@ -70,8 +70,8 @@ onready ->
 		if req.connection.remoteAddress is '127.0.0.1'
 			switch req.url
 				when '/git-status'
-					return exec 'git status', (err, data, errm) ->
-						res.end(if data.toString().indexOf('up-to-date') is -1 then 'KO' else 'OK')
+					return exec 'git pull', (err, data, errm) ->
+						res.end(if trim(data) is "Already up-to-date." then 'OK' else 'KO')
 
 		next = ->
 			# Parse body from requests
