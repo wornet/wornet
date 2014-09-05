@@ -1,2 +1,3 @@
 *.log
 *.lnk
+nodemon.json
