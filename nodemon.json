@@ -1,0 +1,5 @@
+{
+  "execMap": {
+    "coffee": "node_modules/.bin/coffee"
+  }
+}
