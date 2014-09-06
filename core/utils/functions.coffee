@@ -95,8 +95,6 @@ module.exports =
 	,
 	###
 	Return string value or "" if not able to convert
-	"4.7" > 4
-	"R" > 0
 	@param mixed value to convert
 
 	@return string value

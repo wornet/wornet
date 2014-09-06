@@ -1,6 +1,16 @@
 extends ../layouts/wornet
 
 
+block nav
+	header: nav: .container
+		#logo-content.col-md-5.col-sm-4.col-xs-12
+			img#logo.img-responsive(src=png("logohd") alt=s("Wornet"))
+		.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
+			.narrow.col-sm-6.col-sm-offset-6.col-xs-12
+				a.btn.btn-plain(href="/user/login")
+					=s("Connexion")
+
+
 block body
 	.container: section
 		#signinErrors
@@ -15,6 +25,7 @@ block body
 						+formControl()(
 							autofocus
 							required
+							pattern=pattern('email')
 							title=s("Votre e-mail")
 							ng-model="user.email"
 							name="email"

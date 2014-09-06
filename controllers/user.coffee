@@ -63,9 +63,14 @@ module.exports = (router) ->
 		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
 		# 	res.redirect signinUrl
 		# Passwords must be identic
-		if req.body.password isnt req.body.passwordCheck
+		wrongEmail = s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
+		log config.wornet.mail['hosts-black-list']
+		if config.wornet.mail['hosts-black-list'].indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
+			req.flash 'signinErrors', wrongEmail
+			res.redirect signinUrl
+		else if req.body.password isnt req.body.passwordCheck
 			req.flash 'signinErrors', s("Veuillez entrer des mots de passe identiques.")
-			res.redirect signinUrl # Will be removed when errors will be displayed at the second step
+			res.redirect signinUrl
 		# If no error
 		else if req.body.step is "2"
 			req.body.birthDate = strval(req.body.birthDate).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
@@ -88,7 +93,7 @@ module.exports = (router) ->
 						log saveErr
 						switch (saveErr.code || 0)
 							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
+								req.flash 'signinErrors', wrongEmail
 							else
 								req.flash 'signinErrors', (saveErr.err || strval(saveErr))
 						res.redirect signinUrl
