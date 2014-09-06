@@ -4,6 +4,8 @@
 	d.prototype.log = ->
 		@setHours(@getHours() + 2)
 		@toISOString().replace(/Z$/g, '').replace('T', '  ')
+	d.prototype.isValid = ->
+		@toString() isnt 'Invalid Date'
 	d.log = ->
 		(new d).log()
 )(Date)

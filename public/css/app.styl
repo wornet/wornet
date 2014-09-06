@@ -73,7 +73,7 @@ iframe
 	margin-left - $tooltipWidth - $mainPadding
 
 .tooltip-focus.right
-	margin-left $mainPadding
+	right $mainPadding - $tooltipWidth
 
 #wrap
 	min-height 100%
@@ -277,6 +277,21 @@ a#forget-it
 	&:hover
 		text-decoration none
 
+h2
+	// Paramètres relatif au texte. (Hérite de body)
+	color #5f5f5f
+	font-weight bold
+	font-size 20px
+	text-align center
+	padding-bottom 40px
+
+	// Marges externes et type d'élément.
+	margin 5px
+	display block
+
+.player
+	margin auto
+	height auto
 
 // Imports.
 @import "user/login"

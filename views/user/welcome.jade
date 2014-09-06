@@ -1,0 +1,19 @@
+extends ../layouts/wornet
+
+
+block body
+	.container: section
+		if user
+			h2
+				=s("Inscription réussie !")
+			.alert.alert-success
+				=s("Félicitations vos êtes désormais un worner ! Avant d’aller plus loin vous pouvez regarder cette courte vidéo vous présentant les principales fonctionnalités de votre réseau social.")
+		else
+			h2
+				=s("Bienvenue sur Wornet !")
+		iframe.player(data-ratio="1.7778" src="//www.youtube.com/embed/z1k6_mRONPI" frameborder="0" allowfullscreen)
+		if hasGoingTo
+			a.btn.btn-plain(href=goingTo)
+				=s("Reprendre là où j'en étais avant mon inscription")
+		a.btn.btn-plain(href="/user/profile")
+			=s("Accéder à mon profil")

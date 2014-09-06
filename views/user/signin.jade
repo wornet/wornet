@@ -1,13 +1,5 @@
 extends ../layouts/wornet
 
-block nav
-	header: nav: .container
-		#logo-content.col-md-5.col-sm-4.col-xs-12
-			img#logo.img-responsive(src=png("logohd") alt=s("Wornet"))
-		.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
-			.narrow.col-sm-6.col-sm-offset-6.col-xs-12
-				a.btn.btn-plain(href="/user/login")
-					=s("Connexion")
 
 block body
 	.container: section
@@ -17,67 +9,114 @@ block body
 					.alert.alert-danger
 						=error
 		.well
-			+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninCtrl")
-			.col-sm-6.col-xs-12
-				+formControl()(
-					title=s("Votre e-mail")
-					ng-model="user.email"
-					name="email"
-					placeholder=s("Votre e-mail")
-					tooltip!=[
-						s("Adresse électronique"),
-						s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet."),
-						"right"
-					])
-				.check-pass
+			+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninSecondStepCtrl")
+				.col-sm-6.col-xs-12
+					.cb
+						+formControl()(
+							autofocus
+							required
+							title=s("Votre e-mail")
+							ng-model="user.email"
+							name="email"
+							placeholder=s("Votre e-mail")
+							tooltip!=[
+								s("Adresse électronique"),
+								s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet."),
+								"right"
+							]).flash
+					.check-pass
+						+formControl("password")(
+							required
+							title=s("Votre mot de passe")
+							ng-model="user.password"
+							name="password"
+							placeholder=s("Votre mot de passe")
+							tooltip!=[
+								s("Mot de passe"),
+								s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
+								jd('.pass-security\n\t.bar'
+									+ '\n\t\t.inner.verylow ' + s("Faible")
+									+ '\n\t\t.inner.low ' + s("Assez faible")
+									+ '\n\t\t.inner.medium ' + s("Moyen")
+									+ '\n\t\t.inner.high ' + s("Fort")
+									+ '\n\t\t.inner.veryhigh ' + s("Très fort")
+								),
+								"right"
+							]).flash
 					+formControl("password")(
-						title=s("Votre mot de passe")
-						ng-model="user.password"
-						name="password"
-						placeholder=s("Votre mot de passe")
+						required
+						title=s("Confirmez votre mot de passe")
+						ng-model="user.passwordCheck"
+						name="passwordCheck"
+						placeholder=s("Confirmez votre mot de passe")
 						tooltip!=[
-							s("Mot de passe"),
-							s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
-							jd('.pass-security\n\t.bar'
-								+ '\n\t\t.inner.verylow ' + s("Faible")
-								+ '\n\t\t.inner.low ' + s("Assez faible")
-								+ '\n\t\t.inner.medium ' + s("Moyen")
-								+ '\n\t\t.inner.high ' + s("Fort")
-								+ '\n\t\t.inner.veryhigh ' + s("Très fort")
-							),
+							s("Confirmer le mot de passe"),
+							s("La confirmation du mot de passe permet d’éviter tout erreur de frappe."),
 							"right"
-						])
-				+formControl("password")(
-					title=s("Confirmez votre mot de passe")
-					ng-model="user.passwordCheck"
-					name="passwordCheck"
-					placeholder=s("Confirmez votre mot de passe")
-					tooltip!=[
-						s("Confirmer le mot de passe"),
-						s("La confirmation du mot de passe permet d’éviter tout erreur de frappe."),
-						"right"
-					])
-			.col-sm-6.col-xs-12
-				+formControl("name.fisrt")(
-					title=s("Prénom")
-					ng-model="user.name.first"
-					name="name.fisrt"
-					placeholder=s("Prénom"))
-				+formControl("name.last")(
-					title=s("Nom")
-					ng-model="user.name.last"
-					name="name.last"
-					placeholder=s("Nom"))
-				+formControl("birthDate")(
-					type="date"
-					title=s("Date de naissance")
-					ng-model="user.birthDate"
-					name="birthDate"
-					placeholder=s("Date de naissance")
-					tooltip!=[
-						s("Date de naissance"),
-						s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")
-					])
-			.col-sm-6.col-sm-offset-3.col-xs-12
-				input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
-			.cb
+						]).flash
+				.col-sm-6.col-xs-12
+					+formControl("name.fisrt")(
+						required
+						title=s("Prénom")
+						ng-model="user.name.first"
+						name="name.first"
+						placeholder=s("Prénom")).flash
+					+formControl("name.last")(
+						required
+						title=s("Nom")
+						ng-model="user.name.last"
+						name="name.last"
+						placeholder=s("Nom")).flash
+					+formControl("birthDate")(
+						required
+						type="date"
+						title=s("Date de naissance")
+						ng-model="user.birthDate"
+						name="birthDate"
+						placeholder=s("Date de naissance")
+						tooltip!=[
+							s("Date de naissance"),
+							s("Votre date de naissance est obligatoire. Elle nous permet de vérifier si vous entrez bien dans la tranche d’âge définit par nos conditions générales d’utilisations et permet à vos amis de vous retrouver instantanément.")
+						]).flash
+				.col-sm-6.col-sm-offset-3.col-xs-12
+					label.mobile-field
+						input(type="checkbox" ng-model="user.remember" name="remember" tabindex="3" checked).flash
+						=s("Se souvenir de moi")
+					label.mobile-field
+						input(type="checkbox" ng-model="user.legals" name="legals" required).flash
+						- var legals = jd('a(data-toggle="modal" data-target="#legals")\n\t="' + s("les conditions générales d'utilisation") + '"')
+						- var privacyPolicy = jd('a(data-toggle="modal" data-target="#privacyPolicy")\n\t="' + s("la politique de confidentialité") + '"')
+						!=s("J'accepte {legals} et {privacyPolicy}", { legals: legals, privacyPolicy: privacyPolicy })
+					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
+					input(type="hidden" ng-model="user.step" name="step" value="2")
+				.cb
+
+		#legals.modal.fade: .modal-dialog: .modal-content
+			.modal-header
+				button.close(type='button', data-dismiss='modal')
+					span(aria-hidden='true') ×
+					span.sr-only
+						=s("Fermer")
+				h4.modal-title
+					=s("Conditions générales")
+			.modal-body
+				p
+					=s("Blablabla")
+			.modal-footer
+				button.btn.btn-default(type='button', data-dismiss='modal')
+					=s("Fermer")
+
+		#privacyPolicy.modal.fade: .modal-dialog: .modal-content
+			.modal-header
+				button.close(type='button', data-dismiss='modal')
+					span(aria-hidden='true') ×
+					span.sr-only
+						=s("Fermer")
+				h4.modal-title
+					=s("Politique de confidentialité")
+			.modal-body
+				p
+					=s("Blablabla")
+			.modal-footer
+				button.btn.btn-default(type='button', data-dismiss='modal')
+					=s("Fermer")

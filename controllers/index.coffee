@@ -3,10 +3,10 @@
 module.exports = (router) ->
 
 
-	(new PagesManager(router))
-		.page('/newsroom')
-		.page('/jobs')
-		.page('/legals')
+	new PagesManager router
+		.page '/newsroom'
+		.page '/jobs'
+		.page '/legals'
 
 
 	alias =

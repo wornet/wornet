@@ -6,7 +6,7 @@ module.exports = (router) ->
 	loginUrl = '/user/login'
 	signinUrl = '/user/signin'
 
-	pm = new PagesManager(router, templateFolder)
+	pm = new PagesManager router, templateFolder
 
 	# When login/signin page displays
 	pm.page '/login', (req) ->
@@ -59,52 +59,60 @@ module.exports = (router) ->
 
 		model = {}
 		# A full name must contains a space but is not needed at the first step
-		if req.body.name? and req.body.name.full.indexOf(' ') is -1
-			req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
-			res.redirect signinUrl
+		# if req.body.name? and req.body.name.full.indexOf(' ') is -1
+		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
+		# 	res.redirect signinUrl
 		# Passwords must be identic
-		else if req.body.password isnt req.body.passwordCheck
+		if req.body.password isnt req.body.passwordCheck
 			req.flash 'signinErrors', s("Veuillez entrer des mots de passe identiques.")
 			res.redirect signinUrl # Will be removed when errors will be displayed at the second step
 		# If no error
-		else
-			User.create
-				name:
-					full: if req.body.name? and req.body.name.full? then req.body.name.full else null
-				registerDate: new Date
-				email: req.body.email
-				password: req.body.password
-			, (saveErr, user) ->
-				if saveErr
-					switch (saveErr.code || 0)
-						when Errors.DUPLICATE_KEY
-							req.flash 'signinErrors', s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
-						else
-							req.flash 'signinErrors', saveErr.err
-					res.redirect signinUrl
-				else
-					# if "Se souvenir de moi" est coché
-					if req.body.remember?
-						auth.remember res, user._id
-					# Put user in session
-					auth.auth req, res, user
-					url = '/'
-					if user
-						if req.session.goingTo?
-							url = req.session.goingTo
+		else if req.body.step is "2"
+			req.body.birthDate = strval(req.body.birthDate).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
+			birthDate = new Date(req.body.birthDate)
+			# A full name must contains a space but is not needed at the first step
+			if !birthDate.isValid()
+				req.flash 'signinErrors', s("Veuillez entrer votre date de naissance au format jj/mm/aaaa ou aaaa-mm-jj.")
+				res.redirect signinUrl
+			else
+				User.create 
+					name:
+						first: req.body['name.first']
+						last: req.body['name.last']
+					registerDate: new Date
+					email: req.body.email
+					password: req.body.password
+					birthDate: birthDate
+				, (saveErr, user) ->
+					if saveErr
+						log saveErr
+						switch (saveErr.code || 0)
+							when Errors.DUPLICATE_KEY
+								req.flash 'signinErrors', s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
+							else
+								req.flash 'signinErrors', (saveErr.err || strval(saveErr))
+						res.redirect signinUrl
 					else
-						url = signinUrl
-					res.redirect url
+						# if "Se souvenir de moi" est coché
+						if req.body.remember?
+							auth.remember res, user._id
+						# Put user in session
+						auth.auth req, res, user
+						url = '/user/welcome'
+						res.redirect if user then '/user/welcome' else signinUrl
+		else
+			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
 
 	pm.page '/forgotten-password'
 
 	pm.page '/forgotten-password', null, 'post'
 
-	pm.page '/newsroom'
+	pm.page '/welcome', (req) ->
+		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/user/profile')
+		goingTo: req.session.goingTo
 
-	pm.page '/profile', (req) ->
-		user: req.user
+	pm.page '/profile'
 
 	router.post '/photo', (req, res) ->
 

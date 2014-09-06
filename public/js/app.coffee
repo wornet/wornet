@@ -19,7 +19,7 @@ Controllers =
 					else
 						$('#loginErrors').errors data.err
 
-	Signin: ($scope) ->
+	SigninFirstStep: ($scope) ->
 	# 	$scope.submit = (user) ->
 	# 		Ajax.page (done, cancel) ->
 	# 			user._method = "PUT"
@@ -487,6 +487,45 @@ $(document)
 
 	.on 'touchstart', 'img', (e) ->
 		e.preventDefault()
+
+	.on 'submit', 'form', ->
+		if sessionStorage
+			$(@).find('.flash').each ->
+				$field = $ @
+				sessionStorage[$field.attr('ng-model')] =
+					if $field.prop('type') is 'checkbox'
+						if $field.prop('checked') then 'on' else 'off'
+					else
+						$field.val()
+
+
+$('.flash').each ->
+	$field = $ @
+	name = $field.attr('ng-model')
+	if $field.prop('type') is 'checkbox'
+		if sessionStorage[name] is 'on'
+			$field.prop 'checked', true
+		if sessionStorage[name] is 'off'
+			$field.prop 'checked', false
+	else
+		val = $field.val()
+		if !val || !val.length
+			$field.val sessionStorage[name]
+	delete sessionStorage[name]
+
+
+onResize = (fct) ->
+	$(window).resize fct
+	fct.call @
+
+
+onResize ->
+	$('[data-ratio]').each ->
+		$block = $ @
+		ratio = $block.data('ratio') * 1
+		if ratio > 0
+			$block.height $block.width() / ratio
+
 
 dateTexts = getData('dateTexts')
 

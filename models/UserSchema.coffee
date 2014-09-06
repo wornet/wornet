@@ -6,10 +6,12 @@ userSchema = new Schema
 			type: String
 			validate: [regex('simple-text'), 'invalid first name']
 			trim: true
+			required: true
 		last:
 			type: String
 			validate: [regex('simple-text'), 'invalid last name']
 			trim: true
+			required: true
 	password:
 		type: String
 		required: true

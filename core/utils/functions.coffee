@@ -94,6 +94,17 @@ module.exports =
 		r
 	,
 	###
+	Return string value or "" if not able to convert
+	"4.7" > 4
+	"R" > 0
+	@param mixed value to convert
+
+	@return string value
+	###
+	strval: (str) ->
+		str + ''
+	,
+	###
 	Return integer value or 0 if not able to convert
 	"4.7" > 4
 	"R" > 0

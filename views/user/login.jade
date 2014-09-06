@@ -27,14 +27,14 @@ block body
 	.container: section
 		.col-sm-4.col-sm-offset-4.col-xs-12
 			.col-md-8.col-md-offset-2.col-sm-12
-				#slogan
+				h2
 					=s("Ouvrez un compte, c'est gratuit.")
 				#signinErrors
 					if signinErrors
 						each error in signinErrors
 							.alert.alert-danger
 								=error
-				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninCtrl")
+				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninFirstStepCtrl")
 					+formControl()(
 						title=s("Votre e-mail")
 						ng-model="user.email"
@@ -43,7 +43,7 @@ block body
 						tooltip!=[
 							s("Adresse électronique"),
 							s("Votre adresse électronique est affiliée à votre profil, elle nous permet de vérifier votre identité et vous permet d’accéder à votre compte wornet.")
-						])
+						]).flash
 					.check-pass
 						+formControl("password")(
 							title=s("Votre mot de passe")
@@ -60,7 +60,7 @@ block body
 									+ '\n\t\t.inner.high ' + s("Fort")
 									+ '\n\t\t.inner.veryhigh ' + s("Très fort")
 								)
-							])
+							]).flash
 					+formControl("password")(
 						title=s("Confirmez votre mot de passe")
 						ng-model="user.passwordCheck"
@@ -69,7 +69,7 @@ block body
 						tooltip!=[
 							s("Confirmer le mot de passe"),
 							s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")
-						])
+						]).flash
 					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
 		#quotes.col-sm-3.col-xs-12
 			blockquote
