@@ -2,6 +2,16 @@ extends ../layouts/wornet
 
 block nav
 	nav#navbar.navbar.navbar-fixed-top
-		#navbar-left-menu
-		#navbar-logo-content
-		#navbar-right-menu
+		ul.nav.navbar-nav
+			li.active: a(href="/")
+				glyph("globe")
+				&nbsp; &nbsp;
+				=s("Accueil")
+			li.active: a(href="/")
+				glyph("envelope")
+				=s("Message")
+
+		h1
+			=s("WORNET")
+
+block footer

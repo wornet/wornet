@@ -47,9 +47,9 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 				.alert.alert-danger
 					- var upgradeUrl = "http://rowsehappy.com/"
 					- var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"
-					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Upgrade to a different browser") + '"')
-					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("install Google Chrome Frame") + '"')
-					!=s("Your browser is too old! {upgradeYourBrowser} or {installIeFrame} to experience this site.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Téléchargez un autre navigateur") + '"')
+					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("installez Google Chrome Frame") + '"')
+					!=s("Votre navigateur est obsolète. {upgradeYourBrowser} ou {installIeFrame} pour profiter de Wornet.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
 			noscript
 				.alert.alert-danger
 					=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")

@@ -21,6 +21,9 @@ mixin data(name, value)
 mixin csrf()
 	input(type="hidden" name="_csrf" value=_csrf)
 
+mixin glyph(type)
+	span(class="glyphicon glyphicon-" + type)
+
 mixin form(url, method)
 
 	- var enctype, _method, maxsize = -1

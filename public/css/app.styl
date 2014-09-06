@@ -31,16 +31,16 @@ body
 	background url(jpg(background-image-small)) no-repeat center fixed
 	background-size(cover) 
 
-header
-	height $headerHeight
-
 body
 	// Police de charactères.
 	font 14px/1.4 $fonts
 	padding-bottom $footerHeight
 
+.fit
+	padding 0
+
 #logo-content
-	padding 10px
+	padding $mainPadding
 
 iframe
 	size(100%, 0px)
@@ -56,24 +56,6 @@ iframe
 	&.preload
 		height 0
 
-.tooltip-focus .tooltip-inner
-	text-align left
-	width $tooltipWidth
-	max-width $tooltipWidth - 5
-
-.tooltip-focus
-	display none
-	width $tooltipWidth
-
-.tooltip.tooltip-focus .tooltip-arrow
-	top 15px
-	margin-right -5px
-
-.tooltip-focus.left
-	margin-left - $tooltipWidth - $mainPadding
-
-.tooltip-focus.right
-	right $mainPadding - $tooltipWidth
 
 #wrap
 	min-height 100%
@@ -115,68 +97,25 @@ body>footer
 		&:hover
 			text-decoration underline
 
+
+
 .navbar
-	color #000
+	color white
 	size(100%, 50px)
-	background-color #ffffff
-	border-bottom 1px solid #eee
-	box-shadow(0px 0px 4px 2px #DADADA)
-
-
-// Infobulles (tooltip)
-.tooltip.fade.left.in
-	rel(0, 0)
-	width 0
-
-.navbar #navbar-logo-content
-	display inline-block
-	background url(png(logo)) no-repeat center
-
-	margin auto
-	height 50px
-
-
-#navbar-right-menu
-	display inline-block
-
-	height 50px
-	padding 12px
-
-#navbar-left-menu
-	display inline-block
-
-	height 50px
-	padding 12px
+	background-color $orange
 
 .navbar a
-	color #C0C0C0
+	color inherit
 	padding 20px
 	text-decoration none
 	display inline
 	&:hover
-		color #FCA000
+		color $orange
 
+.navbar h1
+	margin 4px
+	text-align center
 
-
-.tooltip-inner
-	padding 0
-	background white
-	border 1px solid gray
-	border-radius(5px)
-	border-right 1px solid gray
-
-	p
-		padding 4px 8px
-		color $darkOrange
-	h4
-		padding 3px 10px 1px 35px
-		margin 0 0 2px
-		color #fff
-		fonts $fonts 18px bold
-		background $orange url(png(i)) no-repeat 0px center
-		background-size(40px 40px)
-		border-bottom 1px solid gray
-		border-radius(5px 5px 1px 1px)
 
 .ref-color
 	color $orange
@@ -294,6 +233,7 @@ h2
 	height auto
 
 // Imports.
+@import "includes/tooltip"
 @import "user/login"
 @import "user/profile"
 @import "agenda"

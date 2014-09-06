@@ -64,7 +64,6 @@ module.exports = (router) ->
 		# 	res.redirect signinUrl
 		# Passwords must be identic
 		wrongEmail = s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
-		log config.wornet.mail['hosts-black-list']
 		if config.wornet.mail['hosts-black-list'].indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
 			req.flash 'signinErrors', wrongEmail
 			res.redirect signinUrl

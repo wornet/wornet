@@ -1,0 +1,44 @@
+
+// Infobulles (tooltip)
+.tooltip.fade.left.in
+	rel(0, 0)
+	width 0
+
+.tooltip-focus .tooltip-inner
+	text-align left
+	width $tooltipWidth
+	max-width $tooltipWidth - 5
+
+.tooltip-focus
+	display none
+	width $tooltipWidth
+
+.tooltip.tooltip-focus .tooltip-arrow
+	top 15px
+	margin-right -5px
+
+.tooltip-focus.left
+	margin-left - $tooltipWidth - $mainPadding
+
+.tooltip-focus.right
+	right $mainPadding - $tooltipWidth
+
+.tooltip-inner
+	padding 0
+	background white
+	border 1px solid gray
+	border-radius(5px)
+	border-right 1px solid gray
+
+	p
+		padding 4px 8px
+		color $darkOrange
+	h4
+		padding 3px 10px 1px 35px
+		margin 0 0 2px
+		color #fff
+		fonts $fonts 18px bold
+		background $orange url(png(i)) no-repeat 0px center
+		background-size(40px 40px)
+		border-bottom 1px solid gray
+		border-radius(5px 5px 1px 1px)
