@@ -27,9 +27,10 @@ body
 	-webkit-touch-callout none
 	user-select(none)
 
-	// Paramètres du fond de la page.
-	background url(jpg(background-image-small)) no-repeat center fixed
-	background-size(cover) 
+	&.openingTemplate
+		// Paramètres du fond de la page.
+		background url(jpg(background-image-small)) no-repeat center fixed
+		background-size(cover) 
 
 body
 	// Police de charactères.
@@ -64,7 +65,7 @@ iframe
 	margin 0 auto -$footerHeight
 	padding 0 0 $footerHeight
 
-body>footer
+footer
 	// Tailles du pied de page.
 	size(100%, $footerHeight)
 
@@ -101,12 +102,11 @@ body>footer
 
 .navbar
 	color white
-	size(100%, 50px)
+	width 100%
 	background-color $orange
 
 .navbar a
 	color inherit
-	padding 20px
 	text-decoration none
 	display inline
 	&:hover
@@ -116,6 +116,9 @@ body>footer
 	margin 4px
 	text-align center
 
+
+#params
+	text-align right
 
 .ref-color
 	color $orange
@@ -194,13 +197,17 @@ select.form-control
 img#logo
 	width 350px
 
+.std-line
+	display inline-block
+	line-height 14px
+	vertical-align bottom
+
 label
 	font-weight normal
-	vertical-align top
-	line-height $fieldLineHeight
 	color $linkcolor
 	input[type="checkbox"]
-		margin-top 3px
+		position relative
+		top 2px
 		margin-right $smallPadding
 
 // Formulaire de connexion.	
@@ -222,11 +229,14 @@ h2
 	font-weight bold
 	font-size 20px
 	text-align center
-	padding-bottom 40px
 
 	// Marges externes et type d'élément.
 	margin 5px
 	display block
+
+#createAccountTitle
+	padding-top $mainPadding
+	padding-bottom 2 * $bigPadding
 
 .player
 	margin auto
@@ -237,3 +247,45 @@ h2
 @import "user/login"
 @import "user/profile"
 @import "agenda"
+
+
+// Media Queries.
+@media (max-width: 767px)
+	.navbar h1
+		display none
+	#createAccountTitle
+		padding-bottom $bigPadding
+	img#logo
+		margin auto
+	#slogan
+		padding-top $bigPadding * 1.5
+		padding-bottom $smallPadding
+	.mobile-field
+		padding $fieldVPadding $fieldHPadding
+		margin $mainPadding 0
+		line-height $fieldLineHeight + $mobileIncrease*0.5
+		display block
+		background rgba(255, 255, 255, 0.8)
+		border-radius(4px)
+	input.form-control
+	.btn
+		line-height $fieldLineHeight + $mobileIncrease*0.5
+		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2 !important
+		height $fieldLineHeight + $mobileIncrease
+	.icon-bar
+		background white
+	.navbar-brand
+		
+	footer
+		a.link
+		.copytag
+			padding $smallPadding
+			margin $smallPadding 0 0
+
+@media (min-width: 768px)
+	.navbar-header
+		display none
+
+@media (max-width: 991px)
+	img#logo
+		margin $bigPadding auto

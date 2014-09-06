@@ -1,3 +1,7 @@
+- var mainTitle = s("Wornet")
+- var upperTitle = strtoupper(mainTitle)
+block params
+	- var bodyClasses = 'openingTemplate'
 include ../includes/mixins
 doctype html
 html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
@@ -5,7 +9,7 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 		meta(charset="UTF-8")
 		title
 			block title
-				=s("Wornet")
+				=mainTitle
 		base(href="/")
 		block meta
 			meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
@@ -39,7 +43,7 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 						)(document.createElement)
 		block head
 
-	body(ng-app="Wornet")
+	body(ng-app="Wornet" class=bodyClasses)
 
 		#wrap
 			block nav
@@ -57,8 +61,8 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 			div(role="main")
 				block body
 
-		footer
-			block footer
+		block footer
+			footer
 				.row.col-sm-8.col-sm-offset-2
 					a.link.col-sm-3.col-xs-6(href="/newsroom")
 						=s("Newsroom")
@@ -67,16 +71,17 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 					a.link.col-sm-3.col-xs-6(href="/legals")
 						=s("Mentions légales")
 					span.copytag.col-sm-3.col-xs-6(data="right")
-						!=s("{c} 2014 Wornet", { c: "&#169;" })
-			if datas
-				each value, name in datas
-					+data(name, value)
-			- var trackers = options.trackers()
-			if trackers.piwik
-				noscript: p: img(src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
-				+data("piwik", trackers.piwik)
-			if trackers.googleAnalytics
-				+data("googleAnalytics", trackers.googleAnalytics)
+						!=s("{c} 2014 ", { c: "&#169;" })
+						=mainTitle
+		if datas
+			each value, name in datas
+				+data(name, value)
+		- var trackers = options.trackers()
+		if trackers.piwik
+			noscript: p: img(src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+			+data("piwik", trackers.piwik)
+		if trackers.googleAnalytics
+			+data("googleAnalytics", trackers.googleAnalytics)
 
 		//- .loader sera utilisé si je parviens à faire un système de navigation
 		//- AJAX compatible Angular

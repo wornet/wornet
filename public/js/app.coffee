@@ -2,6 +2,7 @@ Controllers =
 
 	Login: ($scope) ->
 		# Get remember preference of the user if previously saved (default: true)
+		$scope.user = $scope.user || {}
 		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
 		# When the form is submitted
 		$scope.submit = (user) ->
@@ -20,17 +21,12 @@ Controllers =
 						$('#loginErrors').errors data.err
 
 	SigninFirstStep: ($scope) ->
-	# 	$scope.submit = (user) ->
-	# 		Ajax.page (done, cancel) ->
-	# 			user._method = "PUT"
-	# 			user._csrf = user._csrf || $('head meta[name="_csrf"]').attr 'content'
-	# 			$.post '/user/signin', user, (data) ->
-	# 				$errors = $(data).find('#signinErrors .alert')
-	# 				if $errors.length
-	# 					cancel data
-	# 					$('#signinErrors').append $errors
-	# 				else
-	# 					done data
+		$scope.submit = (user) ->
+			user.remember = $('[ng-model="user.remember"]').prop 'checked'
+			sessionStorage['user'] = JSON.stringify user
+
+	SigninSecondStep: ($scope) ->
+		$scope.user = $.parseJSON sessionStorage['user']
 
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
@@ -487,31 +483,6 @@ $(document)
 
 	.on 'touchstart', 'img', (e) ->
 		e.preventDefault()
-
-	.on 'submit', 'form', ->
-		if sessionStorage
-			$(@).find('.flash').each ->
-				$field = $ @
-				sessionStorage[$field.attr('ng-model')] =
-					if $field.prop('type') is 'checkbox'
-						if $field.prop('checked') then 'on' else 'off'
-					else
-						$field.val()
-
-
-$('.flash').each ->
-	$field = $ @
-	name = $field.attr('ng-model')
-	if $field.prop('type') is 'checkbox'
-		if sessionStorage[name] is 'on'
-			$field.prop 'checked', true
-		if sessionStorage[name] is 'off'
-			$field.prop 'checked', false
-	else
-		val = $field.val()
-		if !val || !val.length
-			$field.val sessionStorage[name]
-	delete sessionStorage[name]
 
 
 onResize = (fct) ->

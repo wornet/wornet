@@ -13,12 +13,12 @@ block nav
 			+form#login("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")
 				.narrow.col-sm-4.col-xs-12
 					+formControl()(required autofocus tabindex="1" pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
-					label.mobile-field
+					label.mobile-field.std-line
 						input(type="checkbox" ng-model="user.remember" name="remember" tabindex="3" checked)
 						=s("Se souvenir de moi")
 				.narrow.col-sm-4.col-xs-12
 					+formControl("password")(required tabindex="2" ng-model="user.password" name="password" placeholder=s("Mot de passe"))
-					a#forget-it.mobile-field(href="/user/forgotten-password" tabindex="4")
+					a#forget-it.mobile-field.std-line(href="/user/forgotten-password" tabindex="4")
 						=s("Oublié ?")
 				.narrow.col-sm-4.col-xs-12
 					input.btn.btn-plain(type="submit" value=s("Se connecter") tabindex="5")
@@ -27,7 +27,7 @@ block body
 	.container: section
 		.col-sm-4.col-sm-offset-4.col-xs-12.fit
 			.col-md-8.col-md-offset-2.col-sm-12
-				h2
+				h2#createAccountTitle
 					=s("Ouvrez un compte, c'est gratuit.")
 				#signinErrors
 					if signinErrors

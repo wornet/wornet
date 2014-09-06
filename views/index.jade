@@ -25,11 +25,11 @@ block body
 	+form("/")
 		.input-group
 			.input-group-addon
-				glyph("user")
+				+glyph("user")
 			input.form-control(type="text" name="name[full]" required pattern=pattern('fullname') placeholder=s("Prénom Nom"))
 		.input-group
 			.input-group-addon
-				glyph("envelope")
+				+glyph("envelope")
 			input.form-control(type="email" name="email" required pattern=pattern('email') placeholder=s("Adresse e-mail"))
 		.input-group
 			input.btn.btn-primary(type="submit")
