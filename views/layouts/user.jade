@@ -42,6 +42,18 @@ block nav
 					a(href="#")
 						+glyph("list")
 
-		#params.col-sm-4
+	nav#underbar.nav.navbar
+		ul.nav.navbar-nav.navbar-left
+			li.dropdown
+				a.dropdown-toggle(href="#", data-toggle="dropdown")
+					=s("Notifications")
+					&nbsp; &nbsp;
+					span.pill
+						=intval(notifications.length)
+				ul.dropdown-menu(role='menu')
+					each notification, id in notifications
+						li
+							a(href="/notification/" + id)
+								=notification
 
 block footer

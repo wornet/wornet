@@ -116,7 +116,8 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/user/profile')
 		goingTo: req.session.goingTo
 
-	pm.page '/profile'
+	pm.page '/profile', ->
+		notifications: [s("Bienvenue sur Wornet !")]
 
 	router.post '/photo', (req, res) ->
 

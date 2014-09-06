@@ -22,12 +22,13 @@ body
 	padding 0
 
 body
-	padding-top 35px
+	padding-top 50px
 	// Bloquage de la séléction sur tous les navigateurs.
 	-webkit-touch-callout none
 	user-select(none)
 
 	&.openingTemplate
+		padding-top 35px
 		// Paramètres du fond de la page.
 		background url(jpg(background-image-small)) no-repeat center fixed
 		background-size(cover) 
@@ -101,9 +102,9 @@ footer
 
 
 .navbar
+	font-size 17px
 	color white
-	width 100%
-	background-color $orange
+	background $orange
 
 .navbar a
 	color inherit
@@ -117,8 +118,21 @@ footer
 	text-align center
 
 
-#params
-	text-align right
+#navbar .container-fluid
+	padding-left 0
+
+
+#underbar
+	background $lightGray
+	color $black
+
+.pill
+	display inline-block
+	background $black
+	color $lightGray
+	padding 2px 10px
+	border-radius(100%)
+
 
 .ref-color
 	color $orange
