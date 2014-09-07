@@ -208,21 +208,26 @@ module.exports =
 				id = photo.id
 				photoDirectory = __dirname + '/../../public/img/photo/'
 				dst = photoDirectory + id + '.jpg'
-				thumb = photoDirectory + '90x' + id + '.jpg'
 				copy req.files.photo.path, dst
-				if album is 0
+				sizes = [50, 90, 200]
+				pending = sizes.length
+				for size in sizes
+					thumb = photoDirectory + size + 'x' + id + '.jpg'
 					imagemagick.resize
 						srcPath: req.files.photo.path
 						dstPath: thumb
-						width: 90
-						height: 90
+						strip : false,
+						width : size,
+						height : size + "^",
+						customArgs: [
+							"-gravity", "center"
+							"-extent", size + "x" + size
+						]
 					, (resizeErr) ->
 						if resizeErr
 							done resizeErr
-						else
+						else unless --pending
 							updateUser req, photoId: id, done
-				else
-					done()
 	,
 	###
 	Return a string in lower case

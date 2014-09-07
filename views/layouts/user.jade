@@ -1,12 +1,38 @@
 extends ../layouts/wornet
 
+mixin notifications(classes)
+	ul.nav(class=classes): li.dropdown
+		a.dropdown-toggle(href="#" data-toggle="dropdown")
+			span.mobile
+				+glyph('globe')
+				&nbsp; &nbsp;
+			=s("Notifications")
+			&nbsp; &nbsp;
+			span.pill
+				=intval(notifications.length)
+		ul.dropdown-menu(role='menu')
+			each notification, id in notifications
+				li: a(href="/notification/" + id)
+					=notification
+
+mixin friends(classes)
+	ul.nav(class=classes)
+		li: a
+			span.mobile
+				+glyph('th-large')
+				&nbsp; &nbsp;
+			=s("Aucun ami connecté|1 ami connecté|{count} amis connectés", {}, intval(0))
+
+
 block params
 	- var bodyClasses = null
 
 block nav
 	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation'): .container-fluid
+		h1.col-xs-12
+			=upperTitle
 		.navbar-header
-			button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#mainLinks')
+			button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
 				span.sr-only Toggle navigation
 				span.icon-bar
 				span.icon-bar
@@ -14,46 +40,45 @@ block nav
 			a.navbar-brand(href='#')
 				=upperTitle
 		#mainLinks.collapse.navbar-collapse
-			ul.nav.navbar-nav.col-sm-4
-				li.active: a(href="/")
-					+glyph("globe")
+			ul.nav.navbar-nav.navbar-left.col-sm-6
+				li: a(href="/")
+					+glyph("home")
 					&nbsp; &nbsp;
 					=s("Accueil")
-				li.active: a(href="/")
+				li: a(href="/")
 					+glyph("envelope")
 					&nbsp; &nbsp;
 					=s("Message")
-
-			h1.col-sm-4
-				=upperTitle
-
+				li.mobile: +notifications()
+				li.mobile: +friends()
 			ul.nav.navbar-nav.navbar-right
 				li.dropdown
-					a.dropdown-toggle(href="#", data-toggle="dropdown")
+					a.dropdown-toggle(href="#" data-toggle="dropdown")
+						span.mobile
+							+glyph('user')
+							&nbsp; &nbsp;
 						=user.name.first
 						&nbsp;
 						=user.name.last
+						&nbsp;
 						span.caret
 					ul.dropdown-menu(role='menu')
-						li
-							a(href="/user/logout")
+						li: a(href="/user/logout")
 								=s("Déconnexion")
-				li.dropdown
-					a(href="#")
-						+glyph("list")
+				li: a(href="#")
+					+glyph("list")
+					span.mobile
+						&nbsp; &nbsp;
+						=s("Options")
 
-	nav#underbar.nav.navbar
-		ul.nav.navbar-nav.navbar-left
-			li.dropdown
-				a.dropdown-toggle(href="#", data-toggle="dropdown")
-					=s("Notifications")
-					&nbsp; &nbsp;
-					span.pill
-						=intval(notifications.length)
-				ul.dropdown-menu(role='menu')
-					each notification, id in notifications
-						li
-							a(href="/notification/" + id)
-								=notification
+	nav#underbar.nav.navbar.cb
+		+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
+		+form("#")(ng-controller="SigninFirstStepCtrl" role="search").navbar-form.navbar-left.col-sm-4.col-xs-12
+			label
+				+formControl()(
+					placeholder=s("Recherchez vos amis")
+					)#search
+				+glyph('search')
+		+friends('desktop navbar-nav navbar-right')
 
 block footer

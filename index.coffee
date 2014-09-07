@@ -86,20 +86,22 @@ onready ->
 
 		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			# Load all scripts in core/global/request directory
-			glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
-				pendingFiles = files.length
-				if pendingFiles
-					files.forEach (file) ->
-						value = require file
-						if typeof(value) is 'function'
-							value req, res, ->
-								unless --pendingFiles
-									next()
-						else
-							unless --pendingFiles
-								next()
-				else
-					next()
+			# Not yet needed
+			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
+			# 	pendingFiles = files.length
+			# 	if pendingFiles
+			# 		files.forEach (file) ->
+			# 			value = require file
+			# 			if typeof(value) is 'function'
+			# 				value req, res, ->
+			# 					unless --pendingFiles
+			# 						next()
+			# 			else
+			# 				unless --pendingFiles
+			# 					next()
+			# 	else
+			# 		next()
+			next()
 		else
 			req.isStatic = true
 			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)

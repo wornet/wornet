@@ -22,7 +22,7 @@ body
 	padding 0
 
 body
-	padding-top 50px
+	padding-top $headerHeight
 	// Bloquage de la séléction sur tous les navigateurs.
 	-webkit-touch-callout none
 	user-select(none)
@@ -104,6 +104,8 @@ footer
 .navbar
 	font-size 17px
 	color white
+
+#navbar
 	background $orange
 
 .navbar a
@@ -113,26 +115,26 @@ footer
 	&:hover
 		color $orange
 
-.navbar h1
-	margin 4px
-	text-align center
-
-
-#navbar .container-fluid
-	padding-left 0
-
 
 #underbar
 	background $lightGray
 	color $black
+	ul.navbar-right
+		margin-right 0
+	.navbar-form label
+		display block
 
 .pill
 	display inline-block
 	background $black
 	color $lightGray
-	padding 2px 10px
+	padding 0 9px
 	border-radius(100%)
 
+#search
+	margin 2px 0 -1px
+	height 32px !important
+	height 22px
 
 .ref-color
 	color $orange
@@ -266,6 +268,7 @@ h2
 // Media Queries.
 @media (max-width: 767px)
 	.navbar h1
+	.desktop
 		display none
 	#createAccountTitle
 		padding-bottom $bigPadding
@@ -288,8 +291,12 @@ h2
 		height $fieldLineHeight + $mobileIncrease
 	.icon-bar
 		background white
-	.navbar-brand
-		
+	#underbar .navbar-form
+		padding 3px 0 5px 30px
+		.glyphicon
+			margin 0 6px -999px
+			top -23px
+			float right
 	footer
 		a.link
 		.copytag
@@ -298,7 +305,23 @@ h2
 
 @media (min-width: 768px)
 	.navbar-header
+	.mobile
+	.nav>li.mobile
 		display none
+	.navbar h1
+		margin 4px 0 (- $headerHeight) 0
+		padding-left 30px
+		text-align center
+	#navbar .container-fluid
+		padding-left 0
+	#underbar .navbar-form
+		width 33.33333333%
+		label
+		.form-control
+			width 100%
+		.glyphicon
+			margin-left -28px
+			top 4px
 
 @media (max-width: 991px)
 	img#logo
