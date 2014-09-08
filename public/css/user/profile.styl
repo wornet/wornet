@@ -1,13 +1,13 @@
-$photoWidth = 90px
-$photoHeight = 90px
-$photoRadius = 100%
+$photoWidth = 200px
+$photoHeight = 200px
+$photoRadius = false
 $progressRadialWidth = 4px
 
 #profile-photo
-	width $photoWidth + 2 * $progressRadialWidth
-	height $photoHeight + 2 * $progressRadialWidth
+	size($photoWidth + 2 * $progressRadialWidth, $photoHeight + 2 * $progressRadialWidth)
 	position relative
-	margin $mainPadding auto
+	float left
+	margin 0 $mainPadding 0 0
 
 	.progress-radial
 	.progress-radial .overlay
@@ -15,8 +15,7 @@ $progressRadialWidth = 4px
 	input.upload
 	.loader
 		position absolute
-		width 100%
-		height 100%
+		size(100%, 100%)
 
 	input.upload
 		cursor pointer
@@ -25,7 +24,8 @@ $progressRadialWidth = 4px
 	.progress-radial
 	.progress-radial .overlay
 	img.upload-thumb
-		border-radius($photoRadius)
+		if $photoRadius
+			border-radius($photoRadius)
 		transition(all .2s)
 
 	.progress-radial

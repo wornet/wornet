@@ -116,11 +116,32 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/user/profile')
 		goingTo: req.session.goingTo
 
-	pm.page '/profile', ->
-		notifications: [s("Bienvenue sur Wornet !")]
+	pm.page '/profile', (req, res, done) ->
+		User.find({}).exec (err, users) ->
+			req.user.getFriends (friends, friendAsks) ->
+				notifications = []
+				req.user.friends = friends
+				req.user.friendAsks = friendAsks
+				for id, friend of friendAsks
+					notifications.push [Date.fromId(id), friend]
+				notifications.push [new Date, "Nouveau"]
+				notifications.push [(new Date).subMonths(1), "Vieux"]
+				notifications.sort (a, b) ->
+					if a < b
+						-1
+					else if a > b
+						1
+					else
+						0
+				done
+					users: users
+					# friends: friends
+					# friendAsks: friendAsks
+					notifications: notifications
+		null
 
 	router.post '/photo', (req, res) ->
-
+		# When user upload a new profile photo
 		model = {}
 		done = ->
 			res.render templateFolder + '/upload-photo', model
@@ -135,5 +156,24 @@ module.exports = (router) ->
 				if err
 					model.error = err
 				else
-					model.src = req.user.thumb
+					model.src = req.user.thumb200
 				done()
+
+	router.post '/friend', (req, res) ->
+		# When user ask some other user for friend
+		req.user.aksForFriend req.body.userId, (data) ->
+			res.json data
+
+	router.post '/friend/accept', (req, res) ->
+		# When user accept friend ask
+		Friend.update _id: req.body.id, { $set: status: 'accepted'}, {}, (err, friend) ->
+			res.json
+				err: err
+				friend: friend
+
+	router.post '/friend/ignore', (req, res) ->
+		# When user ignore friend ask
+		Friend.update _id: req.body.id, { $set: status: 'refused' }, {}, (err, friend) ->
+			res.json
+				err: err
+				friend: friend

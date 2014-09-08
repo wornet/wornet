@@ -27,6 +27,6 @@ photoSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
 
 photoSchema.virtual('createdAt').get ->
-	new Date parseInt(@_id.toString().slice(0,8), 16)*1000
+	Date.fromId @_id
 
 module.exports = photoSchema

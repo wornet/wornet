@@ -1,7 +1,7 @@
 extends ../layouts/wornet
 
 mixin notifications(classes)
-	ul.nav(class=classes): li.dropdown
+	ul#notifications.nav(class=classes): li.dropdown
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('globe')
@@ -13,7 +13,20 @@ mixin notifications(classes)
 		ul.dropdown-menu(role='menu')
 			each notification, id in notifications
 				li: a(href="/notification/" + id)
-					=notification
+					i.date
+						=notification[0].humanDateTime()
+					&nbsp; &nbsp;
+					if notification[1] instanceof User
+						- var dataWithUser = { username: jd('span.username ' + ucfirst(notification[1].name.full)) }
+						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+						br
+						.btn.accept-friend
+							=s("Accepter")
+						&nbsp; &nbsp;
+						.btn.ignore-friend
+							=s("Ignorer")
+					else
+						=notification[1]
 
 mixin friends(classes)
 	ul.nav(class=classes)
@@ -57,9 +70,7 @@ block nav
 						span.mobile
 							+glyph('user')
 							&nbsp; &nbsp;
-						=user.name.first
-						&nbsp;
-						=user.name.last
+						=user.name.full
 						&nbsp;
 						span.caret
 					ul.dropdown-menu(role='menu')

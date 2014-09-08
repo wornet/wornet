@@ -1,3 +1,5 @@
+'use strict';
+
 var PORT, SERVICE, exec;
 PORT = (process.env.PORT || 8002);
 SERVICE = (process.env.SERVICE || 'wornetint');

@@ -3,8 +3,60 @@ extends ../layouts/user
 block body
 	.errors
 
-	iframe(name="upload")
-	+form("/user/photo", "FILE")#profile-photo(target="upload")
-		.progress-radial: .overlay
-			img.upload-thumb(src=user.thumb alt=user.name.full)
-			input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
+	.col-sm-4.col-xs-12.pad-right
+		//- Friends
+		.well
+			h3=strtoupper(s("Amis"))
+			ul.photos-thumbs
+				each friend in user.friends
+					li: img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
+			.cb
+		//- Asks for friend
+		each friend, id in user.friendAsks
+			.alert.alert-success.friend-ask(data-id=id)
+				img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
+				- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
+				.shift
+					i.date
+						=Date.fromId(id).humanDateTime()
+					br
+					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+					br
+					.btn.accept-friend
+						=s("Accepter")
+					&nbsp; &nbsp;
+					.btn.ignore-friend
+						=s("Ignorer")
+				.shift.if-accepted
+					!=s("{username} fait maitnenant partie de vos amis.", dataWithUser)
+				.cb
+		.well
+			h3=strtoupper(s("Utilisateurs"))
+			ul.photos-thumbs
+				each friend in users
+					li: img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
+			.cb
+		//- Photos/Videos
+		.well
+			h3=strtoupper(s("Photos/Vidéos"))
+	.col-sm-8.col-xs-12.pad-left
+		//- Profile
+		.well
+			iframe(name="upload")
+			+form("/user/photo", "FILE")#profile-photo(target="upload")
+				.progress-radial: .overlay
+					img.upload-thumb(src=user.thumb200 alt=user.name.full)
+					input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
+			h3=strtoupper(user.name.full)
+			if user.birthDate
+				p
+					=s("Né le {date} ({age} ans)", { date: user.birthDate.humanDate(), age: user.age })
+			.cb
+		//- Publications
+		.well
+			fieldset
+				h3=strtoupper(s("Publier un statut"))
+				.input-group
+					+formControl()
+					span.input-group-btn
+						input(type="submit" value=s("Envoyer")).btn

@@ -366,12 +366,13 @@ $(document)
 			# In JSON format
 			if settings.dataType? && settings.dataType.toLowerCase() is "json"
 				data = $.parseJSON data
-				if typeof(data) isnt 'object'
+				if typeof(data) isnt 'object' or data is null
 					console.warn 'JSON data response is not an object'
 					console.trace()
-				else if typeof(data.err) isnt 'undefined'
-					err = data.err
-				_csrf = data._csrf
+				else
+					if typeof(data.err) isnt 'undefined'
+						err = data.err
+					_csrf = data._csrf
 			# In HTML format
 			else
 				# Get new CSRF token from meta tags given in the AJAX response
@@ -483,6 +484,42 @@ $(document)
 
 	.on 'touchstart', 'img', (e) ->
 		e.preventDefault()
+
+	.on 'click', 'ul.photos-thumbs img', ->
+		Ajax.post '/user/friend', data: userId: $(@).data 'id'
+
+	.on 'click', '.accept-friend', ->
+		$btn = $ @
+		$message = $btn.parents '.friend-ask'
+		$li = $('<li></li>').appendTo('ul.photos-thumbs')
+		$message.find('img').clone(true).appendTo($li).fadeOut(0).fadeIn()
+		$message.find('.shift').slideUp()
+		$message.find('.if-accepted').slideDown()
+		delay 3000, ->
+			$message.slideUp ->
+				$(@).remove()
+		Ajax.post '/user/friend/accept', data: id: $message.data 'id'
+
+	.on 'click', '.ignore-friend', ->
+		$btn = $ @
+		$message = $btn.parents '.friend-ask'
+		$message.slideUp ->
+			$(@).remove()
+		Ajax.post '/user/friend/ignore', data: id: $message.data 'id'
+
+	.on 'click', '#notifications ul a', (e) ->
+		$('#notifications .pill').each ->
+			count = $(@).text() * 1 - 1
+			if count
+				$(@).text($(@).text() * 1 - 1)
+			else
+				$(@).hide()
+		$(@).slideUp ->
+			$(@).remove()
+		e.preventDefault()
+		false
+
+$('[data-toggle="tooltip"]').tooltip()
 
 
 onResize = (fct) ->

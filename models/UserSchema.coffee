@@ -57,11 +57,17 @@ userSchema.virtual('name.full').set (name) ->
 	return
 
 userSchema.virtual('createdAt').get ->
-	new Date parseInt(@_id.toString().slice(0,8), 16)*1000
+	Date.fromId @_id
 
 userSchema.virtual('photoUpdateAt').get ->
 	if @photoId?
-		new Date parseInt(@photoId.toString().slice(0,8), 16)*1000
+		Date.fromId @photoId
+	else
+		null
+
+userSchema.virtual('age').get ->
+	if @birthDate instanceof Date and @birthDate.isValid()
+		@birthDate.age()
 	else
 		null
 
@@ -77,8 +83,14 @@ photoSrc = (prefix) ->
 userSchema.virtual('photo').get ->
 	photoSrc.call @
 
-userSchema.virtual('thumb').get ->
+userSchema.virtual('thumb50').get ->
+	photoSrc.call @, '50x'
+
+userSchema.virtual('thumb90').get ->
 	photoSrc.call @, '90x'
+
+userSchema.virtual('thumb200').get ->
+	photoSrc.call @, '200x'
 
 userSchema.methods.encryptPassword = (plainText) ->
 	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')
@@ -90,6 +102,67 @@ userSchema.pre 'save', (next) ->
 	if @isModified 'password'
 		@password = @encryptPassword()
 	next()
+
+userSchema.methods.aksForFriend = (askedTo, done) ->
+	askedFrom = @id
+	if askedFrom is askedTo
+		done
+			err: 'self-ask'
+			friend: null
+	else
+		data =
+			askedFrom: askedFrom
+			askedTo: askedTo
+		Friend
+			.findOne data
+			.exec (err, friend) ->
+				unless err or friend
+					friend = new Friend data
+					friend.save()
+				if typeof done is 'function'
+					done
+						err: err
+						friend: friend
+
+userSchema.methods.getFriends = (done) ->
+	ids = []
+	friendAsksIds = []
+	friendAskDates = []
+	pending = 2
+	next = ->
+		User.find()
+			.where('_id').in ids.slice 0, 10
+			.exec (err, users) ->
+				friends = []
+				friendAsks = {}
+				users.forEach (user) ->
+					id = strval user.id
+					if friendAsksIds.indexOf(id) is -1
+						friends.push user
+					else
+						friendAsks[friendAskDates[id]] = user
+				done friends, friendAsks
+	Friend.find askedFrom: @_id
+		.where('status').in ['waiting', 'accepted']
+		.limit 10
+		.exec (err, friends) ->
+			unless err
+				for friend in friends
+					ids.push friend.askedTo
+			unless --pending
+				next()
+	Friend.find askedTo: @_id
+		.where('status').in ['waiting', 'accepted']
+		.limit 10
+		.exec (err, friends) ->
+			unless err
+				for friend in friends
+					ids.push friend.askedFrom
+					if friend.waiting
+						friendAsksIds.push strval friend.askedFrom
+						friendAskDates[friend.askedFrom] = friend.id
+			unless --pending
+				next()
 
 
 module.exports = userSchema

@@ -38,6 +38,16 @@ body
 	font 14px/1.4 $fonts
 	padding-bottom $footerHeight
 
+.well
+	padding $mainPadding
+	background $ultraLight
+
+h3
+	margin 0 0 $mainPadding
+	color $orange
+	text-shadow 0 1px 1px white
+	font-size 18px
+
 .fit
 	padding 0
 
@@ -45,6 +55,7 @@ body
 	padding $mainPadding
 
 iframe
+	display block
 	size(100%, 0px)
 	border none
 
@@ -128,7 +139,7 @@ footer
 	display inline-block
 	background $black
 	color $lightGray
-	padding 0 9px
+	padding 0 9px 0 8px
 	border-radius(100%)
 
 #search
@@ -151,10 +162,12 @@ blockquote
 	line-height $fieldLineHeight * 0.7
 	transition(all .2s)
 
-input.form-control
-input.btn
+.form-control
+.btn
 	height $fieldLineHeight + 2 * $fieldVPadding + 2 !important
 	height $fieldLineHeight
+.btn
+	height $fieldLineHeight + 2 * $fieldVPadding + 2
 
 // Champs de texte.
 .form-control
@@ -247,7 +260,7 @@ h2
 	text-align center
 
 	// Marges externes et type d'élément.
-	margin 5px
+	margin $smallPadding
 	display block
 
 #createAccountTitle
@@ -257,6 +270,32 @@ h2
 .player
 	margin auto
 	height auto
+
+ul.photos-thumbs
+	list-style none
+	padding 0
+	li
+		display block
+
+.thumb
+	display block
+	float left
+	margin $smallPadding
+	width $thumbWidth
+	height $thumbHeight
+
+.date
+	color $black
+
+.friend-ask
+	.if-accepted
+		display none
+	.shift
+		margin-left $thumbWidth + $bigPadding
+		.username
+			font-weight bold
+		.btn
+			margin $smallPadding 0 0
 
 // Imports.
 @import "includes/tooltip"
@@ -284,15 +323,18 @@ h2
 		display block
 		background rgba(255, 255, 255, 0.8)
 		border-radius(4px)
-	input.form-control
+	.form-control
 	.btn
 		line-height $fieldLineHeight + $mobileIncrease*0.5
 		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2 !important
 		height $fieldLineHeight + $mobileIncrease
+	.btn
+		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2
 	.icon-bar
 		background white
 	#underbar .navbar-form
-		padding 3px 0 5px 30px
+		margin 0
+		padding $smallPadding $mainPadding
 		.glyphicon
 			margin 0 6px -999px
 			top -23px
@@ -304,6 +346,10 @@ h2
 			margin $smallPadding 0 0
 
 @media (min-width: 768px)
+	.pad-right
+		padding-right $mainPadding
+	.pad-left
+		padding-left $mainPadding
 	.navbar-header
 	.mobile
 	.nav>li.mobile
@@ -315,13 +361,14 @@ h2
 	#navbar .container-fluid
 		padding-left 0
 	#underbar .navbar-form
+		margin-bottom 0
 		width 33.33333333%
 		label
 		.form-control
 			width 100%
 		.glyphicon
 			margin-left -28px
-			top 4px
+			top 5px
 
 @media (max-width: 991px)
 	img#logo
