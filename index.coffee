@@ -1,3 +1,5 @@
+#!/usr/bin/env coffee
+
 'use strict'
 
 require('./core/system/date')

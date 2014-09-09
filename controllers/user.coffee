@@ -117,27 +117,31 @@ module.exports = (router) ->
 		goingTo: req.session.goingTo
 
 	pm.page '/profile', (req, res, done) ->
-		User.find({}).exec (err, users) ->
-			req.user.getFriends (friends, friendAsks) ->
-				notifications = []
-				req.user.friends = friends
-				req.user.friendAsks = friendAsks
-				for id, friend of friendAsks
-					notifications.push [Date.fromId(id), friend]
-				notifications.push [new Date, "Nouveau"]
-				notifications.push [(new Date).subMonths(1), "Vieux"]
-				notifications.sort (a, b) ->
-					if a < b
-						-1
-					else if a > b
-						1
-					else
-						0
-				done
-					users: users
-					# friends: friends
-					# friendAsks: friendAsks
-					notifications: notifications
+		User.find()
+			.where('_id').ne(req.user._id)
+			.exec (err, users) ->
+				req.user.getFriends (friends, friendAsks) ->
+					notifications = []
+					req.user.friends = friends
+					req.user.friendAsks = friendAsks
+					for id, friend of friendAsks
+						notifications.push [Date.fromId(id), friend, id]
+					notifications.push [new Date, "Nouveau"]
+					notifications.push [(new Date).subMonths(1), "Vieux"]
+					notifications.sort (a, b) ->
+						unless a[0] instanceof Date
+							console.warn a[0] + " n'est pas de type Date"
+						unless b[0] instanceof Date
+							console.warn b[0] + " n'est pas de type Date"
+						if a[0] < b[0]
+							-1
+						else if a[0] > b[0]
+							1
+						else
+							0
+					done
+						users: users
+						notifications: notifications
 		null
 
 	router.post '/photo', (req, res) ->

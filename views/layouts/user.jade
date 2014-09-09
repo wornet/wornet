@@ -12,11 +12,12 @@ mixin notifications(classes)
 				=intval(notifications.length)
 		ul.dropdown-menu(role='menu')
 			each notification, id in notifications
-				li: a(href="/notification/" + id)
+				- var isFriendAsk = notification[1] instanceof User
+				li: a(href="/notification/" + id class=(isFriendAsk ? 'friend-ask' : null) data-id=(isFriendAsk ? notification[2] : null))
 					i.date
 						=notification[0].humanDateTime()
 					&nbsp; &nbsp;
-					if notification[1] instanceof User
+					if isFriendAsk
 						- var dataWithUser = { username: jd('span.username ' + ucfirst(notification[1].name.full)) }
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 						br

@@ -517,7 +517,9 @@ $(document)
 		$(@).slideUp ->
 			$(@).remove()
 		e.preventDefault()
+		e.stopPropagation()
 		false
+
 
 $('[data-toggle="tooltip"]').tooltip()
 
