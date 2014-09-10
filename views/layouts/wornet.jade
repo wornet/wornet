@@ -78,7 +78,7 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 				+data(name, value)
 		- var trackers = options.trackers()
 		if trackers.piwik
-			noscript: p: img(src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+			noscript: p: img(width="1" height="1" src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
 			+data("piwik", trackers.piwik)
 		if trackers.googleAnalytics
 			+data("googleAnalytics", trackers.googleAnalytics)

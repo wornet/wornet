@@ -1,7 +1,7 @@
 extends ../layouts/wornet
 
 mixin notifications(classes)
-	ul#notifications.nav(class=classes): li.dropdown
+	ul.notifications.nav(class=classes): li.dropdown
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('globe')

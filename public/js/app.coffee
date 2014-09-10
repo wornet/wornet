@@ -26,7 +26,8 @@ Controllers =
 			sessionStorage['user'] = JSON.stringify user
 
 	SigninSecondStep: ($scope) ->
-		$scope.user = $.parseJSON sessionStorage['user']
+		user = $.parseJSON sessionStorage['user']
+		$scope.user = user
 
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
@@ -365,10 +366,12 @@ $(document)
 			data = xhr.responseText
 			# In JSON format
 			if settings.dataType? && settings.dataType.toLowerCase() is "json"
-				data = $.parseJSON data
-				if typeof(data) isnt 'object' or data is null
-					console.warn 'JSON data response is not an object'
-					console.trace()
+				try
+					data = $.parseJSON data
+				catch e
+					data = null
+				if typeof(data) isnt 'object' or data is null or typeof(data._csrf) is 'undefined'
+					$('.errors').errors "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
 				else
 					if typeof(data.err) isnt 'undefined'
 						err = data.err
@@ -488,38 +491,56 @@ $(document)
 	.on 'click', 'ul.photos-thumbs img', ->
 		Ajax.post '/user/friend', data: userId: $(@).data 'id'
 
-	.on 'click', '.accept-friend', ->
+	.on 'click', '.accept-friend', (e) ->
 		$btn = $ @
 		$message = $btn.parents '.friend-ask'
-		$li = $('<li></li>').appendTo('ul.photos-thumbs')
+		$li = $('<li></li>').appendTo('#friends')
 		$message.find('img').clone(true).appendTo($li).fadeOut(0).fadeIn()
 		$message.find('.shift').slideUp()
 		$message.find('.if-accepted').slideDown()
 		delay 3000, ->
 			$message.slideUp ->
 				$(@).remove()
-		Ajax.post '/user/friend/accept', data: id: $message.data 'id'
-
-	.on 'click', '.ignore-friend', ->
-		$btn = $ @
-		$message = $btn.parents '.friend-ask'
-		$message.slideUp ->
-			$(@).remove()
-		Ajax.post '/user/friend/ignore', data: id: $message.data 'id'
-
-	.on 'click', '#notifications ul a', (e) ->
-		$('#notifications .pill').each ->
-			count = $(@).text() * 1 - 1
-			if count
-				$(@).text($(@).text() * 1 - 1)
-			else
-				$(@).hide()
-		$(@).slideUp ->
-			$(@).remove()
+		id = $message.data 'id'
+		$('.notifications .friend-ask[data-id="' + id + '"]').each ->
+			$(@).parents('li:first').remove()
+		refreshPill()
+		Ajax.post '/user/friend/accept', data: id: id
 		e.preventDefault()
 		e.stopPropagation()
 		false
 
+	.on 'click', '.ignore-friend', (e) ->
+		$btn = $ @
+		$message = $btn.parents '.friend-ask'
+		$message.slideUp ->
+			$(@).remove()
+		id = $message.data 'id'
+		Ajax.post '/user/friend/ignore', data: id: id
+		$('.notifications .friend-ask[data-id="' + id + '"]').each ->
+			$(@).parents('li:first').remove()
+		refreshPill()
+		e.preventDefault()
+		e.stopPropagation()
+		false
+
+	.on 'click', '.notifications ul a', (e) ->
+		$a = $ @
+		unless $a.is('.friend-ask')
+			$a.parents('li:first').remove()
+		e.preventDefault()
+		e.stopPropagation()
+		false
+
+
+refreshPill = ->
+	$('.notifications').each ->
+		$ul = $ @
+		count = $ul.find('ul li').length
+		if count
+			$ul.find('.pill').show().text count
+		else
+			$ul.find('.pill').hide()
 
 $('[data-toggle="tooltip"]').tooltip()
 

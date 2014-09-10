@@ -7,7 +7,7 @@ block body
 		//- Friends
 		.well
 			h3=strtoupper(s("Amis"))
-			ul.photos-thumbs
+			ul#friends.photos-thumbs
 				each friend in user.friends
 					li: img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
 			.cb

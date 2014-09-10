@@ -22,21 +22,20 @@ body
 	padding 0
 
 body
-	padding-top $headerHeight
+	// Police de charactères.
+	font 14px/1.4 $fonts
+	padding-bottom $footerHeight
 	// Bloquage de la séléction sur tous les navigateurs.
 	-webkit-touch-callout none
 	user-select(none)
 
 	&.openingTemplate
-		padding-top 35px
+		#wrap
+			padding-top 35px
 		// Paramètres du fond de la page.
 		background url(jpg(background-image-small)) no-repeat center fixed
 		background-size(cover) 
 
-body
-	// Police de charactères.
-	font 14px/1.4 $fonts
-	padding-bottom $footerHeight
 
 .well
 	padding $mainPadding
@@ -75,7 +74,7 @@ iframe
 	height auto !important
 	height 100%
 	margin 0 auto -$footerHeight
-	padding 0 0 $footerHeight
+	padding $headerHeight 0 $footerHeight
 
 footer
 	// Tailles du pied de page.

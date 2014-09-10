@@ -78,25 +78,7 @@ onready ->
 				# methodOverride req, res, ->
 				#	delay 3000, done
 
-		unless /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
-			# Load all scripts in core/global/request directory
-			# Not yet needed
-			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
-			# 	pendingFiles = files.length
-			# 	if pendingFiles
-			# 		files.forEach (file) ->
-			# 			value = require file
-			# 			if typeof(value) is 'function'
-			# 				value req, res, ->
-			# 					unless --pendingFiles
-			# 						next()
-			# 			else
-			# 				unless --pendingFiles
-			# 					next()
-			# 	else
-			# 		next()
-			next()
-		else
+		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
 			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)
 			if ie
@@ -130,6 +112,24 @@ onready ->
 			if req.url.indexOf('/img/photo/') is 0
 				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
 			done()
+		else
+			# Load all scripts in core/global/request directory
+			# Not yet needed
+			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
+			# 	pendingFiles = files.length
+			# 	if pendingFiles
+			# 		files.forEach (file) ->
+			# 			value = require file
+			# 			if typeof(value) is 'function'
+			# 				value req, res, ->
+			# 					unless --pendingFiles
+			# 						next()
+			# 			else
+			# 				unless --pendingFiles
+			# 					next()
+			# 	else
+			# 		next()
+			next()
 
 	# Launch Kraken
 	app.use kraken options

@@ -117,6 +117,9 @@ module.exports = (router) ->
 		goingTo: req.session.goingTo
 
 	pm.page '/profile', (req, res, done) ->
+		console.log '-----------------'
+		console.log req.user.email
+		console.log req.session.user.email
 		User.find()
 			.where('_id').ne(req.user._id)
 			.exec (err, users) ->
@@ -124,6 +127,7 @@ module.exports = (router) ->
 					notifications = []
 					req.user.friends = friends
 					req.user.friendAsks = friendAsks
+					friendAsks['540d5304943d6f1038c24c8a'] = users[0]
 					for id, friend of friendAsks
 						notifications.push [Date.fromId(id), friend, id]
 					notifications.push [new Date, "Nouveau"]
