@@ -119,6 +119,7 @@ module.exports = (router) ->
 
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
+		res.setTimeLimit 600
 		model = {}
 		done = ->
 			res.render templateFolder + '/upload-photo', model

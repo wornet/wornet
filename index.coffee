@@ -67,11 +67,9 @@ onready ->
 	# Before each request
 	app.use (req, res, done) ->
 
-		timeout = delay config.wornet.timeout * 1000, ->
-			res.locals.err = new Error "Excedeed timeout"
-			res.serverError()
+		res.setTimeLimit config.wornet.timeout
 		res.on 'finish', ->
-			clearTimeout timeout
+			clearTimeout res.excedeedTimeout
 
 		if req.connection.remoteAddress is '127.0.0.1'
 			switch req.url

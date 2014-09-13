@@ -189,6 +189,13 @@ module.exports = (port) ->
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data
+			setTimeLimit: (time = 0) ->
+				if typeof(@excedeedTimeout) isnt 'undefined'
+					clearTimeout @excedeedTimeout
+				if time > 0
+					@excedeedTimeout = delay time * 1000, ->
+						res.locals.err = new Error "Excedeed timeout"
+						res.serverError()
 			catch: (callback) ->
 				res = @
 				->

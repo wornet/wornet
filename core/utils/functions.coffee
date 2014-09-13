@@ -344,7 +344,7 @@ module.exports =
 			user: req.user.id
 			name: req.files.photo.name
 			album: album
-	 (createErr, photo) ->
+		, (createErr, photo) ->
 			if createErr
 				done createErr
 			else
@@ -366,7 +366,7 @@ module.exports =
 							"-gravity", "center"
 							"-extent", size + "x" + size
 						]
-				 (resizeErr) ->
+					, (resizeErr) ->
 						if resizeErr
 							done resizeErr
 						else unless --pending
