@@ -18,6 +18,11 @@ friendSchema = new Schema
 		type: String
 		default: status[0]
 		enum: status
+,
+	toObject:
+		virtuals: true
+	toJSON:
+		virtuals: true
 
 status.forEach (st) ->
 	friendSchema.virtual(st).get ->

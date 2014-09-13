@@ -1,5 +1,14 @@
 'use strict'
 
+UserErrors =
+	INVALID_DATE: s("Veuillez entrer votre date de naissance au format jj/mm/aaaa ou aaaa-mm-jj.")
+	WRONG_EMAIL: s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
+	INVALID_PASSWORD_CONFIRM: s("Veuillez entrer des mots de passe identiques.")
+
+inputDate = (str) ->
+	str = strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
+	new Date(str)
+
 module.exports = (router) ->
 
 	templateFolder = 'user'
@@ -7,11 +16,6 @@ module.exports = (router) ->
 	signinUrl = '/user/signin'
 
 	pm = new PagesManager router, templateFolder
-
-	# When login/signin page displays
-	pm.page '/login', (req) ->
-		# Get errors in flash memory (any if AJAX is used and works on client device)
-		loginErrors: req.flash 'loginErrors' # Will be removed when errors will be displayed on the next step
 
 
 	# When user submit his e-mail and password to log in
@@ -63,20 +67,18 @@ module.exports = (router) ->
 		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
 		# 	res.redirect signinUrl
 		# Passwords must be identic
-		wrongEmail = s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
 		if config.wornet.mail['hosts-black-list'].indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
-			req.flash 'signinErrors', wrongEmail
+			req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 			res.redirect signinUrl
 		else if req.body.password isnt req.body.passwordCheck
-			req.flash 'signinErrors', s("Veuillez entrer des mots de passe identiques.")
+			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
 			res.redirect signinUrl
 		# If no error
 		else if req.body.step is "2"
-			req.body.birthDate = strval(req.body.birthDate).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
-			birthDate = new Date(req.body.birthDate)
+			birthDate = inputDate req.body.birthDate
 			# A full name must contains a space but is not needed at the first step
 			if !birthDate.isValid()
-				req.flash 'signinErrors', s("Veuillez entrer votre date de naissance au format jj/mm/aaaa ou aaaa-mm-jj.")
+				req.flash 'signinErrors', UserErrors.INVALID_DATE
 				res.redirect signinUrl
 			else
 				User.create 
@@ -89,10 +91,9 @@ module.exports = (router) ->
 					birthDate: birthDate
 				, (saveErr, user) ->
 					if saveErr
-						log saveErr
 						switch (saveErr.code || 0)
 							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', wrongEmail
+								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 							else
 								req.flash 'signinErrors', (saveErr.err || strval(saveErr))
 						res.redirect signinUrl
@@ -116,38 +117,6 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/user/profile')
 		goingTo: req.session.goingTo
 
-	pm.page '/profile', (req, res, done) ->
-		console.log '-----------------'
-		console.log req.user.email
-		console.log req.session.user.email
-		User.find()
-			.where('_id').ne(req.user._id)
-			.exec (err, users) ->
-				req.user.getFriends (friends, friendAsks) ->
-					notifications = []
-					req.user.friends = friends
-					req.user.friendAsks = friendAsks
-					friendAsks['540d5304943d6f1038c24c8a'] = users[0]
-					for id, friend of friendAsks
-						notifications.push [Date.fromId(id), friend, id]
-					notifications.push [new Date, "Nouveau"]
-					notifications.push [(new Date).subMonths(1), "Vieux"]
-					notifications.sort (a, b) ->
-						unless a[0] instanceof Date
-							console.warn a[0] + " n'est pas de type Date"
-						unless b[0] instanceof Date
-							console.warn b[0] + " n'est pas de type Date"
-						if a[0] < b[0]
-							-1
-						else if a[0] > b[0]
-							1
-						else
-							0
-					done
-						users: users
-						notifications: notifications
-		null
-
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
 		model = {}
@@ -166,6 +135,23 @@ module.exports = (router) ->
 				else
 					model.src = req.user.thumb200
 				done()
+
+	router.post '/edit', (req, res) ->
+		# When user edit his profile
+		data = {}
+		for key, val of req.body
+			unless empty val
+				switch key
+					when 'birthDate'
+						birthDate = inputDate val
+						if birthDate.isValid()
+							req.user.birthDate = birthDate
+						else
+							data.err = UserErrors.INVALID_DATE 
+					when 'name.first'
+						req.user.name.first = val
+					when 'name.last'
+						req.user.name.last = val
 
 	router.post '/friend', (req, res) ->
 		# When user ask some other user for friend

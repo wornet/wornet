@@ -31,6 +31,10 @@ config = {}
 
 port = process.env.PORT || 8000
 
+process.on 'uncaughtException', (err) ->
+	console.warn 'Caught exception: ' + err
+	console.log err.stack
+
 options = require('./core/system/options')(port)
 methodOverride = require('method-override')()
 bodyParser = require('body-parser')()
@@ -62,6 +66,12 @@ onready ->
 
 	# Before each request
 	app.use (req, res, done) ->
+
+		timeout = delay config.wornet.timeout * 1000, ->
+			res.locals.err = new Error "Excedeed timeout"
+			res.serverError()
+		res.on 'finish', ->
+			clearTimeout timeout
 
 		if req.connection.remoteAddress is '127.0.0.1'
 			switch req.url

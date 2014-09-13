@@ -2,13 +2,23 @@
     
     "wornet": {
         "version": "0.1.0",
+        "timeout": 30,
         "autoloadDirectories": [
             "core/utils",
             "models"
         ],
+        "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
+        "parseProxyUrl": false,
+        "proxies" : [
+            "p.holowar.com/wornet",
+            "wornet/wornet"
+        ],
         "db": {
             "host": "localhost",
             "basename": "wornet"
+        },
+        "cache": {
+            "defaultLifetime": 600
         },
         "asset": {
             "image": {

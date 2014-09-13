@@ -38,3 +38,7 @@ $progressRadialWidth = 4px
 	&:hover img
 		border-width 0
 		opacity(0.7)
+
+@media (max-width: 767px)
+	#profile-photo
+		size($photoWidth / 2 + 2 * $progressRadialWidth, $photoHeight / 2 + 2 * $progressRadialWidth)

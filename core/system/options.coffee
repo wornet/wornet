@@ -47,8 +47,8 @@ module.exports = (port) ->
 		if useCdn
 			# CDN resources
 			[
-				['if lte IE 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"]
-				['if gt IE 9', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"]
+				['if lt IE 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"]
+				['if gte IE 9', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"]
 				['non-ie', "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"]
 				#"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"
 				"//angular-ui.github.io/ui-calendar/bower_components/jquery-ui/ui/jquery-ui.js"
@@ -73,7 +73,9 @@ module.exports = (port) ->
 		else
 			# locales resources
 			[
-				"/components/jquery/js/jquery.js"
+				['if lt IE 9', "/components/jquery/js/jquery-1.js"]
+				['if gte IE 9', "/components/jquery/js/jquery-2.js"]
+				['non-ie', "/components/jquery/js/jquery-2.js"]
 				"/components/jquery/js/jquery-ui.min.js"
 				"/components/bootstrap/js/bootstrap.min.js"
 				"/components/angular/js/angular.js"
@@ -103,25 +105,99 @@ module.exports = (port) ->
 					@cookies[name]
 				else
 					null
+			cache: (key, calculate, done) ->
+				if typeof(key) is 'function'
+					done = calculate
+					calculate = key
+					key = codeId()
+				unless @session.cache?
+					@session.cache = {}
+				cache = @session.cache
+				if typeof cache[key] is 'undefined'
+					calculate (value) ->
+						cache[key] = value
+						done value, false
+				else
+					done cache[key], true
+			cacheFlush: (key = null) ->
+				if key is null
+					@session.cache = {}
+				else
+					delete @session.cache[key]
+			getFriends: (done) ->
+				user = @user
+				@cache 'friends', (done) ->
+					user.getFriends (friends, friendAsks) ->
+						done [friends, friendAsks]
+				, (result, cached) ->
+					friends = result[0]
+					friendAsks = result[1]
+					if cached
+						for friend, i in friends
+							u = new User
+							extend u, friend
+							friends[i] = u
+							console.log (friend instanceof User ? 'User' : '-')
+							console.log (friends[i] instanceof User ? 'User' : '-')
+						for i, friend of friendAsks
+							u = new User
+							extend u, friend
+							friends[i] = u
+							console.log (friend instanceof User ? 'User' : '-')
+							console.log (friends[i] instanceof User ? 'User' : '-')
+					done friends, friendAsks
 
 		# Available shorthand methods to all response objects in controllers
+		responseErrors =
+			notFound: 404
+			serverError: 500
+			forbidden: 403
+			unautorized: 401
+		for key, val of responseErrors
+			app.response[key] = ((key, val) ->
+				(model = {}) ->
+					model.err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
+					console.warn model.err
+					console.trace()
+					@status val
+					@render 'errors/' + val, model
+			) key, val
+
+		redirect = app.response.redirect
 		extend app.response,
+			###
+			Complete a local URL if needed
+			@param string URL
+
+			@return string complete URL
+			###
+			localUrl: (path) ->
+				if config.wornet.parseProxyUrl and path.charAt(0) is '/'
+					for proxy in config.wornet.proxies
+						if (proxy.indexOf('https://') is 0 and !@secure) or (proxy.indexOf('http://') is 0 and @secure)
+							continue
+						proxy = proxy.replace(/https?:\/\//g, '').split /\//g
+						if proxy.length > 1 and proxy[0] is @hostname
+							return '/' + proxy.slice(1).join('/') + path
+				path
+			redirect: ->
+				params = Array.prototype.slice.call arguments
+				if typeof params[0] is 'string'
+					params[0] = @localUrl params[0]
+				redirect.apply @, params
 			json: (data) ->
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data
-			notFound: (model = {}) ->
-				@status 404
-				@render 'errors/404', model
-			serverError: (model = {}) ->
-				@status 500
-				@render 'errors/500', model
-			forbidden: (model = {}) ->
-				@status 403
-				@render 'errors/403', model
-			unautorized: (model = {}) ->
-				@status 401
-				@render 'errors/401', model
+			catch: (callback) ->
+				res = @
+				->
+					try
+						callback()
+					catch e
+						res.serverError(err: e)
+
+				
 
 		# Templates directory
 		app.set 'views', __dirname + '/../../views'

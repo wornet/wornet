@@ -45,15 +45,25 @@ userSchema = new Schema
 		virtuals: true
 
 userSchema.virtual('name.full').get ->
-	@name.first + ' ' + @name.last
+	f = empty @name.first
+	l = empty @name.last
+	if f and l
+		'Anonyme'
+	else if f
+		@name.last
+	else if l
+		@name.first
+	else 
+		@name.first + ' ' + @name.last
 
 userSchema.virtual('name.full').set (name) ->
-	if name?
-		split = name.split ' '
-	else
-		split = [null, null]
-	@name.first = split[0]
-	@name.last = split[1]
+	unless name is 'Anonyme'
+		if name?
+			split = name.split ' '
+		else
+			split = [null, null]
+		@name.first = split[0]
+		@name.last = split[1]
 	return
 
 userSchema.virtual('createdAt').get ->
@@ -93,7 +103,7 @@ userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
 userSchema.methods.encryptPassword = (plainText) ->
-	crypto.createHmac('sha1', @token + @_id).update(plainText || @password).digest('hex')
+	sha1 plainText || @password, @token + @_id
 
 userSchema.methods.passwordMatches = (plainText) ->
 	@password is @encryptPassword(plainText)

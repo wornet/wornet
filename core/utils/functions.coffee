@@ -2,6 +2,116 @@
 
 module.exports =
 	###
+	Resolve object get from template (passed in JSON)
+	Restore date object converted to strings previously (by JSON stringification)
+	@param mixed value that can contains Date objects stringified
+
+	@return mixed value with stringified Date objectes restored
+	###
+	objectResolve: (value) ->
+
+		key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
+
+		# First, convert the date and put the "resolved" key to do not reconvert
+		enter = (value) ->
+			switch typeof(value)
+				when 'object'
+					unless value[key]
+						for v, i in value
+							value[i] = enter value[i]
+						value[key] = true
+				when 'string'
+					if /^[0-9-]+T[0-9:.]+Z$/.test value
+						date = new Date value
+						if date.isValid()
+							value = date
+			value
+
+		# Then, remove all the "resolved" keys
+		leave = (value) ->
+			if typeof(value) is 'object' and value[key]
+				delete value[key]
+				for v, i in value
+					value[i] = leave value[i]
+			value
+
+		leave enter value
+	###
+	Return an ID generated from the stack strace
+	@return string hexadecimal md5 id
+	###
+	codeId: ->
+		sha1(new Error().stack)
+	###
+	Get a cached mixed value
+	@param string key for cached value in memcached store engine
+	@param function to pass the result
+	###
+	memGet: (key, done) ->
+		mem.get key, (err, result) ->
+			if !err and result is false
+				err = 'not found'
+			else
+				try
+					result = objectResolve JSON.parse result
+				catch e
+					result = null
+					err = 'json: ' + e
+			done err, result
+	###
+	Set a cached mixed value
+	@param string key for cached value in memcached store engine
+	@param int time to keep the value in cache before calculate it again (seconds)
+	@param mixed value
+	@param function to pass the result
+	###
+	memSet: (key, value, lifetime, done) ->
+		try
+			value = JSON.stringify value
+			mem.set key, value, lifetime, done
+		catch e
+			done 'json: ' + e
+	###
+	Cache a value
+	@param string key for cached value in memcached store engine
+	@param int time to keep the value in cache before calculate it again (seconds)
+	@param function to execute to calculate value when it's not in cache
+	@param function to pass the result
+	###
+	cache: (key, lifetime, calculate, done) ->
+		if typeof(key) is 'function'
+			done = lifetime
+			calculate = key
+			key = codeId()
+			console.log key
+			lifetime = 0
+		else if typeof(lifetime) is 'function'
+			done = calculate
+			calculate = lifetime
+			lifetime = 0
+		else
+			lifetime = if lifetime instanceof Date
+				Math.round((time() - time(lifetime)) / 1000)
+			else
+				intval lifetime
+		if lifetime < 1
+			lifetime = config.wornet.cache.defaultLifetime
+		memGet key, (err, result) ->
+			if err or result is false
+				calculate (value) ->
+					if value is false
+						console.warn "[memcached] cannot store a false value"
+						console.trace()
+					done value, false
+					memSet key, value, lifetime, (err) ->
+						if err
+							console.warn "[memcached] " + err
+							console.trace()
+			else
+				done result, true
+			null
+		null
+	###
 	Compress JS code
 	@param string intial code
 
@@ -14,7 +124,7 @@ module.exports =
 		ast = pro.ast_mangle(ast)
 		ast = pro.ast_squeeze(ast)
 		pro.gen_code(ast)
-	,
+
 	###
 	Get files contents, proceed callback of each content and concat all
 	@param string intial code
@@ -64,7 +174,7 @@ module.exports =
 					concatCallback content, lst, proceed, end,
 						i: i + 1
 						ie: ie
-	,
+
 	###
 	Display a message or variable and stack trace if on a development environment
 	@param mixed message or vairbale to print in console log
@@ -79,7 +189,40 @@ module.exports =
 			console.log Date.log()
 			console.trace()
 			console.log '=========================='
-	,
+
+	###
+	Return current timestamp (milliseconds sicne 1/1/1970)
+	@param Date if you specify a date, the time will be extracted from it, else current timestamp is returned
+
+	@return int current timestamp or timestamp from the given date
+	###
+	time: (date = new Date) ->
+		date.getTime()
+
+	###
+	Return a Date object
+	@param int if you specify a timestamp (in milliseconds), the date will be generated from it, else a new Date object is returned
+
+	@return Date date from the given timestamp or actual date
+	###
+	date: (time = null) ->
+		date = new Date
+		if time isnt null
+			date.setTime time
+		date
+
+	###
+	Return a sha1 hased string
+	@param string the string to hash
+	@param string a salt can be added
+
+	@return string sha1
+	###
+	sha1: (str, salt = null) ->
+		if salt is null
+			salt = config.wornet.secret
+		crypto.createHmac('sha1', salt).update(str).digest('hex')
+
 	###
 	Generate a length-specified random alphanumeric string
 	@param int lenght of the returned string
@@ -92,7 +235,7 @@ module.exports =
 		for i in [1..length]
 			r += SALTCHARS[Math.floor(Math.random() * SALTCHARS.length)]
 		r
-	,
+
 	###
 	Return string value or "" if not able to convert
 	@param mixed value to convert
@@ -101,7 +244,7 @@ module.exports =
 	###
 	strval: (str) ->
 		str + ''
-	,
+
 	###
 	Return integer value or 0 if not able to convert
 	"4.7" > 4
@@ -113,7 +256,7 @@ module.exports =
 	intval: (n) ->
 		n = parseInt(n)
 		if isNaN(n) then 0 else n
-	,
+
 	###
 	Return float value or 0 if not able to convert
 	"4.7" > 4.7
@@ -125,7 +268,7 @@ module.exports =
 	floatval: (n) ->
 		n = parseFloat(n)
 		if isNaN(n) then 0 else n
-	,
+
 	###
 	Return a regex string from RegExpString object get with the specified method (trim if any)
 	This can be used in a pattern attribute (HTML5)
@@ -136,7 +279,7 @@ module.exports =
 	###
 	pattern: (name, method = 'trim') ->
 		RegExpString[method] name
-	,
+
 	###
 	Return a regex from RegExpString object get with the specified method (trim if any)
 	This can be used in .match, .replace etc. in controllers
@@ -147,7 +290,7 @@ module.exports =
 	###
 	regex: (name, method = 'is') ->
 		RegExp[method] name
-	,
+
 	###
 	Remove spaces at begen and end of a given string
 	@param string text that can contains spaces
@@ -156,7 +299,7 @@ module.exports =
 	###
 	trim: (str) ->
 		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
-	,
+
 	###
 	Load model if it is not already. In any case, return it
 	@param string model name
@@ -175,7 +318,7 @@ module.exports =
 			model = mongoose.model name, schema
 			global[name] = model
 			global[name + 'Model'] = model
-	,
+
 	###
 	Update user attributes
 	@param HTTPRequest|User user model or request containing a user
@@ -189,7 +332,7 @@ module.exports =
 			user[key] = val
 		User.update _id: user._id, update, multi: false, (updateErr) ->
 			done updateErr
-	,
+
 	###
 	Add an uploaded photo to user album
 	@param HTTPRequest request containing files object (uploaded)
@@ -201,7 +344,7 @@ module.exports =
 			user: req.user.id
 			name: req.files.photo.name
 			album: album
-		, (createErr, photo) ->
+	 (createErr, photo) ->
 			if createErr
 				done createErr
 			else
@@ -223,12 +366,12 @@ module.exports =
 							"-gravity", "center"
 							"-extent", size + "x" + size
 						]
-					, (resizeErr) ->
+				 (resizeErr) ->
 						if resizeErr
 							done resizeErr
 						else unless --pending
 							updateUser req, photoId: id, done
-	,
+
 	###
 	Return a string in lower case
 	@param string text in any case
@@ -237,7 +380,7 @@ module.exports =
 	###
 	strtolower: (str) ->
 		str.toLowerCase()
-	,
+
 	###
 	Return a string in upper case
 	@param string text in any case
@@ -246,7 +389,7 @@ module.exports =
 	###
 	strtoupper: (str) ->
 		str.toUpperCase()
-	,
+
 	###
 	Return a string with first character in upper case
 	@param string text in any case
@@ -255,7 +398,7 @@ module.exports =
 	###
 	ucfirst: (str) ->
 		str.charAt(0).toUpperCase() + str.substr(1)
-	,
+
 	###
 	Shorthand to exec a callback after a delay specified in milliseconds
 	@param integer delay
@@ -265,7 +408,7 @@ module.exports =
 	###
 	delay: (ms, cb) ->
 		setTimeout cb, ms
-	,
+
 	###
 	Test if a value is empty in a very tolerant way
 	@param mixed value to check
@@ -294,7 +437,7 @@ module.exports =
 				)
 			)
 		)
-	,
+
 	###
 	Copy a file in a new path
 	@param string source file
@@ -304,7 +447,7 @@ module.exports =
 	###
 	copy: (from, to) ->
 		fs.createReadStream(from).pipe(fs.createWriteStream(to))
-	,
+
 	###
 	Applying replacemens and pluralization in a given text
 	@param string text to treat
@@ -315,7 +458,7 @@ module.exports =
 	###
 	s: (text, replacements, count) ->
 		(local lang(), text, replacements, count).replace(/'/g, '’')
-	,
+
 	###
 	Return current display locale
 
@@ -323,7 +466,7 @@ module.exports =
 	###
 	lang: ->
 		"fr"
-	,
+
 	###
 	Return HTML from Jade code
 	@param string Jade input code
@@ -333,7 +476,7 @@ module.exports =
 	jd: (code) ->
 		jadeRender = require('jade').render
 		jadeRender(code)
-	,
+
 	###
 	Return a HTML hidden tag that contains a named value
 	@param string data name
@@ -350,7 +493,7 @@ module.exports =
 			console.error e
 			console.trace()
 			"Error (see conole)"
-	,
+
 	###
 	Append a variable to a response to use it in the view
 	@param Response HTTP response to be appened
@@ -365,7 +508,7 @@ module.exports =
 		else
 			res.locals[name] = value
 		null
-	,
+
 	###
 	Generate an asset URL (style, script, image, etc.) and append a version cache
 	to avoid to have to clear the browser cache
@@ -397,7 +540,7 @@ module.exports =
 			else
 				version = config.wornet.version
 			'/' + directory + '/' + file + '.' + extension + '?' + version
-	,
+
 	###
 	Generate an style URL (automaticaly compiled with stylus)
 	"login" > "/css/login.css?123"
@@ -407,7 +550,7 @@ module.exports =
 	###
 	style: (file) ->
 		assetUrl file, 'css', 'styl'
-	,
+
 	###
 	Generate an script URL (automaticaly compiled with stylus)
 	"login" > "/js/login.js?123"

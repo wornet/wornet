@@ -97,11 +97,8 @@ exports.isAuthenticated = (req, res, next) ->
 
 			# Access map
 			auth =
-				"/": true
 				"/admin": true
-				"/profile": true
 				"/agenda": true
-				"/user/profile": true
 				"/photos": true
 
 			blacklist = user:
@@ -118,7 +115,7 @@ exports.isAuthenticated = (req, res, next) ->
 					req.session.goingTo = req.url
 					if ['/', '/user/profile', '/profile'].indexOf(route) is -1
 						req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
-					res.redirect "/user/login"
+					res.redirect "/"
 
 				# Check blacklist for this user's role
 				else if blacklist[role] and blacklist[role][route] is true
