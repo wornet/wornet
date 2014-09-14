@@ -12,7 +12,6 @@ inputDate = (str) ->
 module.exports = (router) ->
 
 	templateFolder = 'user'
-	loginUrl = '/user/login'
 	signinUrl = '/user/signin'
 
 	pm = new PagesManager router, templateFolder
@@ -27,11 +26,6 @@ module.exports = (router) ->
 			if user
 				if req.session.goingTo?
 					url = req.session.goingTo
-			else
-				url = loginUrl
-			# Direct redirect to profile if ask for root
-			if url is '/'
-				url = '/user/profile'
 			# With AJAX, send JSON
 			if req.xhr
 				if err
@@ -50,7 +44,7 @@ module.exports = (router) ->
 		auth.logout req, res
 		if req.body.goingTo?
 			req.session.goingTo = req.body.goingTo
-		res.redirect loginUrl
+		res.redirect '/'
 
 
 	# When signin step 2 page displays
