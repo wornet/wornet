@@ -2,13 +2,15 @@ extends ../layouts/user
 
 
 block nav
-	header: nav: .container
-		#logo-content.col-md-5.col-sm-4.col-xs-12
-			img#logo.img-responsive(src=png("logohd") alt=s("Wornet"))
-		.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
-			.narrow.col-sm-6.col-sm-offset-6.col-xs-12
-				a.btn.btn-plain(href="/user/login")
-					=s("Connexion")
+	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation'): .container-fluid
+		h1.col-xs-12
+			=upperTitle
+		#mainLinks.collapse.navbar-collapse
+			ul.nav.navbar-nav.navbar-right
+				li.dropdown
+					a.dropdown-toggle(href="/" data-toggle="dropdown")
+						=s("Vous avez déjà un compte ? Connectez-vous !")
+	.main-padding
 
 
 block body

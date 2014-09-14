@@ -1,6 +1,13 @@
 extends ../layouts/user
 
 
+block nav
+	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation'): .container-fluid
+		h1.col-xs-12
+			=upperTitle
+	.main-padding
+
+
 block body
 	.container: section
 		if user
