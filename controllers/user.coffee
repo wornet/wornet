@@ -22,10 +22,7 @@ module.exports = (router) ->
 
 		# Log in user
 		auth.login req, res, (err, user) ->
-			url = '/'
-			if user
-				if req.session.goingTo?
-					url = req.session.goingTo
+			url = (req.goingTo() if user) || '/'
 			# With AJAX, send JSON
 			if req.xhr
 				if err
@@ -43,7 +40,7 @@ module.exports = (router) ->
 		model = {}
 		auth.logout req, res
 		if req.body.goingTo?
-			req.session.goingTo = req.body.goingTo
+			req.goingTo req.body.goingTo 
 		res.redirect '/'
 
 
@@ -108,8 +105,8 @@ module.exports = (router) ->
 	pm.page '/forgotten-password', null, 'post'
 
 	pm.page '/welcome', (req) ->
-		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/user/profile')
-		goingTo: req.session.goingTo
+		hasGoingTo: (!empty(req.session.goingTo) and ['/user/profile', '/'].indexOf(req.session.goingTo) is -1)
+		goingTo: req.goingTo()
 
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo

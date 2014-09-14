@@ -100,6 +100,14 @@ module.exports = (port) ->
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
+			goingTo: (url = null) ->
+				if url is null
+					if @session.goingTo?
+						url = @session.goingTo
+						delete @session.goingTo
+				else
+					@session.goingTo = url
+				url
 			cookie: (name) ->
 				if @cookies[name]?
 					@cookies[name]
@@ -194,8 +202,8 @@ module.exports = (port) ->
 					clearTimeout @excedeedTimeout
 				if time > 0
 					@excedeedTimeout = delay time * 1000, ->
-						res.locals.err = new Error "Excedeed timeout"
-						res.serverError()
+						@locals.err = new Error "Excedeed timeout"
+						@serverError()
 			catch: (callback) ->
 				res = @
 				->
