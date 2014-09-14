@@ -119,6 +119,8 @@ onready ->
 					return
 			if req.url.indexOf('/img/photo/') is 0
 				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
+			else if req.url.indexOf('/fonts/glyphicons') is 0
+				req.url = '/components/bootstrap' + req.url
 			done()
 		else
 			# Load all scripts in core/global/request directory
