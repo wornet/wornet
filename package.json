@@ -40,7 +40,8 @@
 		"connect-memcached": "~0.1.0",
 		"connect-flash": "~0.1.1",
 		"imagemagick": "~0.1.3",
-		"uglify-js": "~1.3.5"
+		"uglify-js": "~1.3.5",
+        "connect-redis": "~2.1.0"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",

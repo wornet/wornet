@@ -42,6 +42,7 @@ flash = require('connect-flash')
 cookieParser = require('cookie-parser')
 session = require('express-session')
 MemcachedStore = require('connect-memcached')(session)
+RedisStore = require('connect-redis')(session)
 
 # Make config usables everywhere
 extend global,
@@ -144,10 +145,13 @@ onready ->
 	memStore = new MemcachedStore
 	global.mem = memStore.client
 
+	redisStore = new RedisStore
+	global.redis = redisStore.client
+
 	app.use session
 		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
 		key: "w"
-		store: memStore
+		store: redisStore
 
 	app.on 'start', ->
 
