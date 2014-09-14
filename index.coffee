@@ -74,7 +74,7 @@ onready ->
 		if req.connection.remoteAddress is '127.0.0.1'
 			switch req.url
 				when '/status'
-					res.end 'OK'
+					return res.end 'OK'
 
 		next = ->
 			# Parse body from requests
