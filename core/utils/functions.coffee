@@ -139,7 +139,6 @@ module.exports =
 			end content
 		else
 			file = lst[i]
-			console.log [i, file]
 			# Internet Explorer condition
 			if typeof(file) is 'object'
 				if file[0] is 'non-ie'
