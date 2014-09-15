@@ -140,19 +140,6 @@ module.exports = (port) ->
 				, (result, cached) ->
 					friends = result[0]
 					friendAsks = result[1]
-					if cached
-						for friend, i in friends
-							u = new User
-							extend u, friend
-							friends[i] = u
-							console.log (friend instanceof User ? 'User' : '-')
-							console.log (friends[i] instanceof User ? 'User' : '-')
-						for i, friend of friendAsks
-							u = new User
-							extend u, friend
-							friends[i] = u
-							console.log (friend instanceof User ? 'User' : '-')
-							console.log (friends[i] instanceof User ? 'User' : '-')
 					done friends, friendAsks
 
 		# Available shorthand methods to all response objects in controllers

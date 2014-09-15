@@ -83,7 +83,6 @@ module.exports =
 			done = lifetime
 			calculate = key
 			key = codeId()
-			console.log key
 			lifetime = 0
 		else if typeof(lifetime) is 'function'
 			done = calculate
@@ -332,6 +331,20 @@ module.exports =
 			user[key] = val
 		User.update _id: user._id, update, multi: false, (updateErr) ->
 			done updateErr
+
+	###
+	Get a user from an object
+	@param Object list of attributes
+	@return User user with given attributes
+	###
+	objectToUser: (object = {}, u = null) ->
+		if typeof(object) is 'object'
+			if object instanceof User
+				u = object
+			else
+				u = new User
+				extend u, object
+		u
 
 	###
 	Add an uploaded photo to user album

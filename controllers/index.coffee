@@ -11,6 +11,8 @@ module.exports = (router) ->
 
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
+		console.log 'begin: ' + req.originalUrl
+		console.log req.user
 		if req.user
 			cache 'users', 60, (done) ->
 				User.find()
@@ -22,11 +24,12 @@ module.exports = (router) ->
 					notifications = []
 					req.user.friends = friends
 					req.user.friendAsks = friendAsks
-					friendAsks['540d5304943d6f1038c24c8a'] = users[0]
+					if app.get('env') is 'development'
+						notifications.push [new Date, "Nouveau"]
+						notifications.push [(new Date).subMonths(1), date().toString()]
+						friendAsks['540d5304943d6f1038c24c8a'] = users[0]
 					for id, friend of friendAsks
 						notifications.push [Date.fromId(id), friend, id]
-					notifications.push [new Date, "Nouveau"]
-					notifications.push [(new Date).subMonths(1), date()]
 					notifications.sort (a, b) ->
 						unless a[0] instanceof Date
 							console.warn a[0] + " n'est pas de type Date"

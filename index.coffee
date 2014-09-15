@@ -65,11 +65,27 @@ onready ->
 		config: config
 		options: options
 
+	# Get a memcached client to use cache
+	memStore = new MemcachedStore
+	global.mem = memStore.client
+
+	# Use redis for sessions
+	redisStore = new RedisStore
+	global.redis = redisStore.client
+
+	app.use session
+		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
+		key: "w"
+		store: redisStore
+
 	# Before each request
 	app.use (req, res, done) ->
 
 		res.setTimeLimit config.wornet.timeout
 		res.on 'finish', ->
+			unless req.isStatic
+				console.log 'finish: ' + req.originalUrl
+				console.log req.user
 			clearTimeout res.excedeedTimeout
 
 		if req.connection.remoteAddress is '127.0.0.1'
@@ -143,17 +159,6 @@ onready ->
 
 	# Launch Kraken
 	app.use kraken options
-
-	memStore = new MemcachedStore
-	global.mem = memStore.client
-
-	redisStore = new RedisStore
-	global.redis = redisStore.client
-
-	app.use session
-		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
-		key: "w"
-		store: redisStore
 
 	app.on 'start', ->
 

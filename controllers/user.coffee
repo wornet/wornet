@@ -19,6 +19,8 @@ module.exports = (router) ->
 
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
+		console.log 'begin: ' + req.originalUrl
+		console.log req.user
 
 		# Log in user
 		auth.login req, res, (err, user) ->
@@ -36,6 +38,8 @@ module.exports = (router) ->
 
 	# When user click on a logout link/button
 	router.get '/logout', (req, res) ->
+		console.log 'begin: ' + req.originalUrl
+		console.log req.user
 
 		model = {}
 		auth.logout req, res
