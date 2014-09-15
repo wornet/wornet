@@ -136,19 +136,19 @@ module.exports =
 		i = options.i || 0
 		ie = options.ie || 0
 		if i >= lst.length
-			end(content)
+			end content
 		else
 			file = lst[i]
+			console.log [i, file]
 			# Internet Explorer condition
 			if typeof(file) is 'object'
 				if file[0] is 'non-ie'
 					file = (if ie then false else file[1])
 				else
 					version = 1
-					symbol = file[0].replace(/if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
+					symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
 						version = intval v
 						s
-					)
 					switch symbol
 						when 'gt'
 							file = (if ie > version then file[1] else false)
@@ -160,19 +160,25 @@ module.exports =
 							file = (if ie <= version then file[1] else false)
 						else
 							file = (if ie is version then file[1] else false)
+			done = ->
+				concatCallback content, lst, proceed, end,
+					i: i + 1
+					ie: ie
 			if file
 				if file.indexOf('?') isnt -1
-					file = file.replace(/^(.+)\?.*$/g, (m, start) ->
+					file = file.replace /^([^\?]+)\?.*$/g, (m, start) ->
 						__dirname + '/../../.build' + start
-					)
 				else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
 					file = __dirname + '/../../public' + file
 				fs.readFile file, (err, data) ->
-					unless err
+					if err
+						throw err
+					else
 						content += proceed(data + '') + '\n'
-					concatCallback content, lst, proceed, end,
-						i: i + 1
-						ie: ie
+					done()
+			else
+				done()
+					
 
 	###
 	Display a message or variable and stack trace if on a development environment

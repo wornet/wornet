@@ -104,9 +104,9 @@ onready ->
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
-			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)
+			ie = req.headers['user-agent'].match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
-				ie = intval ie.substr(5)
+				ie = intval ie.substr 5
 			else
 				ie = 0
 			req.ie = ie
@@ -120,13 +120,14 @@ onready ->
 			###
 			for lang, method of methods
 				if req.urlWithoutParams is '/' + lang + '/all.' + lang
+					res.setTimeLimit 200
 					file = __dirname + '/.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
 								concatCallback '', list, method, (content) ->
 									res.end content
-									#fs.writeFile file, content
+									fs.writeFile file, content
 								,
 									ie: req.ie
 							else
