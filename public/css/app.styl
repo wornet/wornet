@@ -64,9 +64,13 @@ iframe
 .loader
 	fix(0px, 0px)
 	size(100%, 100%)
+	opacity(1)
 	overflow hidden
 	background url(gif(loader)) center center no-repeat
+	background-color rgba(0, 0, 0, .2)
+	transition(opacity .8s)
 	&.preload
+		opacity(0)
 		height 0
 
 
@@ -123,7 +127,7 @@ footer
 	color inherit
 	text-decoration none
 	display inline
-	transition .2s all
+	transition(all .2s)
 	&:hover
 		color $orange
 

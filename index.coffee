@@ -83,9 +83,6 @@ onready ->
 
 		res.setTimeLimit config.wornet.timeout
 		res.on 'finish', ->
-			unless req.isStatic
-				console.log 'finish: ' + req.originalUrl
-				console.log req.user
 			clearTimeout res.excedeedTimeout
 
 		if req.connection.remoteAddress is '127.0.0.1'

@@ -11,8 +11,6 @@ module.exports = (router) ->
 
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
-		console.log 'begin: ' + req.originalUrl
-		console.log req.user
 		if req.user
 			cache 'users', 60, (done) ->
 				User.find()

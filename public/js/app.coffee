@@ -532,6 +532,9 @@ $(document)
 		e.stopPropagation()
 		false
 
+window.onbeforeunload = ->
+	$('.loader:last').removeClass 'preload'
+	null
 
 refreshPill = ->
 	$('.notifications').each ->
