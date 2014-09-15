@@ -26,10 +26,12 @@ extend global,
 
 global.app = express()
 
-# Config load
-config = {}
 
 port = process.env.PORT || 8000
+
+# Config load
+config = port: port
+
 
 process.on 'uncaughtException', (err) ->
 	console.warn 'Caught exception: ' + err
@@ -99,9 +101,9 @@ onready ->
 				# methodOverride req, res, ->
 				#	delay 3000, done
 
+		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
-			req.url = req.url.replace /\?.*$/g, ''
 			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)
 			if ie
 				ie = intval ie.substr(5)
@@ -117,20 +119,21 @@ onready ->
 			And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
 			###
 			for lang, method of methods
-				if (req._parseUrl || {}).pathname || req.url is '/' + lang + '/all.' + lang
+				if req.urlWithoutParams is '/' + lang + '/all.' + lang
 					file = __dirname + '/.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
 								concatCallback '', list, method, (content) ->
 									res.end content
-									fs.writeFile file, content
+									#fs.writeFile file, content
 								,
 									ie: req.ie
 							else
 								res.end content
 					)(method, options['main' + ucfirst(lang)]())
 					return
+			req.url = req.urlWithoutParams
 			if req.url.indexOf('/img/photo/') is 0
 				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
 			else if req.url.indexOf('/fonts/glyphicons') is 0
