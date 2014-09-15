@@ -536,7 +536,8 @@ module.exports =
 		# we can do it here because assetUrl is only in use in development
 		# but always prefer async functions to accelerate page load
 		# and defer treatments
-		if /^https?:\/\//g.test file
+		version = config.wornet.version
+		if /https?:\/\//g.test file
 			file + '.' + extension + '?' + version
 		else 
 			source = 'public/' + directory + '/' + file + '.' + extension
@@ -553,8 +554,6 @@ module.exports =
 			else
 				if config.env.development
 					version = stat.mtime.getTime()
-				else
-					version = config.wornet.version
 				'/' + directory + '/' + file + '.' + extension + '?' + version
 
 	###
