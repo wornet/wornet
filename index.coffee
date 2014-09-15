@@ -101,6 +101,7 @@ onready ->
 
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
+			req.url = req.url.replace /\?.*$/g, ''
 			ie = req.headers['user-agent'].match(/MSIE[\\/\s]([0-9\.]+)/g)
 			if ie
 				ie = intval ie.substr(5)
