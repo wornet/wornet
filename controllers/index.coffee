@@ -22,7 +22,7 @@ module.exports = (router) ->
 					notifications = []
 					req.user.friends = friends
 					req.user.friendAsks = friendAsks
-					if app.get('env') is 'development'
+					if config.env.development
 						notifications.push [new Date, "Nouveau"]
 						notifications.push [(new Date).subMonths(1), date().toString()]
 						friendAsks['540d5304943d6f1038c24c8a'] = users[0]
