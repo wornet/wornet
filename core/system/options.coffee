@@ -212,6 +212,7 @@ module.exports = (port) ->
 		['png', 'jpg', 'gif'].forEach (ext) ->
 			stylus.functions[ext] = (url) ->
 				functions[ext](url, config.wornet.asset.image.base64Limit)
+		stylus.functions.bigImg = bigImg
 
 		# Available s() in stylus files
 		stylus.functions.s = functions.s
