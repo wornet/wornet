@@ -41,7 +41,7 @@ module.exports = (port) ->
 		if config.env.development
 			main: @mainCss()
 		else
-			main: ['/css/all.css']
+			main: [style("all")]
 
 	mainJs: ->
 		if useCdn
@@ -95,7 +95,7 @@ module.exports = (port) ->
 		if config.env.development
 			main: @mainJs()
 		else
-			main: ['/js/all.js']
+			main: [script("all")]
 
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
@@ -188,9 +188,10 @@ module.exports = (port) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'
 					clearTimeout @excedeedTimeout
 				if time > 0
+					res = @
 					@excedeedTimeout = delay time * 1000, ->
-						@locals.err = new Error "Excedeed timeout"
-						@serverError()
+						res.locals.err = new Error "Excedeed timeout"
+						res.serverError()
 			catch: (callback) ->
 				res = @
 				->
