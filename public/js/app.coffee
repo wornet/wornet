@@ -533,7 +533,7 @@ $(document)
 		false
 
 window.onbeforeunload = ->
-	$('.loader:last').removeClass 'preload'
+	$('.loader:last').css('z-index', 99999).removeClass 'preload'
 	null
 
 refreshPill = ->
