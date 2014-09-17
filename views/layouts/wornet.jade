@@ -92,9 +92,9 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 				if typeof(script) === 'object'
 					if script[0] === 'non-ie'
 						+non-ie()
-							script(type="text/javascript" src=script[1] async)
+							+script(script[1])
 					else
 						+ie(script[0])
-							script(type="text/javascript" src=script[1] async)
+							+script(script[1])
 				else
-					script(type="text/javascript" src=script async)
+					+script(script)

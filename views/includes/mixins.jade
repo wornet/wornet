@@ -15,6 +15,9 @@ mixin link(href, name)
 	a.link&attributes(attributes)(href=href)
 		=name
 
+mixin script(src, name)
+	script(src=src)
+
 mixin data(name, value)
 	!=data(name, value)
 

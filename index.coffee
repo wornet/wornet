@@ -34,9 +34,9 @@ config = port: port
 
 
 process.on 'uncaughtException', (err) ->
-	#if err.code is 'EADDRINUSE'
-	console.log 'Attempt to listen ' + config + ' on ' + app.settings.env + '(' + app.get('env') + ')'
-	throw err
+	if err.code is 'EADDRINUSE'
+		console.log 'Attempt to listen ' + config.port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
+		throw err
 	console.warn 'Caught exception: ' + err
 	console.log err.stack
 
