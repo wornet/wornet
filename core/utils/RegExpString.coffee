@@ -1,6 +1,6 @@
 'use strict'
 
-simpleText = '[^><&\\n\\r\'"]+'
+simpleText = '[^><&\\n\\r\"]+'
 
 RegExpString =
 
