@@ -1,5 +1,8 @@
-extends ../layouts/wornet
+extends ../layouts/simple
 
-block body
-	h1
+block inner-body
+	h3
 		=s("Page introuvable")
+	p
+		=s("La page que vous recherchez est introuvable. Le lien que vous avez suivi peut être incorrect ou n'existe peut être plus.")
+	+redirectHome()

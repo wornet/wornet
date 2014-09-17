@@ -1,5 +1,6 @@
-extends ../layouts/wornet
+extends ../layouts/simple
 
-block body
-	h1
+block inner-body
+	h3
 		=s("Accès interdit")
+	+redirectHome()

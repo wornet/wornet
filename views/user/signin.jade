@@ -1,16 +1,12 @@
-extends ../layouts/user
+extends ../layouts/simple
 
 
-block nav
-	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation'): .container-fluid
-		h1.col-xs-12
-			=upperTitle
-		#mainLinks.collapse.navbar-collapse
-			ul.nav.navbar-nav.navbar-right
-				li.dropdown
-					a.dropdown-toggle(href="/" data-toggle="dropdown")
-						=s("Vous avez déjà un compte ? Connectez-vous !")
-	.main-padding
+block inner-nav
+	#mainLinks.collapse.navbar-collapse
+		ul.nav.navbar-nav.navbar-right
+			li.dropdown
+				a.dropdown-toggle(href="/" data-toggle="dropdown")
+					=s("Vous avez déjà un compte ? Connectez-vous !")
 
 
 block body

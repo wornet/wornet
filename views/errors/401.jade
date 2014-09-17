@@ -1,7 +1,8 @@
-extends ../layouts/wornet
+extends ../layouts/simple
 
-block body
-	h1
+block inner-body
+	h3
 		=s("Non autorisé")
 	p
 		=s("Désolé, vous n'êtes pas autorisé à voir la page :url", url)
+	+redirectHome()
