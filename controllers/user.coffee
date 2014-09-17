@@ -16,6 +16,9 @@ module.exports = (router) ->
 
 	pm = new PagesManager router, templateFolder
 
+	# GET /user/profile > see controllers/index.coffee
+	# GET /user/login > see controllers/index.coffee
+	# GET /user/login (pre-signin) > see controllers/index.coffee
 
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
@@ -57,7 +60,7 @@ module.exports = (router) ->
 		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
 		# 	res.redirect signinUrl
 		# Passwords must be identic
-		if config.wornet.mail['hosts-black-list'].indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
+		if config.wornet.mail.hostsBlackList.indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
 			req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 			res.redirect signinUrl
 		else if req.body.password isnt req.body.passwordCheck

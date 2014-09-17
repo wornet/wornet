@@ -5,9 +5,9 @@ mixin notifications(classes)
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('globe')
-				&nbsp; &nbsp;
+				| &nbsp; 
 			=s("Notifications")
-			&nbsp; &nbsp;
+			| &nbsp; 
 			span.pill
 				=intval(notifications.length)
 		ul.dropdown-menu(role='menu')
@@ -16,7 +16,7 @@ mixin notifications(classes)
 				li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 					i.date
 						=notification[0].humanDateTime()
-					&nbsp; &nbsp;
+					| &nbsp; 
 					if askingFriend
 						- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
@@ -34,7 +34,7 @@ mixin friends(classes)
 		li: a
 			span.mobile
 				+glyph('th-large')
-				&nbsp; &nbsp;
+				| &nbsp; 
 			=s("Aucun ami connecté|1 ami connecté|{count} amis connectés", {}, intval(0))
 
 
@@ -57,11 +57,11 @@ block nav
 			ul.nav.navbar-nav.navbar-left.col-sm-6
 				li: a(href="/")
 					+glyph("home")
-					&nbsp; &nbsp;
+					| &nbsp; 
 					=s("Accueil")
 				li: a(href="/")
 					+glyph("envelope")
-					&nbsp; &nbsp;
+					| &nbsp; 
 					=s("Message")
 				li.mobile: +notifications()
 				li.mobile: +friends()
@@ -70,7 +70,7 @@ block nav
 					a.dropdown-toggle(href="#" data-toggle="dropdown")
 						span.mobile
 							+glyph('user')
-							&nbsp; &nbsp;
+							| &nbsp; 
 						=user.name.full
 						&nbsp;
 						span.caret
@@ -80,7 +80,7 @@ block nav
 				li: a(href="#")
 					+glyph("list")
 					span.mobile
-						&nbsp; &nbsp;
+						| &nbsp; 
 						=s("Options")
 
 	nav#underbar.nav.navbar.cb

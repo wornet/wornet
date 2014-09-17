@@ -3,6 +3,6 @@ extends ../layouts/wornet
 block body
 	h1
 		=s("Erreur interne")
-	if config.env.development
+	if err
 		pre
 			!=err.stack.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/([^\n\r]+[\/\\][^\/\\]+\.coffee[^\n\r]*)/g, '<b style="color: blue;">$1</b>')

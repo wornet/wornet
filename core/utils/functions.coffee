@@ -164,17 +164,43 @@ module.exports =
 					i: i + 1
 					ie: ie
 			if file
+				pathWithoutParams = file
 				if file.indexOf('?') isnt -1
-					file = file.replace /^([^\?]+)\?.*$/g, (m, start) ->
+					path = file.replace /^([^\?]+)\?.*$/g, (m, start) ->
+						pathWithoutParams = start
 						__dirname + '/../../.build' + start
 				else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
-					file = __dirname + '/../../public' + file
-				fs.readFile file, (err, data) ->
+					path = __dirname + '/../../public' + file
+				else
+					path = file
+				fs.readFile path, (err, data) ->
 					if err
-						throw err
+						if err.code is 'ENOENT'
+							require('http').get
+								host: '127.0.0.1'
+								port: config.port
+								path: pathWithoutParams
+							, (res) ->
+								if ([0, 200]).indexOf res.statusCode is -1
+									data = ''
+									res.on 'error', (err) ->
+										console.warn err
+										done()
+									res.on 'data', (chunk) ->
+										data += chunk
+									res.on 'end', ->
+										content += proceed(data + '') + '\n'
+										done()
+								else
+									console.warn pathWithoutParams + ' : Error ' + res.statusCode
+									done()
+
+						else
+							console.warn err
+							done()
 					else
 						content += proceed(data + '') + '\n'
-					done()
+						done()
 			else
 				done()
 					
@@ -618,4 +644,4 @@ module.exports =
 	@return assert URL
 	###
 	bigImg: (file) ->
-		config.wornet['big-images-server'] + file
+		config.wornet.bigImagesServer + file

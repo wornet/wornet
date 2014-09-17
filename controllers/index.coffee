@@ -12,6 +12,7 @@ module.exports = (router) ->
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
 		if req.user
+			# GET /user/profile
 			cache 'users', 60, (done) ->
 				User.find()
 					.where('_id').ne req.user._id
@@ -20,7 +21,7 @@ module.exports = (router) ->
 			, (users) ->
 				req.getFriends (friends, friendAsks) ->
 					notifications = []
-					req.user.friends = friends
+					req.user.friends = friends.pickUnique config.wornet.limits.friendsOnProfile
 					req.user.friendAsks = friendAsks
 					if config.env.development
 						notifications.push [new Date, "Nouveau"]
@@ -43,6 +44,7 @@ module.exports = (router) ->
 						users: users
 						notifications: notifications
 		else
+			# GET /user/login (and pre-signin)
 			# Get errors in flash memory (any if AJAX is used and works on client device)
 			res.render 'user/login', loginErrors: req.flash 'loginErrors' # Will be removed when errors will be displayed on the next step
 
