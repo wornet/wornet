@@ -127,6 +127,7 @@ onready ->
 					res.setTimeLimit 200
 					file = __dirname + '/.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
+					res.setHeader 'cache-control', 'max-age=259200000, public'
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
