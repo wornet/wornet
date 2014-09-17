@@ -151,9 +151,11 @@ module.exports = (port) ->
 		for key, val of responseErrors
 			app.response[key] = ((key, val) ->
 				(model = {}) ->
-					model.err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
-					console.warn model.err
+					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
+					console.warn err
 					console.trace()
+					if config.env.development
+						model.err = err
 					@status val
 					@render 'errors/' + val, model
 			) key, val
