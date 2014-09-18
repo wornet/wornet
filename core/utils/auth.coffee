@@ -81,8 +81,6 @@ exports.login = (req, res, done) ->
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
-	if exports.isNewVisitor(req)
-		res.locals.isNewVisitor = true
 	if req.session.user?
 		exports.auth req, res, req.session.user
 		next()
@@ -92,6 +90,8 @@ exports.tryLogin = (req, res, next) ->
 				exports.auth req, res, user
 				exports.remember res, id
 			else
+				if exports.isNewVisitor(req)
+					res.locals.isNewVisitor = true
 				exports.remember res, config.wornet.remember.off
 			next()
 
