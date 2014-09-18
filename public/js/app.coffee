@@ -21,13 +21,17 @@ Controllers =
 						$('#loginErrors').errors data.err
 
 	SigninFirstStep: ($scope) ->
-		$scope.submit = (user) ->
-			user.remember = $('[ng-model="user.remember"]').prop 'checked'
-			sessionStorage['user'] = JSON.stringify user
+		saveUser $scope
 
 	SigninSecondStep: ($scope) ->
 		user = $.parseJSON sessionStorage['user']
 		$scope.user = user
+		saveUser $scope
+
+	Welcome: ($scope) ->
+		delete sessionStorage['user']
+		$('iframe.player').removeClass('hidden')
+		$(window).trigger('resize')
 
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
@@ -189,6 +193,12 @@ Controllers =
 		# (passed through the template)
 		$scope.eventSources = [$scope.events]
 
+
+# Save user datas on submit
+saveUser = ($scope) ->
+	$scope.submit = (user) ->
+		user.remember = $('[ng-model="user.remember"]').prop 'checked'
+		sessionStorage['user'] = JSON.stringify user
 
 # Resolve object get from template (passed in JSON)
 # Restore date object converted to strings previously (by JSON stringification)
@@ -552,13 +562,21 @@ onResize = (fct) ->
 	$(window).resize fct
 	fct.call @
 
-
 onResize ->
 	$('[data-ratio]').each ->
 		$block = $ @
 		ratio = $block.data('ratio') * 1
 		if ratio > 0
 			$block.height $block.width() / ratio
+
+bodyBottomPadding = parseInt $('body').css('padding-bottom')
+if exists '.cookiesWarning'
+	$warnings = $('.cookiesWarning')
+	$warnings.find('.ok').click ->
+		$warnings.slideUp ->
+			$warnings.remove()
+	onResize ->
+		$('body').css 'padding-bottom', $('#cookiesWarning').outerHeight() + (if isNaN(bodyBottomPadding) then 0 else bodyBottomPadding)
 
 
 dateTexts = getData('dateTexts')

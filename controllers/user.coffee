@@ -68,36 +68,43 @@ module.exports = (router) ->
 			res.redirect signinUrl
 		# If no error
 		else if req.body.step is "2"
-			birthDate = inputDate req.body.birthDate
 			# A full name must contains a space but is not needed at the first step
-			if !birthDate.isValid()
-				req.flash 'signinErrors', UserErrors.INVALID_DATE
-				res.redirect signinUrl
-			else
-				User.create 
-					name:
-						first: req.body['name.first']
-						last: req.body['name.last']
-					registerDate: new Date
-					email: req.body.email
-					password: req.body.password
-					birthDate: birthDate
-				, (saveErr, user) ->
-					if saveErr
-						switch (saveErr.code || 0)
-							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-							else
-								req.flash 'signinErrors', (saveErr.err || strval(saveErr))
-						res.redirect signinUrl
-					else
-						# if "Se souvenir de moi" est coché
-						if req.body.remember?
-							auth.remember res, user._id
-						# Put user in session
-						auth.auth req, res, user
-						url = '/user/welcome'
-						res.redirect if user then '/user/welcome' else signinUrl
+			User.create
+				name:
+					first: req.body['name.first']
+					last: req.body['name.last']
+				registerDate: new Date
+				email: req.body.email
+				password: req.body.password
+				birthDate: inputDate req.body.birthDate
+			, (saveErr, user) ->
+				if saveErr
+					switch (saveErr.code || 0)
+						when Errors.DUPLICATE_KEY
+							req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+						else
+							err = saveErr.err || strval(saveErr)
+							valErr = 'ValidationError:'
+							if err.indexOf(valErr) is 0
+								err = s("Erreur de validation :") + err.substr(valErr.length)
+								errors =
+									'invalid first name': s("prénom invalide")
+									'invalid last name': s("nom invalide")
+									'invalid birth date': s("date de naissance invalide")
+									'invalid phone number': s("numéro de téléphone invalide")
+									'invalid e-mail address': s("adresse e-mail invalide")
+								for code, message of errors
+									err = err.replace code, message
+							req.flash 'signinErrors', err
+					res.redirect signinUrl
+				else
+					# if "Se souvenir de moi" est coché
+					if req.body.remember?
+						auth.remember res, user._id
+					# Put user in session
+					auth.auth req, res, user
+					url = '/user/welcome'
+					res.redirect if user then '/user/welcome' else signinUrl
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model

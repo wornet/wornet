@@ -67,12 +67,14 @@ block body
 					+formControl("name.fisrt")(
 						required
 						title=s("Prénom")
+						pattern=pattern('simple-text')
 						ng-model="user.name.first"
 						name="name.first"
 						placeholder=s("Prénom")).flash
 					+formControl("name.last")(
 						required
 						title=s("Nom")
+						pattern=pattern('simple-text')
 						ng-model="user.name.last"
 						name="name.last"
 						placeholder=s("Nom")).flash
@@ -80,6 +82,8 @@ block body
 						required
 						type="date"
 						title=s("Date de naissance")
+						min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')
+						max=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
 						ng-model="user.birthDate"
 						name="birthDate"
 						placeholder=s("Date de naissance")

@@ -50,7 +50,7 @@ block body
 			h3=strtoupper(user.name.full)
 			if user.birthDate
 				p
-					=s("Né le {date} ({age} ans)", { date: user.birthDate.humanDate(), age: user.age })
+					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: user.birthDate.humanDate(), age: user.age }, user.age)
 			.cb
 		//- Publications
 		.well

@@ -10,7 +10,7 @@ block nav
 					each error in loginErrors
 						.alert.alert-danger
 							=error
-			+form#login("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")
+			+form("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")#login
 				.narrow.col-sm-4.col-xs-12
 					+formControl()(required autofocus tabindex="1" pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
 					label.mobile-field.std-line

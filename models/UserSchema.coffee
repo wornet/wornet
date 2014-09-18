@@ -4,12 +4,18 @@ userSchema = new Schema
 	name:
 		first:
 			type: String
-			validate: [regex('simple-text'), 'invalid first name']
+			validate: [
+				regex('simple-text')
+				'invalid first name'
+			]
 			trim: true
 			required: true
 		last:
 			type: String
-			validate: [regex('simple-text'), 'invalid last name']
+			validate: [
+				regex('simple-text')
+				'invalid last name'
+			]
 			trim: true
 			required: true
 	password:
@@ -26,15 +32,32 @@ userSchema = new Schema
 		default: 'user'
 		enum: ['user', 'admin']
 	lastLoginDate: Date
-	birthDate: Date
+	birthDate:
+		type: Date
+		validate: [
+			(date) ->
+				if date.isValid()
+					age = date.age()
+					age <= config.wornet.limits.userMaxAge and age >= config.wornet.limits.userMinAge
+				else
+					false
+			'invalid birth date'
+		]
+		required: true
 	phone:
 		type: String
-		validate: [regex('phone'), 'invalid phone number']
+		validate: [
+			regex('phone')
+			'invalid phone number'
+		]
 		trim: true
 	email:
 		type: String
 		required: true
-		validate: [regex('email'), 'invalid e-mail address']
+		validate: [
+			regex('email')
+			'invalid e-mail address'
+		]
 		trim: true
 		set: strtolower
 		unique: true

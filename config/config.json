@@ -7,9 +7,17 @@
             "core/utils",
             "models"
         ],
-        "limits":{
-            "friendsOnProfile": 18
+        "limits": {
+            "friendsOnProfile": 18,
+            "userMaxAge": 150,
+            "userMinAge": 0
         },
+        "remember": {
+            "key": "r",
+            "off": "-",
+            "ttl": 180
+        },
+        "redirectionDelay": 9000,
         "bigImagesServer": "http://gitedulanguedoc.com/.save/wornet/",
         "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
         "parseProxyUrl": false,

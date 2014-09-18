@@ -61,6 +61,7 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 			div(role="main")
 				block body
 
+
 		block footer
 			footer
 				.row.col-sm-8.col-sm-offset-2
@@ -73,6 +74,37 @@ html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
 					span.copytag.col-sm-3.col-xs-6(data="right")
 						!=s("{c} 2014 ", { c: "&#169;" })
 						=mainTitle
+
+
+		if isNewVisitor
+			mixin cookiesWarning(fixed)
+				.cookiesWarning.well.glued(class=fixed ? 'navbar-fixed-bottom' : null)
+					.headband.navbar-left
+						=s("En poursuivant votre navigation sur notre site, vous acceptez notre utilisation des cookies.")
+					.navbar-right
+						a.btn.glued(data-toggle="modal" data-target="#cookiesInfo")
+							=s("En savoir plus")
+						| &nbsp;
+						a.btn.glued.ok
+							=s("OK")
+			+cookiesWarning()
+			+cookiesWarning(true)
+			#cookiesInfo.modal.fade: .modal-dialog: .modal-content
+				.modal-header
+					button.close(type='button', data-dismiss='modal')
+						span(aria-hidden='true') ×
+						span.sr-only
+							=s("Fermer")
+					h4.modal-title
+						=s("Informations sur les cookies")
+				.modal-body
+					p
+						=s("Blablabla")
+				.modal-footer
+					button.btn(type='button', data-dismiss='modal')
+						=s("Fermer")
+
+
 		if datas
 			each value, name in datas
 				+data(name, value)

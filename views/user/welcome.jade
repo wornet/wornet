@@ -2,7 +2,7 @@ extends ../layouts/simple
 
 
 block body
-	.container: section
+	.container: section(ng-controller="WelcomeCtrl")
 		if user
 			h2
 				=s("Inscription réussie !")
@@ -11,7 +11,7 @@ block body
 		else
 			h2
 				=s("Bienvenue sur Wornet !")
-		iframe.player(data-ratio="1.7778" src="//www.youtube.com/embed/z1k6_mRONPI" frameborder="0" allowfullscreen)
+		iframe.player.hidden(data-ratio="1.7778" src="//www.youtube.com/embed/z1k6_mRONPI" frameborder="0" allowfullscreen)
 		if hasGoingTo
 			a.btn.btn-plain(href=goingTo)
 				=s("Reprendre là où j'en étais avant mon inscription")

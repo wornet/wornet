@@ -7,14 +7,14 @@ model 'User'
 
 # Set the remember cookie to recognize the users who checked the remember option
 exports.remember = (res, id) ->
-	res.cookie 'remember', id,
-		maxAge: 6 * 30 * 24 * 60 * 60
+	res.cookie config.wornet.remember.key, id,
+		maxAge: config.wornet.remember.ttl * 24 * 60 * 60
 		httpOnly: true
 
 # Get user id remembered with cookie
 exports.remembered = (req, done) ->
-	id = req.cookie 'remember'
-	if id
+	id = req.cookie config.wornet.remember.key
+	if id and id isnt config.wornet.remember.off
 		User.findOne
 			_id: id
 		, (err, user) ->
@@ -25,13 +25,20 @@ exports.remembered = (req, done) ->
 	else
 		done false
 
+# Know if the visitor if a new visitor
+exports.isNewVisitor = (req) ->
+	empty req.cookie config.wornet.remember.key
+
+# Know if the visitor if a new visitor
+exports.isReturningVisitor = (req) ->
+	!exports.isNewVisitor(req)
+
 # Delete user session and cookie
 exports.logout = (req, res) ->
 	delete res.locals.user
 	delete req.user
 	delete req.session.user
-	if req.cookie 'remember'
-		res.clearCookie 'remember'
+	exports.remember res, config.wornet.remember.off
 
 # Store user in session, and append to the request object
 exports.auth = (req, res, user) ->
@@ -74,6 +81,8 @@ exports.login = (req, res, done) ->
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
+	if exports.isNewVisitor(req)
+		res.locals.isNewVisitor = true
 	if req.session.user?
 		exports.auth req, res, req.session.user
 		next()
@@ -82,6 +91,8 @@ exports.tryLogin = (req, res, next) ->
 			if user
 				exports.auth req, res, user
 				exports.remember res, id
+			else
+				exports.remember res, config.wornet.remember.off
 			next()
 
 ###
