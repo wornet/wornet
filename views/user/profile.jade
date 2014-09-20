@@ -2,39 +2,48 @@ extends ../layouts/user
 
 block body
 	.errors
+		if profileErrors
+			each error in list(profileErrors)
+				.alert.alert-danger
+					=error
+
 
 	.col-sm-4.col-xs-12.pad-right
-		//- Friends
-		.well
-			h3=strtoupper(s("Amis"))
-			ul#friends.photos-thumbs
-				each friend in user.friends
-					li: img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
-			.cb
-		//- Asks for friend
-		each friend, id in user.friendAsks
-			.alert.alert-success.friend-ask(data-id=id)
-				img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
-				- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
-				.shift
-					i.date
-						=Date.fromId(id).humanDateTime()
-					br
-					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-					br
-					.btn.accept-friend
-						=s("Accepter")
-					&nbsp; &nbsp;
-					.btn.ignore-friend
-						=s("Ignorer")
-				.shift.if-accepted
-					!=s("{username} fait maitnenant partie de vos amis.", dataWithUser)
+		if isMe
+			//- Friends
+			.well
+				h3=strtoupper(s("Amis")) + " " + s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+				ul#friends.photos-thumbs
+					each friend in friends
+						li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+							img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
 				.cb
+			//- Asks for friend
+			each friend, id in friendAsks
+				.alert.alert-success.friend-ask(data-id=id)
+					a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
+					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
+					.shift
+						i.date
+							=Date.fromId(id).humanDateTime()
+						br
+						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+						br
+						.btn.accept-friend
+							=s("Accepter")
+						&nbsp; &nbsp;
+						.btn.ignore-friend
+							=s("Ignorer")
+					.shift.if-accepted
+						!=s("{username} fait maitnenant partie de vos amis.", dataWithUser)
+					.cb
 		.well
 			h3=strtoupper(s("Utilisateurs"))
 			ul.photos-thumbs
 				each friend in users
-					li: img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
+					li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
 			.cb
 		//- Photos/Videos
 		.well
@@ -42,15 +51,39 @@ block body
 	.col-sm-8.col-xs-12.pad-left
 		//- Profile
 		.well
-			iframe(name="upload")
-			+form("/user/photo", "FILE")#profile-photo(target="upload")
-				.progress-radial: .overlay
-					img.upload-thumb(src=user.thumb200 alt=user.name.full)
-					input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
-			h3=strtoupper(user.name.full)
-			if user.birthDate
+			if isMe
+				iframe(name="upload")
+				+form("/user/photo", "FILE")#profile-photo(target="upload")
+					.progress-radial: .overlay
+						img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
+						input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
+			else
+				.profileError
+					if ! empty(friendAsked)
+						.alert.alert-success
+							=friendAsked
+				#profile-photo
+					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
+			h3
+				=strtoupper(profile.name.full)
+				if isMe
+					a.inline-button(href="/user/profile/edit")
+						+glyph('edit')
+				else if user && ! askedForFriend
+					a.destroyable.inline-button(
+						href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.name.full)
+						data-target=".profileError"
+						data-click="success"
+						data-params[0]=s("Demande envoyée à " + profile.name.full)
+						data-ask-for-friend=profile.id
+					)
+						+glyph('plus')
+			if isMe && profile.birthDate
 				p
-					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: user.birthDate.humanDate(), age: user.age }, user.age)
+					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
+					| &nbsp;
+					a(href="/user/profile/edit")
+						+glyph('edit')
 			.cb
 		//- Publications
 		.well

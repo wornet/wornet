@@ -158,44 +158,53 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 						friend: friend
 
 userSchema.methods.getFriends = (done) ->
-	ids = []
-	friendAsksIds = []
-	friendAskDates = []
-	pending = 2
-	next = ->
-		User.find()
-			.where('_id').in ids.slice 0, 10
-			.exec (err, users) ->
-				friends = []
-				friendAsks = {}
-				users.forEach (user) ->
-					id = strval user.id
-					if friendAsksIds.indexOf(id) is -1
-						friends.push user
+	if @friends? and @friendAsks?
+		done null, @friends, @friendAsks
+	else
+		ids = []
+		friendAsksIds = []
+		friendAskDates = []
+		pending = 2
+		next = ->
+			User.find()
+				.where('_id').in ids #.slice 0, config.wornet.limits.friendsOnProfile
+				.exec (err, users) ->
+					if err
+						done err, {}, {}
 					else
-						friendAsks[friendAskDates[id]] = user
-				done friends, friendAsks
-	Friend.find askedFrom: @_id
-		.where('status').in ['waiting', 'accepted']
-		.limit 10
-		.exec (err, friends) ->
-			unless err
-				for friend in friends
-					ids.push friend.askedTo
-			unless --pending
-				next()
-	Friend.find askedTo: @_id
-		.where('status').in ['waiting', 'accepted']
-		.limit 10
-		.exec (err, friends) ->
-			unless err
-				for friend in friends
-					ids.push friend.askedFrom
-					if friend.waiting
-						friendAsksIds.push strval friend.askedFrom
-						friendAskDates[friend.askedFrom] = friend.id
-			unless --pending
-				next()
+						friends = []
+						friendAsks = {}
+						users.forEach (user) ->
+							id = strval user.id
+							if friendAsksIds.indexOf(id) is -1
+								friends.push user
+							else
+								friendAsks[friendAskDates[id]] = user
+						done null, friends, friendAsks
+		Friend.find askedFrom: @_id
+			.where('status').in ['waiting', 'accepted']
+			.limit 10
+			.exec (err, friends) ->
+				unless err
+					for friend in friends
+						if friend.askedTo?
+							ids.push friend.askedTo
+						else
+							console.warn 'Friend #' + friend.id + ' does not contains askedTo key'
+				unless --pending
+					next()
+		Friend.find askedTo: @_id
+			.where('status').in ['waiting', 'accepted']
+			.limit 10
+			.exec (err, friends) ->
+				unless err
+					for friend in friends
+						ids.push friend.askedFrom
+						if friend.waiting
+							friendAsksIds.push strval friend.askedFrom
+							friendAskDates[friend.askedFrom] = friend.id
+				unless --pending
+					next()
 
 
 module.exports = userSchema

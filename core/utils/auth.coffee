@@ -96,6 +96,17 @@ exports.tryLogin = (req, res, next) ->
 			next()
 
 ###
+Return true if a value is in a list (after solving jokers)
+@return boolean match
+###
+exports.inList = (value, list) ->
+	for match in list
+		match = new RegExp match.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*')
+		if match.test value
+			return true
+	false
+
+###
 A helper method to determine if a user has been authenticated, and if they have the right role.
 If the user is not known, redirect to the login page. If the role doesn't match, show a 403 page.
 @param role The role that a user should have to pass authentication.
@@ -106,33 +117,52 @@ exports.isAuthenticated = (req, res, next) ->
 	else
 		exports.tryLogin req, res, ->
 
-			# Access map
-			auth =
-				"/admin": true
-				"/agenda": true
-				"/photos": true
+			done = ->
+				# Access map
+				auth = [
+					"/admin"
+					"/agenda"
+					"/photos"
+					"/friend/**"
+				]
 
-			blacklist = user:
-				"/admin": true
+				blacklist = user: [
+					"/admin"
+				]
 
-			route = req.url
-			# Get user role (in any user connected : empty string)
-			role = (if (req.user and req.user.role) then req.user.role else "")
-			# If the URL is in the access restricted list
-			if auth[route]
-				# If any user are connected
-				unless req.user
-					# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-					req.session.goingTo = req.url
-					if ['/', '/user/profile', '/profile'].indexOf(route) is -1
-						req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
-					res.redirect "/"
+				route = req.url
+				# Get user role (in any user connected : empty string)
+				role = (if (req.user and req.user.role) then req.user.role else "")
+				# If the URL is in the access restricted list
+				if exports.inList route, auth
+					# If any user are connected
+					unless req.user
+						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
+						req.session.goingTo = req.url
+						if ['/', '/user/profile', '/profile'].indexOf(route) is -1
+							req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+						res.redirect "/"
 
-				# Check blacklist for this user's role
-				else if blacklist[role] and blacklist[role][route] is true
-					model = url: route
-					res.unautorized model
+					# Check blacklist for this user's role
+					else if blacklist[role] and exports.inList route, blacklist[role]
+						model = url: route
+						res.unautorized model
+					else
+						next()
 				else
 					next()
+
+			if req.user
+				req.getFriends (err, friends, friendAsks) ->
+					if err
+						res.serverError err
+					else
+						req.user.numberOfFriends = friends.length
+						req.user.friends = friends
+						req.user.friendAsks = friendAsks
+						req.user.notifications = []
+						for id, friend of friendAsks
+							req.user.notifications.push [Date.fromId(id), friend, id]
+						done()
 			else
-				next()
+				done()

@@ -9,4 +9,4 @@ fs.exists 'mongod.lnk', (exists) ->
 		command 'mongod.lnk'
 
 # Build coffee scripts
-command 'coffee -b -o .build/js -wc public/js'
+command 'coffee -bcw -o .build/js/ --join app public/js/app/'

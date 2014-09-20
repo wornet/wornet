@@ -20,6 +20,10 @@ module.exports = (router) ->
 	# GET /user/login > see controllers/index.coffee
 	# GET /user/login (pre-signin) > see controllers/index.coffee
 
+	router.get '/profile/:id/:name', (req, res) ->
+		res.locals.friendAsked = req.flash 'friendAsked'
+		UserPackage.renderProfile req, res, req.params.id
+
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
 		# Log in user
@@ -154,10 +158,25 @@ module.exports = (router) ->
 					when 'name.last'
 						req.user.name.last = val
 
+	# Without AJAX
+	router.get '/friend/:id/:name', (req, res) ->
+		# When user ask some other user for friend
+		id = req.params.id
+		req.user.aksForFriend id, (data) ->
+			if empty data.err
+				req.flash 'friendAsked', s("Demande envoyée à " + escape(req.params.name))
+			else
+				req.flash 'profileError', s("Erreur : " + err)
+			res.redirect '/user/profile/' + encodeURIComponent(id) + '/' + encodeURIComponent(req.params.name)
+
+	# With AJAX
 	router.post '/friend', (req, res) ->
 		# When user ask some other user for friend
-		req.user.aksForFriend req.body.userId, (data) ->
-			res.json data
+		if empty req.body.userId
+			res.json err: s("Utilisateur introuvable")
+		else
+			req.user.aksForFriend req.body.userId, (data) ->
+				res.json data
 
 	router.post '/friend/accept', (req, res) ->
 		# When user accept friend ask

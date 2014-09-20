@@ -5,6 +5,7 @@
         "timeout": 30,
         "autoloadDirectories": [
             "core/utils",
+            "core/packages",
             "models"
         ],
         "limits": {

@@ -122,11 +122,12 @@ module.exports = (port) ->
 					@session.cache = {}
 				cache = @session.cache
 				if typeof cache[key] is 'undefined'
-					calculate (value) ->
-						cache[key] = value
-						done value, false
+					calculate (err, value) ->
+						unless err
+							cache[key] = value
+						done err, value, false
 				else
-					done cache[key], true
+					done null, cache[key], true
 			cacheFlush: (key = null) ->
 				if key is null
 					@session.cache = {}
@@ -135,12 +136,18 @@ module.exports = (port) ->
 			getFriends: (done) ->
 				user = @user
 				@cache 'friends', (done) ->
-					user.getFriends (friends, friendAsks) ->
-						done [friends, friendAsks]
-				, (result, cached) ->
-					friends = result[0]
-					friendAsks = result[1]
-					done friends, friendAsks
+					user.getFriends (err, friends, friendAsks) ->
+						done err, [friends, friendAsks]
+				, (err, result, cached) ->
+					if err
+						done err, {}, {}
+					else
+						friends = result[0]
+						friendAsks = result[1]
+						done err, friends, friendAsks
+
+		# Save original method(s) that we will override
+		redirect = app.response.redirect
 
 		# Available shorthand methods to all response objects in controllers
 		responseErrors =
@@ -151,6 +158,8 @@ module.exports = (port) ->
 		for key, val of responseErrors
 			app.response[key] = ((key, val) ->
 				(model = {}) ->
+					if typeof(model) is 'string' or model instanceof Error
+						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					console.warn err
 					console.trace()
@@ -160,7 +169,6 @@ module.exports = (port) ->
 					@render 'errors/' + val, model
 			) key, val
 
-		redirect = app.response.redirect
 		extend app.response,
 			###
 			Complete a local URL if needed

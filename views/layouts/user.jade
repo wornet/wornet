@@ -1,6 +1,7 @@
 extends ../layouts/wornet
 
 mixin notifications(classes)
+	- var notificationsCount = intval(user.notifications.length)
 	ul.notifications.nav(class=classes): li.dropdown
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
@@ -9,25 +10,26 @@ mixin notifications(classes)
 			=s("Notifications")
 			| &nbsp; 
 			span.pill
-				=intval(notifications.length)
-		ul.dropdown-menu(role='menu')
-			each notification, id in notifications
-				- var askingFriend = objectToUser(notification[1])
-				li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-					i.date
-						=notification[0].humanDateTime()
-					| &nbsp; 
-					if askingFriend
-						- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
-						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-						br
-						.btn.accept-friend
-							=s("Accepter")
-						&nbsp; &nbsp;
-						.btn.ignore-friend
-							=s("Ignorer")
-					else
-						=notification[1]
+				=notificationsCount
+		if notificationsCount > 0
+			ul.dropdown-menu(role='menu')
+				each notification, id in user.notifications
+					- var askingFriend = objectToUser(notification[1])
+					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+						i.date
+							=notification[0].humanDateTime()
+						| &nbsp; 
+						if askingFriend
+							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
+							!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+							br
+							.btn.accept-friend
+								=s("Accepter")
+							&nbsp; &nbsp;
+							.btn.ignore-friend
+								=s("Ignorer")
+						else
+							=notification[1]
 
 mixin friends(classes)
 	ul.nav(class=classes)
@@ -46,51 +48,58 @@ block nav
 		h1.col-xs-12
 			=upperTitle
 		.navbar-header
-			button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
-				span.sr-only Toggle navigation
-				span.icon-bar
-				span.icon-bar
-				span.icon-bar
+			if user
+				button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
 			a.navbar-brand(href='#')
 				=upperTitle
-		#mainLinks.collapse.navbar-collapse
-			ul.nav.navbar-nav.navbar-left.col-sm-6
-				li: a(href="/")
-					+glyph("home")
-					| &nbsp; 
-					=s("Accueil")
-				li: a(href="/")
-					+glyph("envelope")
-					| &nbsp; 
-					=s("Message")
-				li.mobile: +notifications()
-				li.mobile: +friends()
-			ul.nav.navbar-nav.navbar-right
-				li.dropdown
-					a.dropdown-toggle(href="#" data-toggle="dropdown")
-						span.mobile
-							+glyph('user')
-							| &nbsp; 
-						=user.name.full
-						&nbsp;
-						span.caret
-					ul.dropdown-menu(role='menu')
-						li: a(href="/user/logout")
-								=s("Déconnexion")
-				li: a(href="#")
-					+glyph("list")
-					span.mobile
+		if user
+			#mainLinks.collapse.navbar-collapse
+				ul.nav.navbar-nav.navbar-left.col-sm-6
+					li: a(href="/")
+						+glyph("home")
 						| &nbsp; 
-						=s("Options")
+						=s("Accueil")
+					li: a(href="/")
+						+glyph("envelope")
+						| &nbsp; 
+						=s("Message")
+					li.mobile: +notifications()
+					li.mobile: +friends()
+				ul.nav.navbar-nav.navbar-right
+					li.dropdown
+						a.dropdown-toggle(href="#" data-toggle="dropdown")
+							span.mobile
+								+glyph('user')
+								| &nbsp; 
+							=user.name.full
+							&nbsp;
+							span.caret
+						ul.dropdown-menu(role='menu')
+							li: a(href="/user/logout")
+									=s("Déconnexion")
+					li: a(href="#")
+						+glyph("list")
+						span.mobile
+							| &nbsp; 
+							=s("Options")
 
-	nav#underbar.nav.navbar.cb
-		+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
-		+form("#")(ng-controller="SigninFirstStepCtrl" role="search").navbar-form.navbar-left.col-sm-4.col-xs-12
-			label
-				+formControl()(
-					placeholder=s("Recherchez vos amis")
-					)#search
-				+glyph('search')
-		+friends('desktop navbar-nav navbar-right')
+	if user
+		nav#underbar.nav.navbar.cb
+			+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
+			+form("#")(ng-controller="SigninFirstStepCtrl" role="search").navbar-form.navbar-left.col-sm-4.col-xs-12
+				label
+					+formControl()(
+						placeholder=s("Recherchez vos amis")
+						)#search
+					+glyph('search')
+			+friends('desktop navbar-nav navbar-right')
+	else
+		.main-padding
 
 block footer
+
+block cookie-banner-under

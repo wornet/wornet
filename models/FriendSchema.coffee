@@ -11,13 +11,16 @@ friendSchema = new Schema
 	askedFrom:
 		type: ObjectId
 		ref: 'UserSchema'
+		required: true
 	askedTo:
 		type: ObjectId
 		ref: 'UserSchema'
+		required: true
 	status:
 		type: String
 		default: status[0]
 		enum: status
+		required: true
 ,
 	toObject:
 		virtuals: true

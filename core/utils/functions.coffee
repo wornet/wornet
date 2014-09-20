@@ -300,6 +300,24 @@ module.exports =
 		if isNaN(n) then 0 else n
 
 	###
+	Return value if it's an array, else return an array containing the value
+	@param mixed value
+
+	@return Array list
+	###
+	arrayval: (val) ->
+		if val instanceof Array
+			val
+		else
+			[val]
+
+	###
+	@alias arrayval
+	###
+	list: (val) ->
+		arrayval val
+
+	###
 	Return a regex string from RegExpString object get with the specified method (trim if any)
 	This can be used in a pattern attribute (HTML5)
 	@param string name of the pattern
