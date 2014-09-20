@@ -187,10 +187,7 @@ userSchema.methods.getFriends = (done) ->
 			.exec (err, friends) ->
 				unless err
 					for friend in friends
-						if friend.askedTo?
-							ids.push friend.askedTo
-						else
-							console.warn 'Friend #' + friend.id + ' does not contains askedTo key'
+						ids.push friend.askedTo
 				unless --pending
 					next()
 		Friend.find askedTo: @_id

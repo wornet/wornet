@@ -1,4 +1,19 @@
 UserPackage =
+
+	askForFriend: (id, req, done) ->
+		if empty req.body.userId
+			done err: s("Utilisateur introuvable")
+		else
+			req.user.aksForFriend id, (data) ->
+				if empty data.err
+					req.user.friendAsks[data.friend.id] = _id: id
+					req.getFriends (err, friends, friendAsks) ->
+						unless err
+							req.user.numberOfFriends = friends.length
+							req.user.friends = friends
+							req.user.friendAsks = friendAsks
+				done data
+
 	renderProfile: (req, res, id = null) ->
 		if id is null
 			id = req.user._id
@@ -28,11 +43,9 @@ UserPackage =
 								1
 							else
 								0
-						log [req.user.friendAsks]
 						if isMe or !req.user? or empty(req.user.friendAsks)
 							askedForFriend = false
 						else
-							log [req.user.friendAsks, profile._id]
 							askedForFriend = !empty(req.user.friendAsks[profile._id])
 						res.render 'user/profile',
 							isMe: isMe

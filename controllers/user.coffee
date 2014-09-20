@@ -162,25 +162,21 @@ module.exports = (router) ->
 	router.get '/friend/:id/:name', (req, res) ->
 		# When user ask some other user for friend
 		id = req.params.id
-		req.user.aksForFriend id, (data) ->
+		UserPackage.askForFriend id, req, (data) ->
 			if empty data.err
 				req.flash 'friendAsked', s("Demande envoyée à " + escape(req.params.name))
 			else
-				req.flash 'profileError', s("Erreur : " + err)
+				req.flash 'profileError', s("Erreur : " + data.err)
 			res.redirect '/user/profile/' + encodeURIComponent(id) + '/' + encodeURIComponent(req.params.name)
 
 	# With AJAX
 	router.post '/friend', (req, res) ->
 		# When user ask some other user for friend
-		if empty req.body.userId
-			res.json err: s("Utilisateur introuvable")
-		else
-			req.user.aksForFriend req.body.userId, (data) ->
-				res.json data
+		UserPackage.askForFriend req.body.userId, req, res.json
 
 	router.post '/friend/accept', (req, res) ->
 		# When user accept friend ask
-		Friend.update _id: req.body.id, { $set: status: 'accepted'}, {}, (err, friend) ->
+		Friend.update _id: req.body.id, { $set: status: 'accepted' }, {}, (err, friend) ->
 			res.json
 				err: err
 				friend: friend
