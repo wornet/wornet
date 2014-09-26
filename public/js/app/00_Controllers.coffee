@@ -15,7 +15,7 @@ Controllers =
 				success: (data) ->
 					# If get a redirection
 					if data.goingTo
-						location.href = data.goingTo
+						Ajax.page data.goingTo
 					# Else : an error occured
 					else
 						$('#loginErrors').errors data.err

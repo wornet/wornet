@@ -69,7 +69,7 @@ block body
 				if isMe
 					a.inline-button(href="/user/profile/edit")
 						+glyph('edit')
-				else if user && ! askedForFriend
+				else if user && ! askedForFriend && ! isAFriend
 					a.destroyable.inline-button(
 						href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.name.full)
 						data-target=".profileError"

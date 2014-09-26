@@ -210,7 +210,7 @@ module.exports = (port) ->
 					catch e
 						res.serverError(err: e)
 
-				
+
 
 		# Templates directory
 		app.set 'views', __dirname + '/../../views'

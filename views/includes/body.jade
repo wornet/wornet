@@ -1,0 +1,91 @@
+
+body(ng-app="Wornet" class=bodyClasses)
+
+		#wrap
+			block nav
+			+ie('if lte IE 7')
+				.alert.alert-danger
+					- var upgradeUrl = "http://rowsehappy.com/"
+					- var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"
+					- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Téléchargez un autre navigateur") + '"')
+					- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("installez Google Chrome Frame") + '"')
+					!=s("Votre navigateur est obsolète. {upgradeYourBrowser} ou {installIeFrame} pour profiter de Wornet.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+			noscript
+				.alert.alert-danger
+					=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
+
+			div(role="main")
+				block body
+
+
+		block footer
+			footer
+				.row.col-sm-8.col-sm-offset-2
+					a.link.col-sm-3.col-xs-6(href="/newsroom")
+						=s("Newsroom")
+					a.link.col-sm-3.col-xs-6(href="/jobs")
+						=s("Offres d'emplois")
+					a.link.col-sm-3.col-xs-6(href="/legals")
+						=s("Mentions légales")
+					span.copytag.col-sm-3.col-xs-6(data="right")
+						!=s("{c} 2014 ", { c: "&#169;" })
+						=mainTitle
+
+
+		block cookie-banner
+			if isNewVisitor
+				mixin cookiesWarning(fixed)
+					.cookiesWarning.well.glued(class=fixed ? 'navbar-fixed-bottom' : null)
+						.headband.navbar-left
+							=s("En poursuivant votre navigation sur notre site, vous acceptez notre utilisation des cookies.")
+						.navbar-right
+							a.btn.glued(data-toggle="modal" data-target="#cookiesInfo")
+								=s("En savoir plus")
+							| &nbsp;
+							a.btn.glued.ok
+								=s("OK")
+				block cookie-banner-under
+					+cookiesWarning()
+				block cookie-banner-over
+					+cookiesWarning(true)
+					#cookiesInfo.modal.fade: .modal-dialog: .modal-content
+						.modal-header
+							button.close(type='button', data-dismiss='modal')
+								span(aria-hidden='true') ×
+								span.sr-only
+									=s("Fermer")
+							h4.modal-title
+								=s("Informations sur les cookies")
+						.modal-body
+							p
+								=s("Blablabla")
+						.modal-footer
+							button.btn(type='button', data-dismiss='modal')
+								=s("Fermer")
+
+
+		if datas
+			each value, name in datas
+				+data(name, value)
+		- var trackers = options.trackers()
+		if trackers.piwik
+			noscript: p: img(width="1" height="1" src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+			+data("piwik", trackers.piwik)
+		if trackers.googleAnalytics
+			+data("googleAnalytics", trackers.googleAnalytics)
+
+		//- .loader sera utilisé si je parviens à faire un système de navigation
+		//- AJAX compatible Angular
+		.loader.preload
+
+		block js
+			each script in options.js().main
+				if typeof(script) === 'object'
+					if script[0] === 'non-ie'
+						+non-ie()
+							+script(script[1])
+					else
+						+ie(script[0])
+							+script(script[1])
+				else
+					+script(script)

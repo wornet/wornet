@@ -176,14 +176,8 @@ module.exports = (router) ->
 
 	router.post '/friend/accept', (req, res) ->
 		# When user accept friend ask
-		Friend.update _id: req.body.id, { $set: status: 'accepted' }, {}, (err, friend) ->
-			res.json
-				err: err
-				friend: friend
+		UserPackage.setFriendStatus req, 'accepted', res.json
 
 	router.post '/friend/ignore', (req, res) ->
 		# When user ignore friend ask
-		Friend.update _id: req.body.id, { $set: status: 'refused' }, {}, (err, friend) ->
-			res.json
-				err: err
-				friend: friend
+		UserPackage.setFriendStatus req, 'refused', res.json

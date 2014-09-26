@@ -20,7 +20,8 @@ Ajax =
 		settings.dataType = settings.dataType || "json"
 		settings.data = settings.data || {}
 		# Append CSRF token (needed for security)
-		settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
+		unless settings.type is "GET"
+			settings.data._csrf = settings.data._csrf || $('head meta[name="_csrf"]').attr 'content'
 		# If method isnt GET or POST, it must be emulated
 		if _method?
 			# Set method in data POST parameters
@@ -61,6 +62,23 @@ Ajax =
 	delete: (url, settings) ->
 		@post url, settings, "DELETE"
 
+	###
+	Ajax navigation
+	###
+	page: (url) ->
+		blacklist =
+			/^agenda$/g
+		path = url.replace(/([^\?]*)\?.*$/g, '$1').replace(/^\//g, '').replace(/\/$/g, '')
+		for match in blacklist
+			if match.test path
+				location.href = url
+				return
+		Ajax.get url,
+			dataType: 'html'
+			success: (data) ->
+				console.log($(data))
+				console.log($(data).find('body').html())
+				$('body').html $(data).find('body').html()
 
 ###
 Crud can send request to its member URL

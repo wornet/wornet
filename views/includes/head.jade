@@ -1,0 +1,38 @@
+
+head
+	meta(charset="UTF-8")
+	title
+		block title
+			=mainTitle
+	base(href="/")
+	block meta
+		meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
+		+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
+		+meta("apple-mobile-web-app-capable", "yes")
+		+meta("format-detection", "telephone=no")
+		+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture)…")
+		+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+		+meta("_csrf", _csrf)
+	block css
+		each style in options.css().main
+			if typeof(style) === 'object'
+				if style[0] === 'non-ie'
+					+non-ie()
+						link(media="all" rel="stylesheet" href=style[1])
+				else
+					+ie(style[0])
+						link(media="all" rel="stylesheet" href=style[1])
+			else
+				link(media="all" rel="stylesheet" href=style)
+	block link
+		link(rel="shortcut icon" href="/favicon.ico")
+	block id
+		+ie('if lte IE 8')
+			script
+				:coffee
+					((f) ->
+						f 'tabs'
+						f 'pane'
+						f 'ng-pluralize'
+					)(document.createElement)
+	block head

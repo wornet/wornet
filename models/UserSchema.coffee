@@ -181,16 +181,22 @@ userSchema.methods.getFriends = (done) ->
 							else
 								friendAsks[friendAskDates[id]] = user
 						done null, friends, friendAsks
-		Friend.find askedFrom: @_id
-			.where('status').in ['waiting', 'accepted']
+		Friend.find
+				askedFrom: @_id
+				status: 'accepted'
+			# .where('status').in ['waiting', 'accepted']
 			.limit 10
 			.exec (err, friends) ->
 				unless err
 					for friend in friends
 						ids.push friend.askedTo
+						# if friend.waiting
+						# 	friendAsksIds.push strval friend.askedTo
+						# 	friendAskDates[friend.askedTo] = friend.id
 				unless --pending
 					next()
-		Friend.find askedTo: @_id
+		Friend.find
+				askedTo: @_id
 			.where('status').in ['waiting', 'accepted']
 			.limit 10
 			.exec (err, friends) ->

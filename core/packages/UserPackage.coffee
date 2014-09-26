@@ -1,5 +1,12 @@
 UserPackage =
 
+	refreshFriends: (req) ->
+		req.getFriends (err, friends, friendAsks) ->
+			unless err
+				req.user.numberOfFriends = friends.length
+				req.user.friends = friends
+				req.user.friendAsks = friendAsks
+
 	askForFriend: (id, req, done) ->
 		if empty req.body.userId
 			done err: s("Utilisateur introuvable")
@@ -7,12 +14,24 @@ UserPackage =
 			req.user.aksForFriend id, (data) ->
 				if empty data.err
 					req.user.friendAsks[data.friend.id] = _id: id
-					req.getFriends (err, friends, friendAsks) ->
-						unless err
-							req.user.numberOfFriends = friends.length
-							req.user.friends = friends
-							req.user.friendAsks = friendAsks
+					@refreshFriends req
 				done data
+
+	setFriendStatus: (req, status, done) ->
+		isRequest = typeof req is 'object' and req.body? and req.body.id?
+		if isRequest
+			id = req.body.id
+		else
+			id = strval req
+		Friend.update { _id: id, askedTo: req.user._id }, { $set: status: status }, {}, (err, friend) ->
+			if ! err and isRequest
+				delete req.user.friendAsks[data.friend.id]
+				if status is 'accepted'
+					req.user.friends.push _id: friend.askedFrom
+				@refreshFriends req
+			done
+				err: err
+				friend: friend
 
 	renderProfile: (req, res, id = null) ->
 		if id is null
@@ -43,13 +62,21 @@ UserPackage =
 								1
 							else
 								0
-						if isMe or !req.user? or empty(req.user.friendAsks)
-							askedForFriend = false
-						else
-							askedForFriend = !empty(req.user.friendAsks[profile._id])
+						try
+							if isMe or !req.user? or empty req.user.friendAsks
+								askedForFriend = false
+							else
+								askedForFriend = req.user.friendAsks.has _id: profile._id
+							if isMe or !req.user? or empty req.user.friends
+								isAFriend = false
+							else
+								isAFriend = req.user.friends.has _id: profile._id
+						catch err
+							console.warn err
 						res.render 'user/profile',
 							isMe: isMe
 							askedForFriend: askedForFriend
+							isAFriend: isAFriend
 							profile: profile
 							numberOfFriends: friends.length
 							friends: friendsThumb

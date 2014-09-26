@@ -38,6 +38,7 @@ exports.logout = (req, res) ->
 	delete res.locals.user
 	delete req.user
 	delete req.session.user
+	req.cacheFlush()
 	exports.remember res, config.wornet.remember.off
 
 # Store user in session, and append to the request object
@@ -90,7 +91,7 @@ exports.tryLogin = (req, res, next) ->
 				exports.auth req, res, user
 				exports.remember res, id
 			else
-				if exports.isNewVisitor(req)
+				if exports.isNewVisitor req
 					res.locals.isNewVisitor = true
 				exports.remember res, config.wornet.remember.off
 			next()

@@ -1,3 +1,4 @@
+'use strict'
 ###
 Extend Array prototype
 ###
@@ -53,6 +54,6 @@ RandomArray =
 		else
 			@pickAndShift count
 
-extend Array.prototype, RandomArray
+safeExtend Array.prototype, RandomArray
 
 module.exports = RandomArray

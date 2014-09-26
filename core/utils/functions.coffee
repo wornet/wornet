@@ -203,7 +203,17 @@ module.exports =
 						done()
 			else
 				done()
-					
+
+	###
+	Do extend but hide the property/method to forbbid enumerate on it
+	###
+	safeExtend: (obj, props) ->
+		Object.keys(props).forEach (key) ->
+			if (props.hasOwnProperty key) and (typeof obj[key] is 'undefined')
+				Object.defineProperty obj, key,
+					value: props[key]
+					writable: true
+					configurable: true
 
 	###
 	Display a message or variable and stack trace if on a development environment
