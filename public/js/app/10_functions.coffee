@@ -132,3 +132,16 @@ refreshPill = ->
 onResize = (fct) ->
 	$(window).resize fct
 	fct.call @
+
+serverError = (message) ->
+	$('.errors').errors message || "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
+
+stop = (e) ->
+	e.stopPropagation()
+	false
+prevent = (e) ->
+	e.preventDefault()
+	false
+cancel = (e) ->
+	stop e
+	prevent e

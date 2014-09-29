@@ -56,7 +56,7 @@ block body
 				+form("/user/photo", "FILE")#profile-photo(target="upload")
 					.progress-radial: .overlay
 						img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
-						input.upload(type="file" title=s("Votre photo") ng-model="user.photo" name="photo")
+						input.upload(type="file" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 			else
 				.profileError
 					if ! empty(friendAsked)

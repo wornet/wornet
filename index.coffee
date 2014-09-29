@@ -147,8 +147,7 @@ onready ->
 				req.url = '/components/bootstrap' + req.url
 			done()
 		else
-			console.log req.headers
-			res.locals.isXHR = req.headers['X-Requested-With']? and req.headers['X-Requested-With'] is 'XMLHttpRequest'
+			res.locals.isXHR = req.getHeader('X-Requested-With') is 'XMLHttpRequest'
 			# Load all scripts in core/global/request directory
 			# Not yet needed
 			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->

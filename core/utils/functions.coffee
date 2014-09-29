@@ -95,20 +95,24 @@ module.exports =
 				intval lifetime
 		if lifetime < 1
 			lifetime = config.wornet.cache.defaultLifetime
-		memGet key, (err, result) ->
-			if err or result is false
-				calculate (value) ->
-					if value is false
-						console.warn "[memcached] cannot store a false value"
-						console.trace()
-					done value, false
-					memSet key, value, lifetime, (err) ->
-						if err
-							console.warn "[memcached] " + err
+		if config.wornet.cache.enabled
+			memGet key, (err, result) ->
+				if err or result is false
+					calculate (value) ->
+						if value is false
+							console.warn "[memcached] cannot store a false value"
 							console.trace()
-			else
-				done result, true
-			null
+						done value, false
+						memSet key, value, lifetime, (err) ->
+							if err
+								console.warn "[memcached] " + err
+								console.trace()
+				else
+					done result, true
+				null
+		else
+			calculate (value) ->
+				done value, false
 		null
 	###
 	Compress JS code

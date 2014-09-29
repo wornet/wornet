@@ -11,7 +11,7 @@ $document = $(document)
 				catch e
 					data = null
 				if typeof(data) isnt 'object' or data is null or typeof(data._csrf) is 'undefined'
-					$('.errors').errors "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
+					serverError()
 				else
 					if data.err
 						err = data.err
@@ -103,7 +103,7 @@ $.each [
 			$img.fadeOut('fast')
 			if typeof(FormData) is 'function'
 				$progress = $form.find '.progress-radial'
-				e.preventDefault()
+				prevent e
 				formData = new FormData()
 				file = $form.find('input[type="file"]')[0].files[0]
 				formData.append 'photo', file
@@ -146,9 +146,8 @@ $.each [
 		'click'
 		'[data-toggle="lightbox"]'
 		($btn, e) ->
-			e.preventDefault()
 			$btn.ekkoLightbox()
-			false
+			prevent e
 	]
 	[
 		'touchstart',
@@ -174,8 +173,7 @@ $.each [
 			if $btn.is '.destroyable'
 				$btn.fadeOut ->
 					$btn.remove()
-			e.preventDefault()
-			false
+			prevent e
 	]
 	[
 		'click'
@@ -194,9 +192,7 @@ $.each [
 				$(@).parents('li:first').remove()
 			refreshPill()
 			Ajax.post '/user/friend/accept', data: id: id
-			e.preventDefault()
-			e.stopPropagation()
-			false
+			cancel e
 	]
 	[
 		'click'
@@ -210,9 +206,7 @@ $.each [
 			$('.notifications .friend-ask[data-id="' + id + '"]').each ->
 				$(@).parents('li:first').remove()
 			refreshPill()
-			e.preventDefault()
-			e.stopPropagation()
-			false
+			cancel e
 	]
 	[
 		'click'
@@ -220,18 +214,22 @@ $.each [
 		($a, e) ->
 			unless $a.is('.friend-ask')
 				$a.parents('li:first').remove()
-			e.preventDefault()
-			e.stopPropagation()
-			false
+			cancel e
 	]
 	[
 		'click'
 		'a[href]'
 		($a, e) ->
-			Ajax.page $a.prop 'href'
+			return true
+			href = $a.prop('href').replace /#.*$/g, ''
+			if href.length and Ajax.page href, true
+				cancel e
+			else
+				true
 	]
 
-], (params) ->
+], ->
+	params = @
 	$document.on params[0], params[1], ->
 		args = Array.prototype.slice.call arguments
 		args.unshift $ @
