@@ -64,26 +64,32 @@ block body
 							=friendAsked
 				#profile-photo
 					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
-			h3
-				=strtoupper(profile.name.full)
-				if isMe
-					a.inline-button(href="/user/profile/edit")
-						+glyph('edit')
-				else if user && ! askedForFriend && ! isAFriend
-					a.destroyable.inline-button(
-						href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.name.full)
-						data-target=".profileError"
-						data-click="success"
-						data-params[0]=s("Demande envoyée à " + profile.name.full)
-						data-ask-for-friend=profile.id
-					)
-						+glyph('plus')
-			if isMe && profile.birthDate
-				p
-					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
+			if isMe
+				a.profile-edit-btn.aside(href="/user/profile/edit")
+					=s("Modifier mon profil")
 					| &nbsp;
-					a(href="/user/profile/edit")
-						+glyph('edit')
+					+glyph('edit')
+				.profile-edit(class=(edit ? null : "hidden"))
+					+form("/user/profile/edit", "POST")
+						span.input-group-btn
+							+formControl(value=profile.name.first)
+							+formControl(value=profile.name.last)
+							input(type="submit" value=s("Modifier")).btn
+			.profile-display(class=(edit ? "hidden" : null))
+				h3
+					=strtoupper(profile.name.full)
+					if ! isMe && user && ! askedForFriend && ! isAFriend
+						a.destroyable.inline-button(
+							href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.name.full)
+							data-target=".profileError"
+							data-click="success"
+							data-params[0]=s("Demande envoyée à " + profile.name.full)
+							data-ask-for-friend=profile.id
+						)
+							+glyph('plus')
+				if isMe && profile.birthDate
+					p
+						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
 			.cb
 		//- Publications
 		.well

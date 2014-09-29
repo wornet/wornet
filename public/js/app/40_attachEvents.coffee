@@ -227,6 +227,14 @@ $.each [
 			else
 				true
 	]
+	[
+		'click'
+		'.profile-edit-btn'
+		($a, e) ->
+			$('.profile-edit').removeClass 'hidden'
+			$('.profile-display').addClass 'hidden'
+			cancel e
+	]
 
 ], ->
 	params = @
