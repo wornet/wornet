@@ -32,6 +32,7 @@
             "basename": "wornet"
         },
         "cache": {
+            "enabled": true,
             "defaultLifetime": 600
         },
         "asset": {

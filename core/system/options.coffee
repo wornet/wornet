@@ -100,6 +100,8 @@ module.exports = (port) ->
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
+			getHeader: (name) ->
+				@headers[name.toLowerCase()]
 			goingTo: (url = null) ->
 				if url is null
 					if @session.goingTo?

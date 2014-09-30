@@ -19,8 +19,7 @@ Controllers =
 					# Else : an error occured
 					else
 						$('#loginErrors').errors data.err
-		$('[ng-controller="LoginCtrl"]').on 'submit', (e) ->
-			e.preventDefault()
+		$('[ng-controller="LoginCtrl"]').on 'submit', prevent
 
 	SigninFirstStep: ($scope) ->
 		saveUser $scope

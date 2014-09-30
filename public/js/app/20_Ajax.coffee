@@ -66,19 +66,32 @@ Ajax =
 	Ajax navigation
 	###
 	page: (url) ->
-		blacklist =
+		blacklist = [
 			/^agenda$/g
+			/^$/g
+			/^user\/signin$/g
+			/^signin$/g
+			/^welcome$/g
+			/^user\/login$/g
+			/^login$/g
+		]
 		path = url.replace(/([^\?]*)\?.*$/g, '$1').replace(/^\//g, '').replace(/\/$/g, '')
 		for match in blacklist
 			if match.test path
 				location.href = url
-				return
+				return false
 		Ajax.get url,
 			dataType: 'html'
 			success: (data) ->
-				console.log($(data))
-				console.log($(data).find('body').html())
-				$('body').html $(data).find('body').html()
+				if (/["']body-class["']/g).test data
+					$body = $ 'body'
+					$body.html data.replace /<script[^>]*>(.*?|\s)*<\/script>/g, ''
+					$class = $body.find '.body-class'
+					$body.attr('class', $class.text()).addClass 'ng-scope'
+					$class.remove()
+				else
+					serverError()
+		true
 
 ###
 Crud can send request to its member URL

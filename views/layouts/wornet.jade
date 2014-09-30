@@ -5,9 +5,13 @@ block params
 include ../includes/mixins
 
 if isXHR
+	.body-class=bodyClasses
 	include ../includes/body
 else
 	doctype html
 	html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
-		include ../includes/head
-		include ../includes/body
+		head
+			include ../includes/head
+
+		body(ng-app="Wornet" class=bodyClasses)
+			include ../includes/body
