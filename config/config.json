@@ -11,7 +11,8 @@
         "limits": {
             "friendsOnProfile": 18,
             "userMaxAge": 150,
-            "userMinAge": 0
+            "userMinAge": 0,
+            "maxTabs": 5
         },
         "remember": {
             "key": "r",

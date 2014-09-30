@@ -181,3 +181,9 @@ module.exports = (router) ->
 	router.post '/friend/ignore', (req, res) ->
 		# When user ignore friend ask
 		UserPackage.setFriendStatus req, 'refused', res.json
+
+	router.get '/notify', (req, res) ->
+		NoticePackage.waitForJson req.user.id, res
+
+	router.post '/notify', (req, res) ->
+		NoticePackage.notify req.body.userId, null, req.body.data

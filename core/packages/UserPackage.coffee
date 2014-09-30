@@ -1,3 +1,5 @@
+'use strict'
+
 UserPackage =
 
 	refreshFriends: (req) ->

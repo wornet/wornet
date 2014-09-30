@@ -125,6 +125,7 @@ exports.isAuthenticated = (req, res, next) ->
 					"/agenda"
 					"/photos"
 					"/friend/**"
+					"/user/notify"
 				]
 
 				blacklist = user: [
