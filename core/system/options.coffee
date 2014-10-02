@@ -202,15 +202,14 @@ module.exports = (port) ->
 				if time > 0
 					res = @
 					@excedeedTimeout = delay time * 1000, ->
-						res.locals.err = new Error "Excedeed timeout"
-						res.serverError()
+						res.serverError new Error "Excedeed timeout"
 			catch: (callback) ->
 				res = @
 				->
 					try
 						callback()
 					catch e
-						res.serverError(err: e)
+						res.serverError e
 
 
 

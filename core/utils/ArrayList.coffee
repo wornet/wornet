@@ -45,6 +45,11 @@ ArrayList =
 			if objectMatch @, keys
 				list.push @
 		list
+	length: () ->
+		count = 0
+		@each ->
+			count++
+		count
 
 safeExtend Array.prototype, ArrayList
 safeExtend Object.prototype, ArrayList

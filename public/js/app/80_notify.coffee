@@ -8,3 +8,5 @@ notify = (userId, data) ->
 	Ajax.post '/user/notify', data:
 		data: data
 		userId: userId
+
+waitForNotify()

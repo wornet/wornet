@@ -8,10 +8,16 @@ NoticePackage =
 	TIMEOUT: 4
 
 	responsesToNotify: {}
+	timeouts: {}
 
 	notify: (userId, err, data) ->
+		self = @
 		if @responsesToNotify[userId]?
-			@responsesToNotify[userId].each ->
+			@responsesToNotify[userId].each (id) ->
+				key = userId + '-' + id
+				if self.timeouts[key]
+					clearTimeout self.timeouts[key]
+					delete self.timeouts[key]
 				@ err, data
 			delete @responsesToNotify[userId]
 
@@ -19,7 +25,6 @@ NoticePackage =
 		if @responsesToNotify[userId]?
 			if id isnt null
 				if @responsesToNotify[userId][id]?
-					delete [id]
 					list = []
 					for callback, i in @responsesToNotify[userId]
 						if i isnt id
@@ -34,12 +39,16 @@ NoticePackage =
 	waitForNotification: (userId, callback) ->
 		responsesToNotify = @responsesToNotify
 		unless responsesToNotify[userId]?
-			responsesToNotify[userId] = []
-		if responsesToNotify[userId].length > config.wornet.limits.maxTabs
-			responsesToNotify[userId].shift().call @, @LIMIT_EXEEDED, {}
-		self = @
-		id = responsesToNotify[userId].length
-		responsesToNotify[userId][id] = callback err, data
+			responsesToNotify[userId] = {}
+		length = responsesToNotify[userId].length()
+		for id, val of responsesToNotify[userId]
+			if length-- <= config.wornet.limits.maxTabs
+				break
+			responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
+			delete responsesToNotify[userId][id]
+		id = (new ObjectId).toString()
+		console.log id
+		responsesToNotify[userId][id] = callback
 		id
 
 	waitForJson: (userId, res) ->
@@ -51,9 +60,10 @@ NoticePackage =
 				data.err = err
 			data.notifyStatus = if err then self.ERROR else self.OK
 			res.json data
-		delay config.wornet.timeout, ->
+		@timeouts[userId + '-' + id] = delay config.wornet.timeout * 1000, ->
 			res.json notifyStatus: @TIMEOUT
 			self.remove userId, id
+			delete self.timeouts[userId + '-' + id]
 
 
 module.exports = NoticePackage
