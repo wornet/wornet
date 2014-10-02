@@ -503,7 +503,10 @@ module.exports =
 				type is 'object' && (
 					(
 						typeof(value.length) isnt 'undefined' &&
-						value.length is 0
+						(
+							value.length is 0 ||
+							typeof(value.length) is 'function' && value.length() is 0
+						)
 					) || (
 						typeof(value.length) is 'undefined' &&
 						typeof(JSON) is 'object' &&

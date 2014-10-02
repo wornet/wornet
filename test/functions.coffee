@@ -48,34 +48,34 @@ describe "functions", ->
 	describe "empty", ->
 
 		it "must return true only if the value is empty", ->
-			empty(0).should.be.true
-			empty(false).should.be.true
-			empty(null).should.be.true
-			empty(undefined).should.be.true
-			empty("").should.be.true
-			empty({}).should.be.true
-			empty([]).should.be.true
+			empty(0).should.equal true, "0"
+			empty(false).should.equal true, "false"
+			empty(null).should.equal true, "null"
+			empty(undefined).should.equal true, "undefined"
+			empty("").should.equal true, '""'
+			empty({}).should.equal true, "{}"
+			empty([]).should.equal true, "[]"
 
-			empty("e12").should.be.false
-			empty(-1).should.be.false
-			empty(0.2).should.be.false
-			empty(" ").should.be.false
-			empty({ foo: "" }).should.be.false
-			empty([""]).should.be.false
+			empty("e12").should.equal false, "e12"
+			empty(-1).should.equal false, "-1"
+			empty(0.2).should.equal false, "0.2"
+			empty(" ").should.equal false, '" "'
+			empty({ foo: "" }).should.equal false, '{ foo: "" }'
+			empty([""]).should.equal false, '[""]'
 
 	describe "trim", ->
 
 		it "must return input value without starting and ending spaces", ->
-			trim(" abc def ").should.be.equal("abc def")
-			trim("abc def").should.be.equal("abc def")
-			trim("\t \t\nabc def").should.be.equal("abc def")
-			trim("\tabc def   \n\n\n    \t\t").should.be.equal("abc def")
+			trim(" abc def ").should.equal "abc def"
+			trim("abc def").should.equal "abc def"
+			trim("\t \t\nabc def").should.equal "abc def"
+			trim("\tabc def   \n\n\n    \t\t").should.equal "abc def"
 
 	describe "jd", ->
 
 		it "must return html code from jade input", ->
-			jd("p Some Text").toString().should.be.equal("<p>Some Text</p>")
-			jd("#id\n\tul\n\t\tli=\"Quoted Text\"").toString().should.be.equal("<div id=\"id\"><ul><li>Quoted Text</li></ul></div>")
+			jd("p Some Text").toString().should.equal "<p>Some Text</p>"
+			jd("#id\n\tul\n\t\tli=\"Quoted Text\"").toString().should.equal "<div id=\"id\"><ul><li>Quoted Text</li></ul></div>"
 
 	describe "s", ->
 
