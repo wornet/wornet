@@ -192,7 +192,7 @@ module.exports = (port) ->
 				if typeof params[0] is 'string'
 					params[0] = @localUrl params[0]
 				redirect.apply @, params
-			json: (data) ->
+			json: (data = {}) ->
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data

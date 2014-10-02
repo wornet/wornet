@@ -186,4 +186,13 @@ module.exports = (router) ->
 		NoticePackage.waitForJson req.user.id, res
 
 	router.post '/notify', (req, res) ->
-		NoticePackage.notify req.body.userId, null, req.body.data
+		data = req.body.data
+		switch data.action || ''
+			when 'message'
+				data.from =
+					name:
+						full: req.user.name.full
+					thumb50: req.user.thumb50
+				data.date = new Date
+		NoticePackage.notify req.body.userId, null, data
+		res.json()

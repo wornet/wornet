@@ -50,21 +50,13 @@ block body
 			h3=strtoupper(s("Photos/Vidéos"))
 	.col-sm-8.col-xs-12.pad-left
 		//- Profile
-		.well
+		.well(ng-controller="ProfileCtrl")
 			if isMe
 				iframe(name="upload")
 				+form("/user/photo", "FILE")#profile-photo(target="upload")
 					.progress-radial: .overlay
 						img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
 						input.upload(type="file" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
-			else
-				.profileError
-					if ! empty(friendAsked)
-						.alert.alert-success
-							=friendAsked
-				#profile-photo
-					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
-			if isMe
 				a.profile-edit-btn.aside(href="/user/profile/edit")
 					=s("Modifier mon profil")
 					| &nbsp;
@@ -75,6 +67,17 @@ block body
 							+formControl(value=profile.name.first)
 							+formControl(value=profile.name.last)
 							input(type="submit" value=s("Modifier")).btn
+			else
+				.profileError
+					if ! empty(friendAsked)
+						.alert.alert-success
+							=friendAsked
+				#profile-photo
+					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
+				a.aside(ng-click="chatWith(" + JSON.stringify(profile) + ")")
+					=s("Discuter")
+					| &nbsp;
+					+glyph('comment')
 			.profile-display(class=(edit ? "hidden" : null))
 				h3
 					=strtoupper(profile.name.full)

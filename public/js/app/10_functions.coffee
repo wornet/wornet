@@ -145,3 +145,17 @@ prevent = (e) ->
 cancel = (e) ->
 	stop e
 	prevent e
+
+saveChats = (chats) ->
+	if window.sessionStorage
+		sessionStorage.chats = JSON.stringify chats
+
+getChats = ->
+	chats = []
+	try
+		chats = JSON.parse sessionStorage.chats
+	catch e
+		chats = []
+	if typeof(chats) isnt 'object'
+		chats = []
+	chats

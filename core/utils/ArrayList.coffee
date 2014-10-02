@@ -45,7 +45,12 @@ ArrayList =
 			if objectMatch @, keys
 				list.push @
 		list
-	length: () ->
+	values: ->
+		list = []
+		@each ->
+			list.push @
+		list
+	length: ->
 		count = 0
 		@each ->
 			count++

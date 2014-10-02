@@ -193,3 +193,45 @@ Controllers =
 		# Take event source at event list get from the controller
 		# (passed through the template)
 		$scope.eventSources = [$scope.events]
+
+	Profile: ($scope, chatService) ->
+		$scope.chatWith = (user) ->
+			chatService.chatWith objectResolve user
+
+	Chat: ($scope) ->
+		chats = getChats()
+		sessionStorage.chats = chats
+		$scope.chats = chats
+
+		$scope.$on "chatWith", (e, user, message) ->
+			modified = false
+			found = false
+			$.each chats, ->
+				if @user.id is user.id
+					currentChat = @
+					found = true
+					unless @open
+						@open = true
+						modified = true
+			unless found
+				currentChat = 
+					open: true
+					user: user
+					messages: []
+				chats.push currentChat
+			if message
+				currentChat.messages.push message
+			if modified
+				saveChats chats
+
+		$scope.close = (chat) ->
+			chat.open = false
+
+		$scope.send = (message, chat) ->
+			data =
+				action: 'message'
+				content: message.content
+			message.date = new Date
+			chat.messages.push message
+			notify chat.user.id, message, ->
+				message.ok = true

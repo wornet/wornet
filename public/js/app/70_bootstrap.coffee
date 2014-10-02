@@ -8,6 +8,19 @@ Wornet = angular.module 'Wornet', [
 	'ui.bootstrap'
 ]
 
+#Angular Wornet services
+Wornet.factory 'chatService', ($rootScope) ->
+	window.chatService =
+		chatWith: (user, message) ->
+			console.log 'service'
+			console.log message
+			$rootScope.$broadcast 'chatWith', user, message
+	chatService
+
 # Load controllers
 for controller, method of Controllers
-	Wornet.controller controller + 'Ctrl', ['$scope', method]
+	params = ['$scope']
+	if (['Profile', 'Chat']).indexOf(controller) isnt -1
+		params.push 'chatService'
+	params.push method
+	Wornet.controller controller + 'Ctrl', params

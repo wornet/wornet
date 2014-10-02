@@ -1,0 +1,67 @@
+#chat
+	position fixed
+	right 0
+	bottom $chatHeight
+	width 100%
+	height 0
+
+	.chat
+		float right
+		width $chatWidth
+		margin 5px
+		border 1px solid $gray
+		border-bottom none
+		box-shadow(0 0 2px $darkGray)
+		border-radius(2px 2px 0 0)
+		background white
+
+		.content .ok
+			float right
+			color $lightGray
+			margin 3px
+			font-size 12px
+
+		h4
+			margin 0
+			padding 0 2px 0 4px
+			font-size 16px
+			height 26px
+			line-height 26px
+			vertical-align middle
+			background $orange
+			border-radius(2px 2px 0 0)
+			color white
+
+			.close
+				float right
+				display block
+				padding $smallPadding
+				background $orange
+				font-size 14px
+				border-radius(2px)
+				transition(background .2s)
+				&:hover
+					background $lightOrange
+
+		.messages
+			height $chatHeight - 24px - 4px - 60px
+			overflow auto
+
+	form
+		position relative
+		padding 2px
+		textarea
+			padding 6px
+			margin 0
+			width 100%
+			height 50px !important
+			height 60px
+			resize(none)
+		button
+			appearance(none)
+			background none
+			border none
+			position absolute
+			right 2px
+			bottom 1px
+
