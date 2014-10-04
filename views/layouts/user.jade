@@ -16,8 +16,7 @@ mixin notifications(classes)
 				each notification, id in user.notifications
 					- var askingFriend = objectToUser(notification[1])
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-						i.date
-							=notification[0].humanDateTime()
+						i.date(data-date=notification[0])
 						| &nbsp; 
 						if askingFriend
 							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
@@ -103,22 +102,28 @@ block nav
 		.main-padding
 
 block footer
-	#chat(ng-controller="ChatCtrl")
+	#chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : ''))
 		.chat(ng-repeat="chat in chats" ng-show="chat.open")
 			h4
 				a.close(ng-click="close(chat)")
 					+glyph('remove-sign')
 				| {{ chat.user.name.full }}
 			.messages
-				.message(ng-repeat="message in chat.mesages")
-					.date {{ message.date }}
-					img(src="chat.user.thumb50" ng-show="message.from")
+				.message(ng-repeat="message in chat.messages")
+					span.ok(ng-show="message.ok")
+						+glyph('ok')
+					.date(data-date="{{ message.date.toString() }}")
+					img(src="{{ chat.user.thumb50 }}" ng-show="chat.user.thumb50 && message.from")
 					.content(class="message.from ? 'received' : 'sended'")
-						+glyph('ok').ok(ng-show="message.ok")
 						| {{ message.content }}
-			+form()(ng-submit="send(message, chat)")
-				textarea.form-control(ng-model="message.content" placeholder=s("Entrez votre message ici"))
-				button(type="submit")
-					+glyph('arrow-right')
+			+form()(ng-submit="send(message, chat.user.id)")
+				if config.wornet.chat.multiline
+					textarea.form-control(ng-model="message" placeholder=s("Entrez votre message ici") focus="true")
+					button(type="submit")
+						+glyph('arrow-right')
+				else
+					+formControl()(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+					button(type="submit")
 
 block cookie-banner-under
+//- Batarang

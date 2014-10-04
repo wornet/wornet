@@ -1,10 +1,11 @@
 'use strict'
 
 ((d) ->
+	s = (text, replacements) ->
+		for key, value of replacements
+			text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
+		text
 	toString = d.prototype.toString
-	d.prototype.log = ->
-		@setHours(@getHours() + 2)
-		@toISOString().replace(/Z$/g, '').replace('T', '  ')
 	d.prototype.isValid = ->
 		@toString() isnt 'Invalid Date'
 	d.prototype.midnight = ->
@@ -93,7 +94,7 @@
 		else if @ < (new d).subSeconds 40
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
 		else
-			s("Il y a {seconds} secondes", { seconds: Math.max(1, (new d).getSeconds() - @getSeconds()) })
+			"Maintenant"
 	d.prototype.humanDateTime = (plain) ->
 		if plain or @ < (new d).yesterday().midnight()
 			@toString s("DD/MM/YYYY à HH:ii")
@@ -104,7 +105,7 @@
 		else if @ < (new d).subSeconds 40
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
 		else
-			s("Il y a {seconds} secondes", { seconds: Math.max(1, (new d).getSeconds() - @getSeconds()) })
+			"Maintenant"
 	d.prototype.age = (now) ->
 		unless now instanceof Date and now.isValid()
 			now = new d
@@ -114,8 +115,6 @@
 		if m < 0 or (m is 0 and now.getDate() < date.getDate())
 			age--
 		age
-	d.log = ->
-		(new d).log()
 	d.fromId = (id) ->
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
 )(Date)

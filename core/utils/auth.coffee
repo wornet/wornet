@@ -126,6 +126,7 @@ exports.isAuthenticated = (req, res, next) ->
 					"/photos"
 					"/friend/**"
 					"/user/notify"
+					"/user/profile/**"
 				]
 
 				blacklist = user: [
@@ -140,10 +141,17 @@ exports.isAuthenticated = (req, res, next) ->
 					# If any user are connected
 					unless req.user
 						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-						req.session.goingTo = req.url
-						if ['/', '/user/profile', '/profile'].indexOf(route) is -1
-							req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
-						res.redirect "/"
+						isARouteWithoutMessage = (['/', '/user/profile', '/profile'].indexOf(route) is -1)
+						if req.isJSON
+							if isARouteWithoutMessage
+								data.err = s("Connectez-vous pour accéder à cette page.")
+							data = goingTo: req.url
+							res.json data
+						else
+							req.goingTo req.url
+							if isARouteWithoutMessage
+								req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+							res.redirect "/"
 
 					# Check blacklist for this user's role
 					else if blacklist[role] and exports.inList route, blacklist[role]

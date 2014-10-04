@@ -125,6 +125,12 @@ userSchema.virtual('thumb90').get ->
 userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
+userSchema.methods.publicInformations = (thumbSize = 50) ->
+	informations = @values ['id', 'thumb' + thumbSize], true
+	informations.name = @name.toObject()
+	informations.name.full = @name.full
+	informations
+
 userSchema.methods.encryptPassword = (plainText) ->
 	sha1 plainText || @password, @token + @_id
 

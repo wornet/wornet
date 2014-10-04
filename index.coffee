@@ -3,7 +3,7 @@
 'use strict'
 
 require('./core/system/date')
-console.log 'Starting Wornet  ' + Date.log()
+console['log'] 'Starting Wornet  ' + Date.log()
 
 # Dependancies to load
 'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus imagemagick'
@@ -35,10 +35,10 @@ config = port: port
 
 process.on 'uncaughtException', (err) ->
 	if err.code is 'EADDRINUSE'
-		console.log 'Attempt to listen ' + config.port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
+		console['log'] 'Attempt to listen ' + config.port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
 		throw err
-	console.warn 'Caught exception: ' + err
-	console.log err.stack
+	console['warn'] 'Caught exception: ' + err
+	console['log'] err.stack
 
 options = require('./core/system/options')(port)
 methodOverride = require('method-override')()
@@ -107,8 +107,7 @@ onready ->
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
-			if req.headers['user-agent']
-				ie = req.headers['user-agent'].match /MSIE[\/\s]([0-9\.]+)/g
+			ie = req.getHeader('User-Agent').match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
 				ie = intval ie.substr 5
 			else
@@ -148,6 +147,7 @@ onready ->
 			done()
 		else
 			res.locals.isXHR = req.getHeader('X-Requested-With') is 'XMLHttpRequest'
+			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
 			# Load all scripts in core/global/request directory
 			# Not yet needed
 			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
@@ -171,7 +171,7 @@ onready ->
 
 	app.on 'start', ->
 
-		console.log 'Wornet is ready  ' + Date.log()
+		console['log'] 'Wornet is ready  ' + Date.log()
 		defer.forEach (done) ->
 			done app
 
@@ -199,6 +199,6 @@ onready ->
 
 	# Handle errors and print in the console
 	app.listen port, (err) ->
-		console.log '[%s] Listening on http://localhost:%d', app.settings.env, port
+		console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
 
 exports = module.exports = app

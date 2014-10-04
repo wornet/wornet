@@ -148,14 +148,19 @@ cancel = (e) ->
 
 saveChats = (chats) ->
 	if window.sessionStorage
+		for k, chat of chats
+			for message in chat.messages
+				if message.$$hashKey
+					delete message.$$hashKey
 		sessionStorage.chats = JSON.stringify chats
+	delay 1, checkDates
 
 getChats = ->
-	chats = []
+	chats = {}
 	try
-		chats = JSON.parse sessionStorage.chats
+		chats = objectResolve JSON.parse sessionStorage.chats
 	catch e
-		chats = []
+		chats = {}
 	if typeof(chats) isnt 'object'
-		chats = []
+		chats = {}
 	chats

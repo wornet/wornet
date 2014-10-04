@@ -227,12 +227,11 @@ module.exports =
 	###
 	log: (message) ->
 		if config.env.development
-			console.log '=========================='
-			console.log message
-			console.log '--------------------------'
-			console.log Date.log()
+			console['log'] '=========================='
+			console['log']  message
+			console['log'] '--------------------------\n' + Date.log()
 			console.trace()
-			console.log '=========================='
+			console['log'] '=========================='
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)

@@ -200,38 +200,42 @@ Controllers =
 
 	Chat: ($scope) ->
 		chats = getChats()
-		sessionStorage.chats = chats
 		$scope.chats = chats
 
 		$scope.$on "chatWith", (e, user, message) ->
 			modified = false
-			found = false
-			$.each chats, ->
-				if @user.id is user.id
-					currentChat = @
-					found = true
-					unless @open
-						@open = true
-						modified = true
-			unless found
-				currentChat = 
+			id = '' + user.id
+			if chats[id]
+				currentChat = chats[id]
+				unless chats[id].open
+					chats[id].open = true
+					modified = true
+			else
+				currentChat =
 					open: true
 					user: user
 					messages: []
-				chats.push currentChat
+				chats[id] = currentChat
+				modified = true
 			if message
 				currentChat.messages.push message
+				modified = true
 			if modified
 				saveChats chats
 
 		$scope.close = (chat) ->
 			chat.open = false
 
-		$scope.send = (message, chat) ->
-			data =
+		$scope.send = (message, chatId) ->
+			id = '' + chatId
+			chatData =
 				action: 'message'
 				content: message.content
-			message.date = new Date
-			chat.messages.push message
-			notify chat.user.id, message, ->
-				message.ok = true
+			postData =
+				date: new Date
+				content: message.content
+			chats[id].messages.push chatData
+			notify id, postData, ->
+				chatData.ok = true
+			message.content = ""
+			saveChats chats

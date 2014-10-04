@@ -220,8 +220,12 @@ $.each [
 		'click'
 		'a[href]'
 		($a, e) ->
-			return true
 			href = $a.prop('href').replace /#.*$/g, ''
+			if href is '/user/logout'
+				for key in ['chats']
+					if window.sessionStorage and sessionStorage[key]
+						delete sessionStorage[key]
+			return true
 			if href.length and Ajax.page href, true
 				cancel e
 			else

@@ -101,13 +101,14 @@ module.exports = (port) ->
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
 			getHeader: (name) ->
-				@headers[name.toLowerCase()]
+				@headers[name.toLowerCase()] || ''
 			goingTo: (url = null) ->
 				if url is null
 					if @session.goingTo?
 						url = @session.goingTo
 						delete @session.goingTo
 				else
+					log url
 					@session.goingTo = url
 				url
 			cookie: (name) ->
@@ -244,13 +245,13 @@ module.exports = (port) ->
 				'hooks/post-merge.bat'
 			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
-				console.log 'setup/git/' + file + ' >>> .git/' + file
+				console['log'] 'setup/git/' + file + ' >>> .git/' + file
 
 		# Initialize DB
 		try
 			mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename
 		catch e
-			console.warn '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
-			console.warn e
+			console['warn'] '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
+			console['warn'] e
 
 		next null, localConfig

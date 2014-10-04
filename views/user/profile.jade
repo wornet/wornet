@@ -25,8 +25,7 @@ block body
 						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
 					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
 					.shift
-						i.date
-							=Date.fromId(id).humanDateTime()
+						i.date(data-dateDate.fromId(id))
 						br
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 						br
@@ -74,7 +73,7 @@ block body
 							=friendAsked
 				#profile-photo
 					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
-				a.aside(ng-click="chatWith(" + JSON.stringify(profile) + ")")
+				a.aside(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
 					=s("Discuter")
 					| &nbsp;
 					+glyph('comment')

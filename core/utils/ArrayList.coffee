@@ -45,10 +45,14 @@ ArrayList =
 			if objectMatch @, keys
 				list.push @
 		list
-	values: ->
-		list = []
-		@each ->
-			list.push @
+	values: (keys = null, preserveKeys = false) ->
+		list = (if preserveKeys then {} else [])
+		@each (key) ->
+			if keys is null or keys.indexOf(key) isnt -1
+				if preserveKeys
+					list[key] = @
+				else
+					list.push @
 		list
 	length: ->
 		count = 0

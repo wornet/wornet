@@ -4,6 +4,7 @@
 	bottom $chatHeight
 	width 100%
 	height 0
+	z-index 3
 
 	.chat
 		float right
@@ -14,12 +15,6 @@
 		box-shadow(0 0 2px $darkGray)
 		border-radius(2px 2px 0 0)
 		background white
-
-		.content .ok
-			float right
-			color $lightGray
-			margin 3px
-			font-size 12px
 
 		h4
 			margin 0
@@ -44,19 +39,55 @@
 					background $lightOrange
 
 		.messages
-			height $chatHeight - 24px - 4px - 60px
+			height $chatHeight - 24px - 38px
 			overflow auto
+
+			.ok
+				float right
+				color $lightGray
+				margin 3px
+				font-size 12px
+
+			img
+				float left
 
 	form
 		position relative
-		padding 2px
+
+		textarea
+		input
+			border-radius(0)
+			margin 0
+			border none
+			border-top 1px solid $ultraLightGray
+
 		textarea
 			padding 6px
-			margin 0
 			width 100%
 			height 50px !important
 			height 60px
 			resize(none)
+
+		input
+			height 30px !important
+			height 30px
+
+		::-webkit-input-placeholder
+			rel(-1px, 0)
+			overflow visible
+		:-moz-placeholder
+			rel(-1px, 0)
+			overflow visible
+		::-moz-placeholder
+			rel(-1px, 0)
+			overflow visible
+		:-ms-input-placeholder
+			rel(-1px, 0)
+			overflow visible
+		:placeholder
+			rel(-1px, 0)
+			overflow visible
+
 		button
 			appearance(none)
 			background none
@@ -65,3 +96,7 @@
 			right 2px
 			bottom 1px
 
+
+#chat.multiline
+	.messages
+		height $chatHeight - 24px - 58px

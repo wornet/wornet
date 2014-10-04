@@ -12,10 +12,19 @@ Wornet = angular.module 'Wornet', [
 Wornet.factory 'chatService', ($rootScope) ->
 	window.chatService =
 		chatWith: (user, message) ->
-			console.log 'service'
-			console.log message
 			$rootScope.$broadcast 'chatWith', user, message
 	chatService
+
+#Angular Wornet directives
+Wornet.directive 'focus', ->
+	($timeout) ->
+		scope:
+			trigger: '@focus'
+		link: (scope, element) ->
+			scope.$watch 'trigger', (value) ->
+				if value is "true"
+					$timeout ->
+						element[0].focus()
 
 # Load controllers
 for controller, method of Controllers

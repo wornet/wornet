@@ -46,6 +46,7 @@ module.exports = (router) ->
 		model = {}
 		auth.logout req, res
 		if req.body.goingTo?
+			log req.body.goingTo
 			req.goingTo req.body.goingTo 
 		res.redirect '/'
 
@@ -186,13 +187,11 @@ module.exports = (router) ->
 		NoticePackage.waitForJson req.user.id, res
 
 	router.post '/notify', (req, res) ->
-		data = req.body.data
+		data = req.body.data.toObject()
+		log data
 		switch data.action || ''
 			when 'message'
-				data.from =
-					name:
-						full: req.user.name.full
-					thumb50: req.user.thumb50
+				data.from = req.user.publicInformations()
 				data.date = new Date
 		NoticePackage.notify req.body.userId, null, data
 		res.json()
