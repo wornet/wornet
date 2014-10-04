@@ -1,4 +1,5 @@
 'use strict'
+
 ###
 Extend Array prototype
 ###
@@ -14,8 +15,8 @@ objectMatch = (obj, keys) ->
 	if typeof obj is 'object'
 		for key, val of keys 
 			if typeof obj[key] is 'undefined' or obj[key] isnt val
-				return true
-	false
+				return false
+	true
 
 ArrayList =
 	each: (callback) ->
@@ -32,7 +33,7 @@ ArrayList =
 		keys = getKeys keys, value
 		result = null
 		@each ->
-			if objectMatch @, keys 
+			if objectMatch @, keys
 				result = @
 				return false
 		result

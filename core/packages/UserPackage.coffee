@@ -55,9 +55,9 @@ UserPackage =
 						friendsThumb = friends.pickUnique config.wornet.limits.friendsOnProfile
 						notifications.sort (a, b) ->
 							unless a[0] instanceof Date
-								console.warn a[0] + " n'est pas de type Date"
+								console['warn'] a[0] + " n'est pas de type Date"
 							unless b[0] instanceof Date
-								console.warn b[0] + " n'est pas de type Date"
+								console['warn'] b[0] + " n'est pas de type Date"
 							if a[0] < b[0]
 								-1
 							else if a[0] > b[0]
@@ -72,9 +72,9 @@ UserPackage =
 							if isMe or !req.user? or empty req.user.friends
 								isAFriend = false
 							else
-								isAFriend = req.user.friends.has _id: profile._id
+								isAFriend = req.user.friends.has id: profile.id
 						catch err
-							console.warn err
+							console['warn'] err
 						res.render 'user/profile',
 							isMe: isMe
 							askedForFriend: askedForFriend
