@@ -74,7 +74,7 @@ block nav
 							span.mobile
 								+glyph('user')
 								| &nbsp; 
-							=user.name.full
+							=user.fullName
 							&nbsp;
 							span.caret
 						ul.dropdown-menu(role='menu')
@@ -107,7 +107,7 @@ block footer
 			h4
 				a.close(ng-click="close(chat)")
 					+glyph('remove-sign')
-				| {{ chat.user.name.full }}
+				| {{ chat.user.fullName }}
 			.messages
 				.message(ng-repeat="message in chat.messages")
 					span.ok(ng-show="message.ok")

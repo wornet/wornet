@@ -16,13 +16,13 @@ block body
 				ul#friends.photos-thumbs
 					each friend in friends
 						li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-							img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
+							img(src=friend.thumb50 alt=friend.fullName data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 				.cb
 			//- Asks for friend
 			each friend, id in friendAsks
 				.alert.alert-success.friend-ask(data-id=id)
 					a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
+						img(src=friend.thumb50 alt=friend.fullName data-id=friend.id).thumb
 					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.fullName)) }
 					.shift
 						i.date(data-date=Date.fromId(id))
@@ -42,7 +42,7 @@ block body
 			ul.photos-thumbs
 				each friend in users
 					li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
+						img(src=friend.thumb50 alt=friend.fullName data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 			.cb
 		//- Photos/Videos
 		.well
@@ -54,7 +54,7 @@ block body
 				iframe(name="upload")
 				+form("/user/photo", "FILE")#profile-photo(target="upload")
 					.progress-radial: .overlay
-						img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
+						img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
 						input.upload(type="file" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 				a.profile-edit-btn.aside(href="/user/profile/edit")
 					=s("Modifier mon profil")
@@ -63,8 +63,8 @@ block body
 				.profile-edit(class=(edit ? null : "hidden"))
 					+form("/user/profile/edit", "POST")
 						span.input-group-btn
-							+formControl(value=profile.name.first)
-							+formControl(value=profile.name.last)
+							+formControl(value=profile.firstName)
+							+formControl(value=profile.lastName)
 							input(type="submit" value=s("Modifier")).btn
 			else
 				.profileError
@@ -72,20 +72,20 @@ block body
 						.alert.alert-success
 							=friendAsked
 				#profile-photo
-					img.upload-thumb(src=profile.thumb200 alt=profile.name.full)
+					img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
 				a.aside(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
 					=s("Discuter")
 					| &nbsp;
 					+glyph('comment')
 			.profile-display(class=(edit ? "hidden" : null))
 				h3
-					=strtoupper(profile.name.full)
+					=strtoupper(profile.fullName)
 					if ! isMe && user && ! askedForFriend && ! isAFriend
 						a.destroyable.inline-button(
-							href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.name.full)
+							href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.fullName)
 							data-target=".profileError"
 							data-click="success"
-							data-params[0]=s("Demande envoyée à " + profile.name.full)
+							data-params[0]=s("Demande envoyée à " + profile.fullName)
 							data-ask-for-friend=profile.id
 						)
 							+glyph('plus')
