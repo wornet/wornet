@@ -1,7 +1,7 @@
 {
     
     "wornet": {
-        "version": "0.1.0-r6",
+        "version": "0.1.1",
         "timeout": 30,
         "autoloadDirectories": [
             "core/utils",
