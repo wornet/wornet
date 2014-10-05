@@ -15,17 +15,17 @@ block body
 				h3=strtoupper(s("Amis")) + " " + s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 				ul#friends.photos-thumbs
 					each friend in friends
-						li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+						li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
 							img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
 				.cb
 			//- Asks for friend
 			each friend, id in friendAsks
 				.alert.alert-success.friend-ask(data-id=id)
-					a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+					a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
 						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id).thumb
-					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
+					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.fullName)) }
 					.shift
-						i.date(data-dateDate.fromId(id))
+						i.date(data-date=Date.fromId(id))
 						br
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 						br
@@ -41,7 +41,7 @@ block body
 			h3=strtoupper(s("Utilisateurs"))
 			ul.photos-thumbs
 				each friend in users
-					li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.name.full))
+					li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
 						img(src=friend.thumb50 alt=friend.name.full data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.name.full).thumb
 			.cb
 		//- Photos/Videos

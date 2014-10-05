@@ -67,17 +67,28 @@ userSchema = new Schema
 	toJSON:
 		virtuals: true
 
-userSchema.virtual('name.full').get ->
-	f = empty @name.first
-	l = empty @name.last
-	if f and l
-		'Anonyme'
-	else if f
-		@name.last
-	else if l
-		@name.first
-	else 
-		@name.first + ' ' + @name.last
+getFullName = ->
+	anonymous = 'Anonyme'
+	if typeof @name isnt 'object'
+		anonymous
+	else
+		f = empty @name.first
+		l = empty @name.last
+		if f and l
+			anonymous
+		else if f
+			@name.last
+		else if l
+			@name.first
+		else
+			@name.first + ' ' + @name.last
+
+userSchema.virtual('name.full').get getFullName
+userSchema.virtual('fullName').get getFullName
+userSchema.virtual('firstName').get ->
+	@name.first
+userSchema.virtual('lastName').get ->
+	@name.last
 
 userSchema.virtual('name.full').set (name) ->
 	unless name is 'Anonyme'

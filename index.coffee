@@ -38,7 +38,7 @@ process.on 'uncaughtException', (err) ->
 		console['log'] 'Attempt to listen ' + config.port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
 		throw err
 	console['warn'] 'Caught exception: ' + err
-	console['log'] err.stack
+	console['log'] err.stack || (new Error).stack
 
 options = require('./core/system/options')(port)
 methodOverride = require('method-override')()

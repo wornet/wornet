@@ -358,8 +358,9 @@ module.exports =
 
 	@return string text without spaces
 	###
-	trim: (str) ->
-		str.replace(/^\s+/g, '').replace(/\s+$/g, '')
+	trim: (str, charlist = '\s') ->
+		str += ''
+		str.replace(new RegExp('^' + charlist + '+', 'g'), '').replace(new RegExp(charlist + '+$', 'g'), '')
 
 	###
 	Load model if it is not already. In any case, return it
@@ -454,6 +455,7 @@ module.exports =
 	@return string text in lower case
 	###
 	strtolower: (str) ->
+		str += ''
 		str.toLowerCase()
 
 	###
@@ -463,6 +465,7 @@ module.exports =
 	@return string text in upper case
 	###
 	strtoupper: (str) ->
+		str += ''
 		str.toUpperCase()
 
 	###
@@ -472,6 +475,7 @@ module.exports =
 	@return string text with first character in upper case
 	###
 	ucfirst: (str) ->
+		str += ''
 		str.charAt(0).toUpperCase() + str.substr(1)
 
 	###

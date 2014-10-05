@@ -16,10 +16,10 @@ mixin notifications(classes)
 				each notification, id in user.notifications
 					- var askingFriend = objectToUser(notification[1])
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-						i.date(data-date=notification[0])
+						i.date(data-date=trim(notification[0], '"'))
 						| &nbsp; 
 						if askingFriend
-							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
+							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.fullName)) }
 							!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 							br
 							.btn.accept-friend
