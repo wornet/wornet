@@ -72,7 +72,7 @@ describe "functions", ->
 			trim("\t \t\nabc def").should.equal "abc def"
 			trim("\tabc def   \n\n\n    \t\t").should.equal "abc def"
 			trim("87.4k90", "[0-9]").should.equal ".4k"
-			trim("là li lo buto nimo", "\w").should.equal "li lo buto"
+			trim("là li lo buto nimo", "\\w").should.equal "li lo buto"
 
 	describe "jd", ->
 
