@@ -358,7 +358,7 @@ module.exports =
 
 	@return string text without spaces
 	###
-	trim: (str, charlist = '\s') ->
+	trim: (str, charlist = '\\s') ->
 		str += ''
 		str.replace(new RegExp('^' + charlist + '+', 'g'), '').replace(new RegExp(charlist + '+$', 'g'), '')
 
