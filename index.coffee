@@ -130,7 +130,11 @@ onready ->
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
-								concatCallback '', list, null, (content) ->
+								fct = null
+								if lang is 'js'
+									fct = (code) ->
+										'try{' + strval(code).replace(/^['"]use strict['"];/g, '') + '}catch(e){console.warn(e);}'
+								concatCallback '', list, fct, (content) ->
 									res.end content
 									fs.writeFile file, content
 								,
