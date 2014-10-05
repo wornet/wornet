@@ -130,13 +130,13 @@ onready ->
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
-								concatCallback '', list, method, (content) ->
+								concatCallback '', list, null, (content) ->
 									res.end content
 									fs.writeFile file, content
 								,
 									ie: req.ie
 							else
-								res.end content
+								res.end method content
 					)(method, options['main' + ucfirst(lang)]())
 					return
 			req.url = req.urlWithoutParams
