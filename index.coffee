@@ -130,17 +130,14 @@ onready ->
 					fs.readFile file, ((method, list) ->
 						(err, content) ->
 							if err
-								fct = null
-								if lang is 'js'
-									fct = (code) ->
-										'try{' + strval(code).replace(/^['"]use strict['"];/g, '') + '}catch(e){console.warn(e);}'
-								concatCallback '', list, fct, (content) ->
+								concatCallback '', list, method, (content) ->
 									res.end content
+									console.log file
 									fs.writeFile file, content
 								,
 									ie: req.ie
 							else
-								res.end method content
+								res.end content
 					)(method, options['main' + ucfirst(lang)]())
 					return
 			req.url = req.urlWithoutParams

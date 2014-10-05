@@ -123,10 +123,13 @@ module.exports =
 	uglifyJs: (code) ->
 		jsp = require("uglify-js").parser
 		pro = require("uglify-js").uglify
-		ast = jsp.parse(code)
-		ast = pro.ast_mangle(ast)
-		ast = pro.ast_squeeze(ast)
-		pro.gen_code(ast)
+		try
+			ast = jsp.parse(code)
+			ast = pro.ast_mangle(ast)
+			ast = pro.ast_squeeze(ast)
+			pro.gen_code(ast)
+		catch e
+			code
 
 	###
 	Get files contents, proceed callback of each content and concat all
@@ -193,7 +196,7 @@ module.exports =
 									res.on 'data', (chunk) ->
 										data += chunk
 									res.on 'end', ->
-										content += proceed(data + '') + '\n'
+										content += proceed(strval(data)) + '\n'
 										done()
 								else
 									console.warn pathWithoutParams + ' : Error ' + res.statusCode
@@ -203,7 +206,7 @@ module.exports =
 							console.warn err
 							done()
 					else
-						content += proceed(data + '') + '\n'
+						content += proceed(strval(data)) + '\n'
 						done()
 			else
 				done()
