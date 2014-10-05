@@ -25,7 +25,7 @@ block body
 						img(src=friend.thumb50 alt=friend.fullName data-id=friend.id).thumb
 					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.fullName)) }
 					.shift
-						i.date(data-date=Date.fromId(id))
+						i.date(data-date=trim(Date.fromId(id), '"'))
 						br
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 						br
