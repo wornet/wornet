@@ -121,13 +121,18 @@ module.exports =
 	@return string compressed code
 	###
 	uglifyJs: (code) ->
+		return code
 		jsp = require("uglify-js").parser
 		pro = require("uglify-js").uglify
 		try
 			ast = jsp.parse(code)
 			ast = pro.ast_mangle(ast)
 			ast = pro.ast_squeeze(ast)
-			pro.gen_code(ast)
+			minifiedCode = pro.gen_code(ast)
+			if minifiedCode.length / code.length > 0.99
+				code
+			else
+				minifiedCode
 		catch e
 			code
 
@@ -143,7 +148,7 @@ module.exports =
 		i = options.i || 0
 		ie = options.ie || 0
 		if i >= lst.length
-			end content
+			end content.replace(/([^\\\{\|;0-9]})([^"\|<\}\/\]\\,\s'])/g, '$1\n$2')
 		else
 			file = lst[i]
 			# Internet Explorer condition
@@ -167,6 +172,7 @@ module.exports =
 						else
 							file = (if ie is version then file[1] else false)
 			done = ->
+				console.log i + ': ' + file
 				concatCallback content, lst, proceed, end,
 					i: i + 1
 					ie: ie
@@ -196,14 +202,17 @@ module.exports =
 									res.on 'data', (chunk) ->
 										data += chunk
 									res.on 'end', ->
-										content += proceed(strval(data)) + '\n'
+										if data.indexOf('<!DOCTYPE html>') is 0
+											console['warn'] path + ' return HTML'
+										else
+											content += proceed(strval(data)) + '\n'
 										done()
 								else
-									console.warn pathWithoutParams + ' : Error ' + res.statusCode
+									console['warn'] pathWithoutParams + ' : Error ' + res.statusCode
 									done()
 
 						else
-							console.warn err
+							console['warn'] err
 							done()
 					else
 						content += proceed(strval(data)) + '\n'

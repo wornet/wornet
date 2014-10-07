@@ -131,8 +131,8 @@ onready ->
 						(err, content) ->
 							if err
 								concatCallback '', list, method, (content) ->
+									# content = uglifyJs content
 									res.end content
-									console.log file
 									fs.writeFile file, content
 								,
 									ie: req.ie
