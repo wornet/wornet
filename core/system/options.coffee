@@ -194,7 +194,8 @@ module.exports = (port) ->
 					params[0] = @localUrl params[0]
 				redirect.apply @, params
 			json: (data = {}) ->
-				log data
+				if data.statusCode? and data.statusCode is 500
+					data.err = strval(data.err || "Unknown error")
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data
@@ -203,7 +204,7 @@ module.exports = (port) ->
 					clearTimeout @excedeedTimeout
 				if time > 0
 					res = @
-					@excedeedTimeout = delay time * 1000, ->
+					@excedeedTimeout = delay time.seconds, ->
 						res.serverError new Error "Excedeed timeout"
 			catch: (callback) ->
 				res = @

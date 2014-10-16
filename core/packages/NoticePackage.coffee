@@ -51,7 +51,8 @@ NoticePackage =
 
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
-			callback @responsesToNotify[userId].values()
+			#callback null, @responsesToNotify[userId].values()
+			callback null, @notificationsToSend[userId].values()
 			delete @notificationsToSend[userId]
 			id = false
 		else
@@ -80,10 +81,12 @@ NoticePackage =
 			if err
 				data.err = err
 			data.notifyStatus = if err then self.ERROR else self.OK
+			if data.userId?
+				delete data.userId
 			res.json data
 		if id
-			@timeouts[userId + '-' + id] = delay config.wornet.timeout * 1000, ->
-				res.json notifyStatus: @TIMEOUT
+			@timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
+				res.json notifyStatus: self.TIMEOUT
 				self.remove userId, id
 				delete self.timeouts[userId + '-' + id]
 

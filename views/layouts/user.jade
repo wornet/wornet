@@ -103,7 +103,7 @@ block nav
 
 block footer
 	#chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : ''))
-		.chat(ng-repeat="chat in chats" ng-show="chat.open")
+		.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open")
 			h4
 				a.close(ng-click="close(chat)")
 					+glyph('remove-sign')
@@ -112,13 +112,13 @@ block footer
 				.message(ng-repeat="message in chat.messages")
 					span.ok(ng-show="message.ok")
 						+glyph('ok')
-					.date(data-date="{{ message.date.toString() }}")
+					.date(data-date="{{ message.date }}")
 					img(src="{{ chat.user.thumb50 }}" ng-show="chat.user.thumb50 && message.from")
 					.content(class="message.from ? 'received' : 'sended'")
 						| {{ message.content }}
-			+form()(ng-submit="send(message, chat.user.id)")
+			+form()(ng-submit="send(message, chatId)")
 				if config.wornet.chat.multiline
-					textarea.form-control(ng-model="message" placeholder=s("Entrez votre message ici") focus="true")
+					textarea.form-control(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
 					button(type="submit")
 						+glyph('arrow-right')
 				else

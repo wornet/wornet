@@ -38,6 +38,8 @@ UserPackage =
 	renderProfile: (req, res, id = null) ->
 		if id is null
 			id = req.user._id
+		else
+			id = cesarRight id
 		isMe = (req.user?) and (id is req.user._id)
 		cache 'users', 60, (done) ->
 			query = User.find()

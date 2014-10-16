@@ -146,6 +146,25 @@ cancel = (e) ->
 	stop e
 	prevent e
 
+keepScroll = (sel) ->
+	excludeElements = []
+	$(sel).each ->
+		$this = $ @
+		elt = $this[0]
+		console.log [elt.scrollHeight, $this.scrollTop() is elt.scrollHeight - $this.height(), $this.is(':hidden')]
+		unless typeof(elt.scrollHeight) isnt 'undefined' and ($this.scrollTop() is elt.scrollHeight - $this.height() or $this.is(':hidden'))
+			excludeElements.push elt
+	delay 1, ->
+		checkDates()
+		$(sel).each ->
+			$this = $ @
+			elt = $this[0]
+			for i in excludeElements
+				if i is elt
+					return true
+			$this.scrollTop elt.scrollHeight - $this.height()
+			true
+
 saveChats = (chats) ->
 	if window.sessionStorage
 		for k, chat of chats
@@ -153,9 +172,12 @@ saveChats = (chats) ->
 				if message.$$hashKey
 					delete message.$$hashKey
 		sessionStorage.chats = JSON.stringify chats
-	delay 1, checkDates
+	$('.chat').show()
+	keepScroll '.chat .messages'
 
 getChats = ->
+	$('.chat').show()
+	keepScroll '.chat .messages'
 	chats = {}
 	try
 		chats = objectResolve JSON.parse sessionStorage.chats

@@ -141,13 +141,13 @@ onready ->
 					)(method, options['main' + ucfirst(lang)]())
 					return
 			req.url = req.urlWithoutParams
-			if req.url.indexOf('/img/photo/') is 0
+			if req.url.startWith '/img/photo/'
 				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
-			else if req.url.indexOf('/fonts/glyphicons') is 0
+			else if req.url.startWith '/fonts/glyphicons'
 				req.url = '/components/bootstrap' + req.url
 			done()
 		else
-			res.locals.isXHR = req.getHeader('X-Requested-With') is 'XMLHttpRequest'
+			res.locals.isXHR = !!req.xhr
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
 			# Load all scripts in core/global/request directory
 			# Not yet needed

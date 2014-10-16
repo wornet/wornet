@@ -7,7 +7,7 @@ status = [
 	'blocked'
 ]
 
-friendSchema = new Schema
+friendSchema = BaseSchema.extend
 	askedFrom:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -30,8 +30,5 @@ friendSchema = new Schema
 status.forEach (st) ->
 	friendSchema.virtual(st).get ->
 		@status is st
-
-friendSchema.virtual('createdAt').get ->
-	Date.fromId @_id
 
 module.exports = friendSchema

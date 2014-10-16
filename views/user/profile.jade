@@ -15,14 +15,14 @@ block body
 				h3=strtoupper(s("Amis")) + " " + s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 				ul#friends.photos-thumbs
 					each friend in friends
-						li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-							img(src=friend.thumb50 alt=friend.fullName data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
+						li: a(href="/user/profile/" + friend.hasedId + "/" + encodeURIComponent(friend.fullName))
+							img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 				.cb
 			//- Asks for friend
 			each friend, id in friendAsks
 				.alert.alert-success.friend-ask(data-id=id)
-					a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-						img(src=friend.thumb50 alt=friend.fullName data-id=friend.id).thumb
+					a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
+						img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId).thumb
 					- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.fullName)) }
 					.shift
 						i.date(data-date=trim(Date.fromId(id), '"'))
@@ -41,8 +41,8 @@ block body
 			h3=strtoupper(s("Utilisateurs"))
 			ul.photos-thumbs
 				each friend in users
-					li: a(href="/user/profile/" + friend.id + "/" + encodeURIComponent(friend.fullName))
-						img(src=friend.thumb50 alt=friend.fullName data-id=friend.id data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
+					li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
+						img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 			.cb
 		//- Photos/Videos
 		.well
@@ -82,11 +82,11 @@ block body
 					=strtoupper(profile.fullName)
 					if ! isMe && user && ! askedForFriend && ! isAFriend
 						a.destroyable.inline-button(
-							href="/user/friend/" + profile.id + "/" + encodeURIComponent(profile.fullName)
+							href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 							data-target=".profileError"
 							data-click="success"
 							data-params[0]=s("Demande envoyée à " + profile.fullName)
-							data-ask-for-friend=profile.id
+							data-ask-for-friend=profile.hashedId
 						)
 							+glyph('plus')
 				if isMe && profile.birthDate

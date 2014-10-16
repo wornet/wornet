@@ -19,6 +19,15 @@ objectMatch = (obj, keys) ->
 	true
 
 ArrayList =
+	contains: (needle) ->
+		if typeof @indexOf is 'function'
+			@indexOf(needle) isnt -1
+		else
+			for val of @
+				if val is needle
+					return true
+			false
+
 	each: (callback) ->
 		if @ instanceof Array
 			for obj, i in @
@@ -29,6 +38,7 @@ ArrayList =
 				if false is callback.call obj, k, obj
 					return false
 		true
+
 	findOne: (keys, value = null) ->
 		keys = getKeys keys, value
 		result = null
@@ -37,8 +47,10 @@ ArrayList =
 				result = @
 				return false
 		result
+
 	has: (keys, value = null) ->
 		@findOne(keys, value) isnt null
+
 	find: (keys, value = null) ->
 		keys = getKeys keys, value
 		list = []
@@ -46,6 +58,7 @@ ArrayList =
 			if objectMatch @, keys
 				list.push @
 		list
+
 	values: (keys = null, preserveKeys = false) ->
 		list = (if preserveKeys then {} else [])
 		@each (key) ->
@@ -55,6 +68,7 @@ ArrayList =
 				else
 					list.push @
 		list
+
 	length: ->
 		count = 0
 		@each ->

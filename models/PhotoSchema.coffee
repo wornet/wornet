@@ -1,6 +1,6 @@
 'use strict'
 
-photoSchema = new Schema
+photoSchema = BaseSchema.extend
 	user:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -25,8 +25,5 @@ photoSchema.virtual('photo').get ->
 
 photoSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
-
-photoSchema.virtual('createdAt').get ->
-	Date.fromId @_id
 
 module.exports = photoSchema

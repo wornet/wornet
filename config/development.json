@@ -1,6 +1,5 @@
 {
     "wornet": {
-        "timeout": 12,
         "bigImagesServer": "/",
         "cache": {
             "enabled": false

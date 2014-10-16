@@ -5,7 +5,7 @@ status = [
 	'read'
 ]
 
-messageRecipientSchema = new Schema
+messageRecipientSchema = BaseSchema.extend
 	message:
 		type: ObjectId
 		ref: 'MessageSchema'

@@ -1,6 +1,6 @@
 'use strict'
 
-eventSchema = new Schema
+eventSchema = BaseSchema.extend
 	user:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -13,7 +13,10 @@ eventSchema = new Schema
 	end: Date
 	title:
 		type: String
-		validate: [regex('simple-text'), 'invalid title']
+		validate: [
+			regex('simple-text')
+			'invalid title'
+		]
 		trim: true
 	content:
 		type: String
@@ -27,8 +30,5 @@ eventSchema = new Schema
 		virtuals: true
 	toJSON:
 		virtuals: true
-
-eventSchema.virtual('createdAt').get ->
-	Date.fromId @_id
 
 module.exports = eventSchema

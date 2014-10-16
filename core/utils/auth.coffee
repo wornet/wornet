@@ -8,7 +8,7 @@ model 'User'
 # Set the remember cookie to recognize the users who checked the remember option
 exports.remember = (res, id) ->
 	res.cookie config.wornet.remember.key, id,
-		maxAge: config.wornet.remember.ttl * 24 * 60 * 60
+		maxAge: config.wornet.remember.ttl.days
 		httpOnly: true
 
 # Get user id remembered with cookie

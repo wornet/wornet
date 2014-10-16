@@ -5,11 +5,12 @@ waitForNotify = ->
 			for notification in data.notifications
 				err =  notification[0]
 				notification = notification[1]
-				console.log notification
-				switch notification.action || ''
+				if notification.action?
+					action = notification.action || ''
+					delete notification.action
+				switch action
 					when 'message'
 						message = objectResolve notification
-						console.log message
 						chatService.chatWith message.from, message
 		delay 500, waitForNotify
 

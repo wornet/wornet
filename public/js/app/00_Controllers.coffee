@@ -199,12 +199,13 @@ Controllers =
 			chatService.chatWith objectResolve user
 
 	Chat: ($scope) ->
+		$('#chat').show()
 		chats = getChats()
 		$scope.chats = chats
 
-		$scope.$on "chatWith", (e, user, message) ->
+		$scope.$on 'chatWith', (e, user, message) ->
 			modified = false
-			id = '' + user.id
+			id = user.hashedId
 			if chats[id]
 				currentChat = chats[id]
 				unless chats[id].open
@@ -222,20 +223,24 @@ Controllers =
 				modified = true
 			if modified
 				saveChats chats
+			$scope.$apply()
+			true
 
 		$scope.close = (chat) ->
 			chat.open = false
+			saveChats chats
+			true
 
-		$scope.send = (message, chatId) ->
-			id = '' + chatId
+		$scope.send = (message, id) ->
 			chatData =
-				action: 'message'
+				date: new Date
 				content: message.content
 			postData =
-				date: new Date
+				action: 'message'
 				content: message.content
 			chats[id].messages.push chatData
 			notify id, postData, ->
 				chatData.ok = true
 			message.content = ""
 			saveChats chats
+			true

@@ -1,6 +1,6 @@
 'use strict'
 
-messageSchema = new Schema
+messageSchema = BaseSchema.extend
 	author:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -8,8 +8,5 @@ messageSchema = new Schema
 		type: String
 		trim: true
 		required: true
-
-messageSchema.virtual('createdAt').get ->
-	Date.fromId @_id
 
 module.exports = messageSchema

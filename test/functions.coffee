@@ -91,3 +91,17 @@ describe "functions", ->
 			s("abc|def", { a: "b" }, 1).should.equal "abc"
 			s("{count} comment|{count} comments {a}", { a: "b" }, 2).should.equal "2 comments b"
 			s("No comments|{count} comment|{count} comments {a}", { a: "b" }, 1).should.equal "1 comment"
+
+	describe "cesar, cesarLeft, cesarRight", ->
+
+		it "must crypt strings", ->
+			str = "7db23cdef32d20219878b3"
+			cesarLeft(str).should.not.equal str
+			cesarRight(str).should.not.equal str
+			cesarLeft(str).length.should.equal str.length
+			cesarRight(str).length.should.equal str.length
+
+		it "must decrypt strings", ->
+			str = "ef32d20217db23cd9878b3"
+			cesarLeft(cesarRight(str)).should.equal str
+			cesarRight(cesarLeft(str)).should.equal str

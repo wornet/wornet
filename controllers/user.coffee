@@ -187,10 +187,9 @@ module.exports = (router) ->
 		NoticePackage.waitForJson req.user.id, res
 
 	router.post '/notify', (req, res) ->
-		log req.body
 		try
-			data = req.body.data.toObject()
-			log data
+			data = req.body.data
+			userId = cesarRight req.body.userId
 			switch data.action || ''
 				when 'message'
 					data.from = req.user.publicInformations()
@@ -201,8 +200,8 @@ module.exports = (router) ->
 					, (err, message) ->
 						MessageRecipient.create
 							message: message._id
-							recipient: req.body.userId
-			NoticePackage.notify req.body.userId, null, data
+							recipient: userId
+			NoticePackage.notify userId, null, data
 			res.json()
 		catch err
 			log err

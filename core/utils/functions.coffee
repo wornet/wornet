@@ -292,6 +292,53 @@ module.exports =
 		r
 
 	###
+	Reverses caracters in a string
+	@param string input
+	@return string reversed input
+	###
+	strrev: (input) ->
+		output = ""
+		for i in [input.length - 1 .. 0]
+			output += input.charAt i
+		output
+
+	###
+	Crypt a string with a Cesar key
+	@param string input string to crypt
+	@param int factor (tow opposite factors with the same key match)
+	@param string Cesar key
+
+	@return string crypted key
+	###
+	cesar: (input, factor = 1, key = null) ->
+		if key is null
+			key = config.wornet.hexSecret
+		output = ""
+		for i in [0 .. input.length - 1]
+			output += ((Math.abs(factor) * 16 + parseInt(input.charAt(i), 16) + factor * parseInt(key.charAt(i % key.length), 16)) % 16).toString(16)
+		output
+
+	###
+	Crypt a string with a Cesar key and 1 factor
+	@param string input string to crypt
+	@param string Cesar key
+
+	@return string crypted key
+	###
+	cesarLeft: (input, key = null) ->
+		cesar strrev(input), 1, key
+
+	###
+	Crypt a string with a Cesar key and -1 factor
+	@param string input string to crypt
+	@param string Cesar key
+
+	@return string crypted key
+	###
+	cesarRight: (input, key = null) ->
+		strrev(cesar input, -1, key)
+
+	###
 	Return string value or "" if not able to convert
 	@param mixed value to convert
 
@@ -384,11 +431,14 @@ module.exports =
 	@return Model asked model
 	###
 	model: (name, schema) ->
+		requireSchema = (name) ->
+			require(__dirname + '/../../models/' + ucfirst(name) + 'Schema')
+		global['BaseSchema'] = requireSchema 'Base'
 		if global[name]? || global[name + 'Model']?
 			console.warn name + ' model already token'
 			global[name] || global[name + 'Model']
 		else
-			schema = schema || require(__dirname + '/../../models/' + ucfirst(name) + 'Schema')
+			schema = schema || requireSchema name
 			model = mongoose.model name, schema
 			global[name] = model
 			global[name + 'Model'] = model

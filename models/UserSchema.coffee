@@ -1,6 +1,6 @@
 'use strict'
 
-userSchema = new Schema
+userSchema = BaseSchema.extend
 	name:
 		first:
 			type: String
@@ -100,8 +100,6 @@ userSchema.virtual('name.full').set (name) ->
 		@name.last = split[1]
 	return
 
-userSchema.virtual('createdAt').get ->
-	Date.fromId @_id
 
 userSchema.virtual('photoUpdateAt').get ->
 	if @photoId?
@@ -137,7 +135,7 @@ userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
 userSchema.methods.publicInformations = (thumbSize = 50) ->
-	informations = @values ['id', 'thumb' + thumbSize], true
+	informations = @values ['id', 'hashedId', 'thumb' + thumbSize], true
 	informations.name = @name.toObject()
 	informations.name.full = @name.full
 	informations
