@@ -312,7 +312,10 @@ module.exports =
 	###
 	cesar: (input, factor = 1, key = null) ->
 		if key is null
-			key = config.wornet.hexSecret
+			if config?
+				key = config.wornet.hexSecret
+			else
+				key = "d6f7b887265debac5120de672873"
 		output = ""
 		for i in [0 .. input.length - 1]
 			output += ((Math.abs(factor) * 16 + parseInt(input.charAt(i), 16) + factor * parseInt(key.charAt(i % key.length), 16)) % 16).toString(16)
