@@ -11,27 +11,47 @@ NoticePackage =
 	notificationsToSend: {}
 	timeouts: {}
 
-	notify: (userId, err, data) ->
+	notify: (userIds, err, groupData) ->
 		self = @
-		if @responsesToNotify[userId]? and @responsesToNotify[userId].length() > 0
-			@responsesToNotify[userId].each (id) ->
-				key = userId + '-' + id
-				if self.timeouts[key]
-					clearTimeout self.timeouts[key]
-					delete self.timeouts[key]
-				@ err, data
-			delete @responsesToNotify[userId]
-		else
-			unless @notificationsToSend[userId]
-				@notificationsToSend[userId] = {}
-			id = Date.log()
-			@notificationsToSend[userId][id] = [err, data]
-			delay 5000, ->
-				if self.responsesToNotify[userId] and self.notificationsToSend[userId][id]
-					if self.responsesToNotify[userId].length() > 0
-						delete self.notificationsToSend[userId][id]
+		userIds.each ->
+			userId = @
+			data = groupData.copy()
+			otherUserIds = userIds.filter (id) ->
+				id isnt userId
+			done = ->
+				if self.responsesToNotify[userId]? and self.responsesToNotify[userId].length() > 0
+					self.responsesToNotify[userId].each (id) ->
+						key = userId + '-' + id
+						if self.timeouts[key]
+							clearTimeout self.timeouts[key]
+							delete self.timeouts[key]
+						@ err, data
+						true
+					delete self.responsesToNotify[userId]
+				else
+					unless self.notificationsToSend[userId]
+						self.notificationsToSend[userId] = {}
+					id = Date.log()
+					self.notificationsToSend[userId][id] = [err, data]
+					delay 5000, ->
+						if self.responsesToNotify[userId] and self.notificationsToSend[userId][id]
+							if self.responsesToNotify[userId].length() > 0
+								delete self.notificationsToSend[userId][id]
+							else
+								delete self.notificationsToSend[userId]
+						true
+				true
+			if otherUserIds.length
+				User.find _id: $in: otherUserIds, (err, users) ->
+					if err
+						log err
 					else
-						delete self.notificationsToSend[userId]
+						data.users = (user.publicInformations() for user in users)
+					done()
+			else
+				done()
+			true
+		true
 
 
 	remove: (userId, id = null) ->

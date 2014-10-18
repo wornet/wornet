@@ -135,7 +135,7 @@ userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
 userSchema.methods.publicInformations = (thumbSize = 50) ->
-	informations = @values ['id', 'hashedId', 'thumb' + thumbSize], true
+	informations = @values ['hashedId', 'thumb' + thumbSize], true
 	informations.name = @name.toObject()
 	informations.name.full = @name.full
 	informations

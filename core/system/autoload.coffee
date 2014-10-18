@@ -37,14 +37,12 @@ autoloadDirectories.forEach (directory) ->
 					name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
 				else
 					name = loadedValue.name
-				if global[name]?
-					console.warn name + ' variable already declared'
-				else
+				unless global[name]?
 					global[name] = loadedValue
 					# If the file is a Schema
 					if name.length > 6 && name.substr(-6) is 'Schema'
 						# Create the corresponding Model
-						model name.substr 0, name.length - 6, loadedValue
+						model name.substr(0, name.length - 6), loadedValue
 
 				unless --pendingFiles
 					unless --pendingDirectories

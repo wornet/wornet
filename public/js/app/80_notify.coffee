@@ -11,14 +11,16 @@ waitForNotify = ->
 				switch action
 					when 'message'
 						message = objectResolve notification
-						chatService.chatWith message.from, message
+						users = message.users || []
+						users.push message.from
+						chatService.chatWith users, message
 		delay 500, waitForNotify
 
-notify = (userId, data, success) ->
+notify = (userIds, data, success) ->
 	Ajax.post '/user/notify',
 		data:
 			data: data
-			userId: userId
+			userIds: userIds
 		success: success
 
 waitForNotify()

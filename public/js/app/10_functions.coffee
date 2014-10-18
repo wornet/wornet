@@ -151,7 +151,6 @@ keepScroll = (sel) ->
 	$(sel).each ->
 		$this = $ @
 		elt = $this[0]
-		console.log [elt.scrollHeight, $this.scrollTop() is elt.scrollHeight - $this.height(), $this.is(':hidden')]
 		unless typeof(elt.scrollHeight) isnt 'undefined' and ($this.scrollTop() is elt.scrollHeight - $this.height() or $this.is(':hidden'))
 			excludeElements.push elt
 	delay 1, ->

@@ -102,28 +102,6 @@ block nav
 		.main-padding
 
 block footer
-	#chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : ''))
-		.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open")
-			h4
-				a.close(ng-click="close(chat)")
-					+glyph('remove-sign')
-				| {{ chat.user.name.full }}
-			.messages
-				.message(ng-repeat="message in chat.messages")
-					span.ok(ng-show="message.ok")
-						+glyph('ok')
-					.date(data-date="{{ message.date }}")
-					img(src="{{ chat.user.thumb50 }}" ng-show="chat.user.thumb50 && message.from")
-					.content(class="message.from ? 'received' : 'sended'")
-						| {{ message.content }}
-			+form()(ng-submit="send(message, chatId)")
-				if config.wornet.chat.multiline
-					textarea.form-control(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
-					button(type="submit")
-						+glyph('arrow-right')
-				else
-					+formControl()(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
-					button(type="submit")
+	include ../includes/chat
 
 block cookie-banner-under
-//- Batarang

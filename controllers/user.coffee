@@ -173,15 +173,18 @@ module.exports = (router) ->
 	# With AJAX
 	router.post '/friend', (req, res) ->
 		# When user ask some other user for friend
-		UserPackage.askForFriend req.body.userId, req, res.json
+		UserPackage.askForFriend req.body.userId, req, (data) ->
+			res.json data
 
 	router.post '/friend/accept', (req, res) ->
 		# When user accept friend ask
-		UserPackage.setFriendStatus req, 'accepted', res.json
+		UserPackage.setFriendStatus req, 'accepted', (data) ->
+			res.json data
 
 	router.post '/friend/ignore', (req, res) ->
 		# When user ignore friend ask
-		UserPackage.setFriendStatus req, 'refused', res.json
+		UserPackage.setFriendStatus req, 'refused', (data) ->
+			res.json data
 
 	router.get '/notify', (req, res) ->
 		NoticePackage.waitForJson req.user.id, res
@@ -189,7 +192,7 @@ module.exports = (router) ->
 	router.post '/notify', (req, res) ->
 		try
 			data = req.body.data
-			userId = cesarRight req.body.userId
+			userIds = (cesarRight id for id in req.body.userIds.split(','))
 			switch data.action || ''
 				when 'message'
 					data.from = req.user.publicInformations()
@@ -198,10 +201,11 @@ module.exports = (router) ->
 						content: data.content
 						author: req.user._id
 					, (err, message) ->
-						MessageRecipient.create
-							message: message._id
-							recipient: userId
-			NoticePackage.notify userId, null, data
+						for id in userIds
+							MessageRecipient.create
+								message: message._id
+								recipient: id
+			NoticePackage.notify userIds, null, data
 			res.json()
 		catch err
 			log err

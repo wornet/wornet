@@ -194,6 +194,8 @@ module.exports = (port) ->
 					params[0] = @localUrl params[0]
 				redirect.apply @, params
 			json: (data = {}) ->
+				if typeof @ is 'undefined'
+					log "No context"
 				if data.statusCode? and data.statusCode is 500
 					data.err = strval(data.err || "Unknown error")
 				data._csrf = data._csrf || @locals._csrf

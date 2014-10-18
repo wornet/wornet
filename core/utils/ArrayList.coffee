@@ -19,6 +19,9 @@ objectMatch = (obj, keys) ->
 	true
 
 ArrayList =
+	copy: ->
+		extend {}, @
+
 	contains: (needle) ->
 		if typeof @indexOf is 'function'
 			@indexOf(needle) isnt -1

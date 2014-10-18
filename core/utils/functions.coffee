@@ -172,7 +172,6 @@ module.exports =
 						else
 							file = (if ie is version then file[1] else false)
 			done = ->
-				console.log i + ': ' + file
 				concatCallback content, lst, proceed, end,
 					i: i + 1
 					ie: ie
@@ -438,7 +437,6 @@ module.exports =
 			require(__dirname + '/../../models/' + ucfirst(name) + 'Schema')
 		global['BaseSchema'] = requireSchema 'Base'
 		if global[name]? || global[name + 'Model']?
-			console.warn name + ' model already token'
 			global[name] || global[name + 'Model']
 		else
 			schema = schema || requireSchema name

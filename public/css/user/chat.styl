@@ -17,16 +17,22 @@
 		border-radius(2px 2px 0 0)
 		background white
 
+		&.minimized
+			margin-top $chatHeight - $chatTitleHeight
+
 		h4
 			margin 0
 			padding 0 2px 0 4px
 			font-size 16px
-			height 26px
-			line-height 26px
+			height $chatTitleHeight
+			line-height $chatTitleHeight
 			vertical-align middle
 			background $orange
 			border-radius(2px 2px 0 0)
 			color white
+
+			a
+				color white
 
 			.close
 				float right

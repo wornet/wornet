@@ -196,16 +196,17 @@ Controllers =
 
 	Profile: ($scope, chatService) ->
 		$scope.chatWith = (user) ->
-			chatService.chatWith objectResolve user
+			chatService.chatWith [objectResolve user]
 
 	Chat: ($scope) ->
 		$('#chat').show()
 		chats = getChats()
 		$scope.chats = chats
 
-		$scope.$on 'chatWith', (e, user, message) ->
+		$scope.$on 'chatWith', (e, users, message) ->
 			modified = false
-			id = user.hashedId
+			ids = (user.hashedId for user in users)
+			id = ids.join ','
 			if chats[id]
 				currentChat = chats[id]
 				unless chats[id].open
@@ -214,9 +215,12 @@ Controllers =
 			else
 				currentChat =
 					open: true
-					user: user
+					users: users
 					messages: []
 				chats[id] = currentChat
+				modified = true
+			if chat.minimized?
+				delete chat.minimized
 				modified = true
 			if message
 				currentChat.messages.push message
@@ -242,5 +246,10 @@ Controllers =
 			notify id, postData, ->
 				chatData.ok = true
 			message.content = ""
+			saveChats chats
+			true
+
+		$scope.minimize = (chat) ->
+			chat.minimized = !(chat.minimized || false)
 			saveChats chats
 			true

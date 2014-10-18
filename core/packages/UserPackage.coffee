@@ -13,10 +13,11 @@ UserPackage =
 		if empty req.body.userId
 			done err: s("Utilisateur introuvable")
 		else
+			self = @
 			req.user.aksForFriend id, (data) ->
 				if empty data.err
 					req.user.friendAsks[data.friend.id] = _id: id
-					@refreshFriends req
+					self.refreshFriends req
 				done data
 
 	setFriendStatus: (req, status, done) ->
@@ -25,12 +26,13 @@ UserPackage =
 			id = req.body.id
 		else
 			id = strval req
+		self = @
 		Friend.update { _id: id, askedTo: req.user._id }, { $set: status: status }, {}, (err, friend) ->
 			if ! err and isRequest
 				delete req.user.friendAsks[data.friend.id]
 				if status is 'accepted'
 					req.user.friends.push _id: friend.askedFrom
-				@refreshFriends req
+				self.refreshFriends req
 			done
 				err: err
 				friend: friend

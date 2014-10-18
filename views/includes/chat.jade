@@ -1,0 +1,25 @@
+#chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : ''))
+	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" class="{{ chat.minimized ? 'minimized' : '' }}")
+		h4(ng-click="minimize(chat)")
+			a.close(ng-click="close(chat); $event.stopPropagation();")
+				+glyph('remove-sign')
+			span(ng-repeat="(index, user) in chat.users")
+				if index > 0
+					=", "
+				+link("/user/profile/{{ user.hashedId }}/{{ user.name.full }}", "{{ user.name.full }}")(ng-click="$event.stopPropagation()")
+		.messages(ng-show="!chat.minimized")
+			.message(ng-repeat="message in chat.messages")
+				span.ok(ng-show="message.ok")
+					+glyph('ok')
+				.date(data-date="{{ message.date }}")
+				img(src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
+				.content(class="{{ message.from ? 'received' : 'sended' }}")
+					| {{ message.content }}
+		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
+			if config.wornet.chat.multiline
+				textarea.form-control(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+				button(type="submit")
+					+glyph('arrow-right')
+			else
+				+formControl()(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+				button(type="submit")

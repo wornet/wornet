@@ -105,3 +105,10 @@ describe "functions", ->
 			str = "ef32d20217db23cd9878b3"
 			cesarLeft(cesarRight(str)).should.equal str
 			cesarRight(cesarLeft(str)).should.equal str
+
+	describe "strrev", ->
+
+		it "must reverse a string", ->
+			strrev("abc").should.equal "cba"
+			strrev(" @9_").should.equal "_9@ "
+			strrev("ggg").should.equal "ggg"
