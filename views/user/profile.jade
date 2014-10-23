@@ -94,10 +94,12 @@ block body
 						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
 			.cb
 		//- Publications
-		.well
-			fieldset
-				h3=strtoupper(s("Publier un statut"))
-				.input-group
-					+formControl()
-					span.input-group-btn
-						input(type="submit" value=s("Envoyer")).btn
+		.well(ng-controller="StatusCtrl")
+			+form()(ng-submit="send(status)")
+				fieldset
+					h3=strtoupper(s("Publier un statut"))
+					.input-group
+						+formControl()(autofocus ng-model="status.content")
+						span.input-group-btn
+							input(type="submit" value=s("Envoyer")).btn
+			include ../includes/status.jade

@@ -185,3 +185,8 @@ getChats = ->
 	if typeof(chats) isnt 'object'
 		chats = {}
 	chats
+
+refreshScope = ($scope) ->
+	unless $scope.$root.$$phase is '$apply' or $scope.$root.$$phase is '$digest'
+		$scope.$apply()
+	checkDates()

@@ -103,7 +103,7 @@
 		else if @ < (new d).subMinutes 50
 			s("Aujourd'hui à {time}", { time: @toString(s("HH:ii")) })
 		else if @ < (new d).subSeconds 40
-			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
+			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
 			"Maintenant"
 	d.prototype.age = (now) ->

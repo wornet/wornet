@@ -227,7 +227,7 @@ Controllers =
 				modified = true
 			if modified
 				saveChats chats
-			$scope.$apply()
+			refreshScope $scope
 			true
 
 		$scope.close = (chat) ->
@@ -253,3 +253,16 @@ Controllers =
 			chat.minimized = !(chat.minimized || false)
 			saveChats chats
 			true
+
+	Status: ($scope) ->
+		getRecentStatus = (data) ->
+			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
+				$scope.recentStatus = data.recentStatus
+				refreshScope $scope
+		Ajax.get '/user/status/recent', getRecentStatus
+
+		$scope.send = (status) ->
+			Ajax.put '/user/status/add',
+				data: status: status
+				success: getRecentStatus
+			status.content = ""

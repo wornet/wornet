@@ -91,9 +91,9 @@
 		if plain or @ < (new d).subMinutes 50
 			@toString s("HH:ii")
 		else if @ < (new d).subSeconds 40
-			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
+			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
-			s("Il y a {seconds} secondes", { seconds: Math.max(1, (new d).getSeconds() - @getSeconds()) })
+			s("Il y a {seconds} secondes", { seconds: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 1000)) })
 	d.prototype.humanDateTime = (plain) ->
 		if plain or @ < (new d).yesterday().midnight()
 			@toString s("DD/MM/YYYY à HH:ii")
@@ -102,9 +102,9 @@
 		else if @ < (new d).subMinutes 50
 			s("Aujourd'hui à {time}", { time: @toString(s("HH:ii")) })
 		else if @ < (new d).subSeconds 40
-			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
+			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
-			s("Il y a {seconds} secondes", { seconds: Math.max(1, (new d).getSeconds() - @getSeconds()) })
+			s("Il y a {seconds} secondes", { seconds: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 1000)) })
 	d.prototype.age = (now) ->
 		unless now instanceof Date and now.isValid()
 			now = new d

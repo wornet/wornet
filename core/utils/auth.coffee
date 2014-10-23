@@ -43,8 +43,7 @@ exports.logout = (req, res) ->
 
 # Store user in session, and append to the request object
 exports.auth = (req, res, user) ->
-	unless user instanceof User
-		user = new User(user)
+	user = objectToUser user
 	res.locals.user = user
 	req.user = user
 	req.session.user = user

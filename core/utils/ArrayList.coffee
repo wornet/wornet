@@ -72,6 +72,15 @@ ArrayList =
 					list.push @
 		list
 
+	columns: (keys = null, preserveKeys = true) ->
+		@values keys, preserveKeys
+
+	column: (key) ->
+		list = []
+		@each ->
+			list.push @[key]
+		list
+
 	length: ->
 		count = 0
 		@each ->

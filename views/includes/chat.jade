@@ -1,5 +1,5 @@
 #chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : ''))
-	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" class="{{ chat.minimized ? 'minimized' : '' }}")
+	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{'minimized': chat.minimized}")
 		h4(ng-click="minimize(chat)")
 			a.close(ng-click="close(chat); $event.stopPropagation();")
 				+glyph('remove-sign')
@@ -12,7 +12,7 @@
 				span.ok(ng-show="message.ok")
 					+glyph('ok')
 				.date(data-date="{{ message.date }}")
-				img(src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
+				img(ng-src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
 				.content(class="{{ message.from ? 'received' : 'sended' }}")
 					| {{ message.content }}
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
