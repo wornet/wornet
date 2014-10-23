@@ -205,7 +205,7 @@ module.exports = (router) ->
 							MessageRecipient.create
 								message: message._id
 								recipient: id
-			NoticePackage.notify userIds, null, data
+			NoticePackage.notify userIds, null, data, true
 			res.json()
 		catch err
 			log err

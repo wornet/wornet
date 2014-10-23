@@ -11,13 +11,14 @@ NoticePackage =
 	notificationsToSend: {}
 	timeouts: {}
 
-	notify: (userIds, err, groupData) ->
+	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
 		userIds.each ->
 			userId = @
 			data = groupData.copy()
-			otherUserIds = userIds.filter (id) ->
-				id isnt userId
+			if appendOtherUsers
+				otherUserIds = userIds.filter (id) ->
+					id isnt userId
 			done = ->
 				if self.responsesToNotify[userId]? and self.responsesToNotify[userId].length() > 0
 					self.responsesToNotify[userId].each (id) ->
@@ -41,7 +42,7 @@ NoticePackage =
 								delete self.notificationsToSend[userId]
 						true
 				true
-			if otherUserIds.length
+			if appendOtherUsers and otherUserIds.length
 				User.find _id: $in: otherUserIds, (err, users) ->
 					if err
 						log err

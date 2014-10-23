@@ -14,6 +14,8 @@ waitForNotify = ->
 						users = message.users || []
 						users.push message.from
 						chatService.chatWith users, message
+					when 'status'
+						statusService.receiveStatus notification.status
 		delay 500, waitForNotify
 
 notify = (userIds, data, success) ->

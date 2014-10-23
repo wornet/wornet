@@ -40,7 +40,15 @@ StatusPackage =
 			Status.create
 				author: req.user._id
 				content: req.body.status.content
-			, done
+			, (err, status) ->
+				unless err
+					status = status.toObject()
+					status.author = req.user.publicInformations()
+					connectedPeople = req.user.friends.column '_id'
+					NoticePackage.notify connectedPeople, null,
+						action: 'status'
+						status: status
+				done err, status
 		else
 			done "Invalid status content"
 

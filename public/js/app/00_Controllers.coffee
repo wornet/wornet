@@ -261,6 +261,10 @@ Controllers =
 				refreshScope $scope
 		Ajax.get '/user/status/recent', getRecentStatus
 
+		$scope.$on 'receiveStatus', (e, status) ->
+			$scope.recentStatus.unshift status
+			refreshScope $scope
+
 		$scope.send = (status) ->
 			Ajax.put '/user/status/add',
 				data: status: status
