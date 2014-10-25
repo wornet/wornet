@@ -62,13 +62,30 @@
 					border-radius(4px)
 					margin $smallPadding
 					padding $smallPadding
+					position relative
 
 					&.received
 						margin-left $chatThumbWidth + $smallPadding * 2
 						background $ultraLightOrange
+						&:before
+							content ''
+							position absolute
+							left -6px
+							top 2px
+							width 6px
+							height 13px
+							background url(png(orange-beak)) left top no-repeat
 
 					&.sent
 						background $nearlyWhite
+						&:after
+							content ''
+							position absolute
+							right -6px
+							top 2px
+							width 6px
+							height 13px
+							background url(png(gray-beak)) left top no-repeat
 
 			.ok
 				float right

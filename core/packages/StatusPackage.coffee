@@ -39,6 +39,7 @@ StatusPackage =
 		if req.body.status and req.body.status.content
 			Status.create
 				author: req.user._id
+				at: req.body.at || null
 				content: req.body.status.content
 			, (err, status) ->
 				unless err

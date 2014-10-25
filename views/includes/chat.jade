@@ -9,9 +9,9 @@
 				+link("/user/profile/{{ user.hashedId }}/{{ user.name.full }}", "{{ user.name.full }}")(ng-click="$event.stopPropagation()")
 		.messages(ng-show="!chat.minimized")
 			.message(ng-repeat="message in chat.messages")
+				.date(data-date="{{ message.date }}" data-date-delay="180")
 				span.ok(ng-show="message.ok")
 					+glyph('ok')
-				.date(data-date="{{ message.date }}" data-date-delay="180")
 				img(ng-src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
 				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}")
 					| {{ message.content }}
