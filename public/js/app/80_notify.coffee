@@ -17,6 +17,7 @@ waitForNotify = ->
 					when 'status'
 						statusService.receiveStatus notification.status
 		delay 500, waitForNotify
+	null
 
 notify = (userIds, data, success) ->
 	Ajax.post '/user/notify',
@@ -24,5 +25,6 @@ notify = (userIds, data, success) ->
 			data: data
 			userIds: userIds
 		success: success
+	null
 
 waitForNotify()

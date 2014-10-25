@@ -109,7 +109,7 @@ onready ->
 			req.isStatic = true
 			ie = req.getHeader('User-Agent').match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
-				ie = intval ie.substr 5
+				ie = intval ie[0].substr 5
 			else
 				ie = 0
 			req.ie = ie

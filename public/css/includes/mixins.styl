@@ -61,7 +61,8 @@ user-select()
 
 opacity(n)
 	css3-prefix("opacity", n)
-	filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
+	-ms-filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
+	filter unquote('alpha(opacity=' + round(n * 100) + ')')
 
 box-shadow()
 	// Fonction pour créer des ombres sur une boite.

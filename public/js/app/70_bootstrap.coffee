@@ -13,12 +13,14 @@ Wornet.factory 'chatService', ($rootScope) ->
 	window.chatService =
 		chatWith: (user, message) ->
 			$rootScope.$broadcast 'chatWith', user, message
+			return
 	chatService
 
 Wornet.factory 'statusService', ($rootScope) ->
 	window.statusService =
 		receiveStatus: (status) ->
 			$rootScope.$broadcast 'receiveStatus', status
+			return
 	statusService
 
 #Angular Wornet directives
@@ -31,6 +33,9 @@ Wornet.directive 'focus', ->
 				if value is "true"
 					$timeout ->
 						element[0].focus()
+						return
+				return
+			return
 
 ControllersByService =
 	chatService: 'Profile Chat'

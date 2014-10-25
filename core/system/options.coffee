@@ -224,6 +224,9 @@ module.exports = (port) ->
 		# Add config.json configuration
 		extend config, localConfig._store
 
+		# Prettify or minify the HTML output as configured
+		app.locals.pretty = true if config.wornet.prettyHtml
+
 		# Assets images in stylus code
 		['png', 'jpg', 'gif'].forEach (ext) ->
 			stylus.functions[ext] = (url) ->

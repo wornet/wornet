@@ -3,5 +3,5 @@ div(ng-repeat="status in recentStatus")
 	.status-author
 		img(width="25" height="25" ng-src="{{ status.author.thumb50 }}")
 		| {{ status.author.name.full }}
-	.status-content
+	.status-content.word-wrap
 		| {{ status.content }}

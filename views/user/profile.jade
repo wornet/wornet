@@ -96,10 +96,34 @@ block body
 		//- Publications
 		.well(ng-controller="StatusCtrl")
 			+form()(ng-submit="send(status)")
-				fieldset
+				ul.nav.nav-tabs(role="tablist")
+					li(ng-click="status.containsPicture = false" ng-class="{ active: ! status.containsPicture }"): a
+						=s("Publier un statut")
+					li(ng-click="status.containsPicture = true; media.step = null;" ng-class="{ active: status.containsPicture }"): a(title=s("Images, vidéos, liens…") data-toggle="tooltip" data-placement="top")
+						=s("Publier un média")
+				fieldset.tab(ng-show="! status.containsPicture")
 					h3=strtoupper(s("Publier un statut"))
 					.input-group
 						+formControl()(autofocus ng-model="status.content")
 						span.input-group-btn
 							input(type="submit" value=s("Envoyer")).btn
+				fieldset.tab(ng-show="status.containsPicture")
+					h3=strtoupper(s("Publier un média"))
+					.animate-switch-container(ng-switch="media.step")
+						.animate-switch(ng-switch-when="create-album")
+							+formControl()(required tabindex="2" ng-model="album.name" name="name" placeholder=s("Nom de l'album"))
+							textarea.form-control(ng-model="album.description" placeholder=s("Entrez votre message ici") focus="true")
+							input(type="submit" value=s("Créer")).btn
+						.animate-switch(ng-switch-when="select-album")
+							div(ng-repeat="album in albums")
+								=album
+						.animate-switch(ng-switch-when="add")
+							input(type="file" multiple="multiple" ng-model="album.images" name="images" value=s("Ajouter média(s)")).btn
+						.animate-switch(ng-switch-default)
+							.col-xs-6
+								a.col-xs-12.btn(ng-click="media.step = 'create-album'")
+									=s("Créer un album")
+							.col-xs-6(tooltip="{{ albums && albums.length ? _('" + s("{count} album|{count} albums") + "', albums.length) : '" + s("Vous n'avez encore aucun album") + "' }}")
+								a.col-xs-12.btn(ng-click="media.step = 'select-album'" disabled="{{ ! (albums && albums.length) }}")
+									=s("Utiliser un album existant")
 			include ../includes/status.jade

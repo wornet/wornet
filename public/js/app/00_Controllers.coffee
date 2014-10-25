@@ -19,20 +19,30 @@ Controllers =
 					# Else : an error occured
 					else
 						$('#loginErrors').errors data.err
+					return
+			return
 		$('[ng-controller="LoginCtrl"]').on 'submit', prevent
+
+		return
 
 	SigninFirstStep: ($scope) ->
 		saveUser $scope
+
+		return
 
 	SigninSecondStep: ($scope) ->
 		user = $.parseJSON sessionStorage['user']
 		$scope.user = user
 		saveUser $scope
 
+		return
+
 	Welcome: ($scope) ->
 		delete sessionStorage['user']
 		$('iframe.player').removeClass('hidden')
 		$(window).trigger('resize')
+
+		return
 
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
@@ -86,6 +96,9 @@ Controllers =
 						delete saveDelays[event.id]
 						if cb?
 							cb(data)
+						return
+				return
+			return
 
 
 		# On click on an event, a modal bootstrap window displays allowing user to
@@ -93,6 +106,7 @@ Controllers =
 		$scope.editContent = (event, allDay, jsEvent, view) ->
 			$scope.eventToEdit = $.extend {}, event
 			$('#eventContent').modal()
+			return
 
 
 		# When user save the event description content
@@ -102,6 +116,7 @@ Controllers =
 					ev.content = event.content
 					$scope.saveEvent ev
 					break
+			return
 
 
 		# When user type a name for a new event or existing event
@@ -115,6 +130,8 @@ Controllers =
 					if typeof(data) is 'object' && typeof(data.err) is 'undefined'
 						# Update eventsTitles with the new name
 						eventsTitles[event.id] = event.title
+					return
+			return
 
 
 		# On add a new event
@@ -139,10 +156,13 @@ Controllers =
 					event: getEvent event
 				success: (data) ->
 					event.id = data._id
+					return
 			# After new field is ready (after AngularJS create it)
 			delay 50, ->
 				# Give the focus to the new field
 				$('ul.events input[ng-model="e.title"]:last').focus()
+				return
+			return
 
 
 		# On delete an event
@@ -155,16 +175,19 @@ Controllers =
 			agenda.delete
 				data:
 					event: getEvent event
+			return
 
 
 		# When switch to day/week/month mode
 		$scope.changeView = (view, calendar) ->
 			calendar.fullCalendar "changeView", view
+			return
 
 
 		# Init calendar
 		$scope.renderCalender = (calendar) ->
 			calendar.fullCalendar "render"
+			return
 
 
 		# Append config options to date texts and giv the all things
@@ -194,9 +217,14 @@ Controllers =
 		# (passed through the template)
 		$scope.eventSources = [$scope.events]
 
+		return
+
 	Profile: ($scope, chatService) ->
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
+			return
+
+		return
 
 	Chat: ($scope) ->
 		$('#chat').show()
@@ -228,12 +256,12 @@ Controllers =
 			if modified
 				saveChats chats
 			refreshScope $scope
-			true
+			return
 
 		$scope.close = (chat) ->
 			chat.open = false
 			saveChats chats
-			true
+			return
 
 		$scope.send = (message, id) ->
 			chatData =
@@ -247,26 +275,33 @@ Controllers =
 				chatData.ok = true
 			message.content = ""
 			saveChats chats
-			true
+			return
 
 		$scope.minimize = (chat) ->
 			chat.minimized = !(chat.minimized || false)
 			saveChats chats
-			true
+			return
+
+		return
 
 	Status: ($scope) ->
-		getRecentStatus = (data) ->
+		setRecentStatus = (data) ->
 			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
 				$scope.recentStatus = data.recentStatus
 				refreshScope $scope
-		Ajax.get '/user/status/recent', getRecentStatus
+			return
+		Ajax.get '/user/status/recent', setRecentStatus
 
 		$scope.$on 'receiveStatus', (e, status) ->
 			$scope.recentStatus.unshift status
 			refreshScope $scope
+			return
 
 		$scope.send = (status) ->
 			Ajax.put '/user/status/add',
 				data: status: status
-				success: getRecentStatus
+				success: setRecentStatus
 			status.content = ""
+			return
+
+		return

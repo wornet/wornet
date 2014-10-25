@@ -3,6 +3,8 @@ saveUser = ($scope) ->
 	$scope.submit = (user) ->
 		user.remember = $('[ng-model="user.remember"]').prop 'checked'
 		sessionStorage['user'] = JSON.stringify user
+		return
+	return
 
 # Resolve object get from template (passed in JSON)
 # Restore date object converted to strings previously (by JSON stringification)
@@ -127,14 +129,18 @@ refreshPill = ->
 			$ul.find('.pill').show().text count
 		else
 			$ul.find('.pill').hide()
+		return
+	return
 
 # Execute a callback when recorded then each time the window is resized
 onResize = (fct) ->
 	$(window).resize fct
 	fct.call @
+	return
 
 serverError = (message) ->
 	$('.errors').errors message || "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
+	return
 
 stop = (e) ->
 	e.stopPropagation()
@@ -153,6 +159,7 @@ keepScroll = (sel) ->
 		elt = $this[0]
 		unless typeof(elt.scrollHeight) isnt 'undefined' and ($this.scrollTop() is elt.scrollHeight - $this.height() or $this.is(':hidden'))
 			excludeElements.push elt
+		return
 	delay 1, ->
 		checkDates()
 		$(sel).each ->
@@ -160,9 +167,11 @@ keepScroll = (sel) ->
 			elt = $this[0]
 			for i in excludeElements
 				if i is elt
-					return true
+					return
 			$this.scrollTop elt.scrollHeight - $this.height()
-			true
+			return
+		return
+	return
 
 saveChats = (chats) ->
 	if window.sessionStorage
@@ -173,6 +182,7 @@ saveChats = (chats) ->
 		sessionStorage.chats = JSON.stringify chats
 	$('.chat').show()
 	keepScroll '.chat .messages'
+	return
 
 getChats = ->
 	$('.chat').show()
@@ -190,3 +200,7 @@ refreshScope = ($scope) ->
 	unless $scope.$root.$$phase is '$apply' or $scope.$root.$$phase is '$digest'
 		$scope.$apply()
 	checkDates()
+	return
+
+_ = (text, replacements, count) ->
+	text
