@@ -1,7 +1,7 @@
 .status-block(ng-repeat="status in recentStatus")
 	.status-author
 		img(ng-src="{{ status.author.thumb50 }}")
-		+link("/user/profile/{{ status.author.hashedId }}/{{ encodeURIComponent(status.author.name.full) }}", "{{ status.author.name.full }}")
+		+link("/user/profile/{{ status.author.hashedId }}/{{ status.author.name.full | urlencode }}", "{{ status.author.name.full }}")
 	.date(data-date="{{ status.date }}")
 	.status-content.word-wrap
 		| {{ status.content }}

@@ -37,6 +37,9 @@ Wornet.directive 'focus', ->
 				return
 			return
 
+Wornet.filter 'urlencode', ->
+	window.encodeURIComponent
+
 ControllersByService =
 	chatService: 'Profile Chat'
 	statusService: 'Status'
