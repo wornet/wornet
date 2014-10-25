@@ -239,6 +239,15 @@ $.each [
 			$('.profile-display').addClass 'hidden'
 			cancel e
 	]
+	[
+		'click'
+		'[give-focus]'
+		($a) ->
+			sel = $a.attr 'give-focus'
+			delay 1, ->
+				$(sel).focus()
+				return
+	]
 
 ], ->
 	params = @

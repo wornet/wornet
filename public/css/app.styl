@@ -174,20 +174,27 @@ blockquote
 	font-size 14px
 
 
+span.form-control
+div.form-control
+a.form-control
+button.form-control
+input.form-control
 .btn
-.form-control
 	// Marges internes et externes.
 	padding $fieldVPadding $fieldHPadding
 	margin $mainPadding 0
 	line-height $fieldLineHeight * 0.7
 	transition(all .2s)
 
-.form-control
-.btn
 	height $fieldLineHeight + 2 * $fieldVPadding + 2 !important
 	height $fieldLineHeight
+
 .btn
 	height $fieldLineHeight + 2 * $fieldVPadding + 2
+
+.btn.bar
+	display block
+	margin 0 $mainPadding
 
 // Champs de texte.
 .form-control
@@ -379,7 +386,11 @@ ul.photos-thumbs
 		display block
 		background rgba(255, 255, 255, 0.8)
 		border-radius(4px)
-	.form-control
+	span.form-control
+	div.form-control
+	a.form-control
+	button.form-control
+	input.form-control
 	.btn
 		line-height $fieldLineHeight + $mobileIncrease*0.5
 		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2 !important
