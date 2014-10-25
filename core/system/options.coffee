@@ -73,6 +73,7 @@ module.exports = (port) ->
 		else
 			# locales resources
 			[
+				['if lt IE 9', "/components/css3-mediaqueries/js/css3-mediaqueries.js"]
 				['if lt IE 9', "/components/jquery/js/jquery-1.js"]
 				['if gte IE 9', "/components/jquery/js/jquery-2.js"]
 				['non-ie', "/components/jquery/js/jquery-2.js"]

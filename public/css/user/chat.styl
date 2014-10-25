@@ -49,20 +49,39 @@
 			height $chatHeight - 24px - 38px
 			overflow auto
 
+			.date
+				margin $smallPadding 0
+				text-align center
+				font-size 14px
+
 			.message
 				clear both
+
+				.content
+					border 1px solid #ddd
+					border-radius(4px)
+					margin $smallPadding
+					padding $smallPadding
+
+					&.received
+						margin-left $chatThumbWidth + $smallPadding * 2
+						background $ultraLightOrange
+
+					&.sent
+						background $nearlyWhite
 
 			.ok
 				float right
 				color $lightGray
-				margin 3px
+				margin 3px $mainPadding 3px 0
 				font-size 12px
 
 			img
 				float left
-				width 25px
-				height 25px
-				margin $smallPadding
+				width $chatThumbWidth
+				height $chatThumbHeight
+				margin 0 $smallPadding
+				border-radius(2px)
 
 	form
 		position relative

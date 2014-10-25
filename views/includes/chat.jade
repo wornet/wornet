@@ -11,9 +11,9 @@
 			.message(ng-repeat="message in chat.messages")
 				span.ok(ng-show="message.ok")
 					+glyph('ok')
-				.date(data-date="{{ message.date }}")
+				.date(data-date="{{ message.date }}" data-date-delay="180")
 				img(ng-src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
-				.content.word-wrap(class="{{ message.from ? 'received' : 'sended' }}")
+				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}")
 					| {{ message.content }}
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
 			if config.wornet.chat.multiline
