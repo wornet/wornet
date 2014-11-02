@@ -8,6 +8,19 @@ window.onbeforeunload = ->
 $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 
 
+# Display loading animation until angular scope is ready
+$ ->
+	$('.loading').each ->
+		$loadin = angular.element(@)
+		$loadin.ready ->
+			$scope = $loadin.scope()
+			$loadin.removeClass 'loading'
+			refreshScope $scope
+			return
+		return
+	return
+
+
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
 onResize ->

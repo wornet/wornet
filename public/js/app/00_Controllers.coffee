@@ -290,6 +290,7 @@ Controllers =
 				$scope.recentStatus = data.recentStatus
 				refreshScope $scope
 			return
+
 		Ajax.get '/user/status/recent', setRecentStatus
 
 		$scope.$on 'receiveStatus', (e, status) ->

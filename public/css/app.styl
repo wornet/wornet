@@ -59,16 +59,24 @@ iframe
 // .loader sera utilisé si je parviens à faire un système de
 // navigation AJAX compatible Angular
 .loader
+.loading
+	background-image url(gif(loader))
+	background-position center center
+	background-repeat no-repeat
+
+.loader
 	fix(0px, 0px)
 	size(100%, 100%)
 	opacity(1)
 	overflow hidden
-	background url(gif(loader)) center center no-repeat
 	background-color rgba(0, 0, 0, .2)
 	transition(opacity .4s)
 	&.preload
 		opacity(0)
 		height 0
+
+.loading *
+	visibility hidden
 
 
 #wrap

@@ -94,7 +94,7 @@ block body
 						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
 			.cb
 		//- Publications
-		.well(ng-controller="StatusCtrl")
+		.well.loading(ng-controller="StatusCtrl")
 			+form()(ng-submit="send(status)")
 				ul.nav.nav-tabs(role="tablist")
 					li(ng-click="status.containsPicture = false" ng-class="{ active: ! status.containsPicture }"): a
