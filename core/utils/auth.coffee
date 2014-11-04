@@ -126,6 +126,7 @@ exports.isAuthenticated = (req, res, next) ->
 					"/friend/**"
 					"/user/notify"
 					"/user/profile/**"
+					"/user/status/**"
 				]
 
 				blacklist = user: [
@@ -166,9 +167,6 @@ exports.isAuthenticated = (req, res, next) ->
 					if err
 						res.serverError err
 					else
-						req.user.numberOfFriends = friends.length
-						req.user.friends = friends
-						req.user.friendAsks = friendAsks
 						req.user.notifications = []
 						for id, friend of friendAsks
 							req.user.notifications.push [Date.fromId(id), friend, id]

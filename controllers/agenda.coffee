@@ -35,7 +35,7 @@ module.exports = (router) ->
 						event.title = eventData.title
 					event.save (err) ->
 						if err
-							res.json err: err
+							res.serverError err
 						else
 							res.json event
 
@@ -44,14 +44,11 @@ module.exports = (router) ->
 					eventData = req.body.event 
 					Event.findById eventData.id, (err, event) ->
 						if err
-							res.json
-								err: err
+							res.serverError err
 						else if event is null
-							res.json
-								err: s("L'événement est introuvable.")
+							res.serverError s("L'événement est introuvable.")
 						else if event.user + '' isnt req.user._id + ''
-							res.json
-								err: s("Vous n'êtes pas propriétaire de cet événement.")
+							res.serverError s("Vous n'êtes pas propriétaire de cet événement.")
 						else
 							for key, value of eventData
 								if key isnt 'id'
@@ -62,8 +59,7 @@ module.exports = (router) ->
 								event.allDay = event.allDay is 'true'
 							event.save (err) ->
 								if err
-									res.json
-										err: err
+									res.serverError err
 								else
 									res.json event
 
@@ -75,7 +71,6 @@ module.exports = (router) ->
 						user: req.user._id
 					, (err) ->
 						if err
-							res.json
-								err: err
+							res.serverError err
 						else
 							res.json {}

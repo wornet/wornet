@@ -12,14 +12,25 @@ statusSchema = BaseSchema.extend
 	at:
 		type: ObjectId
 		ref: 'UserSchema'
-		validate: [
-			(value, done) ->
-				true
-			'post status only on a friend profile'
-		]
 	content:
 		type: String
 		trim: true
 		required: true
+
+statusSchema.pre 'save', (next) ->
+	author = @author
+	at = @at
+	User.findById @author, (err, user) ->
+		if err
+			next err
+		else
+			user.getFriends (err, friends) ->
+				if err
+					next err
+				else if friends.has(id: at)
+					next()
+				else
+					next new Error 'post status only on a friend profile'
+
 
 module.exports = statusSchema

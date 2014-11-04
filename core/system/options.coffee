@@ -101,8 +101,16 @@ module.exports = (port) ->
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
+			# get id from hashed or the id of the user logged in if it's null
+			getRequestedUserId: (id) ->
+				if id is null
+					@user.id
+				else
+					cesarRight id
+			# get request header or empty string if it's not contained
 			getHeader: (name) ->
 				@headers[name.toLowerCase()] || ''
+			# Ask for redirect at next request
 			goingTo: (url = null) ->
 				if url is null
 					if @session.goingTo?
@@ -112,11 +120,13 @@ module.exports = (port) ->
 					log url
 					@session.goingTo = url
 				url
+			# Get a cookie value from name or null if it does not exists
 			cookie: (name) ->
 				if @cookies[name]?
 					@cookies[name]
 				else
 					null
+			# Get from cache if present in user session, else calculate
 			cache: (key, calculate, done) ->
 				if typeof(key) is 'function'
 					done = calculate
@@ -132,11 +142,13 @@ module.exports = (port) ->
 						done err, value, false
 				else
 					done null, cache[key], true
+			# Empty the user session cache
 			cacheFlush: (key = null) ->
 				if key is null
 					@session.cache = {}
 				else
 					delete @session.cache[key]
+			# get friends of the user logged in
 			getFriends: (done) ->
 				user = @user
 				@cache 'friends', (done) ->
@@ -170,7 +182,11 @@ module.exports = (port) ->
 					if config.env.development
 						model.err = err
 					@status val
-					@render 'errors/' + val, model
+					if @isJSON
+						model.statusCode = val
+						@json model
+					else
+						@render 'errors/' + val, model
 			) key, val
 
 		extend app.response,
@@ -198,6 +214,8 @@ module.exports = (port) ->
 				if typeof @ is 'undefined'
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
+					if data.err instanceof Error
+						data.stack = data.err.stack
 					data.err = strval(data.err || "Unknown error")
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
@@ -254,6 +272,7 @@ module.exports = (port) ->
 			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console['log'] 'setup/git/' + file + ' >>> .git/' + file
+			require(__dirname + "/command")("jsdoc -r -d ./doc/ .")
 
 		# Initialize DB
 		try

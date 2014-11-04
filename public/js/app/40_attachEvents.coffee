@@ -1,11 +1,14 @@
+
 $document = $(document)
 	# When receive back an AJAX request
 	.ajaxComplete (event, xhr, settings) ->
 		# POST is secured by CSRF tokens
-		if settings.type is "POST"
+		isPost = (settings.type is "POST")
+		isJson = (settings.dataType? && settings.dataType.toLowerCase() is "json")
+		if isPost or isJson
 			data = xhr.responseText
 			# In JSON format
-			if settings.dataType? && settings.dataType.toLowerCase() is "json"
+			if isJson
 				try
 					data = $.parseJSON data
 				catch e
@@ -14,8 +17,12 @@ $document = $(document)
 					serverError()
 				else
 					if data.err
-						err = data.err
+						console['log'] data.err
+						err = data.err + ''
+						console['error'] err
 						$('.errors').errors err
+					if data.stack
+						console['log'] data.stack
 					_csrf = data._csrf
 					$('head meta[name="_csrf"]').attr 'content', _csrf
 			# In HTML format

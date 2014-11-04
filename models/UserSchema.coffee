@@ -172,12 +172,63 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 						err: err
 						friend: friend
 
+userSchema.methods.getFriendIds = (done) ->
+	if @friendIds?
+		done null, @friendIds
+	else
+		user = @
+		ids = []
+		Friend.find
+				askedFrom: @_id
+				status: 'accepted'
+			# .where('status').in ['waiting', 'accepted']
+			.limit 10
+			.exec (err, friends) ->
+				if err
+					done err
+				else
+					done null, user.friendIds
+
+userSchema.methods.getFriendAndAskIds = (done) ->
+	user = @
+	if user.friendIds? and user.friendAskIds? and uer.friendAskDates?
+		done null, user.friendIds, user.friendAskIds, uer.friendAskDates
+	userSchema.methods.getFriendIds (err, ids) ->
+		if err
+			done err
+		else if user.friendAskIds? and user.friendAskDates?
+			user.friendAskIds.each ->
+				ids.push @
+			done null, ids, user.friendAskIds, user.friendAskDates
+		else
+			friendAskIds = []
+			friendAskDates = []
+			Friend.find
+					askedTo: @_id
+				.where('status').in ['waiting', 'accepted']
+				.limit 10
+				.exec (err, friends) ->
+					if err
+						done err
+					else
+						for friend in friends
+							if friend.waiting
+								friendAskIds.push strval friend.askedFrom
+								friendAskDates[friend.askedFrom] = friend.id
+							else
+								ids.push friend.askedFrom
+						user.friendIds = ids
+						user.friendAskIds = friendAskIds
+						user.friendAskDates = friendAskDates
+						done null, ids, friendAskIds, friendAskDates
+
 userSchema.methods.getFriends = (done) ->
 	if @friends? and @friendAsks?
 		done null, @friends, @friendAsks
 	else
+		user = @
 		ids = []
-		friendAsksIds = []
+		friendAskIds = []
 		friendAskDates = []
 		pending = 2
 		next = ->
@@ -187,14 +238,20 @@ userSchema.methods.getFriends = (done) ->
 					if err
 						done err, {}, {}
 					else
+						friendIds = []
 						friends = []
 						friendAsks = {}
 						users.forEach (user) ->
 							id = strval user.id
-							if friendAsksIds.indexOf(id) is -1
+							if friendAskIds.indexOf(id) is -1
 								friends.push user
+								friendIds.push id
 							else
 								friendAsks[friendAskDates[id]] = user
+						user.numberOfFriends = friends.length
+						user.friendIds = friendIds
+						user.friends = friends
+						user.friendAsks = friendAsks
 						done null, friends, friendAsks
 		Friend.find
 				askedFrom: @_id
@@ -206,7 +263,7 @@ userSchema.methods.getFriends = (done) ->
 					for friend in friends
 						ids.push friend.askedTo
 						# if friend.waiting
-						# 	friendAsksIds.push strval friend.askedTo
+						# 	friendAskIds.push strval friend.askedTo
 						# 	friendAskDates[friend.askedTo] = friend.id
 				unless --pending
 					next()
@@ -219,8 +276,10 @@ userSchema.methods.getFriends = (done) ->
 					for friend in friends
 						ids.push friend.askedFrom
 						if friend.waiting
-							friendAsksIds.push strval friend.askedFrom
+							friendAskIds.push strval friend.askedFrom
 							friendAskDates[friend.askedFrom] = friend.id
+					user.friendAskIds = friendAskIds
+					user.friendAskDates = friendAskDates
 				unless --pending
 					next()
 

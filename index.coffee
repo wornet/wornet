@@ -148,7 +148,9 @@ onready ->
 			done()
 		else
 			res.locals.isXHR = !!req.xhr
+			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
+			res.isJSON = req.isJSON
 			# Load all scripts in core/global/request directory
 			# Not yet needed
 			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->

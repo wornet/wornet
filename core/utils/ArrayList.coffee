@@ -20,7 +20,10 @@ objectMatch = (obj, keys) ->
 
 ArrayList =
 	copy: ->
-		extend {}, @
+		if @ instanceof Array
+			@slice()
+		else
+			extend {}, @
 
 	contains: (needle) ->
 		if typeof @indexOf is 'function'
