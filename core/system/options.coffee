@@ -161,6 +161,50 @@ module.exports = (port) ->
 						friends = result[0]
 						friendAsks = result[1]
 						done err, friends, friendAsks
+			# get users from friend, me
+			getKnownUsersByIds: (ids, done) ->
+				@getUsersByIds ids, done, false
+			# get users from friend, me, or from database
+			getUsersByIds: (ids, done, searchInDataBase = true) ->
+				currentUser = @user
+				ids = ids.map strval
+				idsToFind = []
+				usersMap = {}
+				@getFriends (err, friends, friendAsks) ->
+					if err
+						done err, null, false
+					else
+						ids.each ->
+							user = (if @ is currentUser.id
+								currentUser
+							else
+								friends.findOne _id: @
+							)
+							if user
+								usersMap[@] = objectToUser user
+							else
+								idsToFind.push @
+							true
+						if idsToFind.length > 0
+							if searchInDataBase
+								User.find id: $in: idsToFind, (err, otherUsers) ->
+									if err
+										done err, null, true
+									else
+										err = (if otherUsers.length is idsToFind.length
+											null
+										else
+											new Error "Unable to find all users even from the database"
+										)
+										otherUsers.each ->
+											usersMap[@id] = @
+										done err, usersMap, true
+							else
+								err = new Error "Unable to find all users"
+								done err, null, false
+						else
+							done null, usersMap, false
+
 
 		# Save original method(s) that we will override
 		redirect = app.response.redirect
@@ -272,7 +316,8 @@ module.exports = (port) ->
 			].forEach (file) ->
 				copy 'setup/git/' + file, '.git/' + file
 				console['log'] 'setup/git/' + file + ' >>> .git/' + file
-			require(__dirname + "/command")("jsdoc -r -d ./doc/ .")
+			# To document with JsDoc
+			# require(__dirname + "/command")("jsdoc -c ./doc/conf.json -r -d ./doc/ .")
 
 		# Initialize DB
 		try

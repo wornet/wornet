@@ -10,32 +10,41 @@ saveUser = ($scope) ->
 # Restore date object converted to strings previously (by JSON stringification)
 objectResolve = (value) ->
 
-	key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
+	if (['null', 'undefined']).indexOf(typeof value) isnt -1
 
-	# First, convert the date and put the "resolved" key to do not reconvert
-	enter = (value) ->
-		switch typeof(value)
-			when 'object'
-				unless value[key]
-					for v, i in value
-						value[i] = enter value[i]
-					value[key] = true
-			when 'string'
-				if /^[0-9-]+T[0-9:.]+Z$/.test value
-					date = new Date value
-					if `date != 'Invalid Date'`
-						value = date
-		value
+		null
 
-	# Then, remove all the "resolved" keys
-	leave = (value) ->
-		if typeof(value) is 'object' and value[key]
-			delete value[key]
-			for v, i in value
-				value[i] = leave value[i]
-		value
+	else
 
-	leave enter value
+		if typeof value isnt 'object'
+			value = JSON.parse value
+
+		key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
+
+		# First, convert the date and put the "resolved" key to do not reconvert
+		enter = (value) ->
+			switch typeof(value)
+				when 'object'
+					unless value[key]
+						for v, i in value
+							value[i] = enter value[i]
+						value[key] = true
+				when 'string'
+					if /^[0-9-]+T[0-9:.]+Z$/.test value
+						date = new Date value
+						if `date != 'Invalid Date'`
+							value = date
+			value
+
+		# Then, remove all the "resolved" keys
+		leave = (value) ->
+			if typeof(value) is 'object' and value[key]
+				delete value[key]
+				for v, i in value
+					value[i] = leave value[i]
+			value
+
+		leave enter value
 
 
 # To know if a object or selector exists

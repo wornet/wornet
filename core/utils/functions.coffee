@@ -571,7 +571,7 @@ module.exports =
 						typeof(value.length) isnt 'undefined' &&
 						(
 							value.length is 0 ||
-							typeof(value.length) is 'function' && value.length() is 0
+							typeof(value.length) is 'function' && value.getLength() is 0
 						)
 					) || (
 						typeof(value.length) is 'undefined' &&

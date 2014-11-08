@@ -79,6 +79,9 @@ onready ->
 	global.redis = redisStore.client
 
 	app.use session
+		# Express session options
+		resave: true,
+		saveUninitialized: false,
 		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
 		key: "w"
 		store: redisStore

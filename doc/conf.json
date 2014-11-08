@@ -1,0 +1,18 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+        "includePattern": ".+\\.(coffee|js)$",
+        "excludePattern": "^[\\/]?(\\.|doc[\\/]|node_modules[\\/])"
+    },
+    "plugins": [],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "opts": {
+        "destination": "./doc/",
+        "recurse": true
+    }
+}

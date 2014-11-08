@@ -20,7 +20,7 @@ NoticePackage =
 				otherUserIds = userIds.filter (id) ->
 					id isnt userId
 			done = ->
-				if self.responsesToNotify[userId]? and self.responsesToNotify[userId].length() > 0
+				if self.responsesToNotify[userId]? and self.responsesToNotify[userId].getLength() > 0
 					self.responsesToNotify[userId].each (id) ->
 						key = userId + '-' + id
 						if self.timeouts[key]
@@ -36,7 +36,7 @@ NoticePackage =
 					self.notificationsToSend[userId][id] = [err, data]
 					delay 5000, ->
 						if self.responsesToNotify[userId] and self.notificationsToSend[userId][id]
-							if self.responsesToNotify[userId].length() > 0
+							if self.responsesToNotify[userId].getLength() > 0
 								delete self.notificationsToSend[userId][id]
 							else
 								delete self.notificationsToSend[userId]
@@ -80,7 +80,7 @@ NoticePackage =
 			responsesToNotify = @responsesToNotify
 			unless responsesToNotify[userId]?
 				responsesToNotify[userId] = {}
-			length = responsesToNotify[userId].length()
+			length = responsesToNotify[userId].getLength()
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs
 					break

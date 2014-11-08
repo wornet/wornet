@@ -24,6 +24,11 @@ module.exports = (router) ->
 		res.locals.friendAsked = req.flash 'friendAsked'
 		UserPackage.renderProfile req, res, req.params.id
 
+
+	# GET /user/profile
+	router.get '/profile', (req, res) ->
+		UserPackage.renderProfile req, res
+
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
 		# Log in user

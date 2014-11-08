@@ -1,39 +1,22 @@
-extends layouts/wornet
+extends layouts/user
 
 block body
-	h1
-		=s("Respirez, vous êtes sur Wornet.")
-	section
-		input.btn.btn-primary(type="button" value=s("If I am blue, Bootstrap works !"))
-		input.btn.btn-primary(type="button" value="{{isAngularWorking}}")
-	if err
-		.alert.alert-danger
-			=err
-	if saved
-		.alert.alert-success
-			=s("Utilisateur enregistré.")
-	unless users.length
-		p
-			=s("Aucun utilisateur inscrit.")
-	else
-		ul
-			each user in users
-				li
-					=user.fullName
-					| -&nbsp;
-					=user.email
-	+form("/")
-		.input-group
-			.input-group-addon
-				+glyph("user")
-			input.form-control(type="text" name="name[full]" required pattern=pattern('fullname') placeholder=s("Prénom Nom"))
-		.input-group
-			.input-group-addon
-				+glyph("envelope")
-			input.form-control(type="email" name="email" required pattern=pattern('email') placeholder=s("Adresse e-mail"))
-		.input-group
-			input.btn.btn-primary(type="submit")
+	.errors
+		if profileErrors
+			each error in list(profileErrors)
+				.alert.alert-danger
+					=error
 
-	- for(var i = 0; i < 1000; i++)
-		p.
-			Bla bla
+
+	.col-sm-4.col-xs-12.pad-right
+		//- Friends
+		if isMe
+			include includes/friends.jade
+			include includes/asks-for-friend.jade
+		//- Users
+		include includes/users.jade
+		//- Photos/Videos
+		include includes/medias.jade
+	.col-sm-8.col-xs-12.pad-left
+		//- Publications
+		include includes/status.jade

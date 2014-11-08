@@ -84,11 +84,11 @@ ArrayList =
 			list.push @[key]
 		list
 
-	length: ->
-		count = 0
-		@each ->
-			count++
-		count
+	getLength: ->
+		if @ instanceof Array
+			@length
+		else
+			Object.keys(@).length
 
 safeExtend Array.prototype, ArrayList
 safeExtend Object.prototype, ArrayList

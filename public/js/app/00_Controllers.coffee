@@ -291,7 +291,12 @@ Controllers =
 				refreshScope $scope
 			return
 
-		Ajax.get '/user/status/recent', setRecentStatus
+		at = getData 'at'
+
+		Ajax.get '/user/status/recent',
+			data:
+				at: at
+			success: setRecentStatus
 
 		$scope.$on 'receiveStatus', (e, status) ->
 			$scope.recentStatus.unshift status
@@ -300,7 +305,9 @@ Controllers =
 
 		$scope.send = (status) ->
 			Ajax.put '/user/status/add',
-				data: status: status
+				data:
+					status: status
+					at: at
 				success: setRecentStatus
 			status.content = ""
 			return

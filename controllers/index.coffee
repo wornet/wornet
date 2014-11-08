@@ -12,8 +12,8 @@ module.exports = (router) ->
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
 		if req.user
-			# GET /user/profile
-			UserPackage.renderProfile req, res
+			# GET /
+			UserPackage.renderHome req, res
 		else
 			# GET /user/login (and pre-signin)
 			# Get errors in flash memory (any if AJAX is used and works on client device)
@@ -21,12 +21,11 @@ module.exports = (router) ->
 
 
 	alias =
-		'user/profile': ''
 		'user/login': ''
 		signin: 'user/signin'
 		logout: 'user/logout'
 		'forgotten-password': 'user/forgotten-password'
-		profile: ''
+		profile: 'user/profile'
 
 	for as, route of alias
 		((as, route) ->

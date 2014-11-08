@@ -1,0 +1,10 @@
+.status-block(ng-repeat="status in recentStatus")
+	.status-author
+		img(ng-src="{{ status.author.thumb50 }}")
+		+link("/user/profile/{{ status.author.hashedId }}/{{ status.author.name.full | urlencode }}", "{{ status.author.name.full }}")
+		span(ng-show="{{ status.at }}")
+			=s("posté chez")
+			+link("/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}", "{{ status.at.name.full }}")
+	.date(data-date="{{ status.date }}")
+	.status-content.word-wrap
+		| {{ status.content }}

@@ -37,9 +37,12 @@ UserPackage =
 				err: err
 				friend: friend
 
-	renderProfile: (req, res, id = null) ->
+	renderHome: (req, res, id = null, template = 'index') ->
+		@renderProfile req, res, id, template
+
+	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
-		isMe = (req.user?) and (id is req.user._id)
+		isMe = (req.user?) and (id is req.user.id)
 		cache 'users', 60, (done) ->
 			query = User.find()
 			if req.user
@@ -76,7 +79,7 @@ UserPackage =
 								isAFriend = req.user.friends.has id: profile.id
 						catch err
 							console['warn'] err
-						res.render 'user/profile',
+						res.render template,
 							isMe: isMe
 							askedForFriend: askedForFriend
 							isAFriend: isAFriend

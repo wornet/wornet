@@ -1,0 +1,44 @@
+.well(ng-controller="ProfileCtrl")
+	if isMe
+		iframe(name="upload")
+		+form("/user/photo", "FILE")#profile-photo(target="upload")
+			.progress-radial: .overlay
+				img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
+				input.upload(type="file" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
+		a.profile-edit-btn.aside(href="/user/profile/edit")
+			=s("Modifier mon profil")
+			| &nbsp;
+			+glyph('edit')
+		.profile-edit(class=(edit ? null : "hidden"))
+			+form("/user/profile/edit", "POST")
+				span.input-group-btn
+					+formControl(value=profile.firstName)
+					+formControl(value=profile.lastName)
+					input(type="submit" value=s("Modifier")).btn
+	else
+		.profileError
+			if ! empty(friendAsked)
+				.alert.alert-success
+					=friendAsked
+		#profile-photo
+			img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
+		a.aside(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
+			=s("Discuter")
+			| &nbsp;
+			+glyph('comment')
+	.profile-display(class=(edit ? "hidden" : null))
+		h3
+			=strtoupper(profile.fullName)
+			if ! isMe && user && ! askedForFriend && ! isAFriend
+				a.destroyable.inline-button(
+					href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
+					data-target=".profileError"
+					data-click="success"
+					data-params[0]=s("Demande envoyée à " + profile.fullName)
+					data-ask-for-friend=profile.hashedId
+				)
+					+glyph('plus')
+		if isMe && profile.birthDate
+			p
+				=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
+	.cb
