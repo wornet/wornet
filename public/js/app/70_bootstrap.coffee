@@ -9,35 +9,39 @@ Wornet = angular.module 'Wornet', [
 ]
 
 #Angular Wornet services
-Wornet.factory 'chatService', ($rootScope) ->
+.factory 'chatService', ['$rootScope', ($rootScope) ->
 	window.chatService =
 		chatWith: (user, message) ->
 			$rootScope.$broadcast 'chatWith', user, message
 			return
 	chatService
+]
 
-Wornet.factory 'statusService', ($rootScope) ->
+.factory 'statusService', ['$rootScope', ($rootScope) ->
 	window.statusService =
 		receiveStatus: (status) ->
 			$rootScope.$broadcast 'receiveStatus', status
 			return
 	statusService
+]
 
 #Angular Wornet directives
-Wornet.directive 'focus', ->
-	($timeout) ->
+.directive 'focus', ->
+	['$timeout', ($timeout) ->
 		scope:
 			trigger: '@focus'
-		link: (scope, element) ->
-			scope.$watch 'trigger', (value) ->
+		link: ['$scope', '$element', ($scope, $element) ->
+			$scope.$watch 'trigger', (value) ->
 				if value is "true"
 					$timeout ->
-						element[0].focus()
+						$element[0].focus()
 						return
 				return
 			return
+		]
+	]
 
-Wornet.filter 'urlencode', ->
+.filter 'urlencode', ->
 	window.encodeURIComponent
 
 ControllersByService =

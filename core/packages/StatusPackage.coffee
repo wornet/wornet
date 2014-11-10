@@ -13,26 +13,16 @@ StatusPackage =
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.copy()
 			connectedPeopleAndMe.push req.user.id
-			console.log onProfile
 			where = (if onProfile
-				if id is me
-					$or: [
-						author: $in: connectedPeople
-						at: me
-					,
-						author: me
-						at: null
-					]
-				else
-					$or: [
-						author:
-							$in: connectedPeopleAndMe
-							$ne: id
-						at: id
-					,
-						author: id
-						at: null
-					]
+				$or: [
+					author:
+						$in: connectedPeopleAndMe
+						$ne: id
+					at: id
+				,
+					author: id
+					at: null
+				]
 			else
 				$or: [
 					author: $in: connectedPeople
@@ -42,6 +32,7 @@ StatusPackage =
 					at: null
 				]
 			)
+			console.log where
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0

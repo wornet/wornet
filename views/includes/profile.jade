@@ -4,7 +4,7 @@
 		+form("/user/photo", "FILE")#profile-photo(target="upload")
 			.progress-radial: .overlay
 				img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
-				input.upload(type="file" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
+				input.upload(type="file" accept="image/*" capture="camera" onchange="alert('Yep');" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 		a.profile-edit-btn.aside(href="/user/profile/edit")
 			=s("Modifier mon profil")
 			| &nbsp;

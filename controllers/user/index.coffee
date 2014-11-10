@@ -124,7 +124,7 @@ module.exports = (router) ->
 	pm.page '/forgotten-password', null, 'post'
 
 	pm.page '/welcome', (req) ->
-		hasGoingTo: (!empty(req.session.goingTo) and ['/user/profile', '/'].indexOf(req.session.goingTo) is -1)
+		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
 	router.post '/photo', (req, res) ->
@@ -136,7 +136,7 @@ module.exports = (router) ->
 		if req.files.photo.size > config.wornet.upload.maxsize
 			model.error = "size-exceeded"
 			done()
-		else if (['image/png', 'image/jpeg']).indexOf(req.files.photo.type) is -1
+		else unless (['image/png', 'image/jpeg']).contains(req.files.photo.type)
 			model.error = "wrong-format"
 			done()
 		else

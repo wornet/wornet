@@ -2,23 +2,26 @@
 
 UserPackage =
 
-	refreshFriends: (req) ->
+	refreshFriends: (req, done) ->
 		req.getFriends (err, friends, friendAsks) ->
 			unless err
 				req.user.numberOfFriends = friends.length
 				req.user.friends = friends
 				req.user.friendAsks = friendAsks
+				done err
 
 	askForFriend: (id, req, done) ->
 		if empty req.body.userId
 			done err: s("Utilisateur introuvable")
 		else
-			self = @
-			req.user.aksForFriend id, (data) ->
-				if empty data.err
-					req.user.friendAsks[data.friend.id] = _id: id
-					self.refreshFriends req
-				done data
+			@refreshFriends req, (err) ->
+				if err
+					done err: err
+				else
+					req.user.aksForFriend id, (data) ->
+						if empty data.err
+							req.user.friendAsks[data.friend.id] = _id: id
+						done data
 
 	setFriendStatus: (req, status, done) ->
 		isRequest = typeof req is 'object' and req.body? and req.body.id?
@@ -26,16 +29,18 @@ UserPackage =
 			id = req.body.id
 		else
 			id = strval req
-		self = @
-		Friend.update { _id: id, askedTo: req.user._id }, { $set: status: status }, {}, (err, friend) ->
-			if ! err and isRequest
-				delete req.user.friendAsks[data.friend.id]
-				if status is 'accepted'
-					req.user.friends.push _id: friend.askedFrom
-				self.refreshFriends req
-			done
-				err: err
-				friend: friend
+		@refreshFriends req, (err) ->
+			if err
+				done err: err
+			else
+				Friend.update { _id: id, askedTo: req.user._id }, { $set: status: status }, {}, (err, friend) ->
+					if ! err and isRequest
+						delete req.user.friendAsks[data.friend.id]
+						if status is 'accepted'
+							req.user.friends.push _id: friend.askedFrom
+					done
+						err: err
+						friend: friend
 
 	renderHome: (req, res, id = null, template = 'index') ->
 		@renderProfile req, res, id, template

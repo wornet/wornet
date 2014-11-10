@@ -1,84 +1,4 @@
 {
-    
-    "wornet": {
-        "version": "0.1.1-r4",
-        "timeout": 30,
-        "autoloadDirectories": [
-            "core/utils",
-            "core/packages",
-            "models"
-        ],
-        "limits": {
-            "friendsOnProfile": 18,
-            "userMaxAge": 150,
-            "userMinAge": 0,
-            "maxTabs": 5
-        },
-        "remember": {
-            "key": "r",
-            "off": "-",
-            "ttl": 180
-        },
-        "redirectionDelay": 9000,
-        "bigImagesServer": "http://gitedulanguedoc.com/.save/wornet/",
-        "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
-        "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",
-        "parseProxyUrl": false,
-        "proxies" : [
-            "p.holowar.com/wornet",
-            "wornet/wornet"
-        ],
-        "db": {
-            "host": "localhost",
-            "basename": "wornet"
-        },
-        "cache": {
-            "enabled": true,
-            "defaultLifetime": 600
-        },
-        "asset": {
-            "image": {
-                "base64Limit": 30000
-            }
-        },
-        "upload": {
-            "maxsize": 5000000
-        },
-        "mail": {
-            "hostsBlackList": ["yopmail.com", "jetable.org", "get2mail.fr", "mail-temporaire.fr", "0-mail.com", "appspotmail.com", "fakemail.fr", "haltospam.com", "filzmail.com", "brefemail.com", "mailincubator.com", "kurzepost.de", "proxymail.eu", "rcpt.at", "trash-mail.at", "trashmail.at", "trashmail.me", "trashmail.net", "wegwerfmail.net", "wegwerfmail.org", "nepwk.com", "10minutemail.com", "spamgourmet.com", "tempomail.fr", "meltmail.com", "anonymbox.com", "link2mail.net", "whyspamme.me", "amilegit.com", "sharklasers.com", "mailinator.com", "mailmetrash.com", "thankyou2010.com", "trash2009.com", "mt2009.com", "trashymail.com", "mytrashmail.com", "mailcatch.com", "spambox.us", "dispostable.com", "spamavert.co", "yxzx.net", "tempemail.net", "spamfree24.org", "spammotel.com", "e4ward.com", "spamcero.com", "mytempemail.com", "mailnull.com", "spamspot.com", "incognitomail.org", "spamobox.com", "deadaddress.com", "mailexpire.com", "soodonims.com", "wegwerfmail.de", "objectmail.comlroid.com", "mintemail.com", "nospamfor.us", "gishpuppy.com", "onewaymail.com", "makemetheking.com", "privy-mail.de", "privy-mail.com"]
-        },
-        "chat": {
-            "multiline": false
-        }
-    },
-
-    "view engines": {
-        "jade": {
-            "module": "consolidate"
-        },
-
-        "html": {
-            "name": "ejs",
-            "module": "ejs",
-            "renderer": "renderFile"
-        },
-
-        "dust": {
-            "module": "adaro",
-            "renderer": {
-                "method": "dust",
-                "arguments": [{ "cache": false }]
-            }
-        },
-
-        "js": {
-            "module": "adaro",
-            "renderer": {
-                "method": "js",
-                "arguments": [{ "cache": false }]
-            }
-        }
-    },
 
     "express": {
         "view engine": "jade"
@@ -107,19 +27,6 @@
                 ]
             }
         },
-
-        "static": {
-            "module": {
-                "arguments": [ "path:./.build" ]
-            }
-        },
-
-        "router": {
-            "module": {
-                "arguments": [{ "directory": "path:./controllers/" }]
-            }
-        },
-
         
         "expressView": {
             "priority": 100,
@@ -136,6 +43,12 @@
             "module": {
                 "name": "kraken-js/middleware/404",
                 "arguments": [ "errors/404" ]
+            }
+        },
+
+        "router": {
+            "module": {
+                "arguments": [{ "directory": "path:./controllers/" }]
             }
         },
 
@@ -168,7 +81,121 @@
                     }
                 ]
             }
+        },
+
+        "static": {
+            "module": {
+                "arguments": [ "path:./.build" ]
+            }
         }
+
+    },
+
+    "view engines": {
+
+        "dust": {
+            "module": "adaro",
+            "renderer": {
+                "method": "dust",
+                "arguments": [{ "cache": false }]
+            }
+        },
+
+        "html": {
+            "name": "ejs",
+            "module": "ejs",
+            "renderer": "renderFile"
+        },
+
+        "jade": {
+            "module": "consolidate"
+        },
+
+        "js": {
+            "module": "adaro",
+            "renderer": {
+                "method": "js",
+                "arguments": [{ "cache": false }]
+            }
+        }
+
+    },
+
+    "wornet": {
+
+        "asset": {
+            "image": {
+                "base64Limit": 30000
+            }
+        },
+
+        "autoloadDirectories": [
+            "core/utils",
+            "core/packages",
+            "models"
+        ],
+
+        "bigImagesServer": "http://gitedulanguedoc.com/.save/wornet/",
+
+        "cache": {
+            "enabled": true,
+            "defaultLifetime": 600
+        },
+
+        "chat": {
+            "multiline": false
+        },
+
+        "db": {
+            "host": "localhost",
+            "basename": "wornet"
+        },
+
+        "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",
+
+        "limits": {
+            "friendsOnProfile": 18,
+            "maxTabs": 5,
+            "userMaxAge": 150,
+            "userMinAge": 0
+        },
+
+        "mail": {
+            "hostsBlackList": ["yopmail.com", "jetable.org", "get2mail.fr", "mail-temporaire.fr", "0-mail.com", "appspotmail.com", "fakemail.fr", "haltospam.com", "filzmail.com", "brefemail.com", "mailincubator.com", "kurzepost.de", "proxymail.eu", "rcpt.at", "trash-mail.at", "trashmail.at", "trashmail.me", "trashmail.net", "wegwerfmail.net", "wegwerfmail.org", "nepwk.com", "10minutemail.com", "spamgourmet.com", "tempomail.fr", "meltmail.com", "anonymbox.com", "link2mail.net", "whyspamme.me", "amilegit.com", "sharklasers.com", "mailinator.com", "mailmetrash.com", "thankyou2010.com", "trash2009.com", "mt2009.com", "trashymail.com", "mytrashmail.com", "mailcatch.com", "spambox.us", "dispostable.com", "spamavert.co", "yxzx.net", "tempemail.net", "spamfree24.org", "spammotel.com", "e4ward.com", "spamcero.com", "mytempemail.com", "mailnull.com", "spamspot.com", "incognitomail.org", "spamobox.com", "deadaddress.com", "mailexpire.com", "soodonims.com", "wegwerfmail.de", "objectmail.comlroid.com", "mintemail.com", "nospamfor.us", "gishpuppy.com", "onewaymail.com", "makemetheking.com", "privy-mail.de", "privy-mail.com"]
+        },
+
+        "parseProxyUrl": false,
+
+        "proxies" : [
+            "p.holowar.com/wornet",
+            "wornet/wornet"
+        ],
+
+        "redirectionDelay": 9000,
+
+        "remember": {
+            "key": "r",
+            "off": "-",
+            "ttl": 180
+        },
+
+        "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
+
+        "timeout": 30,
+
+        "uglify": {
+            "beautify": true,
+            "comments": false,
+            "mangle": true,
+            "minifyOnRate": false,
+            "minRate": 0.99
+        },
+
+        "upload": {
+            "maxsize": 5000000
+        },
+
+        "version": "0.1.2-rc31"
 
     }
 }

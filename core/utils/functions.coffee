@@ -121,20 +121,36 @@ module.exports =
 	@return string compressed code
 	###
 	uglifyJs: (code) ->
-		return code
-		jsp = require("uglify-js").parser
-		pro = require("uglify-js").uglify
-		try
-			ast = jsp.parse(code)
-			ast = pro.ast_mangle(ast)
-			ast = pro.ast_squeeze(ast)
-			minifiedCode = pro.gen_code(ast)
-			if minifiedCode.length / code.length > 0.99
-				code
-			else
-				minifiedCode
-		catch e
+		if code.indexOf('angular.') isnt -1
 			code
+			###
+				.replace /\n/g, '\n\n'
+				.replace /^\/\/[^\n]*\n/g, ''
+				.replace /([^\\:"])\/\/[^\n]*\n/g, '$1'
+				.replace /(\n|\s{2,})/g, ''
+				.replace /\/\*(.*?)\*\//g, ''
+			###
+		else
+			jsp = require("uglify-js").parser
+			pro = require("uglify-js").uglify
+			try
+				ast = jsp.parse code, config.wornet.uglify || {}
+				ast = pro.ast_mangle ast
+				ast = pro.ast_squeeze ast
+				minifiedCode = pro.gen_code ast
+				if config.wornet.uglify.minifyOnRate and minifiedCode.length / code.length > config.wornet.uglify.minRate
+					output = code
+					console.log "code"
+				else
+					output = minifiedCode
+					console.log "minifiedCode"
+			catch e
+				#log e
+				delay 1, ->
+					console.log "catch error"
+					#throw e
+				output = code
+			output
 
 	###
 	Get files contents, proceed callback of each content and concat all
@@ -172,6 +188,7 @@ module.exports =
 						else
 							file = (if ie is version then file[1] else false)
 			done = ->
+				console.log file
 				concatCallback content, lst, proceed, end,
 					i: i + 1
 					ie: ie
@@ -193,7 +210,7 @@ module.exports =
 								port: config.port
 								path: pathWithoutParams
 							, (res) ->
-								if ([0, 200]).indexOf res.statusCode is -1
+								if ([0, 200]).contains res.statusCode
 									data = ''
 									res.on 'error', (err) ->
 										console.warn err
@@ -214,6 +231,7 @@ module.exports =
 							console['warn'] err
 							done()
 					else
+						console.log file
 						content += proceed(strval(data)) + '\n'
 						done()
 			else
@@ -348,6 +366,16 @@ module.exports =
 	###
 	strval: (str) ->
 		str + ''
+
+	###
+	Compare two values as strings
+	@param mixed value convertable to string
+	@param mixed value convertable to string
+
+	@return boolean true if strings converted from values are equal
+	###
+	equals: (a, b) ->
+		a + '' is b + ''
 
 	###
 	Return integer value or 0 if not able to convert

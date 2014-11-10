@@ -18,8 +18,9 @@ statusSchema = BaseSchema.extend
 		required: true
 
 statusSchema.pre 'save', (next) ->
-	if @at is @author
+	if equals @at, @author
 		@at = null
+	console.log @at
 	if @at is null
 		next()
 	else

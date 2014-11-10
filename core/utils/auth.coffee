@@ -141,7 +141,7 @@ exports.isAuthenticated = (req, res, next) ->
 					# If any user are connected
 					unless req.user
 						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-						isARouteWithoutMessage = (['/', '/user/profile', '/profile'].indexOf(route) is -1)
+						isARouteWithoutMessage = (route is '/')
 						if req.isJSON
 							if isARouteWithoutMessage
 								data.err = s("Connectez-vous pour accéder à cette page.")
