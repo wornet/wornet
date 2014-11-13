@@ -3,7 +3,7 @@
 StatusPackage =
 
 	getRecentStatusForRequest: (req, res, id = null, data = {}) ->
-		onProfile = !!req.query.at
+		onProfile = !!req.data.at
 		@getRecentStatus req, res, id, data, onProfile
 
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
@@ -32,7 +32,6 @@ StatusPackage =
 					at: null
 				]
 			)
-			console.log where
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0
@@ -63,10 +62,8 @@ StatusPackage =
 											status = @toObject()
 											if @at is @author
 												@at = null
-											#console.log [74, usersMap, @author]
 											status.author = usersMap[strval @author].publicInformations()
 											if @at
-												console.log [77, usersMap, @at]
 												status.at = usersMap[strval @at].publicInformations()
 											recentStatusPublicData.push status
 											true
@@ -79,12 +76,12 @@ StatusPackage =
 				res.serverError new Error "You can't see the status of this profile"
 
 	add: (req, done) ->
-		if req.body.status and req.body.status.content
+		if req.data.status and req.data.status.content
 			try
 				Status.create
 					author: req.user._id
-					at: req.body.at || null
-					content: req.body.status.content
+					at: req.data.at || null
+					content: req.data.status.content
 				, (err, status) ->
 					unless err
 						status = status.toObject()

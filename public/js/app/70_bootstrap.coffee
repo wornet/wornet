@@ -25,6 +25,14 @@ Wornet = angular.module 'Wornet', [
 	statusService
 ]
 
+.factory 'notificationsService', ['$rootScope', ($rootScope) ->
+	window.notificationsService =
+		receiveNotification: (notification) ->
+			$rootScope.$broadcast 'receiveNotification', notification
+			return
+	notificationsService
+]
+
 #Angular Wornet directives
 .directive 'focus', ->
 	['$timeout', ($timeout) ->
@@ -47,6 +55,7 @@ Wornet = angular.module 'Wornet', [
 ControllersByService =
 	chatService: 'Profile Chat'
 	statusService: 'Status'
+	notificationsService: 'Notifications'
 
 # Load controllers
 for controller, method of Controllers

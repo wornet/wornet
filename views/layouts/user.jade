@@ -1,8 +1,9 @@
 extends ../layouts/wornet
 
 mixin notifications(classes)
-	- var notificationsCount = intval(user.notifications.length)
-	ul.notifications.nav(class=classes): li.dropdown
+	- var notifications = user.getNotifications()
+	- var notificationsCount = intval(notifications.length)
+	ul.notifications.nav(class=classes): li.btn-group
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('globe')
@@ -11,9 +12,9 @@ mixin notifications(classes)
 			| &nbsp; 
 			span.pill
 				=notificationsCount
-		if notificationsCount > 0
-			ul.dropdown-menu(role='menu')
-				each notification, id in user.notifications
+		ul.dropdown-menu(role='menu' ng-controller="NotificationsCtrl")
+			if notificationsCount > 0
+				each notification, id in notifications
 					- var askingFriend = objectToUser(notification[1])
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 						i.date(data-date=trim(notification[0], '"'))
@@ -29,6 +30,21 @@ mixin notifications(classes)
 								=s("Ignorer")
 						else
 							=notification[1]
+			li(ng-repeat="notification in notifications")
+				a(href="/notification/{{ $index }}" ng-class="{ 'friend-ask' : notification[3] === 'askForFriend' }" ng-attr-data-id="{{ notification[3] === 'askForFriend' ? notification[2] : undefined }}")
+					i.date(data-date="{{ notification[0] }} ")
+					| &nbsp; 
+					span(ng-if="notification[3] === 'askForFriend'")
+						- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
+						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+						br
+						.btn.accept-friend
+							=s("Accepter")
+						&nbsp; &nbsp;
+						.btn.ignore-friend
+							=s("Ignorer")
+					span(ng-if="notification[3] !== 'askForFriend'")
+						| {{ notification[1] }}
 
 mixin friends(classes)
 	ul.nav(class=classes)
@@ -69,7 +85,7 @@ block nav
 					li.mobile: +notifications()
 					li.mobile: +friends()
 				ul.nav.navbar-nav.navbar-right
-					li.dropdown
+					li.btn-group
 						a.dropdown-toggle(href="#" data-toggle="dropdown")
 							span.mobile
 								+glyph('user')

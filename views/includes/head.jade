@@ -11,6 +11,7 @@ block meta
 	+meta("format-detection", "telephone=no")
 	+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture)…")
 	+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+	+meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
 	+meta("_csrf", _csrf)
 block css
 	each style in options.css().main

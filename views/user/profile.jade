@@ -20,7 +20,8 @@ block body
 	.col-sm-8.col-xs-12.pad-left
 		//- Profile
 		include ../includes/profile.jade
-		//- Publications
-		include ../includes/status.jade
+		if isAFriend || isMe
+			//- Publications
+			include ../includes/status.jade
 
-	+data('at', profile.id)
+	+data('at', profile.hashedId)

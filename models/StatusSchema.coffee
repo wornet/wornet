@@ -20,7 +20,6 @@ statusSchema = BaseSchema.extend
 statusSchema.pre 'save', (next) ->
 	if equals @at, @author
 		@at = null
-	console.log @at
 	if @at is null
 		next()
 	else
@@ -30,7 +29,6 @@ statusSchema.pre 'save', (next) ->
 				next err
 			else
 				user.getFriends (err, friends) ->
-					console.log [friends, at]
 					if err
 						next err
 					else if friends.has(id: at)

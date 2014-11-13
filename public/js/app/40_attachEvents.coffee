@@ -29,6 +29,7 @@ $document = $(document)
 			else
 				# Get new CSRF token from meta tags given in the AJAX response
 				_csrf = $(data).find('meta[name="_csrf"]').attr 'content'
+		return
 
 # All global events
 # [ [ "events to catch", "selector to target", callbackFunction ], ... ]
@@ -38,12 +39,14 @@ $.each [
 		'.form-control'
 		($field) ->
 			$field.prev('.tooltip').readyToFade().fadeIn 'fast'
+			return
 	]
 	[
 		'blur'
 		'.form-control'
 		($field) ->
 			$field.prev('.tooltip').fadeOut 'fast'
+			return
 	]
 	[
 		'keyup focus change click'
@@ -63,6 +66,7 @@ $.each [
 					$security.addClass 'low'
 				else
 					$security.addClass 'verylow'
+			return
 	]
 	[
 		'error'
@@ -70,12 +74,14 @@ $.each [
 		($thumb) ->
 			$input = $thumb.parent().find 'input.upload'
 			$('.errors').errors $input.data 'error'
+			return
 	]
 	[
 		'error load'
 		'img.upload-thumb'
 		($thumb) ->
 			$thumb.parent().find('.loader').remove()
+			return
 	]
 	[
 		'change'
@@ -85,6 +91,7 @@ $.each [
 			$thumb = $parent.find 'img.upload-thumb'
 			$('<div class="loader"></div>').appendTo($parent).fadeOut(0).fadeIn 'fast'
 			$input.parents('form').submit()
+			return
 	]
 	[
 		'load'
@@ -101,6 +108,7 @@ $.each [
 				$form.find('img.upload-thumb').prop 'src', $img.prop 'src'
 			else
 				$('.errors').errors $form.find('input.upload').data 'error'
+			return
 	]
 	[
 		'submit'
@@ -132,8 +140,12 @@ $.each [
 					$('.errors').errors $error.html()
 
 				xhr.onload = ->
-					$newImg = $(@responseText)
-					unless $newImg.is('.error') || $newImg.is('img')
+					$newImg = $(@responseText
+						.replace /[\n\r\t]/g, ''
+						.replace /^.*<body[^>]*>/ig, ''
+						.replace /<\/body>.*$/ig, ''
+					)
+					unless $newImg.is('.error') or $newImg.is('img')
 						$newImg = $newImg.find 'img'
 					if $newImg.is('img')
 						newSource = $newImg.attr('src')
@@ -161,6 +173,7 @@ $.each [
 		'img'
 		($, e) ->
 			e.preventDefault()
+			return
 	]
 	[
 		'click'
@@ -171,6 +184,7 @@ $.each [
 				param
 			$target = $ $btn.data 'target'
 			$target[$btn.data 'click'].apply $target, params
+			return
 	]
 	[
 		'click'
@@ -233,7 +247,7 @@ $.each [
 					if window.sessionStorage and sessionStorage[key]
 						delete sessionStorage[key]
 			return true
-			if href.length and Ajax.page href, true
+			if href.length and href.charAt(0) isnt '#' and Ajax.page href, true
 				cancel e
 			else
 				true
@@ -254,6 +268,7 @@ $.each [
 			delay 1, ->
 				$(sel).focus()
 				return
+			return
 	]
 
 ], ->
@@ -262,3 +277,4 @@ $.each [
 		args = Array.prototype.slice.call arguments
 		args.unshift $ @
 		params[2].apply @, args
+	return

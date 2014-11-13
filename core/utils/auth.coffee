@@ -133,6 +133,7 @@ exports.isAuthenticated = (req, res, next) ->
 					"/admin"
 				]
 
+				res.locals.noIndex = false
 				route = req.url
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
@@ -158,6 +159,7 @@ exports.isAuthenticated = (req, res, next) ->
 						model = url: route
 						res.unautorized model
 					else
+						res.locals.noIndex = true
 						next()
 				else
 					next()
@@ -169,7 +171,8 @@ exports.isAuthenticated = (req, res, next) ->
 					else
 						req.user.notifications = []
 						for id, friend of friendAsks
-							req.user.notifications.push [Date.fromId(id), friend, id]
+							if friend.askedTo
+								req.user.notifications.push [Date.fromId(id), friend, id]
 						done()
 			else
 				done()

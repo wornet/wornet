@@ -1,10 +1,12 @@
 'use strict'
 
+textReplacements = (text, replacements) ->
+	for key, value of replacements
+		text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
+	text
+
 ((d) ->
-	s = (text, replacements) ->
-		for key, value of replacements
-			text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
-		text
+	s = textReplacements
 	toString = d.prototype.toString
 	d.prototype.isValid = ->
 		@toString() isnt 'Invalid Date'

@@ -83,7 +83,7 @@ module.exports = (port) ->
 				"/components/angular/js/angular-locale_fr-fr.js"
 				"/components/angular/js/angular-animate.js"
 				#"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-route.js"
-				"/components/bootstrap/js/ui-bootstrap.min.js"
+				"/components/bootstrap/js/ui-bootstrap-tpls.min.js"
 				"/components/moment/js/moment-with-langs.min.js"
 				script("app")
 				"/components/jquery/js/fullcalendar.min.js"

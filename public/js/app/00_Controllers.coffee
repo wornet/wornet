@@ -1,49 +1,5 @@
 Controllers =
 
-	Login: ($scope) ->
-		# Get remember preference of the user if previously saved (default: true)
-		$scope.user = $scope.user || {}
-		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
-		# When the form is submitted
-		$scope.submit = (user) ->
-			# Save remember preference of the user
-			if localStorage
-				localStorage['user.remember'] = user.remember
-			# send a POST request to /user/login with user.email and user.password
-			Ajax.post '/user/login',
-				data: user
-				success: (data) ->
-					# If get a redirection
-					if data.goingTo
-						Ajax.page data.goingTo
-					# Else : an error occured
-					else
-						$('#loginErrors').errors data.err
-					return
-			return
-		$('[ng-controller="LoginCtrl"]').on 'submit', prevent
-
-		return
-
-	SigninFirstStep: ($scope) ->
-		saveUser $scope
-
-		return
-
-	SigninSecondStep: ($scope) ->
-		user = $.parseJSON sessionStorage['user']
-		$scope.user = user
-		saveUser $scope
-
-		return
-
-	Welcome: ($scope) ->
-		delete sessionStorage['user']
-		$('iframe.player').removeClass('hidden')
-		$(window).trigger('resize')
-
-		return
-
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
 		agenda = new Crud '/agenda'
@@ -219,13 +175,6 @@ Controllers =
 
 		return
 
-	Profile: ($scope, chatService) ->
-		$scope.chatWith = (user) ->
-			chatService.chatWith [objectResolve user]
-			return
-
-		return
-
 	Chat: ($scope) ->
 		$('#chat').show()
 		chats = getChats()
@@ -284,6 +233,61 @@ Controllers =
 
 		return
 
+	Login: ($scope) ->
+		# Get remember preference of the user if previously saved (default: true)
+		$scope.user = $scope.user || {}
+		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
+		# When the form is submitted
+		$scope.submit = (user) ->
+			# Save remember preference of the user
+			if localStorage
+				localStorage['user.remember'] = user.remember
+			# send a POST request to /user/login with user.email and user.password
+			Ajax.post '/user/login',
+				data: user
+				success: (data) ->
+					# If get a redirection
+					if data.goingTo
+						Ajax.page data.goingTo
+					# Else : an error occured
+					else
+						$('#loginErrors').errors data.err
+					return
+			return
+		$('[ng-controller="LoginCtrl"]').on 'submit', prevent
+
+		return
+
+	Notifications: ($scope) ->
+		$scope.notifications = []
+
+		$scope.$on 'receiveNotification', (e, notification) ->
+			$scope.notifications.push notification
+			refreshScope $scope
+			delay 1, refreshPill
+			return
+
+		return
+
+	Profile: ($scope, chatService) ->
+		$scope.chatWith = (user) ->
+			chatService.chatWith [objectResolve user]
+			return
+
+		return
+
+	SigninFirstStep: ($scope) ->
+		saveUser $scope
+
+		return
+
+	SigninSecondStep: ($scope) ->
+		user = $.parseJSON sessionStorage['user']
+		$scope.user = user
+		saveUser $scope
+
+		return
+
 	Status: ($scope) ->
 		setRecentStatus = (data) ->
 			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
@@ -293,9 +297,7 @@ Controllers =
 
 		at = getData 'at'
 
-		Ajax.get '/user/status/recent',
-			data:
-				at: at
+		Ajax.get '/user/status/recent' + (if at then '/' + at else ''),
 			success: setRecentStatus
 
 		$scope.$on 'receiveStatus', (e, status) ->
@@ -311,5 +313,12 @@ Controllers =
 				success: setRecentStatus
 			status.content = ""
 			return
+
+		return
+
+	Welcome: ($scope) ->
+		delete sessionStorage['user']
+		$('iframe.player').removeClass('hidden')
+		$(window).trigger('resize')
 
 		return

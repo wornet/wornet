@@ -13,7 +13,6 @@ module.exports = (router) ->
 			if err
 				res.serverError err
 			else
-				req.query.at = req.body.at || null
 				StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status
 
 	router.put '/add', (req, res) ->
@@ -21,5 +20,4 @@ module.exports = (router) ->
 			if err
 				res.serverError err
 			else
-				req.query.at = req.body.at || null
 				StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status

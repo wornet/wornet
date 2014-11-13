@@ -150,6 +150,7 @@ onready ->
 				req.url = '/components/bootstrap' + req.url
 			done()
 		else
+			req.data = extend {}, (req.query || {}), (req.body || {})
 			res.locals.isXHR = !!req.xhr
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g

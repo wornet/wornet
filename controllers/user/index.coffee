@@ -136,7 +136,7 @@ module.exports = (router) ->
 		if req.files.photo.size > config.wornet.upload.maxsize
 			model.error = "size-exceeded"
 			done()
-		else unless (['image/png', 'image/jpeg']).contains(req.files.photo.type)
+		else unless (['image/png', 'image/jpeg']).contains req.files.photo.type
 			model.error = "wrong-format"
 			done()
 		else
@@ -144,6 +144,7 @@ module.exports = (router) ->
 				if err
 					model.error = err
 				else
+					req.session.user.thumb200 = req.user.thumb200
 					model.src = req.user.thumb200
 				done()
 
@@ -163,33 +164,6 @@ module.exports = (router) ->
 						req.user.name.first = val
 					when 'name.last'
 						req.user.name.last = val
-
-	# Without AJAX
-	router.get '/friend/:id/:name', (req, res) ->
-		# When user ask some other user for friend
-		id = req.params.id
-		UserPackage.askForFriend id, req, (data) ->
-			if empty data.err
-				req.flash 'friendAsked', s("Demande envoyée à " + escape(req.params.name))
-			else
-				req.flash 'profileError', s("Erreur : " + data.err)
-			res.redirect '/user/profile/' + encodeURIComponent(id) + '/' + encodeURIComponent(req.params.name)
-
-	# With AJAX
-	router.post '/friend', (req, res) ->
-		# When user ask some other user for friend
-		UserPackage.askForFriend req.body.userId, req, (data) ->
-			res.json data
-
-	router.post '/friend/accept', (req, res) ->
-		# When user accept friend ask
-		UserPackage.setFriendStatus req, 'accepted', (data) ->
-			res.json data
-
-	router.post '/friend/ignore', (req, res) ->
-		# When user ignore friend ask
-		UserPackage.setFriendStatus req, 'refused', (data) ->
-			res.json data
 
 	router.get '/notify', (req, res) ->
 		NoticePackage.waitForJson req.user.id, res

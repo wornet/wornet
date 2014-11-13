@@ -11,10 +11,10 @@ $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 # Display loading animation until angular scope is ready
 $ ->
 	$('.loading').each ->
-		$loadin = angular.element(@)
-		$loadin.ready ->
-			$scope = $loadin.scope()
-			$loadin.removeClass 'loading'
+		$loading = $ @
+		$loading.ready ->
+			$scope = $loading.scope()
+			$loading.removeClass 'loading'
 			refreshScope $scope
 			return
 		return

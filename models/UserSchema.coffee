@@ -31,6 +31,9 @@ userSchema = BaseSchema.extend
 		type: String
 		default: 'user'
 		enum: ['user', 'admin']
+	numberOfFriends:
+		type: Number
+		default: 0
 	lastLoginDate: Date
 	birthDate:
 		type: Date
@@ -172,55 +175,19 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 						err: err
 						friend: friend
 
-userSchema.methods.getFriendIds = (done) ->
-	if @friendIds?
-		done null, @friendIds
-	else
-		user = @
-		ids = []
-		Friend.find
-				askedFrom: @_id
-				status: 'accepted'
-			# .where('status').in ['waiting', 'accepted']
-			.limit 10
-			.exec (err, friends) ->
-				if err
-					done err
-				else
-					done null, user.friendIds
-
-userSchema.methods.getFriendAndAskIds = (done) ->
-	user = @
-	if user.friendIds? and user.friendAskIds? and uer.friendAskDates?
-		done null, user.friendIds, user.friendAskIds, uer.friendAskDates
-	userSchema.methods.getFriendIds (err, ids) ->
-		if err
-			done err
-		else if user.friendAskIds? and user.friendAskDates?
-			user.friendAskIds.each ->
-				ids.push @
-			done null, ids, user.friendAskIds, user.friendAskDates
+userSchema.methods.getNotifications = ->
+	@notifications.sort (a, b) ->
+		unless a[0] instanceof Date
+			console['warn'] a[0] + " n'est pas de type Date"
+		unless b[0] instanceof Date
+			console['warn'] b[0] + " n'est pas de type Date"
+		if a[0] < b[0]
+			-1
+		else if a[0] > b[0]
+			1
 		else
-			friendAskIds = []
-			friendAskDates = []
-			Friend.find
-					askedTo: @_id
-				.where('status').in ['waiting', 'accepted']
-				.limit 10
-				.exec (err, friends) ->
-					if err
-						done err
-					else
-						for friend in friends
-							if friend.waiting
-								friendAskIds.push strval friend.askedFrom
-								friendAskDates[friend.askedFrom] = friend.id
-							else
-								ids.push friend.askedFrom
-						user.friendIds = ids
-						user.friendAskIds = friendAskIds
-						user.friendAskDates = friendAskDates
-						done null, ids, friendAskIds, friendAskDates
+			0
+	@notifications || []
 
 userSchema.methods.getFriends = (done) ->
 	if @friends? and @friendAsks?
@@ -229,47 +196,53 @@ userSchema.methods.getFriends = (done) ->
 		user = @
 		ids = []
 		friendAskIds = []
+		friendAskFromIds = []
 		friendAskDates = []
 		pending = 2
 		next = ->
-			User.find()
-				.where('_id').in ids #.slice 0, config.wornet.limits.friendsOnProfile
-				.exec (err, users) ->
-					if err
-						done err, {}, {}
-					else
-						friendIds = []
-						friends = []
-						friendAsks = {}
-						users.forEach (user) ->
-							id = strval user.id
-							if friendAskIds.indexOf(id) is -1
-								friends.push user
-								friendIds.push id
-							else
-								friendAsks[friendAskDates[id]] = user
-						user.numberOfFriends = friends.length
-						user.friendIds = friendIds
-						user.friends = friends
-						user.friendAsks = friendAsks
-						done null, friends, friendAsks
+			User.find
+				_id: $in: ids
+			, (err, users) ->
+				if err
+					done err, {}, {}
+				else
+					friendIds = []
+					friends = []
+					friendAsks = {}
+					users.forEach (user) ->
+						id = strval user.id
+						if friendAskIds.contains id
+							askedFrom = friendAskFromIds.contains id
+							user = user.publicInformations()
+							user.askedFrom = askedFrom
+							user.askedTo = !askedFrom
+							friendAsks[friendAskDates[id]] = user
+						else
+							friends.push user
+							friendIds.push id
+					user.numberOfFriends = friends.length
+					user.friendIds = friendIds
+					user.friends = friends
+					user.friendAsks = friendAsks
+					done null, friends, friendAsks
 		Friend.find
 				askedFrom: @_id
-				status: 'accepted'
-			# .where('status').in ['waiting', 'accepted']
+				status: $in: ['waiting', 'accepted']
 			.limit 10
 			.exec (err, friends) ->
 				unless err
 					for friend in friends
 						ids.push friend.askedTo
-						# if friend.waiting
-						# 	friendAskIds.push strval friend.askedTo
-						# 	friendAskDates[friend.askedTo] = friend.id
+						if friend.waiting
+							askedTo = strval friend.askedTo
+							friendAskIds.push askedTo
+							friendAskFromIds.push askedTo
+							friendAskDates[askedTo] = friend.id
 				unless --pending
 					next()
 		Friend.find
 				askedTo: @_id
-			.where('status').in ['waiting', 'accepted']
+				status: $in: ['waiting', 'accepted']
 			.limit 10
 			.exec (err, friends) ->
 				unless err

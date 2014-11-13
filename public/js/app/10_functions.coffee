@@ -68,6 +68,11 @@ delay = (ms, cb) ->
 	setTimeout cb, ms
 
 
+# Escape HTML entities < and >
+safeHtml = (val) ->
+	$('<div/>').text(val).html()
+
+
 # Return strongness level of a password
 passwordStrongness = (mdp) ->
 
