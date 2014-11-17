@@ -102,10 +102,11 @@ onready ->
 			# Parse body from requests
 			bodyParser req, res, ->
 				# Available PUT and DELETE on old browsers
-				methodOverride req, res, done
-				# To simulate a slow bandwith add a delay like this :
-				# methodOverride req, res, ->
-				#	delay 3000, done
+				methodOverride req, res, ->
+					req.data = extend {}, (req.query || {}), (req.body || {})
+					done()
+					# To simulate a slow bandwith add a delay like this :
+					# delay 3000, done
 
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
@@ -150,7 +151,6 @@ onready ->
 				req.url = '/components/bootstrap' + req.url
 			done()
 		else
-			req.data = extend {}, (req.query || {}), (req.body || {})
 			res.locals.isXHR = !!req.xhr
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g

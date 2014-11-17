@@ -259,10 +259,10 @@ Controllers =
 		return
 
 	Notifications: ($scope) ->
-		$scope.notifications = []
+		$scope.notifications = {}
 
 		$scope.$on 'receiveNotification', (e, notification) ->
-			$scope.notifications.push notification
+			$scope.notifications[notification.id] = notification
 			refreshScope $scope
 			delay 1, refreshPill
 			return

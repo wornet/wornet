@@ -166,6 +166,12 @@ exports.isAuthenticated = (req, res, next) ->
 
 			if req.user
 				req.getFriends (err, friends, friendAsks) ->
+					req.user.friendAsks = friendAsks
+					req.user.friends = friends
+					req.user.numberOfFriends = friends.length
+					req.session.user.friendAsks = friendAsks
+					req.session.user.friends = friends
+					req.session.user.numberOfFriends = friends.length
 					if err
 						res.serverError err
 					else

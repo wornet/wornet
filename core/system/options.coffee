@@ -161,6 +161,12 @@ module.exports = (port) ->
 						friends = result[0]
 						friendAsks = result[1]
 						done err, friends, friendAsks
+			# add a friend to the current user
+			addFriend: (user) ->
+				@user.friends.push user
+				@user.numberOfFriends = @user.friends.length
+				@session.user.friends = @user.friends
+				@session.user.numberOfFriends = @session.user.friends.length
 			# get users from friend, me
 			getKnownUsersByIds: (ids, done) ->
 				@getUsersByIds ids, done, false

@@ -27,8 +27,10 @@ friendSchema = BaseSchema.extend
 	toJSON:
 		virtuals: true
 
-status.forEach (st) ->
-	friendSchema.virtual(st).get ->
-		@status is st
+status.each ->
+	s = @
+	friendSchema.methods['is' + ucfirst(s)] = ->
+		@status = s
+
 
 module.exports = friendSchema

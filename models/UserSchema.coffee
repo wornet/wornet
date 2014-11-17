@@ -70,6 +70,18 @@ userSchema = BaseSchema.extend
 	toJSON:
 		virtuals: true
 
+userSchema.virtual('friendAsks').get ->
+	@_friendAsks
+
+userSchema.virtual('friends').get ->
+	@_friends
+
+userSchema.virtual('friendAsks').set (friendAsks) ->
+	@_friendAsks = friendAsks
+
+userSchema.virtual('friends').set (friends) ->
+	@_friends = friends
+
 getFullName = ->
 	anonymous = 'Anonyme'
 	if typeof @name isnt 'object'
@@ -233,7 +245,7 @@ userSchema.methods.getFriends = (done) ->
 				unless err
 					for friend in friends
 						ids.push friend.askedTo
-						if friend.waiting
+						if friend.isWaiting()
 							askedTo = strval friend.askedTo
 							friendAskIds.push askedTo
 							friendAskFromIds.push askedTo
@@ -248,7 +260,7 @@ userSchema.methods.getFriends = (done) ->
 				unless err
 					for friend in friends
 						ids.push friend.askedFrom
-						if friend.waiting
+						if friend.isWaiting()
 							friendAskIds.push strval friend.askedFrom
 							friendAskDates[friend.askedFrom] = friend.id
 					user.friendAskIds = friendAskIds

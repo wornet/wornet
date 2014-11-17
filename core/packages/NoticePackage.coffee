@@ -14,7 +14,7 @@ NoticePackage =
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
 		userIds.each ->
-			userId = @
+			userId = strval @
 			data = groupData.copy()
 			if appendOtherUsers
 				otherUserIds = userIds.filter (id) ->
@@ -91,19 +91,27 @@ NoticePackage =
 			responsesToNotify[userId][id] = callback
 		id
 
-	waitForJson: (userId, res) ->
+	waitForJson: (userId, req, res) ->
 		res.setTimeLimit 0
 		self = @
 		responsesToNotify = @responsesToNotify
 		id = @waitForNotification userId, (err, notifications = []) ->
 			unless notifications instanceof Array
 				notifications = [[err, notifications]]
+			for notification in notifications
+				if notification[1]
+					if notification[1].userId?
+						delete notification[1].userId
+					if notification[1].deleteFriendAsk?
+						delete req.user.friendAsks[notification[1].deleteFriendAsk]
+						req.session.user.friendAsks = req.user.friendAsks
+						delete notification[1].deleteFriendAsk
+					if notification[1].action? and notification[1].action is 'friendAccepted'
+						req.addFriend notification[1].user
 			data = notifications: notifications
+			data.notifyStatus = if err then self.ERROR else self.OK
 			if err
 				data.err = err
-			data.notifyStatus = if err then self.ERROR else self.OK
-			if data.userId?
-				delete data.userId
 			res.json data
 		if id
 			@timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->

@@ -22,6 +22,7 @@ UserPackage =
 					req.user.aksForFriend id, (data) ->
 						if empty data.err
 							req.user.friendAsks[data.friend.id] = _id: id
+							req.session.user.friendAsks = req.user.friendAsks
 						done data
 						dataWithUser = username: jd 'span.username ' + req.user.fullName
 						NoticePackage.notify [data.friend.askedTo], null,
@@ -43,12 +44,18 @@ UserPackage =
 					if ! err and friend and isRequest
 						delete req.user.friendAsks[id]
 						if status is 'accepted'
-							req.user.friends.push _id: friend.askedFrom
-							dataWithUser = username: jd 'span.username ' + req.user.fullName
+							User.findById friend.askedFrom, (err, user) ->
+								if user and !err
+									req.addFriend user
+									dataWithUser = username: jd 'span.username ' + req.user.fullName
+									NoticePackage.notify [friend.askedFrom], null,
+										action: 'friendAccepted'
+										deleteFriendAsk: id
+										user: req.user.publicInformations()
+										notification: s("{username} fait maintenant partie de vos amis.", dataWithUser)
+						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,
-								action: 'friendAccepted'
-								user: req.user.publicInformations()
-								notification: s("{username} fait maintenant partie de vos amis.", dataWithUser)
+								deleteFriendAsk: id
 						Friend.count
 							$or: [
 								askedTo: req.user._id
@@ -57,7 +64,6 @@ UserPackage =
 							]
 							status: 'accepted'
 						, (err, count) ->
-							log [err, count]
 							unless err
 								req.user.numberOfFriends = count
 								req.user.save()

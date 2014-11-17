@@ -1,6 +1,13 @@
 'use strict'
 
-textReplacements = (text, replacements) ->
+textReplacements = (text, replacements, count = null) ->
+	unless count is null
+		texts = text.split /\|/g
+		if texts.length > 1
+			if texts.length is 2
+				texts.unshift texts[0]
+			count = Math.min count, texts.length - 1
+			text = texts[count]
 	for key, value of replacements
 		text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
 	text

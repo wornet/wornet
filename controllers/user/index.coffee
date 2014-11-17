@@ -166,7 +166,7 @@ module.exports = (router) ->
 						req.user.name.last = val
 
 	router.get '/notify', (req, res) ->
-		NoticePackage.waitForJson req.user.id, res
+		NoticePackage.waitForJson req.user.id, req, res
 
 	router.post '/notify', (req, res) ->
 		try

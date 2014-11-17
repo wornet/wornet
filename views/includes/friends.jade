@@ -1,5 +1,8 @@
 .well
-	h3=strtoupper(s("Amis")) + " " + s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+	h3
+		=strtoupper(s("Amis")) + " "
+		span.numberOfFriends
+			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 	ul#friends.photos-thumbs
 		each friend in friends
 			li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))

@@ -191,6 +191,8 @@
             "minRate": 0.99
         },
 
+        "onlyAuthoredByAFriend": false,
+
         "upload": {
             "maxsize": 5000000
         },

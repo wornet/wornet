@@ -20,7 +20,8 @@ $document = $(document)
 						console['log'] data.err
 						err = data.err + ''
 						console['error'] err
-						$('.errors').errors err
+						if isPost
+							$('.errors').errors err
 					if data.stack
 						console['log'] data.stack
 					_csrf = data._csrf
@@ -201,18 +202,29 @@ $.each [
 		'.accept-friend'
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
-			$li = $('<li></li>').appendTo('#friends')
-			$message.find('a').clone(true).fadeOut(0).fadeIn()
+			$friends = $ '#friends'
+			if exists $friends
+				$li = $('<li></li>').appendTo $friends
+				$message.find('a').clone(true).appendTo($li).fadeOut(0).fadeIn()
+				numberOfFriends = $friends.find('li').length
+				s = textReplacements
+				text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+				$('.numberOfFriends').text text
 			$message.find('.shift').slideUp()
 			$message.find('.if-accepted').slideDown()
 			delay 3000, ->
 				$message.slideUp ->
 					$(@).remove()
 			id = $message.data 'id'
-			$('.notifications .friend-ask[data-id="' + id + '"]').each ->
-				$(@).parents('li:first').remove()
-			refreshPill()
 			Ajax.post '/user/friend/accept', data: id: id
+			$('.friend-ask[data-id="' + id + '"]').each ->
+				$this = $ @
+				$li = $this.parents 'li:first'
+				if exists $li
+					$li.remove()
+				else
+					$this.remove()
+			refreshPill()
 			cancel e
 	]
 	[
@@ -224,8 +236,13 @@ $.each [
 				$(@).remove()
 			id = $message.data 'id'
 			Ajax.post '/user/friend/ignore', data: id: id
-			$('.notifications .friend-ask[data-id="' + id + '"]').each ->
-				$(@).parents('li:first').remove()
+			$('.friend-ask[data-id="' + id + '"]').each ->
+				$this = $ @
+				$li = $this.parents 'li:first'
+				if exists $li
+					$li.remove()
+				else
+					$this.remove()
 			refreshPill()
 			cancel e
 	]

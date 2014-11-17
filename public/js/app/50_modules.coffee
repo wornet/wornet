@@ -15,7 +15,8 @@ $ ->
 		$loading.ready ->
 			$scope = $loading.scope()
 			$loading.removeClass 'loading'
-			refreshScope $scope
+			if $scope
+				refreshScope $scope
 			return
 		return
 	return

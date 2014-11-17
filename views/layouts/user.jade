@@ -43,8 +43,7 @@ mixin notifications(classes)
 						&nbsp; &nbsp;
 						.btn.ignore-friend
 							=s("Ignorer")
-					span(ng-if="notification[3] !== 'askForFriend'")
-						| {{ notification[1] }}
+					span(ng-if="notification[3] !== 'askForFriend'" ng-bind-html-unsafe="notification[1]")
 
 mixin friends(classes)
 	ul.nav(class=classes)

@@ -14,23 +14,25 @@ StatusPackage =
 			connectedPeopleAndMe = connectedPeople.copy()
 			connectedPeopleAndMe.push req.user.id
 			where = (if onProfile
-				$or: [
-					author:
-						$in: connectedPeopleAndMe
-						$ne: id
-					at: id
-				,
-					author: id
-					at: null
-				]
+				if config.wornet.onlyAuthoredByAFriend
+					$or: [
+						author:
+							$in: connectedPeopleAndMe
+							$ne: id
+						at: id
+					,
+						author: id
+						at: null
+					]
+				else
+					$or: [
+						at: id
+					,
+						author: id
+						at: null
+					]
 			else
-				$or: [
-					author: $in: connectedPeople
-					at: null
-				,
-					author: id
-					at: null
-				]
+				author: $in: connectedPeopleAndMe
 			)
 			if connectedPeopleAndMe.contains id
 				Status.find where
@@ -54,7 +56,8 @@ StatusPackage =
 										add @at
 									add @author
 									true
-								req.getKnownUsersByIds missingIds, (err, usersMap) ->
+								searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
+								done = (err, usersMap) ->
 									if err
 										res.serverError err
 									else
@@ -69,6 +72,7 @@ StatusPackage =
 											true
 										data.recentStatus = recentStatusPublicData
 										res.json data
+								req.getUsersByIds missingIds, done, searchInDataBase
 							else
 								data.recentStatus = recentStatusPublicData
 								res.json data
