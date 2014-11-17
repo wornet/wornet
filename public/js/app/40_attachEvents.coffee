@@ -204,8 +204,17 @@ $.each [
 			$message = $btn.parents '.friend-ask'
 			$friends = $ '#friends'
 			if exists $friends
-				$li = $('<li></li>').appendTo $friends
-				$message.find('a').clone(true).appendTo($li).fadeOut(0).fadeIn()
+				$li = $('<li>').appendTo $friends
+				$a = $message.find 'a'
+				if exists $a
+					$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
+				else
+					$img = $message.find 'img'
+					if exists $img
+						$a = $ '<a>'
+						$a.attr('href', '/user/profile/' + $img.data('id') + '/' + encodeURIComponent($img.prop('alt')))
+						$img.clone(true).appendTo $a
+						$a.appendTo($li).fadeOut(0).fadeIn()
 				numberOfFriends = $friends.find('li').length
 				s = textReplacements
 				text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
@@ -215,6 +224,8 @@ $.each [
 			delay 3000, ->
 				$message.slideUp ->
 					$(@).remove()
+					return
+				return
 			id = $message.data 'id'
 			Ajax.post '/user/friend/accept', data: id: id
 			$('.friend-ask[data-id="' + id + '"]').each ->
@@ -224,6 +235,7 @@ $.each [
 					$li.remove()
 				else
 					$this.remove()
+				return
 			refreshPill()
 			cancel e
 	]
@@ -234,6 +246,7 @@ $.each [
 			$message = $btn.parents '.friend-ask'
 			$message.slideUp ->
 				$(@).remove()
+				return
 			id = $message.data 'id'
 			Ajax.post '/user/friend/ignore', data: id: id
 			$('.friend-ask[data-id="' + id + '"]').each ->
@@ -243,6 +256,7 @@ $.each [
 					$li.remove()
 				else
 					$this.remove()
+				return
 			refreshPill()
 			cancel e
 	]
@@ -252,6 +266,7 @@ $.each [
 		($a, e) ->
 			unless $a.is('.friend-ask')
 				$a.parents('li:first').remove()
+				refreshPill()
 			cancel e
 	]
 	[

@@ -6,6 +6,7 @@ shortLang = lang.split(/[^a-zA-Z]/)[0]
 Wornet = angular.module 'Wornet', [
 	'ui.calendar'
 	'ui.bootstrap'
+	'ngSanitize'
 ]
 
 #Angular Wornet services

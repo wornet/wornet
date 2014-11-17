@@ -106,8 +106,9 @@ NoticePackage =
 						delete req.user.friendAsks[notification[1].deleteFriendAsk]
 						req.session.user.friendAsks = req.user.friendAsks
 						delete notification[1].deleteFriendAsk
-					if notification[1].action? and notification[1].action is 'friendAccepted'
-						req.addFriend notification[1].user
+					if notification[1].addFriend?
+						req.addFriend notification[1].addFriend
+						delete notification[1].addFriend
 			data = notifications: notifications
 			data.notifyStatus = if err then self.ERROR else self.OK
 			if err

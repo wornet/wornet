@@ -48,11 +48,13 @@ UserPackage =
 								if user and !err
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + req.user.fullName
+									img = jd 'img(src="' + escape(req.user.thumb50) + '" alt="' + escape(req.user.fullName) + '" data-id="' + req.user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(req.user.fullName) + '").thumb'
 									NoticePackage.notify [friend.askedFrom], null,
 										action: 'friendAccepted'
 										deleteFriendAsk: id
+										addFriend: req.user
 										user: req.user.publicInformations()
-										notification: s("{username} fait maintenant partie de vos amis.", dataWithUser)
+										notification: img + " " + s("{username} fait maintenant partie de vos amis.", dataWithUser)
 						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,
 								deleteFriendAsk: id

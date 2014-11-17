@@ -20,6 +20,8 @@ mixin notifications(classes)
 						i.date(data-date=trim(notification[0], '"'))
 						| &nbsp; 
 						if askingFriend
+							img(src=askingFriend.thumb50 alt=askingFriend.fullName data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.fullName).thumb
+							=" "
 							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.fullName)) }
 							!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 							br
@@ -35,6 +37,8 @@ mixin notifications(classes)
 					i.date(data-date="{{ notification[0] }} ")
 					| &nbsp; 
 					span(ng-if="notification[3] === 'askForFriend'")
+						img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].fullName }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].fullName }}").thumb
+						=" "
 						- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
 						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 						br
@@ -43,7 +47,7 @@ mixin notifications(classes)
 						&nbsp; &nbsp;
 						.btn.ignore-friend
 							=s("Ignorer")
-					span(ng-if="notification[3] !== 'askForFriend'" ng-bind-html-unsafe="notification[1]")
+					span(ng-if="notification[3] !== 'askForFriend'" ng-bind-html="notification[1]")
 
 mixin friends(classes)
 	ul.nav(class=classes)
