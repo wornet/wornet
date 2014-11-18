@@ -6,6 +6,15 @@ saveUser = ($scope) ->
 		return
 	return
 
+# Preserve the form data already tiped by the user before $scope loaded
+keepTipedModel = ($scope, selector, modelName) ->
+	model = {}
+	$(selector + ' [ng-model^="' + modelName + '."]').each ->
+		$input = $ @
+		name = $input.attr('ng-model').substr(modelName.length + 1)
+		model[name] = $input.val()
+	$scope[modelName] = model
+
 # Resolve object get from template (passed in JSON)
 # Restore date object converted to strings previously (by JSON stringification)
 objectResolve = (value) ->

@@ -15,7 +15,7 @@
 		.animate-switch-container(ng-switch="media.step")
 			.animate-switch(ng-switch-when="create-album")
 				+formControl()(required tabindex="2" ng-model="album.name" name="name" id="album-name" placeholder=s("Nom de l'album"))
-				textarea.form-control(rows="3" ng-model="album.description" placeholder=s("Entrez votre message ici"))
+				textarea.form-control(rows="3" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" value=s("Créer")).btn.col-xs-12
 			.animate-switch(ng-switch-when="select-album")

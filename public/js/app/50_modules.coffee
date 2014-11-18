@@ -9,18 +9,15 @@ $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 
 
 # Display loading animation until angular scope is ready
-$ ->
-	$('.loading').each ->
-		$loading = $ @
-		$loading.ready ->
-			$scope = $loading.scope()
-			$loading.removeClass 'loading'
-			if $scope
-				refreshScope $scope
-			return
+$('.loading').each ->
+	$loading = $ @
+	$loading.ready ->
+		$scope = $loading.scope()
+		$loading.removeClass 'loading'
+		if $scope
+			refreshScope $scope
 		return
 	return
-
 
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized

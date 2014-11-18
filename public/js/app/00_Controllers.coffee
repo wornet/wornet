@@ -234,8 +234,8 @@ Controllers =
 		return
 
 	Login: ($scope) ->
+		keepTipedModel $scope, '#login', 'user'
 		# Get remember preference of the user if previously saved (default: true)
-		$scope.user = $scope.user || {}
 		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
 		# When the form is submitted
 		$scope.submit = (user) ->
@@ -254,7 +254,7 @@ Controllers =
 						$('#loginErrors').errors data.err
 					return
 			return
-		$('[ng-controller="LoginCtrl"]').on 'submit', prevent
+		$('#login').on 'submit', prevent
 
 		return
 
@@ -277,6 +277,7 @@ Controllers =
 		return
 
 	SigninFirstStep: ($scope) ->
+		keepTipedModel $scope, '#signin', 'user'
 		saveUser $scope
 
 		return

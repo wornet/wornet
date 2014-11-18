@@ -14,7 +14,7 @@ block nav
 				.narrow.col-sm-4.col-xs-12
 					+formControl()(required autofocus tabindex="1" pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
 					label.mobile-field.std-line
-						input(type="checkbox" ng-model="user.remember" name="remember" tabindex="3" checked)
+						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="3" checked)
 						=s("Se souvenir de moi")
 				.narrow.col-sm-4.col-xs-12
 					+formControl("password")(required tabindex="2" ng-model="user.password" name="password" placeholder=s("Mot de passe"))
@@ -34,7 +34,7 @@ block body
 						each error in signinErrors
 							.alert.alert-danger
 								=error
-				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninFirstStepCtrl")
+				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninFirstStepCtrl")#signin
 					+formControl()(
 						title=s("Votre e-mail")
 						ng-model="user.email"

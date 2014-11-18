@@ -8,11 +8,11 @@ photoSchema = BaseSchema.extend
 		type: String
 		trim: true
 	album:
-		type: Number
-		default: 0
+		type: ObjectId
+		ref: 'AlbumSchema'
 
 photoSrc = (prefix) ->
-	'/img/' +(
+	'/img/' + (
 		if @_id?
 			'photo/' + (prefix || '') + @_id
 		else
@@ -25,5 +25,17 @@ photoSchema.virtual('photo').get ->
 
 photoSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
+
+photoSchema.virtual('thumb90').get ->
+	photoSrc.call @, '90x'
+
+photoSchema.virtual('thumb50').get ->
+	photoSrc.call @, '50x'
+
+photoSchema.virtual('thumb200').get ->
+	photoSrc.call @, '200x'
+
+photoSchema.methods.getAlbum = (done) ->
+	Album.findById @album, done
 
 module.exports = photoSchema
