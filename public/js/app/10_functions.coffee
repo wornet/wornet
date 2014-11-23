@@ -161,20 +161,27 @@ onResize = (fct) ->
 	fct.call @
 	return
 
+# Display error message or default message
 serverError = (message) ->
 	$('.errors').errors message || "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
 	return
 
+# Shorthand to stop event propagation and return false
 stop = (e) ->
 	e.stopPropagation()
 	false
+
+# Shorthand to prevent default behavior and return false
 prevent = (e) ->
 	e.preventDefault()
 	false
+
+# Shorthand to stop event propagation, prevent default behavior and return false
 cancel = (e) ->
 	stop e
 	prevent e
 
+# Restore scroll after a dom change in a block
 keepScroll = (sel) ->
 	excludeElements = []
 	$(sel).each ->
@@ -196,6 +203,7 @@ keepScroll = (sel) ->
 		return
 	return
 
+# Save chat messages and states in local session
 saveChats = (chats) ->
 	if window.sessionStorage
 		for k, chat of chats
@@ -207,6 +215,7 @@ saveChats = (chats) ->
 	keepScroll '.chat .messages'
 	return
 
+# Get chat messages and states from local session
 getChats = ->
 	$('.chat').show()
 	keepScroll '.chat .messages'
@@ -219,11 +228,30 @@ getChats = ->
 		chats = {}
 	chats
 
+# Apply modifications in scope variables then refresh date
 refreshScope = ($scope) ->
 	unless $scope.$root.$$phase is '$apply' or $scope.$root.$$phase is '$digest'
 		$scope.$apply()
 	checkDates()
 	return
 
-_ = (text, replacements, count) ->
-	text
+# Get albums from local storage or server
+getAlbums = (done) ->
+	albums = null
+	try
+		albums = objectResolve JSON.parse sessionStorage.albums
+	catch e
+		albums = null
+	if typeof(albums) isnt 'object'
+		albums = null
+	if albums is null
+		Ajax.get '/user/albums', (data) ->
+			err = data.err || null
+			if data.albums
+				albums = data.albums
+				sessionStorage.albums = JSON.stringify albums
+			done err, albums
+			return
+	else
+		done null, albums
+	return

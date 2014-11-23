@@ -305,6 +305,7 @@ module.exports = (port) ->
 			stylus.functions['big' + ucfirst(ext)] = (url) ->
 				functions[ext](bigImg(url), config.wornet.asset.image.base64Limit)
 		stylus.functions.bigImg = bigImg
+		stylus.functions.quote = quoteString
 
 		# Available s() in stylus files
 		stylus.functions.s = functions.s

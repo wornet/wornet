@@ -175,10 +175,14 @@ exports.isAuthenticated = (req, res, next) ->
 					if err
 						res.serverError err
 					else
-						req.user.notifications = []
-						for id, friend of friendAsks
-							if friend.askedTo
-								req.user.notifications.push [Date.fromId(id), friend, id]
+						unless req.session.user.notifications
+							notifications = []
+							for id, friend of friendAsks
+								if friend.askedTo
+									notifications.push [id, friend, id]
+							req.session.user.notifications = notifications
+						req.user.notifications = req.session.user.notifications
+						console.log req.session.user.notifications
 						done()
 			else
 				done()

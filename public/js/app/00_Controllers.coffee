@@ -298,12 +298,35 @@ Controllers =
 
 		at = getData 'at'
 
-		Ajax.get '/user/status/recent' + (if at then '/' + at else ''),
-			success: setRecentStatus
+		Ajax.get '/user/status/recent' + (if at then '/' + at else ''), setRecentStatus
 
+		getAlbums (err, albums) ->
+			unless err
+				$scope.albums = albums
+				refreshScope $scope
+
+		window.statusScope = $scope
 		$scope.$on 'receiveStatus', (e, status) ->
 			$scope.recentStatus.unshift status
 			refreshScope $scope
+			return
+
+		$scope.selectAlbum = (album) ->
+			$scope.currentAlbum = $.extend {}, album
+			$scope.media.step = 'add'
+			return
+
+		$scope.createAlbum = (album) ->
+			delete sessionStorage['albums']
+			Ajax.put '/user/album/add',
+				data:
+					album: album
+			$scope.currentAlbum = $.extend {}, album
+			$scope.albums.push $scope.currentAlbum
+			$scope.media.step = 'add'
+			album =
+				name: ''
+				description: ''
 			return
 
 		$scope.send = (status) ->

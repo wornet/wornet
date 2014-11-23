@@ -165,10 +165,26 @@ module.exports = (router) ->
 					when 'name.last'
 						req.user.name.last = val
 
+	router.get '/notify/read/:notification', (req, res) ->
+		# Delete notification when read
+		if req.session.user.notifications
+			notifications = []
+			for notification in req.session.user.notifications
+				unless notification[0] is req.params.id
+					notifications.push notification
+			req.session.user.notifications = notifications
+			req.user.notifications = notifications
+			console.log req.session.user.notifications
+			res.json notifications: notifications
+		else
+			res.serverError new Error "No notifications"
+
 	router.get '/notify', (req, res) ->
+		# Wait for new notifications
 		NoticePackage.waitForJson req.user.id, req, res
 
 	router.post '/notify', (req, res) ->
+		# Send a notification
 		try
 			data = req.body.data
 			userIds = (cesarRight id for id in req.body.userIds.split(','))
@@ -188,4 +204,20 @@ module.exports = (router) ->
 			res.json()
 		catch err
 			log err
-			res.json err: err
+			res.serverError err
+
+	router.get '/albums', (req, res) ->
+		# Get albums list from the user logged in
+		Album.find user: req.user.id, (err, albums) ->
+			res.json
+				err: err
+				albums: albums
+
+	router.put '/album/add', (req, res) ->
+		# Create a new album
+		album = extend user: req.user._id, req.body.album
+		Album.create album, (err, album) ->
+			album.user = cesarLeft album.user
+			res.json
+				err: err
+				album: album

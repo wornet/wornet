@@ -5,12 +5,12 @@ $.fn.extend
 		messages = messages || "Info"
 		if typeof(messages) isnt 'object'
 			messages = [messages]
-		@.html('') # Get and empty the #loginErrors block
+		@html('') # Get and empty the #loginErrors block
 		# Append each error
 		for message in messages
-			@.append('<div class="alert alert-' + type + '">' + message + '</div>')
+			@append('<div class="alert alert-' + type + '">' + message + '</div>')
 		# Close (instantanly) the error block
-		@.slideUp(0).slideDown('fast')
+		@slideUp(0).slideDown('fast')
 	# Append errors to the given jQuery block
 	# Then slide them out
 	errors: (errors) ->
@@ -21,14 +21,39 @@ $.fn.extend
 		@messages messages || "Succès", 'success'
 	# To permit to a 0 opacity HTML element to fade
 	readyToFade: ->
-		if @.css('opacity') is '0'
-			@.css('opacity', '1').fadeOut(0)
+		if @css('opacity') is '0'
+			@css('opacity', '1').fadeOut(0)
 		@
 	# Circular progress load animation
 	circularProgress: (ratio, color) ->
 		color = color || ($('<div class="ref-color"></div>').css('color') || '#ff8800')
-		bgCol = @.css('background-color')
+		bgCol = @css('background-color')
 		if ratio < 0.5
-			@.css('background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')')
+			@css('background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')')
 		else
-			@.css('background-image', 'linear-gradient(' + Math.round(90 + 360 * ratio) + 'deg, ' + color + ' 50%, transparent 50%, transparent), linear-gradient(270deg, ' + color + ' 50%, transparent 50%, transparent)')
+			@css('background-image', 'linear-gradient(' + Math.round(90 + 360 * ratio) + 'deg, ' + color + ' 50%, transparent 50%, transparent), linear-gradient(270deg, ' + color + ' 50%, transparent 50%, transparent)')
+	# Get date id if the element contains [data-date] within it or its children
+	dateId: (defaultValue = null) ->
+		$date = $ @
+		unless $date.is '[data-date]'
+			$date = $date.find '[data-date]:first'
+		date = $date.data 'date'
+		if date and date.length
+			date
+		else
+			defaultValue
+	# Get date if the element contains [data-date] within it or its children
+	date: (defaultValue = null) ->
+		dateId = @dateId()
+		if dateId
+			date = (if /^[0-9a-f]+$/i.test date
+					Date.fromId date
+				else
+					new Date dateId
+			)
+			if date.isValid()
+				date
+			else
+				defaultValue
+		else
+			defaultValue

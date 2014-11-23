@@ -18,7 +18,20 @@ $document = $(document)
 				else
 					if data.err
 						console['log'] data.err
-						err = data.err + ''
+						if typeof data.err is 'object' and data.err.name
+							switch data.err.name
+								when "ValidationError"
+									err = data.err.message + '<ul>'
+									errors = data.err.errors
+									unless errors.length
+										errors = [errors]
+									for error in errors
+										err += '<li>' + safeHtml(error.name.message) + '</li>'
+									err += '</ul>'
+								else
+									err = data.err.message || (data.err + '')
+						else
+							err = data.err + ''
 						console['error'] err
 						if isPost
 							$('.errors').errors err
@@ -264,10 +277,17 @@ $.each [
 		'click'
 		'.notifications ul a'
 		($a, e) ->
-			unless $a.is('.friend-ask')
-				$a.parents('li:first').remove()
-				refreshPill()
-			cancel e
+			dateId = $a.dateId()
+			console.log [$a, dateId]
+			if dateId
+				Ajax.get '/user/notify/read/' + dateId
+			if $a.is '.friend-accepted'
+				true
+			else
+				unless $a.is '.friend-ask'
+					$a.parents('li:first').remove()
+					refreshPill()
+				cancel e
 	]
 	[
 		'click'

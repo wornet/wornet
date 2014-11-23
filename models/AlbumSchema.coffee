@@ -1,6 +1,9 @@
 'use strict'
 
 albumSchema = BaseSchema.extend
+	user:
+		type: ObjectId
+		ref: 'UserSchema'
 	name:
 		type: String
 		trim: true
@@ -8,6 +11,8 @@ albumSchema = BaseSchema.extend
 	description:
 		type: String
 		trim: true
+	preview:
+		type: Array
 
 albumSchema.methods.firstPhoto = (done, thumbSize = null) ->
 	Photo.findOne album: @id, (err, photo) ->

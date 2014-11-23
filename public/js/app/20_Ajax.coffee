@@ -10,7 +10,7 @@ Ajax =
 
 	@return XHR object (+ jQuery extra stuff)
 	###
-	get: (url, settings, _method, defaultType = "GET") ->
+	get: (url, settings = {}, _method, defaultType = "GET") ->
 		# If the second parameter is a function, we use it as success callback
 		if typeof(settings) is 'function'
 			settings =

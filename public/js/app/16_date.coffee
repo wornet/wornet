@@ -2,11 +2,9 @@
 checkDates = ->
 	prevDate = null
 	$('[data-date]').each ->
-		$date = $(@)
+		$date = $ @
 		unless exists $date.parents '.calendar'
-			date = new Date $date.data 'date'
-			unless date.isValid()
-				date = new Date
+			date = $date.date new Date
 			delayed = $date.data 'date-delay'
 			if delayed and prevDate and Math.abs(date.getTime() - prevDate.getTime()) / 1000 < delayed
 				text = ''

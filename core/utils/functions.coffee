@@ -702,6 +702,7 @@ module.exports =
 			else
 				if config.env.development
 					version = stat.mtime.getTime()
+				file = file.replace /^\//g, ''
 				'/' + directory + '/' + file + '.' + extension + '?' + version
 
 	###
@@ -762,3 +763,12 @@ module.exports =
 	###
 	bigImg: (file) ->
 		config.wornet.bigImagesServer + file
+
+	###
+	Wrap text with quotes and escape quotes and backslashes within it
+	@param string text
+
+	@return string quoted text
+	###
+	quoteString: (str) ->
+		'"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'

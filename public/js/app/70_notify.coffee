@@ -20,7 +20,6 @@ waitForNotify = ->
 						when 'askForFriend'
 							s = textReplacements
 							id = notification.id
-							date = Date.fromId id
 							friend = notification.user
 							name = friend.name.full
 							dataWithUser = username: '<span class="username">' + safeHtml(name) + '</span>'
@@ -30,7 +29,7 @@ waitForNotify = ->
 										'<img class="thumb" src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" data-id="' + friend.hashedId + '">' +
 									'</a>' +
 									'<div class="shift">' +
-										'<i class="date" data-date="' + date.toISOString() + '"></i>' +
+										'<i class="date" data-date="' + id + '"></i>' +
 										'<br>' +
 										s("{username} souhaite vous ajouter à ses amis.", dataWithUser) +
 										'<br>' +
@@ -43,20 +42,23 @@ waitForNotify = ->
 									'</div>' +
 									'<div class="cb"></div>' +
 								'</div>')
-							notificationsService.receiveNotification [(new Date).toISOString(), notification.user, notification.id, 'askForFriend']
+							notificationsService.receiveNotification [id, notification.user, notification.id, 'askForFriend']
 						when 'friendAccepted'
 							friend = notification.user
+							id = notification.id
 							name = friend.name.full
+							href = '/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name)
 							$friends = $('#friends').append('<li>' +
-								'<a href="/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name) + '">' +
+								'<a href="' + href + '">' +
 									'<img src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" data-id="' + friend.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + safeHtml(name) + '">' +
 								'</a>' +
 							'</li>')
-							numberOfFriends = $friends.find('li').length
-							s = textReplacements
-							text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
-							$('.numberOfFriends').text text
-							notificationsService.receiveNotification [(new Date).toISOString(), notification.notification]
+							if exists $friends
+								numberOfFriends = $friends.find('li').length
+								s = textReplacements
+								text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+								$('.numberOfFriends').text text
+							notificationsService.receiveNotification [id, notification.notification, href, 'friendAccepted']
 			delay 500, waitForNotify
 			return
 		error: ->

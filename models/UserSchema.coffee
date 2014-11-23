@@ -149,8 +149,16 @@ userSchema.virtual('thumb90').get ->
 userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
-userSchema.methods.publicInformations = (thumbSize = 50) ->
-	informations = @values ['hashedId', 'thumb' + thumbSize], true
+userSchema.methods.publicInformations = (thumbSizes = null) ->
+	values = ['hashedId']
+	if thumbSizes is null
+		thumbSizes = [50, 90, 200]
+	else unless thumbSizes instanceof Array
+		thumbSizes = Array.prototype.slice.call arguments
+	thumbSizes.each ->
+		values.push 'thumb' + @
+		true
+	informations = @values values, true
 	informations.name = @name.toObject()
 	informations.name.full = @name.full
 	informations
@@ -160,11 +168,6 @@ userSchema.methods.encryptPassword = (plainText) ->
 
 userSchema.methods.passwordMatches = (plainText) ->
 	@password is @encryptPassword(plainText)
-
-userSchema.pre 'save', (next) ->
-	if @isModified 'password'
-		@password = @encryptPassword()
-	next()
 
 userSchema.methods.aksForFriend = (askedTo, done) ->
 	askedFrom = @id
@@ -267,6 +270,11 @@ userSchema.methods.getFriends = (done) ->
 					user.friendAskDates = friendAskDates
 				unless --pending
 					next()
+
+userSchema.pre 'save', (next) ->
+	if @isModified 'password'
+		@password = @encryptPassword()
+	next()
 
 
 module.exports = userSchema

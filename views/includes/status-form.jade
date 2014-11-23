@@ -1,32 +1,52 @@
-+form()(ng-submit="send(status)")
-	ul.nav.nav-tabs(role="tablist")
-		li(ng-click="status.containsPicture = false" ng-class="{ active: ! status.containsPicture }"): a
+
+ul.nav.nav-tabs(role="tablist")
+	li(ng-click="status.containsPicture = false" ng-class="{ active: ! status.containsPicture }")
+		a(title=s("Quoi de neuf ?") data-toggle="tooltip" data-placement="top")
 			=s("Publier un statut")
-		li(ng-click="status.containsPicture = true; media.step = null;" ng-class="{ active: status.containsPicture }"): a(title=s("Images, vidéos, liens…") data-toggle="tooltip" data-placement="top")
+	li(ng-click="status.containsPicture = true; media.step = null;" ng-class="{ active: status.containsPicture }")
+		a(title=s("Images, vidéos, liens…") data-toggle="tooltip" data-placement="top")
 			=s("Publier un média")
-	fieldset.tab(ng-show="! status.containsPicture")
+fieldset.tab(ng-show="! status.containsPicture")
+	+form()(ng-submit="send(status)")
 		h3=strtoupper(s("Publier un statut"))
 		.input-group
-			+formControl()(autofocus ng-model="status.content")
+			+formControl()(autofocus tabindex="91" ng-model="status.content")
 			span.input-group-btn
-				input(type="submit" value=s("Envoyer")).btn
-	fieldset.tab(ng-show="status.containsPicture")
-		h3=strtoupper(s("Publier un média"))
-		.animate-switch-container(ng-switch="media.step")
-			.animate-switch(ng-switch-when="create-album")
-				+formControl()(required tabindex="2" ng-model="album.name" name="name" id="album-name" placeholder=s("Nom de l'album"))
-				textarea.form-control(rows="3" ng-model="album.description" placeholder=s("Description (facultatif)"))
+				input(type="submit" tabindex="92" value=s("Envoyer")).btn
+fieldset.tab(ng-show="status.containsPicture")
+	h3=strtoupper(s("Publier un média"))
+	.animate-switch-container(ng-switch="media.step")
+		.animate-switch(ng-switch-when="create-album")
+			+form()(ng-submit="createAlbum(album)")
+				+formControl()(required tabindex="101" ng-model="album.name" name="name" id="album-name" placeholder=s("Nom de l'album"))
+				textarea.form-control(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
-					input(type="submit" value=s("Créer")).btn.col-xs-12
-			.animate-switch(ng-switch-when="select-album")
-				div(ng-repeat="album in albums")
-					=album
-			.animate-switch(ng-switch-when="add")
-				input(type="file" multiple="multiple" ng-model="album.images" name="images" value=s("Ajouter média(s)")).btn
-			.animate-switch(ng-switch-default)
-				.col-xs-6.fit
-					a.btn.bar(ng-click="media.step = 'create-album';" give-focus="#album-name")
-						=s("Créer un album")
-				.col-xs-6.fit(tooltip="{{ albums && albums.length ? _('" + s("{count} album|{count} albums") + "', albums.length) : '" + s("Vous n'avez encore aucun album") + "' }}")
-					a.btn.bar(ng-click="media.step = 'select-album'" disabled="{{ ! (albums && albums.length) }}")
-						=s("Utiliser un album existant")
+					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12
+		.animate-switch(ng-switch-when="select-album")
+			.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
+				h4 {{ album.name }}
+				p.description {{ album.description }}
+			.col-xs-12.col-sm-6.col-sm-offset-3
+				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104" give-focus="#album-name")
+					=s("Créer un album")
+		.animate-switch(ng-switch-when="add")
+			.col-xs-6.fit
+				h4.glued.big-line {{ currentAlbum.name }}
+			.col-xs-6.fit
+				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
+					=s("Sélectionner un autre album")
+			.col-xs-12.fit
+				+form()(ng-submit="uploadImages(images)")
+					.upload-container
+						.upload-label
+							=s("Ajouter média(s)")
+							br
+							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
+						input(type="file" multiple="multiple" tabindex="112" ng-model="images" name="images").upload-button
+		.animate-switch(ng-switch-default)
+			.col-xs-6.fit
+				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121" give-focus="#album-name")
+					=s("Créer un album")
+			.col-xs-6.fit
+				a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")
+					=s("Utiliser un album existant")
