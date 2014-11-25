@@ -43,5 +43,5 @@ describe "syntax", ->
 			files.length.should.be.above 10
 
 		logOrConsoleLog = "lo" + "g or console.lo" + "g"
-		it "should not contains " + , forEachFile (file, contents) ->
+		it "should not contains " + logOrConsoleLog, forEachFile (file, contents) ->
 			/[^a-zA-Z0-9_]log[^a-zA-Z0-9_]/.test(contents).should.equal false, file + " should not contains " + logOrConsoleLog
