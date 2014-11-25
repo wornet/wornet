@@ -167,17 +167,11 @@ module.exports = (router) ->
 
 	router.get '/notify/read/:notification', (req, res) ->
 		# Delete notification when read
-		if req.session.user.notifications
-			notifications = []
-			for notification in req.session.user.notifications
-				unless notification[0] is req.params.id
-					notifications.push notification
-			req.session.user.notifications = notifications
-			req.user.notifications = notifications
-			console.log req.session.user.notifications
-			res.json notifications: notifications
-		else
-			res.serverError new Error "No notifications"
+		req.deleteNotification req.params.id, (err, notifications) ->
+			if err
+				res.serverError err
+			else
+				res.json notifications: notifications
 
 	router.get '/notify', (req, res) ->
 		# Wait for new notifications

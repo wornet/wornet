@@ -17,7 +17,7 @@ mixin notifications(classes)
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 						i.date(data-date=trim(notification[0], '"'))
 						| &nbsp; 
-						if askingFriend
+						if askingFriend && askingFriend.hashedId
 							img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 							=" "
 							- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
