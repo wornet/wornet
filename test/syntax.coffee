@@ -5,7 +5,7 @@ fs = require 'fs'
 
 describe "syntax", ->
 
-	@timeout 5000
+	@timeout 10000
 
 	files = []
 	filesContents = {}
@@ -44,4 +44,4 @@ describe "syntax", ->
 
 		logOrConsoleLog = "lo" + "g or console.lo" + "g"
 		it "should not contains " + logOrConsoleLog, forEachFile (file, contents) ->
-			/[^a-zA-Z0-9_]log[^a-zA-Z0-9_]/.test(contents).should.equal false, file + " should not contains " + logOrConsoleLog
+			/[^a-zA-Z0-9_]console\.log[^a-zA-Z0-9_]/.test(contents).should.equal false, file + " should not contains " + logOrConsoleLog
