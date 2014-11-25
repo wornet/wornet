@@ -151,6 +151,8 @@ onready ->
 				req.url = '/components/bootstrap' + req.url
 			done()
 		else
+			unless req.xhr
+				res.setHeader 'keep-alive', 'timeout=15, max=100'
 			res.locals.isXHR = !!req.xhr
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
