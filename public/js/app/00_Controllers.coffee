@@ -267,6 +267,12 @@ Controllers =
 			delay 1, refreshPill
 			return
 
+		$scope.$on 'setNotifications', (e, notifications) ->
+			$scope.notifications = notifications
+			refreshScope $scope
+			delay 1, refreshPill
+			return
+
 		return
 
 	Profile: ($scope, chatService) ->

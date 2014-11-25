@@ -277,10 +277,11 @@ $.each [
 		'click'
 		'.notifications ul a'
 		($a, e) ->
-			dateId = $a.dateId()
-			console.log [$a, dateId]
-			if dateId
-				Ajax.get '/user/notify/read/' + dateId
+			unless $a.is '[data-id]'
+				dateId = $a.dateId()
+				if dateId
+					Ajax.get '/user/notify/read/' + dateId, (data) ->
+						notificationsService.setNotifications notifications
 			if $a.is '.friend-accepted'
 				true
 			else
