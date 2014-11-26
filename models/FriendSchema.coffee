@@ -30,7 +30,7 @@ friendSchema = BaseSchema.extend
 status.each ->
 	s = @
 	friendSchema.methods['is' + ucfirst(s)] = ->
-		@status = s
+		@status is s
 
 
 module.exports = friendSchema

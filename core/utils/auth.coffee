@@ -182,7 +182,6 @@ exports.isAuthenticated = (req, res, next) ->
 									notifications.push [id, friend, id]
 							req.session.user.notifications = notifications
 						req.user.notifications = req.session.user.notifications
-						console.log req.session.user.notifications
 						done()
 			else
 				done()
