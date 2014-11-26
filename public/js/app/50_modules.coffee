@@ -3,6 +3,11 @@ window.onbeforeunload = ->
 	$('.loader:last').css('z-index', 99999).removeClass 'preload'
 	return
 
+$(window).on "offline", ->
+	$('.errors').warningx s("Attention, vous n'êtes plus connecté à Internet")
+
+$(window).on "online", ->
+	$('.errors').infos s("Connexion Internet rétablie")
 
 # Convert titles attributes to tooltips when elements have a data-toggle="tooltip" atribute
 $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()

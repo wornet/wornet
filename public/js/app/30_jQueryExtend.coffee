@@ -11,6 +11,14 @@ $.fn.extend
 			@append('<div class="alert alert-' + type + '">' + message + '</div>')
 		# Close (instantanly) the error block
 		@slideUp(0).slideDown('fast')
+	# Append warnings to the given jQuery block
+	# Then slide them out
+	infos: (infos) ->
+		@messages infos || "Information", 'info'
+	# Append warnings to the given jQuery block
+	# Then slide them out
+	warnings: (warnings) ->
+		@messages warnings || "Attention", 'warning'
 	# Append errors to the given jQuery block
 	# Then slide them out
 	errors: (errors) ->
