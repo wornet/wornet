@@ -161,9 +161,15 @@ onResize = (fct) ->
 	fct.call @
 	return
 
+((s) ->
+	# Default errors
+	window.SERVER_ERROR_DEFAULT_MESSAGE = "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
+
+)(textReplacements)
+
 # Display error message or default message
 serverError = (message) ->
-	$('.errors').errors message || "Perte de la connexion internet. La dernière action n'a pas pu être effectuée."
+	$('.errors').errors message || SERVER_ERROR_DEFAULT_MESSAGE
 	return
 
 # Shorthand to stop event propagation and return false

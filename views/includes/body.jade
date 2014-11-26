@@ -12,6 +12,12 @@
 		.alert.alert-danger
 			=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
 
+	.errors
+		if profileErrors
+			each error in list(profileErrors)
+				.alert.alert-danger
+					=error
+
 	div(role="main")
 		block body
 

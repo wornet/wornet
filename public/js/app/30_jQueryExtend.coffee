@@ -22,7 +22,8 @@ $.fn.extend
 	# Append errors to the given jQuery block
 	# Then slide them out
 	errors: (errors) ->
-		@messages errors || "Erreur", 'danger'
+		if (errors and errors isnt SERVER_ERROR_DEFAULT_MESSAGE) or navigator.onLine
+			@messages errors || "Erreur", 'danger'
 	# Append success messages to the given jQuery block
 	# Then slide them out
 	success: (messages) ->

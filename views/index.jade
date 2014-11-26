@@ -1,13 +1,6 @@
 extends layouts/user
 
 block body
-	.errors
-		if profileErrors
-			each error in list(profileErrors)
-				.alert.alert-danger
-					=error
-
-
 	.col-sm-4.col-xs-12.pad-right
 		//- Friends
 		if isMe
