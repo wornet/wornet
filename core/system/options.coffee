@@ -169,6 +169,18 @@ module.exports = (port) ->
 				@user.numberOfFriends = @user.friends.length
 				@session.user.friends = @user.friends
 				@session.user.numberOfFriends = @session.user.friends.length
+			# delete a notification
+			deleteNotification: (id) ->
+				if req.session.user.notifications
+					notifications = []
+					for notification in req.session.user.notifications
+						unless notification[0] is id
+							notifications.push notification
+					req.session.user.notifications = notifications
+					req.user.notifications = notifications
+					done null, notifications
+				else
+					done new Error "No notifications"
 			# get users from friend, me
 			getKnownUsersByIds: (ids, done) ->
 				@getUsersByIds ids, done, false
