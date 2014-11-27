@@ -491,41 +491,61 @@ module.exports =
 	###
 	Add an uploaded photo to user album
 	@param HTTPRequest request containing files object (uploaded)
-	@param integer album number (0 = profile photo)
+	@param ObjectId albumId id (0 = profile photo)
 	@param callback executed when everything is done
 	###
-	addPhoto: (req, album, done) ->
-		Photo.create
-			user: req.user.id
-			name: req.files.photo.name
-			album: album
-		, (createErr, photo) ->
-			if createErr
-				done createErr
-			else
-				id = photo.id
-				photoDirectory = __dirname + '/../../public/img/photo/'
-				dst = photoDirectory + id + '.jpg'
-				copy req.files.photo.path, dst
-				sizes = [50, 90, 200]
-				pending = sizes.length
-				for size in sizes
-					thumb = photoDirectory + size + 'x' + id + '.jpg'
-					imagemagick.resize
-						srcPath: req.files.photo.path
-						dstPath: thumb
-						strip : false,
-						width : size,
-						height : size + "^",
-						customArgs: [
-							"-gravity", "center"
-							"-extent", size + "x" + size
-						]
-					, (resizeErr) ->
-						if resizeErr
-							done resizeErr
-						else unless --pending
-							updateUser req, photoId: id, done
+	addPhoto: (req, albumId, done) ->
+		next = (createdAlbum = null) ->
+			Photo.create
+				user: req.user.id
+				name: req.files.photo.name
+				album: albumId
+			, (createErr, photo) ->
+				if createErr
+					done createErr, createdAlbum
+				else
+					id = photo.id
+					photoDirectory = __dirname + '/../../public/img/photo/'
+					dst = photoDirectory + id + '.jpg'
+					copy req.files.photo.path, dst
+					sizes = [50, 90, 200]
+					pending = sizes.length
+					for size in sizes
+						thumb = photoDirectory + size + 'x' + id + '.jpg'
+						imagemagick.resize
+							srcPath: req.files.photo.path
+							dstPath: thumb
+							strip : false,
+							width : size,
+							height : size + "^",
+							customArgs: [
+								"-gravity", "center"
+								"-extent", size + "x" + size
+							]
+						, (resizeErr) ->
+							if resizeErr
+								done resizeErr, createdAlbum
+							else unless --pending
+								updateUser req, photoId: id, (err) ->
+									done err, createdAlbum
+		if albumId and albumId isnt "0"
+			next()
+		else
+			defaultName = s("Photos de profil")
+			Album.findOne name: defaultName, (err, album) ->
+				if album
+					albumId = album.id
+					next album
+				else
+					Album.create
+						user: req.user.id
+						name: defaultName
+					, (err, album) ->
+						if err
+							done err
+						else
+							albumId = album.id
+							next album
 
 	###
 	Return a string in lower case

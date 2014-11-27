@@ -15,35 +15,36 @@ fieldset.tab(ng-show="! status.containsPicture")
 				input(type="submit" tabindex="92" value=s("Envoyer")).btn
 fieldset.tab(ng-show="status.containsPicture")
 	h3=strtoupper(s("Publier un média"))
-	.animate-switch-container(ng-switch="media.step")
-		.animate-switch(ng-switch-when="create-album")
+	div(ng-switch="media.step")
+		div(ng-switch-when="create-album")
 			+form()(ng-submit="createAlbum(album)")
 				+formControl()(required tabindex="101" ng-model="album.name" name="name" id="album-name" placeholder=s("Nom de l'album"))
 				textarea.form-control(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12
-		.animate-switch(ng-switch-when="select-album")
+		div(ng-switch-when="select-album")
 			.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
 				h4 {{ album.name }}
 				p.description {{ album.description }}
 			.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104" give-focus="#album-name")
 					=s("Créer un album")
-		.animate-switch(ng-switch-when="add")
+		div(ng-switch-when="add")
 			.col-xs-6.fit
 				h4.glued.big-line {{ currentAlbum.name }}
 			.col-xs-6.fit
 				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
 					=s("Sélectionner un autre album")
 			.col-xs-12.fit
-				+form()(ng-submit="uploadImages(images)")
+				iframe(name="status-upload")
+				+form("/user/photo/add")(target="status-upload" ng-submit="uploadImages(this, images)")
 					.upload-container
 						.upload-label
 							=s("Ajouter média(s)")
 							br
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
 						input(type="file" multiple="multiple" tabindex="112" ng-model="images" name="images").upload-button
-		.animate-switch(ng-switch-default)
+		div(ng-switch-default)
 			.col-xs-6.fit
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121" give-focus="#album-name")
 					=s("Créer un album")

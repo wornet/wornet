@@ -10,10 +10,12 @@
 			| &nbsp;
 			+glyph('edit')
 		.profile-edit(class=(edit ? null : "hidden"))
-			+form("/user/profile/edit", "POST")
-				span.input-group-btn
-					+formControl(value=profile.firstName)
-					+formControl(value=profile.lastName)
+			+form("/user/profile/edit")
+				.input-group
+					+formControl(name="name.first" value=profile.firstName).glued
+				.input-group
+					+formControl(name="name.last" value=profile.lastName)
+				.btn-group
 					input(type="submit" value=s("Modifier")).btn
 	else
 		.profileError

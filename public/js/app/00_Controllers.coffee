@@ -280,6 +280,51 @@ Controllers =
 			chatService.chatWith [objectResolve user]
 			return
 
+		$scope.uploadImages = (form, images) ->
+			console.log [form, images]
+			$form = $ form
+			if typeof(FormData) is 'function'
+				$container = $form.find '.upload-container'
+				$label = $container.find '.upload-label'
+				$container.find('input[type="file"]').hide()
+				$progress = $('<div class="progress-bar"></div>').prependTo $container
+				formData = new FormData()
+				files = $form.find('input[type="file"]')[0].files
+				formData.append 'images', files
+				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
+
+				xhr = new XMLHttpRequest()
+				xhr.open 'POST', $form.prop('action'), true
+
+				xhr.upload.onprogress = (e) ->
+					if e.lengthComputable
+						$progress.width e.loaded / e.total
+						$label.text Math.round(e.loaded * 100 / e.total) + '%'
+
+				xhr.onerror = ->
+					$error = $(@responseText)
+					unless $error.is('.error')
+						$error = $error.find '.error'
+					$('.errors').errors $error.html()
+
+				xhr.onload = ->
+					$newImg = $(@responseText
+						.replace /[\n\r\t]/g, ''
+						.replace /^.*<body[^>]*>/ig, ''
+						.replace /<\/body>.*$/ig, ''
+					)
+					unless $newImg.is('.error') or $newImg.is('img')
+						$newImg = $newImg.find 'img'
+					if $newImg.is('img')
+						console.log $newImg
+					else
+						@onerror()
+
+				xhr.send formData
+			else
+				form.submit()
+			return
+
 		return
 
 	SigninFirstStep: ($scope) ->
@@ -333,6 +378,14 @@ Controllers =
 			album =
 				name: ''
 				description: ''
+			return
+
+		$scope.uploadImages = (form, images) ->
+			console.log form
+			if typeof(FormData) is 'function'
+				console.log images
+			else
+				# form.submit()
 			return
 
 		$scope.send = (status) ->

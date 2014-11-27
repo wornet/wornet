@@ -99,9 +99,10 @@ $.each [
 						$progress.circularProgress e.loaded / e.total
 
 				xhr.onerror = ->
-					$error = $(@responseText)
-					unless $error.is('.error')
+					$error = $ @responseText
+					unless $error.is '.error'
 						$error = $error.find '.error'
+					$error = $error.filter '.error'
 					$loader = $form.find '.loader'
 					$loader.fadeOut 'fast', $loader.remove
 					$('.errors').errors $error.html()
@@ -116,6 +117,21 @@ $.each [
 						$newImg = $newImg.find 'img'
 					if $newImg.is('img')
 						newSource = $newImg.attr('src')
+						album = $newImg.data 'created-album'
+						if album
+							albums = objectResolve JSON.parse sessionStorage.albums
+							present = false
+							for a in albums
+								if a._id is album._id
+									present = true
+									break
+							unless present
+								albums.push album
+								statusScope.albums = albums
+								sessionStorage.albums = JSON.stringify albums
+								refreshScope statusScope
+							getAlbumsFromServer ->
+								refreshScope statusScope
 						$img.fadeOut 'fast', ->
 							$loader = $form.find '.loader'
 							$loader.fadeOut 'fast', $loader.remove
@@ -247,11 +263,11 @@ $.each [
 		'click'
 		'a[href]'
 		($a, e) ->
-			href = $a.prop('href').replace /#.*$/g, ''
-			if href is '/user/logout'
-				for key in ['chats']
-					if window.sessionStorage and sessionStorage[key]
-						delete sessionStorage[key]
+			href = $a.prop('href')
+				.replace /#.*$/g, ''
+				.replace /^https?:\/\/[^\/]+/g, ''
+			if href is '/user/logout' and window.sessionStorage
+				sessionStorage.clear()
 			return true
 			if href.length and href.charAt(0) isnt '#' and Ajax.page href, true
 				cancel e

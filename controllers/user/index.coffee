@@ -140,7 +140,8 @@ module.exports = (router) ->
 			model.error = "wrong-format"
 			done()
 		else
-			addPhoto req, 0, (err) ->
+			addPhoto req, 0, (err, createdAlbum = null) ->
+				model.createdAlbum = createdAlbum
 				if err
 					model.error = err
 				else
@@ -148,22 +149,37 @@ module.exports = (router) ->
 					model.src = req.user.thumb200
 				done()
 
-	router.post '/edit', (req, res) ->
+	router.post '/profile/edit', (req, res) ->
 		# When user edit his profile
-		data = {}
+		userModifications = {}
 		for key, val of req.body
 			unless empty val
 				switch key
 					when 'birthDate'
 						birthDate = inputDate val
 						if birthDate.isValid()
-							req.user.birthDate = birthDate
-						else
-							data.err = UserErrors.INVALID_DATE 
+							userModifications.birthDate = birthDate
 					when 'name.first'
-						req.user.name.first = val
+						unless userModifications.name
+							userModifications.name = req.user.name
+						userModifications.name.first = val
 					when 'name.last'
-						req.user.name.last = val
+						unless userModifications.name
+							userModifications.name = req.user.name
+						userModifications.name.last = val
+		extend req.user, userModifications
+		extend req.session.user, userModifications
+		res.redirect '/user/profile'
+		User.findById req.user.id, (err, user) ->
+			if user
+				extend user, userModifications
+				user.save (err, user) ->
+					if user
+						console.log user
+					if err
+						throw err
+			if err
+				throw err
 
 	router.get '/notify/read/:notification', (req, res) ->
 		# Delete notification when read

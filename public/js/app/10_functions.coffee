@@ -241,6 +241,17 @@ refreshScope = ($scope) ->
 	checkDates()
 	return
 
+# Get albums from server
+getAlbumsFromServer = (done) ->
+	Ajax.get '/user/albums', (data) ->
+		err = data.err || null
+		if data.albums
+			albums = data.albums
+			sessionStorage.albums = JSON.stringify albums
+		done err, albums
+		return
+	return
+
 # Get albums from local storage or server
 getAlbums = (done) ->
 	albums = null
@@ -251,13 +262,7 @@ getAlbums = (done) ->
 	if typeof(albums) isnt 'object'
 		albums = null
 	if albums is null
-		Ajax.get '/user/albums', (data) ->
-			err = data.err || null
-			if data.albums
-				albums = data.albums
-				sessionStorage.albums = JSON.stringify albums
-			done err, albums
-			return
+		getAlbumsFromServer done
 	else
 		done null, albums
 	return
