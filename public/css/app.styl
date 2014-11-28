@@ -162,8 +162,7 @@ a
 
 #search
 	margin 2px 0 -1px
-	height 32px !important
-	height 22px
+	height 32px
 
 .ref-color
 	color $orange
@@ -198,10 +197,6 @@ input.form-control
 	line-height $fieldLineHeight * 0.7
 	transition(all .2s)
 
-	height $fieldLineHeight + 2 * $fieldVPadding + 2 !important
-	height $fieldLineHeight
-
-.btn
 	height $fieldLineHeight + 2 * $fieldVPadding + 2
 
 .btn.bar
@@ -244,8 +239,6 @@ select.form-control
 	box-shadow(0px 0px 3px 1px #F7852E)
 
 .btn
-	height 28px !important
-	height 18px
 	line-height 18px
 
 	// Bordures.
@@ -333,10 +326,16 @@ h2
 	border 2px solid $orange
 	box-sizing border-box
 	height 68px
+	
 	.progress-bar
 		position absolute
-		height 68px
-		background $lightOrange
+		height 64px
+		background lighten($lightOrange, 40%)
+	
+	.upload
+		opacity(0)
+		position absolute
+		size(100%, 100%)
 
 .upload-label
 	color $darkGray
@@ -349,11 +348,6 @@ h2
 	
 	small
 		font-weight normal
-
-.upload-button
-	opacity(0)
-	position absolute
-	size(100%, 100%)
 
 .description
 	font-size 11px
@@ -403,6 +397,23 @@ ul.photos-thumbs
 .btn.glued
 input.glued
 	margin 0
+
+fieldset.tab .btn
+	margin-bottom 0
+
+.medias
+	h3
+		clear left
+		margin 0
+		padding-top $mainPadding
+
+	iframe
+	img
+		size(90px, 90px)
+		float left
+	
+	a
+		display block
 
 .cookiesWarning .navbar-right
 	text-align right
@@ -463,9 +474,6 @@ input.glued
 	input.form-control
 	.btn
 		line-height $fieldLineHeight + $mobileIncrease*0.5
-		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2 !important
-		height $fieldLineHeight + $mobileIncrease
-	.btn
 		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2
 	.icon-bar
 		background white

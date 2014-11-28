@@ -6,5 +6,15 @@
 			=s("posté chez")
 			+link("/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}", "{{ status.at.name.full }}")
 	.date(data-date="{{ status.date }}")
+	.medias
+		div(ng-if="status.images.length > 0")
+			h3=s("Images")
+			img(ng-repeat="image in status.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
+		div(ng-if="status.videos.length > 0")
+			h3=s("Vidéos")
+			iframe(ng-repeat="video in status.videos" ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
+		div(ng-if="status.links.length > 0")
+			h3=s("Liens")
+			a(ng-repeat="link in status.links" tagret="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
 	.status-content.word-wrap
 		| {{ status.content }}

@@ -56,7 +56,8 @@ $.each [
 		($input) ->
 			$parent = $input.parent()
 			$thumb = $parent.find 'img.upload-thumb'
-			$('<div class="loader"></div>').appendTo($parent).fadeOut(0).fadeIn 'fast'
+			if exists $thumb
+				$('<div class="loader"></div>').appendTo($parent).fadeOut(0).fadeIn 'fast'
 			$input.parents('form').submit()
 			return
 	]
@@ -97,6 +98,7 @@ $.each [
 				xhr.upload.onprogress = (e) ->
 					if e.lengthComputable
 						$progress.circularProgress e.loaded / e.total
+					return
 
 				xhr.onerror = ->
 					$error = $ @responseText
@@ -106,6 +108,7 @@ $.each [
 					$loader = $form.find '.loader'
 					$loader.fadeOut 'fast', $loader.remove
 					$('.errors').errors $error.html()
+					return
 
 				xhr.onload = ->
 					$newImg = $(@responseText
@@ -132,12 +135,78 @@ $.each [
 								refreshScope statusScope
 							getAlbumsFromServer ->
 								refreshScope statusScope
+								return
 						$img.fadeOut 'fast', ->
 							$loader = $form.find '.loader'
 							$loader.fadeOut 'fast', $loader.remove
 							$img.attr('src', newSource).fadeIn('fast')
+							return
 					else
 						@onerror()
+					return
+
+				xhr.send formData
+				false
+			else
+				true
+	]
+	[
+		'submit'
+		'.status-images'
+		($form, e) ->
+			if typeof(FormData) is 'function'
+				prevent e
+				$scope = $form.scope()
+				$container = $form.find '.upload-container'
+				saveHtml = $container.html()
+				$label = $container.find '.upload-label'
+				$input = $container.find 'input[type="file"]'
+				$input.hide()
+				$progress = $('<div class="progress-bar"></div>').prependTo $container
+				formData = new FormData()
+				$.each $form.find('input[type="file"]')[0].files, (index) ->
+					formData.append 'images[' + index + ']', @
+					return
+				formData.append 'album', $scope.currentAlbum._id || "new"
+				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
+
+				xhr = new XMLHttpRequest()
+				xhr.open 'POST', $form.prop('action'), true
+
+				complete = ->
+					delay 1000, ->
+						$container.html saveHtml
+						$input.show()
+
+				xhr.upload.onprogress = (e) ->
+					if e.lengthComputable
+						percent = Math.round(e.loaded * 100 / e.total) + '%'
+						$progress.css width: percent
+						$label.text percent
+					return
+
+				xhr.onerror = ->
+					complete()
+					$('.errors').errors $('<div>' + @responseText + '</div>').find('.error').html()
+					return
+
+				xhr.onload = ->
+					complete()
+					$('<div>' + @responseText
+						.replace /[\n\r\t]/g, ''
+						.replace /^.*<body[^>]*>/ig, ''
+						.replace /<\/body>.*$/ig, ''
+					+ '</div>').find('.error, img').each ->
+						$tag = $ @
+						if $tag.is '.error'
+							$('.errors').errors $tag.html()
+						else
+							$scope.medias.images.push
+								src: $tag.prop 'src'
+								name: $tag.prop 'alt'
+						return
+					$scope.$apply()
+					return
 
 				xhr.send formData
 				false

@@ -280,51 +280,6 @@ Controllers =
 			chatService.chatWith [objectResolve user]
 			return
 
-		$scope.uploadImages = (form, images) ->
-			console.log [form, images]
-			$form = $ form
-			if typeof(FormData) is 'function'
-				$container = $form.find '.upload-container'
-				$label = $container.find '.upload-label'
-				$container.find('input[type="file"]').hide()
-				$progress = $('<div class="progress-bar"></div>').prependTo $container
-				formData = new FormData()
-				files = $form.find('input[type="file"]')[0].files
-				formData.append 'images', files
-				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
-
-				xhr = new XMLHttpRequest()
-				xhr.open 'POST', $form.prop('action'), true
-
-				xhr.upload.onprogress = (e) ->
-					if e.lengthComputable
-						$progress.width e.loaded / e.total
-						$label.text Math.round(e.loaded * 100 / e.total) + '%'
-
-				xhr.onerror = ->
-					$error = $(@responseText)
-					unless $error.is('.error')
-						$error = $error.find '.error'
-					$('.errors').errors $error.html()
-
-				xhr.onload = ->
-					$newImg = $(@responseText
-						.replace /[\n\r\t]/g, ''
-						.replace /^.*<body[^>]*>/ig, ''
-						.replace /<\/body>.*$/ig, ''
-					)
-					unless $newImg.is('.error') or $newImg.is('img')
-						$newImg = $newImg.find 'img'
-					if $newImg.is('img')
-						console.log $newImg
-					else
-						@onerror()
-
-				xhr.send formData
-			else
-				form.submit()
-			return
-
 		return
 
 	SigninFirstStep: ($scope) ->
@@ -362,8 +317,25 @@ Controllers =
 			refreshScope $scope
 			return
 
+		$scope.status = containsMedias: false
+		$scope.media = step: null
+
+		initMedias = ->
+			$scope.medias =
+				links: []
+				images: []
+				videos: []
+			return
+
+		$scope.containsMedias = (status) ->
+			status.containsMedias = true
+			initMedias()
+			$scope.media.step = null
+			return
+
 		$scope.selectAlbum = (album) ->
 			$scope.currentAlbum = $.extend {}, album
+			initMedias()
 			$scope.media.step = 'add'
 			return
 
@@ -372,20 +344,42 @@ Controllers =
 			Ajax.put '/user/album/add',
 				data:
 					album: album
-			$scope.currentAlbum = $.extend {}, album
+			$scope.selectAlbum album
 			$scope.albums.push $scope.currentAlbum
-			$scope.media.step = 'add'
 			album =
 				name: ''
 				description: ''
 			return
 
-		$scope.uploadImages = (form, images) ->
-			console.log form
-			if typeof(FormData) is 'function'
-				console.log images
+		$scope.addMedia = (link) ->
+			href = link.href
+			match = href.match /src="([^"]+)"/g
+			if match and match.length > 1
+				href = match[1]
+			https = href.substr(0, 5) is 'https'
+			href = href
+				.replace /^(https?)?:?\/\//, ''
+				.replace /^www\./, ''
+			video = (->
+				videoHosts =
+					'//www.dailymotion.com/embed/video/$1': [/^dai\.ly\/([a-z0-9_-]+)/, /^dailymotion\.com\/video\/([a-z0-9_-]+)/i]
+					'//www.youtube.com/embed/$1': [/^youtu\.be\/([a-z0-9_-]+)/, /^youtube\.com\/watch\?v=([a-z0-9_-]+)/i]
+				for url, regexps of videoHosts
+					for regexp in regexps
+						match = href.match regexp
+						if match and match.length > 1
+							return url.replace '$1', match[1]
+				null
+			)()
+			if video
+				$scope.medias.videos.push
+					href: video
 			else
-				# form.submit()
+				$scope.medias.links.push
+					href: href
+					https: https
+			link.href = ''
+
 			return
 
 		$scope.send = (status) ->
@@ -393,6 +387,7 @@ Controllers =
 				data:
 					status: status
 					at: at
+					medias: $scope.medias || null
 				success: setRecentStatus
 			status.content = ""
 			return

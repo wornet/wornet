@@ -39,7 +39,7 @@ StatusPackage =
 					.skip 0
 					.limit 10
 					.sort date: 'desc'
-					.select '_id date author at content'
+					.select '_id date author at content images videos links'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
@@ -77,15 +77,22 @@ StatusPackage =
 								data.recentStatus = recentStatusPublicData
 								res.json data
 			else
-				res.serverError new Error "You can't see the status of this profile"
+				res.serverError new Error s("Vous ne pouvez pas voir les statuts de ce profile")
 
 	add: (req, done) ->
-		if req.data.status and req.data.status.content
+		if req.data.status
 			try
+				medias = req.data.medias || {}
+				at = req.data.at || null
+				unless at is null
+					at = cesarRight at
 				Status.create
 					author: req.user._id
-					at: req.data.at || null
-					content: req.data.status.content
+					at: at
+					content: req.data.status.content || ""
+					images: medias.images || []
+					videos: medias.videos || []
+					links: medias.links || []
 				, (err, status) ->
 					unless err
 						status = status.toObject()
@@ -103,6 +110,6 @@ StatusPackage =
 			catch err
 				done err
 		else
-			done "Invalid status content"
+			done new Error s("Ce statut est vide")
 
 module.exports = StatusPackage

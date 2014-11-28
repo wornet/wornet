@@ -15,26 +15,47 @@ statusSchema = BaseSchema.extend
 	content:
 		type: String
 		trim: true
-		required: true
+	images: [
+		name:
+			type: String
+			trim: true
+		src:
+			type: String
+			trim: true
+	]
+	videos: [
+		href:
+			type: String
+			trim: true
+	]
+	links: [
+		href:
+			type: String
+			trim: true
+		https: Boolean
+	]
 
 statusSchema.pre 'save', (next) ->
-	if equals @at, @author
-		@at = null
-	if @at is null
-		next()
+	if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
+		next new Error s("Ce statut est vide")
 	else
-		at = strval @at
-		User.findById @author, (err, user) ->
-			if err
-				next err
-			else
-				user.getFriends (err, friends) ->
-					if err
-						next err
-					else if friends.has(id: at)
-						next()
-					else
-						next new Error 'post status only on a friend profile'
+		if equals @at, @author
+			@at = null
+		if @at is null
+			next()
+		else
+			at = strval @at
+			User.findById @author, (err, user) ->
+				if err
+					next err
+				else
+					user.getFriends (err, friends) ->
+						if err
+							next err
+						else if friends.has(id: at)
+							next()
+						else
+							next new Error s("Vous ne pouvez poster que sur les profils de vos amis")
 
 
 module.exports = statusSchema

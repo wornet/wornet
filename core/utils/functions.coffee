@@ -494,26 +494,27 @@ module.exports =
 	@param ObjectId albumId id (0 = profile photo)
 	@param callback executed when everything is done
 	###
-	addPhoto: (req, albumId, done) ->
+	addPhoto: (req, image, albumId, done) ->
+		notProfilePhoto = (albumId and albumId isnt "0")
 		next = (createdAlbum = null) ->
 			Photo.create
 				user: req.user.id
-				name: req.files.photo.name
+				name: image.name
 				album: albumId
 			, (createErr, photo) ->
 				if createErr
-					done createErr, createdAlbum
+					done createErr, createdAlbum, photo
 				else
 					id = photo.id
 					photoDirectory = __dirname + '/../../public/img/photo/'
 					dst = photoDirectory + id + '.jpg'
-					copy req.files.photo.path, dst
+					copy image.path, dst
 					sizes = [50, 90, 200]
 					pending = sizes.length
 					for size in sizes
 						thumb = photoDirectory + size + 'x' + id + '.jpg'
 						imagemagick.resize
-							srcPath: req.files.photo.path
+							srcPath: image.path
 							dstPath: thumb
 							strip : false,
 							width : size,
@@ -524,11 +525,21 @@ module.exports =
 							]
 						, (resizeErr) ->
 							if resizeErr
-								done resizeErr, createdAlbum
+								done resizeErr, createdAlbum, photo
 							else unless --pending
-								updateUser req, photoId: id, (err) ->
-									done err, createdAlbum
-		if albumId and albumId isnt "0"
+								if notProfilePhoto
+									done null, createdAlbum, photo
+								else
+									userModifications = {}
+									userModifications.photoId = photo.id
+									userModifications.thumb = photo.thumb
+									for size in sizes
+										userModifications['thumb' + size] = photo['thumb' + size]
+									extend req.session.user, userModifications
+									extend req.user, userModifications
+									updateUser req, photoId: id, (err) ->
+										done err, createdAlbum, photo
+		if notProfilePhoto
 			next()
 		else
 			defaultName = s("Photos de profil")

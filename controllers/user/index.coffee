@@ -127,28 +127,6 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
-	router.post '/photo', (req, res) ->
-		# When user upload a new profile photo
-		res.setTimeLimit 600
-		model = {}
-		done = ->
-			res.render templateFolder + '/upload-photo', model
-		if req.files.photo.size > config.wornet.upload.maxsize
-			model.error = "size-exceeded"
-			done()
-		else unless (['image/png', 'image/jpeg']).contains req.files.photo.type
-			model.error = "wrong-format"
-			done()
-		else
-			addPhoto req, 0, (err, createdAlbum = null) ->
-				model.createdAlbum = createdAlbum
-				if err
-					model.error = err
-				else
-					req.session.user.thumb200 = req.user.thumb200
-					model.src = req.user.thumb200
-				done()
-
 	router.post '/profile/edit', (req, res) ->
 		# When user edit his profile
 		userModifications = {}
@@ -174,8 +152,6 @@ module.exports = (router) ->
 			if user
 				extend user, userModifications
 				user.save (err, user) ->
-					if user
-						console.log user
 					if err
 						throw err
 			if err
@@ -231,3 +207,56 @@ module.exports = (router) ->
 			res.json
 				err: err
 				album: album
+
+	router.post '/photo', (req, res) ->
+		# When user upload a new profile photo
+		res.setTimeLimit 600
+		model = { images: [] }
+		images = req.files.photo || []
+		unless images instanceof Array
+			images = [images]
+		unless images.length
+			index = 0
+			while req.files['images[' + index + ']']
+				images.push req.files['images[' + index + ']']
+				index++
+		done = (data) ->
+			model.images.push data
+			if model.images.length is images.length
+				res.render templateFolder + '/upload-photo', model
+		lastestAlbum = null
+		images.each ->
+			image = @
+			data = name: @name
+			if image.size > config.wornet.upload.maxsize
+				data.error = "size-exceeded"
+				done data
+			else unless (['image/png', 'image/jpeg']).contains image.type
+				data.error = "wrong-format"
+				done data
+			else
+				album =  req.body.album || 0
+				next = ->
+					addPhoto req, image, album, (err, createdAlbum = null, photo) ->
+						data.createdAlbum = createdAlbum
+						if err
+							data.error = err
+						else
+							data.src = photo.thumb200
+						done data
+				if album is "new"
+					if lastestAlbum
+						album = lastestAlbum
+						next()
+					else
+						Album.findOne {}, {}, sort: created_at : -1, (err, foundAlbum) ->
+							if err
+								data.error = err
+								done data
+							else
+								album = foundAlbum._id
+								lastestAlbum = album
+								next()
+				else
+					next()
+			true

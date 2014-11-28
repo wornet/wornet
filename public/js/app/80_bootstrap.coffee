@@ -9,6 +9,15 @@ Wornet = angular.module 'Wornet', [
 	'ngSanitize'
 ]
 
+.config ($sceDelegateProvider) ->
+	$sceDelegateProvider.resourceUrlWhitelist [
+		'self'
+		'http://www.youtube.com/embed/**'
+		'https://www.youtube.com/embed/**'
+		'http://www.dailymotion.com/embed/video/**'
+		'https://www.dailymotion.com/embed/video/**'
+	]
+
 #Angular Wornet services
 .factory 'chatService', ['$rootScope', ($rootScope) ->
 	window.chatService =

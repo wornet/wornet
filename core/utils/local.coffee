@@ -20,7 +20,7 @@ module.exports = (lang, text, replacements, count) ->
 	replacements = replacements || {}
 
 	for from, to of replacements
-		reg = new RegExp '\{' + from + '\}', 'g'
+		reg = new RegExp '\\{' + from + '\\}', 'g'
 		text = text.replace reg, to
 
 	texts = text.split /\|/g
