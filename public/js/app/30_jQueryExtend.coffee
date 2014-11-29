@@ -66,3 +66,12 @@ $.fn.extend
 				defaultValue
 		else
 			defaultValue
+	# Force size of a box to specified ratio or to ratio embeded in data attribute
+	ratio: (r) ->
+		@each ->
+			$block = $ @
+			console.log $block
+			ratio = (r || $block.data 'ratio') * 1
+			unless isNaN(ratio)
+				$block.height $block.width() / ratio
+			return

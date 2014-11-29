@@ -330,7 +330,7 @@ $.each [
 	]
 	[
 		'click'
-		'a[href]'
+		'a[href][target!="_blank"]'
 		($a, e) ->
 			href = $a.prop('href')
 				.replace /#.*$/g, ''
@@ -359,6 +359,13 @@ $.each [
 			delay 1, ->
 				$(sel).focus()
 				return
+			return
+	]
+	[
+		'load'
+		'iframe[data-ratio]'
+		($iframe) ->
+			$iframe.ratio()
 			return
 	]
 

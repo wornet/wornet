@@ -30,10 +30,5 @@ $('.loading').each ->
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
 onResize ->
-	$('[data-ratio]').each ->
-		$block = $ @
-		ratio = $block.data('ratio') * 1
-		if ratio > 0
-			$block.height $block.width() / ratio
-		return
+	$('[data-ratio]').ratio()
 	return

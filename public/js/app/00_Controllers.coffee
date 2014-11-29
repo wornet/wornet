@@ -390,6 +390,18 @@ Controllers =
 					medias: $scope.medias || null
 				success: setRecentStatus
 			status.content = ""
+			initMedias()
+
+			return
+
+		$scope.loadMedia = (type, media) ->
+			media.type = type
+			if type is 'image'
+				media.src = media.src.replace(/\/[0-9]+x([^\/]+)$/g, '/$1')
+			$scope.loadedMedia = media
+			delay 1000, ->
+				$('#status-view iframe[data-ratio]').ratio()
+
 			return
 
 		return
