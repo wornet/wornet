@@ -70,7 +70,6 @@ $.fn.extend
 	ratio: (r) ->
 		@each ->
 			$block = $ @
-			console.log $block
 			ratio = (r || $block.data 'ratio') * 1
 			unless isNaN(ratio)
 				$block.height $block.width() / ratio
