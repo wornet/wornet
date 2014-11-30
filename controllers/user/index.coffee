@@ -222,9 +222,7 @@ module.exports = (router) ->
 				done err: err
 			else
 				photos = foundPhotos.map (photo) ->
-					r = photo.values ['photo', 'name'], true
-					console.log r
-					r
+					photo.values ['photo', 'name'], true
 				next()
 
 	router.put '/album/add', (req, res) ->
