@@ -270,7 +270,6 @@ Controllers =
 
 	MediaView: ($scope) ->
 		$scope.loadMedia = (type, media) ->
-			console.log [@, arguments]
 			media.type = type
 			if type is 'image'
 				media.src = (media.src || media.photo).replace(/\/[0-9]+x([^\/]+)$/g, '/$1')
