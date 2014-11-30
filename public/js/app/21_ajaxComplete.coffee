@@ -43,5 +43,4 @@ $document = $(document)
 				else
 					# Get new CSRF token from meta tags given in the AJAX response
 					_csrf = $(data).find('meta[name="_csrf"]').attr 'content'
-			return
 		return

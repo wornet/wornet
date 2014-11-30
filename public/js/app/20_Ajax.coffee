@@ -26,7 +26,6 @@ Ajax =
 		if _method?
 			# Set method in data POST parameters
 			settings.data._method = _method
-		console.log settings
 		$.ajax url, settings
 
 	###

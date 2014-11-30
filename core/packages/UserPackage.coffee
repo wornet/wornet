@@ -19,7 +19,6 @@ UserPackage =
 		query = query || "-"
 		limit = limit || 8
 		regexp = new RegExp query, 'gi'
-		console.log exclude
 		User.find
 			$or: [
 				'name.first': regexp

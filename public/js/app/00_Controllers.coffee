@@ -351,34 +351,6 @@ Controllers =
 		return
 
 	Status: ($scope) ->
-		setRecentStatus = (data) ->
-			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
-				console.log data.recentStatus
-				$scope.recentStatus = data.recentStatus.map (status) ->
-					status.content = richText status.content
-					console.log status
-					status
-				refreshScope $scope
-			return
-
-		at = getData 'at'
-
-		Ajax.get '/user/status/recent' + (if at then '/' + at else ''), setRecentStatus
-
-		getAlbums (err, albums) ->
-			unless err
-				$scope.albums = albums
-				refreshScope $scope
-			return
-
-		window.statusScope = $scope
-		$scope.$on 'receiveStatus', (e, status) ->
-			$scope.recentStatus.unshift status
-			refreshScope $scope
-			return
-
-		$scope.status = containsMedias: false
-		$scope.media = step: null
 
 		initMedias = ->
 			$scope.medias =
@@ -386,42 +358,6 @@ Controllers =
 				images: []
 				videos: []
 			return
-
-		initMedias()
-
-		$scope.containsMedias = (status) ->
-			status.containsMedias = true
-			initMedias()
-			$scope.media.step = null
-			return
-
-		$scope.selectAlbum = (album) ->
-			$scope.currentAlbum = $.extend {}, album
-			initMedias()
-			$scope.media.step = 'add'
-			return
-
-		$scope.createAlbum = (album) ->
-			delete sessionStorage['albums']
-			Ajax.put '/user/album/add',
-				data:
-					album: album
-			$scope.selectAlbum album
-			$scope.albums.push $scope.currentAlbum
-			album =
-				name: ''
-				description: ''
-			return
-
-		videoHosts =
-			'//www.dailymotion.com/embed/video/$1': [
-				/^dai\.ly\/([a-z0-9_-]+)/
-				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
-			]
-			'//www.youtube.com/embed/$1': [
-				/^youtu\.be\/([a-z0-9_-]+)/
-				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
-			]
 
 		scanLink = (href) ->
 			https = href.substr(0, 5) is 'https'
@@ -453,13 +389,55 @@ Controllers =
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
 					link = scanLink link
 					if transformToLinks
-						link
+						space + link
 					else
 						all
 			)).substr 1
 
-		$scope.richText = (text) ->
+		richText = (text) ->
 			scannAllLinks safeHtml(text), true
+
+		setRecentStatus = (data) ->
+			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
+				$scope.recentStatus = data.recentStatus.map (status) ->
+					status.content = richText status.content
+					status
+				refreshScope $scope
+			return
+
+		videoHosts =
+			'//www.dailymotion.com/embed/video/$1': [
+				/^dai\.ly\/([a-z0-9_-]+)/
+				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
+			]
+			'//www.youtube.com/embed/$1': [
+				/^youtu\.be\/([a-z0-9_-]+)/
+				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
+			]
+
+		$scope.containsMedias = (status) ->
+			status.containsMedias = true
+			initMedias()
+			$scope.media.step = null
+			return
+
+		$scope.selectAlbum = (album) ->
+			$scope.currentAlbum = $.extend {}, album
+			initMedias()
+			$scope.media.step = 'add'
+			return
+
+		$scope.createAlbum = (album) ->
+			delete sessionStorage['albums']
+			Ajax.put '/user/album/add',
+				data:
+					album: album
+			$scope.selectAlbum album
+			$scope.albums.push $scope.currentAlbum
+			album =
+				name: ''
+				description: ''
+			return
 
 		$scope.addMedia = (link) ->
 			href = link.href
@@ -488,6 +466,28 @@ Controllers =
 			loadMedia type, media
 
 			return
+
+		at = getData 'at'
+
+		Ajax.get '/user/status/recent' + (if at then '/' + at else ''), setRecentStatus
+
+		getAlbums (err, albums) ->
+			unless err
+				$scope.albums = albums
+				refreshScope $scope
+			return
+
+		window.statusScope = $scope
+
+		$scope.$on 'receiveStatus', (e, status) ->
+			$scope.recentStatus.unshift status
+			refreshScope $scope
+			return
+
+		$scope.status = containsMedias: false
+		$scope.media = step: null
+
+		initMedias()
 
 		return
 
