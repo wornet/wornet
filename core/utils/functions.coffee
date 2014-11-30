@@ -249,6 +249,16 @@ module.exports =
 			console['log'] '--------------------------\n' + Date.log()
 			console.trace()
 			console['log'] '=========================='
+	###
+	Display a warning message and stack trace
+	@param mixed message or vairbale to print in console warn
+
+	@return void
+	###
+	warn: (message) ->
+		console['warn']  message
+		console['log'] '--------------------------\n' + Date.log()
+		console.trace()
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)

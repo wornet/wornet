@@ -75,9 +75,14 @@ block nav
 						placeholder=s("Recherchez vos amis")
 						)#search
 					+glyph('search')
-				ul: li(ng-repeat="user in query.users")
-					a(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
-						img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
+				.suggests
+					ul.loading.hidden-loading
+						li(ng-repeat="user in query.users")
+							a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+								img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
+								| {{ user.name.full }}
+							a.col-xs-3.chat-with(ng-click="chatWith(user)")
+								+glyph('comment')
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding

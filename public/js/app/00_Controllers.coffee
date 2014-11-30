@@ -310,6 +310,10 @@ Controllers =
 		return
 
 	Search: ($scope) ->
+		$scope.chatWith = (user) ->
+			chatService.chatWith [objectResolve user]
+			return
+
 		$scope.search = (query) ->
 			query.content = ''
 			return
@@ -317,13 +321,18 @@ Controllers =
 		ajaxRequest = null
 
 		$scope.change = (query) ->
-			query.action = '/user/first/' + query.content
 			if ajaxRequest
 				ajaxRequest.abort()
-			ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent query.content, (data) ->
-				if data.users
-					query.users = data.users
-					$scope.apply()
+			if query.content.length > 0
+				query.action = '/user/first/' + query.content
+				ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent query.content
+				.done (data) ->
+					if data.users
+						$scope.query.users = data.users
+						$scope.apply()
+			else
+				$scope.query.users = []
+				query.action = '#'
 			return
 
 		return
@@ -344,7 +353,11 @@ Controllers =
 	Status: ($scope) ->
 		setRecentStatus = (data) ->
 			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
-				$scope.recentStatus = data.recentStatus
+				console.log data.recentStatus
+				$scope.recentStatus = data.recentStatus.map (status) ->
+					status.content = richText status.content
+					console.log status
+					status
 				refreshScope $scope
 			return
 
@@ -374,6 +387,8 @@ Controllers =
 				videos: []
 			return
 
+		initMedias()
+
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
@@ -398,19 +413,22 @@ Controllers =
 				description: ''
 			return
 
-		$scope.addMedia = (link) ->
-			href = link.href
-			match = href.match /src="([^"]+)"/g
-			if match and match.length > 1
-				href = match[1]
+		videoHosts =
+			'//www.dailymotion.com/embed/video/$1': [
+				/^dai\.ly\/([a-z0-9_-]+)/
+				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
+			]
+			'//www.youtube.com/embed/$1': [
+				/^youtu\.be\/([a-z0-9_-]+)/
+				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
+			]
+
+		scanLink = (href) ->
 			https = href.substr(0, 5) is 'https'
 			href = href
 				.replace /^(https?)?:?\/\//, ''
 				.replace /^www\./, ''
 			video = (->
-				videoHosts =
-					'//www.dailymotion.com/embed/video/$1': [/^dai\.ly\/([a-z0-9_-]+)/, /^dailymotion\.com\/video\/([a-z0-9_-]+)/i]
-					'//www.youtube.com/embed/$1': [/^youtu\.be\/([a-z0-9_-]+)/, /^youtube\.com\/watch\?v=([a-z0-9_-]+)/i]
 				for url, regexps of videoHosts
 					for regexp in regexps
 						match = href.match regexp
@@ -418,18 +436,43 @@ Controllers =
 							return url.replace '$1', match[1]
 				null
 			)()
+			s = textReplacements
 			if video
 				$scope.medias.videos.push
 					href: video
+				'<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
 			else
 				$scope.medias.links.push
 					href: href
 					https: https
+				'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+
+		scannAllLinks = (text, transformToLinks = false) ->
+			(' ' + (text
+				.replace /(\s)www\./g, '$1http://www.'
+				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+					link = scanLink link
+					if transformToLinks
+						link
+					else
+						all
+			)).substr 1
+
+		$scope.richText = (text) ->
+			scannAllLinks safeHtml(text), true
+
+		$scope.addMedia = (link) ->
+			href = link.href
+			match = href.match /src="([^"]+)"/g
+			if match and match.length > 1
+				href = match[1]
+			scanLink href
 			link.href = ''
 
 			return
 
 		$scope.send = (status) ->
+			status.content = scannAllLinks status.content
 			Ajax.put '/user/status/add',
 				data:
 					status: status

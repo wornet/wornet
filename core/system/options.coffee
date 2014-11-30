@@ -241,8 +241,7 @@ module.exports = (port) ->
 					if typeof(model) is 'string' or model instanceof Error
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
-					console.warn err
-					console.trace()
+					warn err
 					if config.env.development
 						model.err = err
 					@status val

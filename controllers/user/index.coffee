@@ -256,9 +256,11 @@ module.exports = (router) ->
 			data = name: @name
 			if image.size > config.wornet.upload.maxsize
 				data.error = "size-exceeded"
+				warn data.error
 				done data
 			else unless (['image/png', 'image/jpeg']).contains image.type
 				data.error = "wrong-format"
+				warn data.error
 				done data
 			else
 				album =  req.body.album || 0
@@ -267,6 +269,7 @@ module.exports = (router) ->
 						data.createdAlbum = createdAlbum
 						if err
 							data.error = err
+							warn err
 						else
 							data.src = photo.thumb200
 						done data
@@ -278,6 +281,7 @@ module.exports = (router) ->
 						Album.findOne {}, {}, sort: created_at : -1, (err, foundAlbum) ->
 							if err
 								data.error = err
+								warn err
 								done data
 							else
 								album = foundAlbum._id
@@ -286,3 +290,12 @@ module.exports = (router) ->
 				else
 					next()
 			true
+
+	router.get '/search/:query', (req, res) ->
+		query = req.params.query
+		UserPackage.search [req.user.id], query, (err, users) ->
+			if err
+				res.serverError err
+			else
+				res.json users: users.map (user) ->
+					user.publicInformations()

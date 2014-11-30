@@ -32,7 +32,7 @@ fieldset.tab(ng-show="status.containsMedias")
 				h4 {{ album.name }}
 				.preview
 					img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
-			.col-xs-12.col-sm-6.col-sm-offset-3
+			.cb.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104" give-focus="#album-name")
 					=s("Créer un album")
 		div(ng-switch-when="add")

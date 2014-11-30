@@ -78,6 +78,9 @@ iframe
 .loading *
 	visibility hidden
 
+.loading.hidden-loading
+	display none
+
 
 #wrap
 	min-height 100%
@@ -426,6 +429,38 @@ fieldset.tab .btn
 	
 	a
 		display block
+
+.status-block .medias
+	padding $smallPadding
+
+.suggests
+#underbar .suggests
+	position relative
+
+	ul
+		display block
+		position absolute
+		padding 0
+		width 100%
+		z-index 1
+
+		li
+			display block
+			
+			a
+				height $thumbHeight + 2 * $smallPadding
+				display block
+				padding 0
+				line-height 58px
+				background $lightGray
+				border 1px solid $nearlyWhite
+				margin 0 0 -1px -1px
+			
+			a.chat-with
+				text-align center
+				
+				.glyphicon
+					margin-left 0
 
 #media-view img.big
 	max-width 100%

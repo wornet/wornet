@@ -6,7 +6,8 @@
 			=s("posté chez")
 			+link("/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}", "{{ status.at.name.full }}")
 	.date(data-date="{{ status.date }}")
-	.medias
+	.status-content.word-wrap(ng-bind-html="status.content")
+	.medias(ng-if="status.images.length > 0 || status.videos.length > 0 || status.links.length > 0")
 		div(ng-if="status.images.length > 0")
 			h3=s("Images")
 			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-view" ng-click="loadMedia('image', image)")
@@ -20,5 +21,4 @@
 		div(ng-if="status.links.length > 0")
 			h3=s("Liens")
 			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
-	.status-content.word-wrap
-		| {{ status.content }}
+	.cb

@@ -2,6 +2,58 @@
 
 UserPackage =
 
+	search: ->
+		for arg in arguments
+			if arg instanceof ObjectId
+				exclude = [arg]
+			else if arg instanceof Array
+				exclude = arg
+			else if typeof arg is 'number'
+				limit = arg
+			else if typeof arg is 'function'
+				done = arg
+			else
+				query = strval arg
+		exclude = exclude || []
+		done = done || ->
+		query = query || "-"
+		limit = limit || 8
+		regexp = new RegExp query, 'gi'
+		console.log exclude
+		User.find
+			$or: [
+				'name.first': regexp
+			,
+				'name.last': regexp
+			]
+			id: $not: $in: exclude
+		.limit limit
+		.exec done
+
+		###
+		User.find
+				$text: $search: query
+			,
+				score: $meta: 'textScore'
+			.sort score: $meta: 'textScore'
+			.limit limit
+			.exec (err, users) ->
+				if err
+					done err
+				else
+					if users and users.length > 0
+						done null, users
+					else
+						regexp = new RegExp query, 'gi'
+						User.find $or: [
+								'name.first': regexp
+							,
+								'name.last': regexp
+							]
+							.limit limit
+							.exec done
+		###
+
 	refreshFriends: (req, done) ->
 		req.getFriends (err, friends, friendAsks) ->
 			unless err
