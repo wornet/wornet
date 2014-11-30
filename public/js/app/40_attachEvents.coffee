@@ -368,6 +368,13 @@ $.each [
 			$iframe.ratio()
 			return
 	]
+	[
+		'click'
+		'[data-load-media]'
+		($btn) ->
+			params = $btn.data 'load-media'
+			loadMedia.apply @, params
+	]
 
 ], ->
 	params = @

@@ -30,7 +30,8 @@ fieldset.tab(ng-show="status.containsMedias")
 		div(ng-switch-when="select-album")
 			.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
 				h4 {{ album.name }}
-				p.description {{ album.description }}
+				.preview
+					img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
 			.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104" give-focus="#album-name")
 					=s("Créer un album")
@@ -76,3 +77,4 @@ fieldset.tab(ng-show="status.containsMedias")
 			.col-xs-6.fit
 				a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")
 					=s("Utiliser un album existant")
+	.cb

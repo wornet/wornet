@@ -54,6 +54,8 @@ block nav
 						ul.dropdown-menu(role='menu')
 							li: a(href="/user/profile")
 									=s("Mon profil")
+							li: a(href="/agenda")
+									=s("Mon agenda")
 							li: a(href="/user/logout")
 									=s("Déconnexion")
 					li: a(href="#")
@@ -65,17 +67,23 @@ block nav
 	if user
 		nav#underbar.nav.navbar.cb
 			+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
-			+form("#")(ng-controller="SigninFirstStepCtrl" role="search").navbar-form.navbar-left.col-sm-4.col-xs-12
+			+form("{{ query.action }}")(ng-controller="SearchCtrl" role="search" ng-submit="search(query)").navbar-form.navbar-left.col-sm-4.col-xs-12
 				label
 					+formControl()(
+						ng-model="query.content"
+						ng-change="change(query)"
 						placeholder=s("Recherchez vos amis")
 						)#search
 					+glyph('search')
+				ul: li(ng-repeat="user in query.users")
+					a(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+						img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding
 
 block footer
 	include ../includes/chat
+	include ../includes/media-view
 
 block cookie-banner-under

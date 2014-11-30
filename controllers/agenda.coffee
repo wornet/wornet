@@ -37,7 +37,7 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 						else
-							res.json event
+							res.json event: event
 
 				when "POST"
 					# Modify event (changes of dates, hours or name)
@@ -61,7 +61,7 @@ module.exports = (router) ->
 								if err
 									res.serverError err
 								else
-									res.json event
+									res.json event: event
 
 				when "DELETE"
 					# Remove an event
@@ -73,4 +73,4 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 						else
-							res.json {}
+							res.json()

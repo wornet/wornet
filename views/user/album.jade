@@ -1,0 +1,11 @@
+extends ../layouts/user
+
+block body
+	.well
+		h3=album.name
+		p=album.description
+		.medias
+			each image in photos
+				a(data-toggle="modal" data-target="#media-view" data-load-media=['image', image])
+					img(src=image.photo alt=image.name)
+			.cb

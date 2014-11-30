@@ -243,13 +243,22 @@ refreshScope = ($scope) ->
 
 # Get albums from server
 getAlbumsFromServer = (done) ->
-	Ajax.get '/user/albums', (data) ->
-		err = data.err || null
-		if data.albums
-			albums = data.albums
-			sessionStorage.albums = JSON.stringify albums
-		done err, albums
-		return
+	if window.getAlbumsFromServer.waitingCallbacks
+		window.getAlbumsFromServer.waitingCallbacks.push done
+	else
+		window.getAlbumsFromServer.waitingCallbacks = [done]
+		Ajax.get '/user/albums', (data) ->
+			err = data.err || null
+			if data.albums
+				albums = data.albums
+				sessionStorage.albums = JSON.stringify albums
+			for done in window.getAlbumsFromServer.waitingCallbacks
+				done err, albums
+			window.getAlbumsFromServer.waitingCallbacks = false
+			return
+		.error ->
+			window.getAlbumsFromServer.waitingCallbacks = false
+			return
 	return
 
 # Get albums from local storage or server

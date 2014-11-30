@@ -199,6 +199,34 @@ module.exports = (router) ->
 				err: err
 				albums: albums
 
+	# Display images in an album
+	router.get '/album/:id', (req, res) ->
+		done = (model) ->
+			res.render templateFolder + '/album', model
+		id = req.params.id
+		album = null
+		photos = null
+		next = ->
+			if album and photos
+				done
+					album: album
+					photos: photos
+		Album.findById id, (err, foundAlbum) ->
+			if err
+				done err: err
+			else
+				album = foundAlbum
+				next()
+		Photo.find album: id, (err, foundPhotos) ->
+			if err
+				done err: err
+			else
+				photos = foundPhotos.map (photo) ->
+					r = photo.values ['photo', 'name'], true
+					console.log r
+					r
+				next()
+
 	router.put '/album/add', (req, res) ->
 		# Create a new album
 		album = extend user: req.user._id, req.body.album

@@ -50,8 +50,8 @@ Controllers =
 						event: getEvent event
 					success: (data) ->
 						delete saveDelays[event.id]
-						if cb?
-							cb(data)
+						if cb? and typeof(data) is 'object' and data.event
+							cb data.event
 						return
 				return
 			return
@@ -111,7 +111,8 @@ Controllers =
 				data:
 					event: getEvent event
 				success: (data) ->
-					event.id = data._id
+					if typeof(data) is 'object' and data.event
+						event.id = data.event._id
 					return
 			# After new field is ready (after AngularJS create it)
 			delay 50, ->
@@ -258,6 +259,33 @@ Controllers =
 
 		return
 
+	Medias: ($scope) ->
+		getAlbums (err, albums) ->
+			unless err
+				$scope.albums = albums
+				refreshScope $scope
+			return
+
+		return
+
+	MediaView: ($scope) ->
+		$scope.loadMedia = (type, media) ->
+			console.log [@, arguments]
+			media.type = type
+			if type is 'image'
+				media.src = (media.src || media.photo).replace(/\/[0-9]+x([^\/]+)$/g, '/$1')
+			$scope.loadedMedia = media
+			delay 1000, ->
+				$('#status-view iframe[data-ratio]').ratio()
+			refreshScope $scope
+			return
+
+		window.loadMedia = (type, media) ->
+			$scope.loadMedia type, media
+			return
+
+		return
+
 	Notifications: ($scope) ->
 		$scope.notifications = {}
 
@@ -278,6 +306,25 @@ Controllers =
 	Profile: ($scope, chatService) ->
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
+			return
+
+		return
+
+	Search: ($scope) ->
+		$scope.search = (query) ->
+			query.content = ''
+			return
+
+		ajaxRequest = null
+
+		$scope.change = (query) ->
+			query.action = '/user/first/' + query.content
+			if ajaxRequest
+				ajaxRequest.abort()
+			ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent tquery.content, (data) ->
+				if data.users
+					query.users = data.users
+					$scope.apply()
 			return
 
 		return
@@ -310,6 +357,7 @@ Controllers =
 			unless err
 				$scope.albums = albums
 				refreshScope $scope
+			return
 
 		window.statusScope = $scope
 		$scope.$on 'receiveStatus', (e, status) ->
@@ -395,12 +443,7 @@ Controllers =
 			return
 
 		$scope.loadMedia = (type, media) ->
-			media.type = type
-			if type is 'image'
-				media.src = media.src.replace(/\/[0-9]+x([^\/]+)$/g, '/$1')
-			$scope.loadedMedia = media
-			delay 1000, ->
-				$('#status-view iframe[data-ratio]').ratio()
+			loadMedia type, media
 
 			return
 

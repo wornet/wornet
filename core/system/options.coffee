@@ -214,13 +214,13 @@ module.exports = (port) ->
 										err = (if otherUsers.length is idsToFind.length
 											null
 										else
-											new Error "Unable to find all users even from the database"
+											new Error s("Impossible de trouver tous les utilisateurs")
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
 										done err, usersMap, true
 							else
-								err = new Error "Unable to find all users"
+								err = new Error s("Impossible de trouver tous les utilisateurs")
 								done err, null, false
 						else
 							done null, usersMap, false
@@ -278,9 +278,9 @@ module.exports = (port) ->
 				if typeof @ is 'undefined'
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
-					if data.err instanceof Error
+					if data.err instanceof Error and config.env.development
 						data.stack = data.err.stack
-					data.err = strval(data.err || "Unknown error")
+					data.err = strval(data.err || s("Erreur inconnue"))
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data
@@ -290,7 +290,7 @@ module.exports = (port) ->
 				if time > 0
 					res = @
 					@excedeedTimeout = delay time.seconds, ->
-						res.serverError new Error "Excedeed timeout"
+						res.serverError new Error s("Navré, nous n'avons pas pu traiter votre demande, veuillez réessayer ultérieurement.")
 			catch: (callback) ->
 				res = @
 				->
