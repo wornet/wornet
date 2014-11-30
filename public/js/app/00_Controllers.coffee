@@ -320,7 +320,7 @@ Controllers =
 			query.action = '/user/first/' + query.content
 			if ajaxRequest
 				ajaxRequest.abort()
-			ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent tquery.content, (data) ->
+			ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent query.content, (data) ->
 				if data.users
 					query.users = data.users
 					$scope.apply()

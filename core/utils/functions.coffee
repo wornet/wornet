@@ -126,7 +126,7 @@ module.exports =
 			output = code
 				.replace /\n/g, '\n\n'
 				.replace /^\/\/[^\n]*\n/g, ''
-				.replace /([^\\:"])\/\/[^\n]*\n/g, '$1'
+				.replace /([^\\:"'])\/\/[^\n]*\n/g, '$1'
 				.replace /(\n|\s{2,})/g, ''
 				.replace /\/\*(.*?)\*\//g, ''
 		else if code.indexOf('angular.') is -1
