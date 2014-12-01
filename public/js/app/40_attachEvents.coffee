@@ -221,6 +221,15 @@ $.each [
 			prevent e
 	]
 	[
+		'click'
+		'a.dropdown-toggle'
+		($a, e) ->
+			$dropdown = $a.next('ul.dropdown-menu')
+			if $dropdown.find('li').length is 0 and $dropdown.is(':visible')
+				$dropdown.toggle()
+			return
+	]
+	[
 		'touchstart',
 		'img'
 		($, e) ->

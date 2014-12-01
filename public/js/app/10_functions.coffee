@@ -283,7 +283,7 @@ loggedFriends = (friends) ->
 		$ul.find('span.pill').text friends.length
 		ul = ''
 		$.each friends, ->
-			ul += '<li><a href="/user/profile/' + friend.hashedId + "/" + encodeURIComponent(friend.name.full) + '">' + safeHtml(friend.name.full) + '</a>'
+			ul += '<li><a href="/user/profile/' + @hashedId + "/" + encodeURIComponent(@name.full) + '">' + safeHtml(@name.full) + '</a>'
 		$ul.find('.dropdown-menu').html ul
 		return
 	return

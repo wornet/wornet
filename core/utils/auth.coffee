@@ -166,6 +166,10 @@ exports.isAuthenticated = (req, res, next) ->
 
 			if req.user
 				req.getFriends (err, friends, friendAsks) ->
+					friends.each ->
+						present = NoticePackage.isPresent @id
+						if @present isnt present
+							@present = present
 					req.user.friendAsks = friendAsks
 					req.user.friends = friends
 					req.user.numberOfFriends = friends.length
