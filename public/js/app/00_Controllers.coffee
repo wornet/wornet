@@ -380,15 +380,20 @@ Controllers =
 			if video
 				$scope.medias.videos.push
 					href: video
+				Ajax.put '/video/add', video: url: video
 				'<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
 			else
 				$scope.medias.links.push
 					href: href
 					https: https
+				Ajax.put '/video/add', link:
+					name: href
+					url: href
+					https: https
 				'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
 
 		scannAllLinks = (text, transformToLinks = false) ->
-			(' ' + (text
+			((' ' + text)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
 					link = scanLink link
@@ -396,7 +401,7 @@ Controllers =
 						space + link
 					else
 						all
-			)).substr 1
+			).substr 1
 
 		richText = (text) ->
 			scannAllLinks safeHtml(text), true

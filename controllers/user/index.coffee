@@ -234,10 +234,22 @@ module.exports = (router) ->
 				err: err
 				album: album
 
+	router.put '/video/add', (req, res) ->
+		# Create a new video
+		video = extend user: req.user._id, req.body.video
+		Video.create video, ->
+			res.json()
+
+	router.put '/link/add', (req, res) ->
+		# Create a new link
+		link = extend user: req.user._id, req.body.link
+		Link.create link, ->
+			res.json()
+
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
 		res.setTimeLimit 600
-		model = { images: [] }
+		model = images: []
 		images = req.files.photo || []
 		unless images instanceof Array
 			images = [images]
