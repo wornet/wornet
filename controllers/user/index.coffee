@@ -291,6 +291,18 @@ module.exports = (router) ->
 					next()
 			true
 
+	router.post '/first/:query', (req, res) ->
+		query = req.params.query
+		UserPackage.search 1, [req.user.id], query, (err, users) ->
+			if err
+				res.serverError err
+			else
+				if users.length
+					user = users[0]
+					res.redirect '/user/profile/' + user.hashedId + '/' + encodeURIComponent user.name.full
+				else
+					res.notFound()
+
 	router.get '/search/:query', (req, res) ->
 		query = req.params.query
 		UserPackage.search [req.user.id], query, (err, users) ->

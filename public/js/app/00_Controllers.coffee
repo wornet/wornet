@@ -312,6 +312,10 @@ Controllers =
 	Search: ($scope) ->
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
+			$scope.query.action = '#'
+			$scope.query.content = '#'
+			$scope.query.users = data.users
+			$scope.apply()
 			return
 
 		$scope.search = (query) ->
