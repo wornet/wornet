@@ -2,15 +2,23 @@ extends ../layouts/wornet
 
 include ../includes/notifications
 
-include ../includes/notifications
-
 mixin friends(classes)
-	ul.nav(class=classes)
-		li: a
+	- var loggedFriends = user.friends.find({ present: true })
+	ul.nav(class=classes): li.loggedFriends
+		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('th-large')
 				| &nbsp; 
-			=s("Aucun ami connecté|1 ami connecté|{count} amis connectés", {}, intval(0))
+			span
+				=s("Amis connectés")
+				| &nbsp; 
+				span.pill
+					=loggedFriends.length
+		ul.dropdown-menu(role='menu')
+			if loggedFriends.length > 0
+				each friend, id in loggedFriends
+					li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.name.full))
+						=friend.name.full
 
 
 block params

@@ -343,7 +343,7 @@ module.exports = (port) ->
 		try
 			mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename
 		catch e
-			console['warn'] '\n\n-----------\nUnable to connecte Mongoose. Is MongoDB installed and started?\n'
+			console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
 			console['warn'] e
 
 		next null, localConfig

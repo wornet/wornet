@@ -3,7 +3,7 @@
 StatusPackage =
 
 	getRecentStatusForRequest: (req, res, id = null, data = {}) ->
-		onProfile = !!req.data.at
+		onProfile = id or req.data.at
 		@getRecentStatus req, res, id, data, onProfile
 
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->

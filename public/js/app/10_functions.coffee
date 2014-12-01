@@ -275,3 +275,15 @@ getAlbums = (done) ->
 	else
 		done null, albums
 	return
+
+# Refresh logged friends menu
+loggedFriends = (friends) ->
+	$('.loggedFriends').each ->
+		$ul = $ @
+		$ul.find('span.pill').text friends.length
+		ul = ''
+		$.each friends, ->
+			ul += '<li><a href="/user/profile/' + friend.hashedId + "/" + encodeURIComponent(friend.name.full) + '">' + safeHtml(friend.name.full) + '</a>'
+		$ul.find('.dropdown-menu').html ul
+		return
+	return

@@ -11,6 +11,13 @@ NoticePackage =
 	notificationsToSend: {}
 	timeouts: {}
 
+	isPresent: (userId) ->
+		@responsesToNotify[userId]?
+
+	arePresents: (userIds) ->
+		userIds.filter (id) ->
+			@isPrsent id
+
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
 		userIds.each ->
@@ -84,7 +91,7 @@ NoticePackage =
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs
 					break
-				console['warn'] 'Maximum of tabs exeeded'
+				warn 'Maximum of tabs exeeded'
 				responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
 				delete responsesToNotify[userId][id]
 
@@ -123,7 +130,10 @@ NoticePackage =
 			res.json data
 		if id
 			@timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
-				res.json notifyStatus: self.TIMEOUT
+				console.log (req.user.friends || [])
+				res.json
+					notifyStatus: self.TIMEOUT
+					loggedFriends: (req.user.friends || []).find present: true
 				self.remove userId, id
 				delete self.timeouts[userId + '-' + id]
 

@@ -149,8 +149,11 @@ userSchema.virtual('thumb90').get ->
 userSchema.virtual('thumb200').get ->
 	photoSrc.call @, '200x'
 
+userSchema.virtual('present').get ->
+	NoticePackage.isPresent @id
+
 userSchema.methods.publicInformations = (thumbSizes = null) ->
-	values = ['hashedId']
+	values = ['hashedId', 'present']
 	if thumbSizes is null
 		thumbSizes = [50, 90, 200]
 	else unless thumbSizes instanceof Array
@@ -193,9 +196,9 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 userSchema.methods.getNotifications = ->
 	@notifications.sort (a, b) ->
 		unless a[0] instanceof Date
-			console['warn'] a[0] + " n'est pas de type Date"
+			warn a[0] + " n'est pas de type Date"
 		unless b[0] instanceof Date
-			console['warn'] b[0] + " n'est pas de type Date"
+			warn b[0] + " n'est pas de type Date"
 		if a[0] < b[0]
 			-1
 		else if a[0] > b[0]

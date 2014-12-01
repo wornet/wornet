@@ -2,6 +2,8 @@
 waitForNotify = ->
 	Ajax.get '/user/notify',
 		success: (data) ->
+			if data.loggedFriends
+				loggedFriends data.loggedFriends
 			if data.notifications
 				for notification in data.notifications
 					err =  notification[0]

@@ -165,12 +165,12 @@ UserPackage =
 								askedForFriend = false
 							else
 								askedForFriend = req.user.friendAsks.has hashedId: cesarLeft profile.id
-							if isMe or !req.user? or empty req.user.friends
+							if isMe or !req.user? or empty friends
 								isAFriend = false
 							else
-								isAFriend = req.user.friends.has id: profile.id
+								isAFriend = friends.has id: req.user.id
 						catch err
-							console['warn'] err
+							warn err
 						res.render template,
 							isMe: isMe
 							askedForFriend: askedForFriend
@@ -187,7 +187,6 @@ UserPackage =
 					if err
 						res.notFound()
 					else
-						req.getFriends (err) ->
-							done user
+						done user
 
 module.exports = UserPackage

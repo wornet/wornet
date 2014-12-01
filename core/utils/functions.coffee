@@ -208,16 +208,16 @@ module.exports =
 										data += chunk
 									res.on 'end', ->
 										if data.indexOf('<!DOCTYPE html>') is 0
-											console['warn'] path + ' return HTML'
+											warn path + ' return HTML'
 										else
 											content += proceed(strval(data)) + '\n'
 										done()
 								else
-									console['warn'] pathWithoutParams + ' : Error ' + res.statusCode
+									warn pathWithoutParams + ' : Error ' + res.statusCode
 									done()
 
 						else
-							console['warn'] err
+							warn err
 							done()
 					else
 						content += proceed(strval(data)) + '\n'
