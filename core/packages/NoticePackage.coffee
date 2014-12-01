@@ -130,7 +130,6 @@ NoticePackage =
 			res.json data
 		if id
 			@timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
-				console.log (req.user.friends || [])
 				res.json
 					notifyStatus: self.TIMEOUT
 					loggedFriends: (req.user.friends || []).find present: true
