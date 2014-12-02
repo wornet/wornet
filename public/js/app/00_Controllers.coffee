@@ -363,7 +363,7 @@ Controllers =
 				videos: []
 			return
 
-		scanLink = (href) ->
+		scanLink = (href, sendMedia = false) ->
 			https = href.substr(0, 5) is 'https'
 			href = href
 				.replace /^(https?)?:?\/\//, ''
@@ -378,28 +378,34 @@ Controllers =
 			)()
 			s = textReplacements
 			if video
-				$scope.medias.videos.push
-					href: video
-				Ajax.put '/video/add', video: url: video
-				'<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
+				if sendMedia
+					$scope.medias.videos.push
+						href: video
+					Ajax.put '/user/video/add', video: url: video
+					return
+				else
+					'<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
 			else
-				$scope.medias.links.push
-					href: href
-					https: https
-				Ajax.put '/video/add', link:
-					name: href
-					url: href
-					https: https
-				'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+				if sendMedia
+					$scope.medias.links.push
+						href: href
+						https: https
+					Ajax.put '/user/video/add', link:
+						name: href
+						url: href
+						https: https
+					return
+				else
+					'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
 
 		scannAllLinks = (text, transformToLinks = false) ->
 			((' ' + text)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
-					link = scanLink link
 					if transformToLinks
-						space + link
+						space + scanLink link, false
 					else
+						scanLink link
 						all
 			).substr 1
 
@@ -476,7 +482,17 @@ Controllers =
 
 			return
 
+		$scope.$on 'receiveStatus', (e, status) ->
+			$scope.recentStatus.unshift status
+			refreshScope $scope
+			return
+
 		at = getData 'at'
+
+		window.statusScope = $scope
+
+		$scope.status = containsMedias: false
+		$scope.media = step: null
 
 		Ajax.get '/user/status/recent' + (if at then '/' + at else ''), setRecentStatus
 
@@ -485,16 +501,6 @@ Controllers =
 				$scope.albums = albums
 				refreshScope $scope
 			return
-
-		window.statusScope = $scope
-
-		$scope.$on 'receiveStatus', (e, status) ->
-			$scope.recentStatus.unshift status
-			refreshScope $scope
-			return
-
-		$scope.status = containsMedias: false
-		$scope.media = step: null
 
 		initMedias()
 
