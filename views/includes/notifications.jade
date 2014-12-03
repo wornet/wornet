@@ -13,7 +13,7 @@ mixin notifications(classes)
 		ul.dropdown-menu(role='menu' ng-controller="NotificationsCtrl")
 			if notificationsCount > 0
 				each notification, id in notifications
-					- var askingFriend = notification[1]
+					- var askingFriend = objectToUser(notification[1])
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 						i.date(data-date=trim(notification[0], '"'))
 						| &nbsp; 

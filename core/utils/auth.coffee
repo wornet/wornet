@@ -3,8 +3,6 @@ Module that will handle our authentication tasks
 ###
 "use strict"
 
-model 'User'
-
 # Set the remember cookie to recognize the users who checked the remember option
 exports.remember = (res, id) ->
 	res.cookie config.wornet.remember.key, id,
@@ -170,8 +168,12 @@ exports.isAuthenticated = (req, res, next) ->
 						present = NoticePackage.isPresent @id
 						if @present isnt present
 							@present = present
-					req.user.friendAsks = friendAsks
 					req.user.friends = friends
+					friendIds = friends.column 'id'
+					for id, friend of friendAsks
+						if friendIds.contains friend.id
+							delete friendAsks[id]
+					req.user.friendAsks = friendAsks
 					req.user.numberOfFriends = friends.length
 					req.session.user.friendAsks = friendAsks
 					req.session.user.friends = friends

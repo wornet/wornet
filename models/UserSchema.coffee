@@ -161,7 +161,7 @@ userSchema.methods.publicInformations = (thumbSizes = null) ->
 	thumbSizes.each ->
 		values.push 'thumb' + @
 		true
-	informations = @values values, true
+	informations = @columns values
 	informations.name = @name.toObject()
 	informations.name.full = @name.full
 	informations

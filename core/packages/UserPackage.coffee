@@ -71,15 +71,23 @@ UserPackage =
 				else
 					id = cesarRight id
 					req.user.aksForFriend id, (data) ->
+						next = ->
+							done data
+							dataWithUser = username: jd 'span.username ' + req.user.fullName
+							NoticePackage.notify [data.friend.askedTo], null,
+								action: 'askForFriend'
+								user: req.user.publicInformations()
+								id: data.friend.id
 						if empty data.err
-							req.user.friendAsks[data.friend.id] = _id: id
-							req.session.user.friendAsks = req.user.friendAsks
-						done data
-						dataWithUser = username: jd 'span.username ' + req.user.fullName
-						NoticePackage.notify [data.friend.askedTo], null,
-							action: 'askForFriend'
-							user: req.user.publicInformations()
-							id: data.friend.id
+							User.findById id, (err, user) ->
+								if err
+									data.err = err
+								if user
+									req.user.friendAsks[data.friend.id] = user
+									req.session.user.friendAsks = req.user.friendAsks
+								next()
+						else
+							next()
 
 	setFriendStatus: (req, status, done) ->
 		isRequest = typeof req is 'object' and req.body? and req.body.id?
@@ -155,6 +163,7 @@ UserPackage =
 			)
 		, (users) ->
 			done = (profile) ->
+				profile = objectToUser profile
 				profile.getFriends (err, friends, friendAsks) ->
 					if err
 						res.serverError err

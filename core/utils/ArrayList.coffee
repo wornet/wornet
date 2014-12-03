@@ -67,12 +67,14 @@ ArrayList =
 
 	values: (keys = null, preserveKeys = false) ->
 		list = (if preserveKeys then {} else [])
-		@each (key) ->
-			if keys is null or keys.indexOf(key) isnt -1
-				if preserveKeys
-					list[key] = @
-				else
-					list.push @
+		keys  = keys || Object.keys @
+		self = @
+		keys.each ->
+			if preserveKeys
+				list[@] = self[@]
+			else
+				list.push self[@]
+			true
 		list
 
 	columns: (keys = null, preserveKeys = true) ->

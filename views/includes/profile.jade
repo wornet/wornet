@@ -24,10 +24,16 @@
 					=friendAsked
 		#profile-photo
 			img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
-		a.aside(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
-			=s("Discuter")
-			| &nbsp;
-			+glyph('comment')
+		.aside
+			a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
+				=s("Discuter")
+				| &nbsp;
+				+glyph('comment')
+			if isAFriend
+				a.block(ng-click="deleteFriend('" + profile.hashedId + "')")
+					=s("Retirer des amis")
+					| &nbsp;
+					+glyph('minus')
 	.profile-display(class=(edit ? "hidden" : null))
 		h3
 			=strtoupper(profile.fullName)

@@ -21,6 +21,7 @@ multiples =
 multiples.each (key) ->
 	value = @
 	Number.prototype.__defineGetter__ key, ->
-		@ * value;
+		@ * value
+	true
 
 module.exports = multiples

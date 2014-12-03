@@ -20,13 +20,17 @@ require root + 'core/utils/RegExpString'
 extend global, functions
 
 defer = []
+models = []
 
 # Load all files contained in autoloadDirectories
 pendingDirectories = autoloadDirectories.length
 next = ->
 	# When no more directory need to be loaded
+	models.forEach (params) ->
+		model params[0], params[1]
 	defer.forEach (callback) ->
 		callback autoloadDirectories
+
 autoloadDirectories.forEach (directory) ->
 	glob directory + "/**/*.coffee", (er, files) ->
 		pendingFiles = files.length
@@ -40,9 +44,9 @@ autoloadDirectories.forEach (directory) ->
 				unless global[name]?
 					global[name] = loadedValue
 					# If the file is a Schema
-					if name.length > 6 && name.substr(-6) is 'Schema'
+					if name.length > 6 && name.substr(-6) is 'Schema' and loadedValue instanceof Schema
 						# Create the corresponding Model
-						model name.substr(0, name.length - 6), loadedValue
+						models.push [name.substr(0, name.length - 6), loadedValue]
 
 				unless --pendingFiles
 					unless --pendingDirectories

@@ -9,7 +9,7 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
 		req.getFriends (err, friends, friendAsks) ->
 			id = req.getRequestedUserId id
-			me = req.user.id
+			me = req.user.ids
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.copy()
 			connectedPeopleAndMe.push req.user.id
@@ -72,12 +72,13 @@ StatusPackage =
 											true
 										data.recentStatus = recentStatusPublicData
 										res.json data
-								req.getUsersByIds missingIds, done, searchInDataBase
+								req.getUsersByIds missingIds, done #, searchInDataBase
 							else
 								data.recentStatus = recentStatusPublicData
 								res.json data
 			else
-				res.serverError new Error s("Vous ne pouvez pas voir les statuts de ce profile")
+				warn [connectedPeopleAndMe, 'does not contains', id]
+				res.serverError new Error s("Vous ne pouvez pas voir les statuts de ce profil")
 
 	add: (req, done) ->
 		if req.data.status

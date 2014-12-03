@@ -307,6 +307,13 @@ Controllers =
 			chatService.chatWith [objectResolve user]
 			return
 
+		$scope.deleteFriend = (id) ->
+			Ajax.delete '/user/friend',
+				data: id: id
+				success: ->
+					location.reload()
+			return
+
 		return
 
 	Search: ($scope) ->
@@ -365,13 +372,12 @@ Controllers =
 
 		scanLink = (href, sendMedia = false) ->
 			https = href.substr(0, 5) is 'https'
-			href = href
-				.replace /^(https?)?:?\/\//, ''
-				.replace /^www\./, ''
+			href = href.replace /^(https?)?:?\/\//, ''
+			test = href.replace /^www\./, ''
 			video = (->
 				for url, regexps of videoHosts
 					for regexp in regexps
-						match = href.match regexp
+						match = test.match regexp
 						if match and match.length > 1
 							return url.replace '$1', match[1]
 				null
@@ -390,7 +396,7 @@ Controllers =
 					$scope.medias.links.push
 						href: href
 						https: https
-					Ajax.put '/user/video/add', link:
+					Ajax.put '/user/link/add', link:
 						name: href
 						url: href
 						https: https

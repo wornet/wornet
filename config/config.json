@@ -132,6 +132,7 @@
         "autoloadDirectories": [
             "core/utils",
             "core/packages",
+            "models/abstract",
             "models"
         ],
 

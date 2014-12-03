@@ -190,6 +190,7 @@ module.exports = (port) ->
 				ids = ids.map strval
 				idsToFind = []
 				usersMap = {}
+				req = @
 				@getFriends (err, friends, friendAsks) ->
 					if err
 						done err, null, false
@@ -198,7 +199,7 @@ module.exports = (port) ->
 							user = (if @ is currentUser.id
 								currentUser
 							else
-								friends.findOne _id: @
+								friends.findOne id: @
 							)
 							if user
 								usersMap[@] = objectToUser user
@@ -218,6 +219,7 @@ module.exports = (port) ->
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
+											true
 										done err, usersMap, true
 							else
 								err = new Error s("Impossible de trouver tous les utilisateurs")

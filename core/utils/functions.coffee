@@ -460,8 +460,7 @@ module.exports =
 	###
 	model: (name, schema) ->
 		requireSchema = (name) ->
-			require(__dirname + '/../../models/' + ucfirst(name) + 'Schema')
-		global['BaseSchema'] = requireSchema 'Base'
+			require __dirname + '/../../models/' + ucfirst(name) + 'Schema'
 		if global[name]? || global[name + 'Model']?
 			global[name] || global[name + 'Model']
 		else

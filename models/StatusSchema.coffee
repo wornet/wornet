@@ -1,39 +1,9 @@
 'use strict'
 
-statusSchema = BaseSchema.extend
-	date:
-		type: Date
-		default: Date.now
-		required: true
-	author:
-		type: ObjectId
-		ref: 'UserSchema'
-		required: true
+statusSchema = PostSchema.extend
 	at:
 		type: ObjectId
 		ref: 'UserSchema'
-	content:
-		type: String
-		trim: true
-	images: [
-		name:
-			type: String
-			trim: true
-		src:
-			type: String
-			trim: true
-	]
-	videos: [
-		href:
-			type: String
-			trim: true
-	]
-	links: [
-		href:
-			type: String
-			trim: true
-		https: Boolean
-	]
 
 statusSchema.pre 'save', (next) ->
 	if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
