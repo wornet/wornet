@@ -49,7 +49,6 @@ module.exports = (router) ->
 				res.json count: count
 				if count
 					req.user.friends = req.user.friends.filter (user) ->
-						console.log [user.id, him]
 						! equals user.id, him
 					req.user.numberOfFriends = req.user.friends.length
 					req.session.user.friends = req.user.friends
