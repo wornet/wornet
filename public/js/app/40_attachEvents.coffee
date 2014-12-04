@@ -259,64 +259,42 @@ $.each [
 	]
 	[
 		'click'
-		'.accept-friend'
+		'.accept-friend, .ignore-friend'
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
-			$friends = $ '#friends'
-			if exists $friends
-				$li = $('<li>').appendTo $friends
-				$a = $message.find 'a'
-				if exists $a
-					$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
-				else
-					$img = $message.find 'img'
-					if exists $img
-						$a = $ '<a>'
-						$a.attr('href', '/user/profile/' + $img.data('id') + '/' + encodeURIComponent($img.prop('alt')))
-						$img.clone(true).appendTo $a
-						$a.appendTo($li).fadeOut(0).fadeIn()
-				numberOfFriends = $friends.find('li').length
-				s = textReplacements
-				text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
-				$('.numberOfFriends').text text
-			$message.find('.shift').slideUp()
-			$message.find('.if-accepted').slideDown()
-			delay 3000, ->
+			id = $message.data 'id'
+			if $btn.is '.accept-friend'
+				$friends = $ '#friends'
+				if exists $friends
+					$li = $('<li>').appendTo $friends
+					$a = $message.find 'a'
+					if exists $a
+						$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
+					else
+						$img = $message.find 'img'
+						if exists $img
+							$a = $ '<a>'
+							$a.attr('href', '/user/profile/' + $img.data('id') + '/' + encodeURIComponent($img.prop('alt')))
+							$img.clone(true).appendTo $a
+							$a.appendTo($li).fadeOut(0).fadeIn()
+					numberOfFriends = $friends.find('li').length
+					s = textReplacements
+					text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+					$('.numberOfFriends').text text
+				$message.find('.shift').slideUp()
+				$message.find('.if-accepted').slideDown()
+				delay 3000, ->
+					$message.slideUp ->
+						$(@).remove()
+						return
+					return
+				Ajax.post '/user/friend/accept', data: id: id
+			else
+				Ajax.post '/user/friend/ignore', data: id: id
 				$message.slideUp ->
 					$(@).remove()
 					return
-				return
-			id = $message.data 'id'
-			Ajax.post '/user/friend/accept', data: id: id
-			$('.friend-ask[data-id="' + id + '"]').each ->
-				$this = $ @
-				$li = $this.parents 'li:first'
-				if exists $li
-					$li.remove()
-				else
-					$this.remove()
-				return
-			refreshPill()
-			cancel e
-	]
-	[
-		'click'
-		'.ignore-friend'
-		($btn, e) ->
-			$message = $btn.parents '.friend-ask'
-			$message.slideUp ->
-				$(@).remove()
-				return
-			id = $message.data 'id'
-			Ajax.post '/user/friend/ignore', data: id: id
-			$('.friend-ask[data-id="' + id + '"]').each ->
-				$this = $ @
-				$li = $this.parents 'li:first'
-				if exists $li
-					$li.remove()
-				else
-					$this.remove()
-				return
+			deleteFriendAsk id
 			refreshPill()
 			cancel e
 	]

@@ -142,6 +142,17 @@ passwordStrongness = (mdp) ->
 		else
 			Math.pow 100, mdp.length
 
+# Delete a friend ask by id
+deleteFriendAsk = (id) ->
+	$('.friend-ask[data-id="' + id + '"]').each ->
+		$this = $ @
+		$li = $this.parents 'li:first'
+		if exists $li
+			$li.remove()
+		else
+			$this.remove()
+		return
+	return
 
 # Refresh pill counter
 refreshPill = ->
@@ -283,7 +294,12 @@ loggedFriends = (friends) ->
 		$ul.find('span.pill').text friends.length
 		ul = ''
 		$.each friends, ->
-			ul += '<li><a href="/user/profile/' + @hashedId + "/" + encodeURIComponent(@name.full) + '">' + safeHtml(@name.full) + '</a>'
-		$ul.find('.dropdown-menu').html ul
+			ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; ' + safeHtml(@name.full) + ' &nbsp; <span class="glyphicon glyphicon-comment"></span></a></li>'
+			return
+		$ul.find('.dropdown-menu').html(ul).find('li a').each (key) ->
+			$(@).click ->
+				chatService.chatWith [objectResolve friends[key]]
+				return
+			return
 		return
 	return

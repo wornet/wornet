@@ -25,8 +25,7 @@ waitForNotify = ->
 							friend = notification.user
 							name = friend.name.full
 							dataWithUser = username: '<span class="username">' + safeHtml(name) + '</span>'
-							$('.friend-ask[data-id="' + id + '"]').each ->
-								$(@).parents('li:first').remove()
+							deleteFriendAsk id
 							unless exists '#asks-for-friend .friend-ask[data-id="' + id + '"]'
 								$('#asks-for-friend').append('<div class="alert alert-success friend-ask" data-id="' + id + '">' +
 									'<a href="/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name) + '">' +

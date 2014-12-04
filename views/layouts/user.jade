@@ -14,11 +14,15 @@ mixin friends(classes)
 				| &nbsp; 
 				span.pill
 					=loggedFriends.length
-		ul.dropdown-menu(role='menu')
+		ul.dropdown-menu(role='menu' ng-controller="ProfileCtrl")
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
-					li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.name.full))
+					li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
+						img.thumb(src=friend.thumb50 alt=friend.name.full)
+						| &nbsp; 
 						=friend.name.full
+						| &nbsp; 
+						+glyph('comment')
 
 
 block params

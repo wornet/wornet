@@ -33,6 +33,7 @@ exports.isReturningVisitor = (req) ->
 
 # Delete user session and cookie
 exports.logout = (req, res) ->
+	NoticePackage.remove req.user.id
 	delete res.locals.user
 	delete req.user
 	delete req.session.user

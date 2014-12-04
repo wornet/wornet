@@ -7,17 +7,23 @@ NoticePackage =
 	LIMIT_EXEEDED: 3
 	TIMEOUT: 4
 
+	# Pending requests until receive a new notification
 	responsesToNotify: {}
+	# Pending notifications until users recipient ask for receive it
 	notificationsToSend: {}
+	# Notifications disapear after some time if they are not received
 	timeouts: {}
 
+	# Is a user (identified by id) waiting for notifications (and so present)
 	isPresent: (userId) ->
 		@responsesToNotify[userId]?
 
+	# Are users (identifed by ids array) present
 	arePresents: (userIds) ->
 		userIds.filter (id) ->
 			@isPrsent id
 
+	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
 		userIds.each ->
@@ -61,22 +67,18 @@ NoticePackage =
 			true
 		true
 
-
+	# Delete a notification if id is specified or all the notifications to a user if not
 	remove: (userId, id = null) ->
 		if @responsesToNotify[userId]?
 			if id isnt null
 				if @responsesToNotify[userId][id]?
-					list = []
-					for callback, i in @responsesToNotify[userId]
-						if i isnt id
-							list.push callback
-					if list.length
-						@responsesToNotify[userId] = list
-					else
+					delete @responsesToNotify[userId][id]
+					if empty @responsesToNotify[userId]
 						delete @responsesToNotify[userId]
 			else
 				delete @responsesToNotify[userId]
 
+	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
 			#callback null, @responsesToNotify[userId].values()
@@ -99,6 +101,7 @@ NoticePackage =
 			responsesToNotify[userId][id] = callback
 		id
 
+	# Register a response to wich send JSON data when a user receive a notification
 	waitForJson: (userId, req, res) ->
 		res.setTimeLimit 0
 		self = @
