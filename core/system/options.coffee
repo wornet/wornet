@@ -237,6 +237,7 @@ module.exports = (port) ->
 		# Save original method(s) that we will override
 		redirect = app.response.redirect
 		setHeader = app.response.setHeader
+		render = app.response.render
 		end = app.response.end
 
 		# Available shorthand methods to all response objects in controllers
@@ -252,10 +253,7 @@ module.exports = (port) ->
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err
-					model.err = if config.env.development
-						err
-					else
-						false
+					model.err = err
 					@status val
 					if @isJSON
 						model.statusCode = val
@@ -303,6 +301,13 @@ module.exports = (port) ->
 				params = arguments
 				@safeHeader ->
 					setHeader.apply res, params
+			render: ->
+				res = @
+				params = arguments
+				if params[1] and params[1].err and ! config.env.development
+					delete params[1].err
+				@safeHeader ->
+					render.apply res, params
 			end: ->
 				@endAt = new Error "End here:"
 				res = @
