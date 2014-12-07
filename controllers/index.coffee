@@ -27,7 +27,8 @@ module.exports = (router) ->
 			res.json()
 		else
 			res.render 'report'
-		MailPackage.send 'kylekatarnls@gmail.com', "[Wornet] Contenu signalé", req.params.status, (err, info) ->
+		message = 'Un contenu a été signalé par ' + req.user.fullName + '. L\'id du contenu est : ' + req.params.status
+		MailPackage.send config.wornet.mail.reportTo, "[Wornet] Contenu signalé", message, (err, info) ->
 			if err
 				throw err
 			else

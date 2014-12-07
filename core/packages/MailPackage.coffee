@@ -2,14 +2,23 @@
 
 nodemailer = require 'nodemailer'
 
-transporter = nodemailer.createTransport
-	service: config.wornet.mail.service
-	auth:
-		user: config.wornet.mail.auth.user
-		pass: config.wornet.mail.auth.pass
-	config.wornet.mail
+errorMessage = 'Mailer not configured or not initialized'
+
+transporter = null
 
 MailPackage =
+
+	init: ->
+		if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
+			warn errorMessage
+		else
+			transporter = nodemailer.createTransport
+				service: config.wornet.mail.service
+				auth:
+					user: config.wornet.mail.auth.user
+					pass: config.wornet.mail.auth.pass
+				config.wornet.mail
+
 	send: (to, subject, text, html = null, from = null, done = null) ->
 		if done is null
 			done = from
@@ -33,6 +42,9 @@ MailPackage =
 			subject: subject
 			text: text
 			html: html
+
+		if transporter is null
+			throw new Error errorMessage
 
 		transporter.sendMail mailOptions, done
 

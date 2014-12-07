@@ -338,7 +338,11 @@ module.exports = (port) ->
 		app.set 'views', __dirname + '/../../views'
 
 		# Add config.json configuration
-		extend config, localConfig._store
+		deepextend config, localConfig._store
+		deepextend config, require __dirname + '/../../config/custom.json'
+
+		# Initialize packages
+		MailPackage.init()
 
 		# Prettify or minify the HTML output as configured
 		app.locals.pretty = true if config.wornet.prettyHtml

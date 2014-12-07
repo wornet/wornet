@@ -6,7 +6,7 @@ require('./core/system/date')
 console['log'] 'Starting Wornet  ' + Date.log()
 
 # Dependancies to load
-'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus imagemagick'
+'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus imagemagick deep-extend'
 .split(/\s+/).forEach (dependancy) ->
 	global[dependancy.replace(/([^a-zA-Z0-9_]|js$)/g, '')] = require dependancy
 
