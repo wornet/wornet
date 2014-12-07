@@ -217,7 +217,7 @@ onready ->
 			if req.secure
 				next()
 			else
-				res.redirect 'https://' + req.host + req.url
+				res.redirect 'https://' + req.hostname + req.url
 
 		app.listen 80, (err) ->
 			if err

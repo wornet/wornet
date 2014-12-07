@@ -145,7 +145,7 @@
             "models"
         ],
 
-        "bigImagesServer": "http://static.wornet.fr/",
+        "bigImagesServer": "http://static.wornet.fr/img/",
 
         "cache": {
             "enabled": true,
