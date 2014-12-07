@@ -212,12 +212,14 @@ onready ->
 
 	# Handle errors and print in the console
 	if port is 443
-		http = express.createServer()
 
-		http.get '*', (req,res) ->
-			res.redirect 'https://' + req.getHeader('host') + req.url
+		app.all '*', (req, res, next) ->
+			if req.secure
+				next()
+			else
+				res.redirect 'https://' + req.host + req.url
 
-		http.listen 80, (err) ->
+		app.listen 80, (err) ->
 			if err
 				throw err
 			else
