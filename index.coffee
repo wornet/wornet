@@ -27,7 +27,11 @@ extend global,
 global.app = express()
 
 
-port = process.env.PORT || 8000
+port = parseInt process.env.PORT
+
+if isNaN(port) or port < 1
+	port = 8000
+
 
 # Config load
 config = port: port
@@ -207,7 +211,28 @@ onready ->
 		###
 
 	# Handle errors and print in the console
-	app.listen port, (err) ->
-		console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
+	if port is 443
+		http = express.createServer()
+
+		http.get '*', (req,res) ->
+			res.redirect 'https://' + req.getHeader('host') + req.url
+
+		http.listen 80, (err) ->
+			if err
+				throw err
+			else
+				console['log'] '[%s] Redirect on http://localhost:%d', app.settings.env, 80
+
+		app.listen 443, (err) ->
+			if err
+				throw err
+			else
+				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, 443
+	else
+		app.listen port, (err) ->
+			if err
+				throw err
+			else
+				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
 
 exports = module.exports = app

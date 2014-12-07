@@ -61,6 +61,15 @@
             }
         },
 
+        "cookieParser": {
+            "enabled": true,
+            "priority": 90,
+            "module": {
+                "name": "cookie-parser",
+                "arguments": [ "LKJSQdA8238jkds826mllmNJXPIC827F2BdJh" ]
+            }
+        },
+
         "session": {
             "enabled": true,
             "priority": 100,
@@ -136,7 +145,7 @@
             "models"
         ],
 
-        "bigImagesServer": "http://gitedulanguedoc.com/.save/wornet/",
+        "bigImagesServer": "http://static.wornet.fr/",
 
         "cache": {
             "enabled": true,
@@ -162,10 +171,18 @@
         },
 
         "mail": {
-            "hostsBlackList": ["yopmail.com", "jetable.org", "get2mail.fr", "mail-temporaire.fr", "0-mail.com", "appspotmail.com", "fakemail.fr", "haltospam.com", "filzmail.com", "brefemail.com", "mailincubator.com", "kurzepost.de", "proxymail.eu", "rcpt.at", "trash-mail.at", "trashmail.at", "trashmail.me", "trashmail.net", "wegwerfmail.net", "wegwerfmail.org", "nepwk.com", "10minutemail.com", "spamgourmet.com", "tempomail.fr", "meltmail.com", "anonymbox.com", "link2mail.net", "whyspamme.me", "amilegit.com", "sharklasers.com", "mailinator.com", "mailmetrash.com", "thankyou2010.com", "trash2009.com", "mt2009.com", "trashymail.com", "mytrashmail.com", "mailcatch.com", "spambox.us", "dispostable.com", "spamavert.co", "yxzx.net", "tempemail.net", "spamfree24.org", "spammotel.com", "e4ward.com", "spamcero.com", "mytempemail.com", "mailnull.com", "spamspot.com", "incognitomail.org", "spamobox.com", "deadaddress.com", "mailexpire.com", "soodonims.com", "wegwerfmail.de", "objectmail.comlroid.com", "mintemail.com", "nospamfor.us", "gishpuppy.com", "onewaymail.com", "makemetheking.com", "privy-mail.de", "privy-mail.com"]
+            "hostsBlackList": ["yopmail.com", "jetable.org", "get2mail.fr", "mail-temporaire.fr", "0-mail.com", "appspotmail.com", "fakemail.fr", "haltospam.com", "filzmail.com", "brefemail.com", "mailincubator.com", "kurzepost.de", "proxymail.eu", "rcpt.at", "trash-mail.at", "trashmail.at", "trashmail.me", "trashmail.net", "wegwerfmail.net", "wegwerfmail.org", "nepwk.com", "10minutemail.com", "spamgourmet.com", "tempomail.fr", "meltmail.com", "anonymbox.com", "link2mail.net", "whyspamme.me", "amilegit.com", "sharklasers.com", "mailinator.com", "mailmetrash.com", "thankyou2010.com", "trash2009.com", "mt2009.com", "trashymail.com", "mytrashmail.com", "mailcatch.com", "spambox.us", "dispostable.com", "spamavert.co", "yxzx.net", "tempemail.net", "spamfree24.org", "spammotel.com", "e4ward.com", "spamcero.com", "mytempemail.com", "mailnull.com", "spamspot.com", "incognitomail.org", "spamobox.com", "deadaddress.com", "mailexpire.com", "soodonims.com", "wegwerfmail.de", "objectmail.comlroid.com", "mintemail.com", "nospamfor.us", "gishpuppy.com", "onewaymail.com", "makemetheking.com", "privy-mail.de", "privy-mail.com"],
+
+            "service": "Gmail",
+            "auth": {
+                "user": "you@gmail.com",
+                "pass": "yourpass"
+            }
         },
 
         "parseProxyUrl": false,
+
+        "protocole": "http",
 
         "proxies" : [
             "p.holowar.com/wornet",

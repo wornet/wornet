@@ -32,6 +32,14 @@ mixin csrf()
 mixin glyph(type)
 	span(class="glyphicon glyphicon-" + type)
 
+mixin alert(data)
+	if data && typeof(data) === 'object'
+		each key in ['danger', 'success', 'info', 'warning']
+			if data[key]
+				each alert in data[key]
+					.alert(class="alert-" + key)
+						=alert
+
 mixin form(url, method)
 
 	- var enctype, _method, maxsize = -1

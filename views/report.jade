@@ -1,0 +1,8 @@
+extends layouts/user
+
+block body
+	.well
+		.alert.alert-success
+			=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
+		a.bar.btn(href="/")
+			=s("Retour à l'accueil")

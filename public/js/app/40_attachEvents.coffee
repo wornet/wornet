@@ -319,16 +319,21 @@ $.each [
 		'click'
 		'a[href][target!="_blank"]'
 		($a, e) ->
-			href = $a.prop('href')
-				.replace /#.*$/g, ''
-				.replace /^https?:\/\/[^\/]+/g, ''
-			if href is '/user/logout' and window.sessionStorage
-				sessionStorage.clear()
-			return true
+			if $a.is '.ajax'
+				cancel e
+			else
+				href = $a.prop('href')
+					.replace /#.*$/g, ''
+					.replace /^https?:\/\/[^\/]+/g, ''
+				if href is '/user/logout' and window.sessionStorage
+					sessionStorage.clear()
+				true
+			###
 			if href.length and href.charAt(0) isnt '#' and Ajax.page href, true
 				cancel e
 			else
 				true
+			###
 	]
 	[
 		'click'

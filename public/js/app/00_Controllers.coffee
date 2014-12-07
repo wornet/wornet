@@ -436,6 +436,11 @@ Controllers =
 				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
 			]
 
+		$scope.report = (status) ->
+			status.reported = true
+			Ajax.get '/report/' + status._id
+			return
+
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()

@@ -1,4 +1,10 @@
-.status-block(ng-repeat="status in recentStatus")
+.status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}")
+	.nostyle(data-starpush="{{ status._id }}")
+	.aside.continue
+		a.ajax(href="/report/{{ status._id }}" ng-if="! status.reported" ng-click="report(status, event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
+			=s("Signaler")
+		.alert.alert-success(ng-if="status.reported")
+			=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
 	.status-author
 		img(ng-src="{{ status.author.thumb50 }}")
 		+link("/user/profile/{{ status.author.hashedId }}/{{ status.author.name.full | urlencode }}", "{{ status.author.name.full }}")

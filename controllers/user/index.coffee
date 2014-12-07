@@ -115,6 +115,9 @@ module.exports = (router) ->
 					auth.auth req, res, user
 					url = '/user/welcome'
 					res.redirect if user then '/user/welcome' else signinUrl
+					confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+					confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+					MailPackage.send user.email, s("Bienvenue sur Wornet"), confirmUrl, '<a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
@@ -326,3 +329,16 @@ module.exports = (router) ->
 			else
 				res.json users: users.map (user) ->
 					user.publicInformations()
+
+	router.get '/confirm/:hashedId/:token', (req, res) ->
+		id = cesarRight req.params.hashedId
+		if req.user._id and req.user._id isnt id
+			auth.logout req, res
+		User.findOneAndUpdate { _id: id, token: token }, { $set: role: 'confirmed' }, {}, (err, user) ->
+			if err or ! user
+				req.flash 'loginErrors', s("Votre adresse n'a pas pu être confirmée")
+				warn [user, err]
+			else if user
+				auth.auth req, res, user
+				req.flash 'profileSuccess', s("Votre adresse a bien été confirmée")
+			res.redirect '/'

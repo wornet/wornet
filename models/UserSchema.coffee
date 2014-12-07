@@ -30,7 +30,7 @@ userSchema = BaseSchema.extend
 	role:
 		type: String
 		default: 'user'
-		enum: ['user', 'admin']
+		enum: ['user', 'confirmed', 'admin']
 	numberOfFriends:
 		type: Number
 		default: 0

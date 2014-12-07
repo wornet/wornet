@@ -17,7 +17,21 @@ module.exports = (router) ->
 		else
 			# GET /user/login (and pre-signin)
 			# Get errors in flash memory (any if AJAX is used and works on client device)
-			res.render 'user/login', loginErrors: req.flash 'loginErrors' # Will be removed when errors will be displayed on the next step
+			res.render 'user/login',
+				loginAlerts: req.getAlerts 'login' # Will be removed when errors will be displayed on the next step
+
+
+	# Report a non-appropriated content
+	router.get '/report/:status', (req, res) ->
+		if req.xhr
+			res.json()
+		else
+			res.render 'report'
+		MailPackage.send 'kylekatarnls@gmail.com', "[Wornet] Contenu signalé", req.params.status, (err, info) ->
+			if err
+				throw err
+			else
+				console['log'] info
 
 
 	alias =

@@ -12,10 +12,7 @@ block inner-nav
 block body
 	.container: section
 		#signinErrors
-			if signinErrors
-				each error in signinErrors
-					.alert.alert-danger
-						=error
+			+alert(signinAlerts)
 		.well.loading(ng-controller="SigninSecondStepCtrl")
 			+form("/user/signin", "PUT")(ng-submit="submit(user)")
 				.col-sm-6.col-xs-12

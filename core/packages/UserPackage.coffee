@@ -185,6 +185,7 @@ UserPackage =
 							askedForFriend: askedForFriend
 							isAFriend: isAFriend
 							profile: profile
+							profileAlerts: req.getAlerts 'profile'
 							numberOfFriends: friends.length
 							friends: friendsThumb
 							friendAsks: friendAsks

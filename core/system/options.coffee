@@ -103,6 +103,12 @@ module.exports = (port) ->
 	onconfig: (localConfig, next) ->
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
+			# get objets of the different alert types for a given key
+			getAlerts: (key) ->
+				danger: @flash key + 'Errors'
+				success: @flash key + 'Success'
+				info: @flash key + 'Infos'
+				warning: @flash key + 'Warnings'
 			# get id from hashed or the id of the user logged in if it's null
 			getRequestedUserId: (id) ->
 				if id is null
@@ -230,6 +236,8 @@ module.exports = (port) ->
 
 		# Save original method(s) that we will override
 		redirect = app.response.redirect
+		setHeader = app.response.setHeader
+		end = app.response.end
 
 		# Available shorthand methods to all response objects in controllers
 		responseErrors =
@@ -275,6 +283,30 @@ module.exports = (port) ->
 				if typeof params[0] is 'string'
 					params[0] = @localUrl params[0]
 				redirect.apply @, params
+			safeHeader: (done) ->
+				try
+					done()
+				catch e
+					if equals e, "Error: Can't set headers after they are sent."
+						if @endAt
+							warn @endAt
+						else if @setHeaderAt
+							warn @setHeaderAt
+						throw e
+					else
+						throw e
+			setHeader: ->
+				@setHeaderAt = new Error "End here:"
+				res = @
+				params = arguments
+				@safeHeader ->
+					setHeader.apply res, params
+			end: ->
+				@endAt = new Error "End here:"
+				res = @
+				params = arguments
+				@safeHeader ->
+					end.apply res, params
 			json: (data = {}) ->
 				if typeof @ is 'undefined'
 					log "No context"
