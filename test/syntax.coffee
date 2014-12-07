@@ -35,7 +35,7 @@ describe "syntax", ->
 	before (done) ->
 		glob __dirname + "/../**/*.coffee", (err, inputFiles) ->
 			files = inputFiles.filter (file) ->
-				file.indexOf('/node_modules/') isnt 0
+				file.indexOf(__dirname + '/../node_modules/') isnt 0
 			done()
 
 	describe "coffee files", ->

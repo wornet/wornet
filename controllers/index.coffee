@@ -34,7 +34,6 @@ module.exports = (router) ->
 			else
 				console['log'] info
 
-
 	alias =
 		'user/login': ''
 		signin: 'user/signin'
