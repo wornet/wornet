@@ -29,13 +29,16 @@ describe "syntax", ->
 	forEachFile = (test) ->
 		(done) ->
 			allFiles done, (file, contents, done) ->
-				test file.replace(/^.+\.\./, ''), contents
+				test file, contents
 				done()
 
 	before (done) ->
 		glob __dirname + "/../**/*.coffee", (err, inputFiles) ->
-			files = inputFiles.filter (file) ->
-				file.indexOf(__dirname + '/../node_modules/') isnt 0
+			files = inputFiles
+				.map (file) ->
+					file.replace /^.+\.\./, ''
+				.filter (file) ->
+					! /^[\/\\]?node_modules[\/\\]/.test file
 			done()
 
 	describe "coffee files", ->
