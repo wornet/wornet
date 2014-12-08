@@ -17,6 +17,13 @@ PostSchema.extend = (columns, options) ->
 			type: Date
 			default: Date.now
 			required: true
+		status:
+			type: String
+			default: 'active'
+			enum: [
+				'active'
+				'blocked'
+			]
 		author:
 			type: ObjectId
 			ref: 'UserSchema'

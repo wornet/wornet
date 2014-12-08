@@ -39,7 +39,7 @@ StatusPackage =
 					.skip 0
 					.limit 10
 					.sort date: 'desc'
-					.select '_id date author at content images videos links'
+					.select '_id date author at content status images videos links'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
@@ -69,6 +69,9 @@ StatusPackage =
 											if @at
 												status.at = usersMap[strval @at].publicInformations()
 											status.concernMe = [@at, @author].contains me, equals
+											status.status = @status
+											if @status is 'blocked'
+												status.content = ''
 											recentStatusPublicData.push status
 											true
 										data.recentStatus = recentStatusPublicData
