@@ -19,6 +19,11 @@ waitForNotify = ->
 							chatService.chatWith users, message
 						when 'status'
 							statusService.receiveStatus notification.status
+						when 'notice'
+							data = notification.notice
+							id = notification.id
+							data.unshift id
+							notificationsService.receiveNotification data
 						when 'askForFriend'
 							s = textReplacements
 							id = notification.id

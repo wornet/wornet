@@ -25,14 +25,20 @@ ArrayList =
 		else
 			extend {}, @
 
-	contains: (needle) ->
-		if typeof @indexOf is 'function'
+	contains: (needle, compare) ->
+		if typeof @indexOf is 'function' and ! compare
 			@indexOf(needle) isnt -1
 		else
-			for val of @
-				if val is needle
-					return true
-			false
+			compare = compare || (val, needle) ->
+				val is needle
+			result = false
+			@each ->
+				if compare @, needle
+					result = true
+					false
+				else
+					true
+			result
 
 	each: (callback) ->
 		if @ instanceof Array

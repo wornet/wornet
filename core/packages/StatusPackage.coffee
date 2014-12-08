@@ -9,7 +9,7 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
 		req.getFriends (err, friends, friendAsks) ->
 			id = req.getRequestedUserId id
-			me = req.user.ids
+			me = req.user.id
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.copy()
 			connectedPeopleAndMe.push req.user.id
@@ -68,6 +68,7 @@ StatusPackage =
 											status.author = usersMap[strval @author].publicInformations()
 											if @at
 												status.at = usersMap[strval @at].publicInformations()
+											status.concernMe = [@at, @author].contains me, equals
 											recentStatusPublicData.push status
 											true
 										data.recentStatus = recentStatusPublicData

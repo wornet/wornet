@@ -339,8 +339,8 @@ $.each [
 		'click'
 		'.profile-edit-btn'
 		($a, e) ->
-			$('.profile-edit').removeClass 'hidden'
-			$('.profile-display').addClass 'hidden'
+			$('.profile-display').toggle()
+			$('.profile-edit').toggleClass 'hidden'
 			cancel e
 	]
 	[

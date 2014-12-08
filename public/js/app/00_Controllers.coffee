@@ -260,6 +260,10 @@ Controllers =
 		return
 
 	Medias: ($scope) ->
+		$scope.selectAlbum = (album) ->
+			location.href = '/user/album/' + album._id
+			return
+
 		getAlbums (err, albums) ->
 			unless err
 				$scope.albums = albums
@@ -272,7 +276,7 @@ Controllers =
 		$scope.loadMedia = (type, media) ->
 			media.type = type
 			if type is 'image'
-				media.src = (media.src || media.photo).replace(/\/[0-9]+x([^\/]+)$/g, '/$1')
+				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 			$scope.loadedMedia = media
 			delay 1000, ->
 				$('#status-view iframe[data-ratio]').ratio()
@@ -320,9 +324,9 @@ Controllers =
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
 			$scope.query.action = '#'
-			$scope.query.content = '#'
-			$scope.query.users = data.users
-			$scope.apply()
+			$scope.query.content = ''
+			$scope.query.users = []
+			refreshScope $scope
 			return
 
 		$scope.search = (query) ->
@@ -340,7 +344,7 @@ Controllers =
 				.done (data) ->
 					if data.users
 						$scope.query.users = data.users
-						$scope.apply()
+						refreshScope $scope
 			else
 				$scope.query.users = []
 				query.action = '#'
@@ -436,7 +440,17 @@ Controllers =
 				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
 			]
 
-		$scope.report = (status) ->
+		$scope.delete = (status, $event) ->
+			$($event.target)
+				.parents('ul.dropdown-menu:first').trigger 'click'
+				.parents('.status-block:first').slideUp ->
+					$(@).remove()
+			Ajax.delete '/user/status/' + status._id
+			return
+
+		$scope.report = (status, $event) ->
+			$($event.target)
+				.parents('ul.dropdown-menu:first').trigger 'click'
 			status.reported = true
 			Ajax.get '/report/' + status._id
 			return

@@ -214,22 +214,24 @@ module.exports = (router) ->
 				done
 					album: album
 					photos: photos
-		Album.findById id, (err, foundAlbum) ->
-			if equals foundAlbum.user, req.user.id
-				if err
-					done err: err
-				else
+		try
+			Album.findById id, (err, foundAlbum) ->
+				if err or ! foundAlbum
+					res.notFound()
+				else if equals foundAlbum.user, req.user.id
 					album = foundAlbum
 					next()
-			else
-				done err: new Error s("Cet album est privé")
-		Photo.find album: id, (err, foundPhotos) ->
-			if err
-				done err: err
-			else
-				photos = foundPhotos.map (photo) ->
-					photo.columns ['photo', 'name']
-				next()
+				else
+					res.serverError new Error s("Cet album est privé")
+			Photo.find album: id, (err, foundPhotos) ->
+				if err
+					res.serverError err
+				else
+					photos = foundPhotos.map (photo) ->
+						photo.columns ['photo', 'name']
+					next()
+		catch
+			res.notFound()
 
 	router.put '/album/add', (req, res) ->
 		# Create a new album

@@ -5,18 +5,19 @@
 			.progress-radial: .overlay
 				img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
 				input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
-		a.profile-edit-btn.aside(href="/user/profile/edit")
+		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
 			=s("Modifier mon profil")
 			| &nbsp;
 			+glyph('edit')
 		.profile-edit(class=(edit ? null : "hidden"))
 			+form("/user/profile/edit")
+				.btn-group
+					input(type="button" value=s("Annuler")).btn.glued.profile-edit-btn
+					input(type="submit" value=s("Modifier")).btn.glued
 				.input-group
 					+formControl(name="name.first" value=profile.firstName).glued
 				.input-group
 					+formControl(name="name.last" value=profile.lastName)
-				.btn-group
-					input(type="submit" value=s("Modifier")).btn
 	else
 		.profileError
 			if ! empty(friendAsked)
@@ -34,7 +35,7 @@
 					=s("Retirer des amis")
 					| &nbsp;
 					+glyph('minus')
-	.profile-display(class=(edit ? "hidden" : null))
+	.profile-edit(class=(edit ? "hidden" : null))
 		h3
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend && ! isAFriend

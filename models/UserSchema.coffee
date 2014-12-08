@@ -98,6 +98,7 @@ getFullName = ->
 		else
 			@name.first + ' ' + @name.last
 
+
 userSchema.virtual('name.full').get getFullName
 userSchema.virtual('fullName').get getFullName
 userSchema.virtual('firstName').get ->

@@ -1,8 +1,19 @@
 .status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}")
 	.nostyle(data-starpush="{{ status._id }}")
 	.aside.continue
-		a.ajax(href="/report/{{ status._id }}" ng-if="! status.reported" ng-click="report(status, event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
-			=s("Signaler")
+		a.dropdown-toggle(href="#" data-toggle="dropdown")
+			+glyph('cog')
+		ul.dropdown-menu(role="menu")
+			li(ng-if="status.concernMe")
+				a.ajax(href="#" ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
+					+glyph('trash')
+					| &nbsp; 
+					=s("Supprimer")
+			li(ng-if="! status.reported")
+				a.ajax(href="/report/{{ status._id }}" ng-click="report(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
+					+glyph('exclamation-sign')
+					| &nbsp; 
+					=s("Signaler")
 		.alert.alert-success(ng-if="status.reported")
 			=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
 	.status-author

@@ -176,6 +176,9 @@ a
 	color $orange
 
 .errors
+	margin 0 15px
+
+.well .errors
 	margin 0 $mainPadding
 
 .inline-button
@@ -491,6 +494,11 @@ fieldset.tab .btn
 	width 200px
 	&.continue
 		clear right
+		position relative
+		.dropdown-menu
+			position absolute
+			top $smallPadding
+			right $smallPadding
 
 .word-wrap
 	overflow-wrap break-word

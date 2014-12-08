@@ -1,6 +1,8 @@
 'use strict'
 
 module.exports =
+	standartError: ->
+		new Error s("Navré, la dernière action a échouée. Veuillez réessayer ultérieurement.")
 	###
 	Resolve object get from template (passed in JSON)
 	Restore date object converted to strings previously (by JSON stringification)
