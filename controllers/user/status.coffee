@@ -17,7 +17,6 @@ module.exports = (router) ->
 				author: req.user._id
 			]
 		, (err, status) ->
-			console.log [err, status]
 			if err
 				res.serverError err
 			else unless status
