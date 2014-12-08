@@ -491,7 +491,7 @@ Controllers =
 
 		$scope.send = (status) ->
 			status.content = scannAllLinks status.content
-			Ajax.put '/user/status/add',
+			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
 				data:
 					status: status
 					at: at
