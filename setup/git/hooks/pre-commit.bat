@@ -1,1 +1,1 @@
-exit 0
+mocha --compilers coffee:coffee-script/register
