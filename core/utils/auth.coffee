@@ -98,12 +98,10 @@ exports.tryLogin = (req, res, next) ->
 Return true if a value is in a list (after solving jokers)
 @return boolean match
 ###
-exports.inList = (value, list) ->
-	for match in list
+inList = (value, list) ->
+	list.contains value, (match, value) ->
 		match = new RegExp match.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*')
-		if match.test value
-			return true
-	false
+		match.test value
 
 ###
 A helper method to determine if a user has been authenticated, and if they have the right role.
@@ -122,10 +120,14 @@ exports.isAuthenticated = (req, res, next) ->
 					"/admin"
 					"/agenda"
 					"/photos"
-					"/friend/**"
-					"/user/notify"
-					"/user/profile/**"
-					"/user/status/**"
+					"/report/**"
+					"/user/**"
+				]
+
+				whitelist = [
+					"/user/forgotten-password"
+					"/user/login"
+					"/user/signin"
 				]
 
 				blacklist = user: [
@@ -137,7 +139,7 @@ exports.isAuthenticated = (req, res, next) ->
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
 				# If the URL is in the access restricted list
-				if exports.inList route, auth
+				if inList(route, auth) and ! inList(route, whitelist)
 					# If any user are connected
 					unless req.user
 						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
@@ -154,7 +156,7 @@ exports.isAuthenticated = (req, res, next) ->
 							res.redirect "/"
 
 					# Check blacklist for this user's role
-					else if blacklist[role] and exports.inList route, blacklist[role]
+					else if blacklist[role] and inList route, blacklist[role]
 						model = url: route
 						res.unautorized model
 					else

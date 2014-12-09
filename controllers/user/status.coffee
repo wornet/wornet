@@ -40,4 +40,8 @@ module.exports = (router) ->
 			if err
 				res.serverError err
 			else
+				if status.at
+					NoticePackage.notify [status.at], null,
+						action: 'notice'
+						notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
 				StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status

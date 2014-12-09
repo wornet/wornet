@@ -44,11 +44,7 @@ process.on 'uncaughtException', (err) ->
 	console['warn'] 'Caught exception: ' + err
 	console['log'] err.stack || (new Error).stack
 
-options = require('./core/system/options')(port)
-methodOverride = require('method-override')()
-bodyParser = require('body-parser')()
-flash = require('connect-flash')
-cookieParser = require('cookie-parser')
+options = require('./core/system/options')(app, port)
 session = require('express-session')
 MemcachedStore = require('connect-memcached')(session)
 RedisStore = require('connect-redis')(session)
@@ -90,97 +86,10 @@ onready ->
 		key: "w"
 		store: redisStore
 
-	# Before each request
-	app.use (req, res, done) ->
-
-		res.setTimeLimit config.wornet.timeout
-		res.on 'finish', ->
-			clearTimeout res.excedeedTimeout
-
-		if req.connection.remoteAddress is '127.0.0.1'
-			switch req.url
-				when '/status'
-					return res.end 'OK'
-
-		next = ->
-			# Parse body from requests
-			bodyParser req, res, ->
-				# Available PUT and DELETE on old browsers
-				methodOverride req, res, ->
-					req.data = extend {}, (req.query || {}), (req.body || {})
-					done()
-					# To simulate a slow bandwith add a delay like this :
-					# delay 3000, done
-
-		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
-		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
-			req.isStatic = true
-			ie = req.getHeader('User-Agent').match /MSIE[\/\s]([0-9\.]+)/g
-			if ie
-				ie = intval ie[0].substr 5
-			else
-				ie = 0
-			req.ie = ie
-			methods =
-				js: uglifyJs
-				css: (str) ->
-					str.replace /[\r\n\t]/g, ''
-			###
-			In production mode, all scripts are minified with UglifyJS and joined in /js/all.js
-			And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
-			###
-			for lang, method of methods
-				if req.urlWithoutParams is '/' + lang + '/all.' + lang
-					res.setTimeLimit 200
-					file = __dirname + '/.build/' + lang + '/all-ie-' + req.ie + '.' + lang
-					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
-					res.setHeader 'cache-control', 'max-age=259200000, public'
-					fs.readFile file, ((method, list) ->
-						(err, content) ->
-							if err
-								concatCallback '', list, method, (content) ->
-									# content = uglifyJs content
-									res.end content
-									fs.writeFile file, content
-								,
-									ie: req.ie
-							else
-								res.end content
-					)(method, options['main' + ucfirst(lang)]())
-					return
-			req.url = req.urlWithoutParams
-			if req.url.startWith '/img/photo/'
-				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
-			else if req.url.startWith '/fonts/glyphicons'
-				req.url = '/components/bootstrap' + req.url
-			done()
-		else
-			unless req.xhr
-				res.setHeader 'keep-alive', 'timeout=15, max=100'
-			res.locals.isXHR = !!req.xhr
-			res.isXHR = res.locals.isXHR
-			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
-			res.isJSON = req.isJSON
-			# Load all scripts in core/global/request directory
-			# Not yet needed
-			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
-			# 	pendingFiles = files.length
-			# 	if pendingFiles
-			# 		files.forEach (file) ->
-			# 			value = require file
-			# 			if typeof(value) is 'function'
-			# 				value req, res, ->
-			# 					unless --pendingFiles
-			# 						next()
-			# 			else
-			# 				unless --pendingFiles
-			# 					next()
-			# 	else
-			# 		next()
-			next()
-
 	# Launch Kraken
 	app.use kraken options
+
+	require(__dirname + '/core/global/request/handle-static')(app)
 
 	app.on 'start', ->
 
@@ -188,27 +97,9 @@ onready ->
 		defer.forEach (done) ->
 			done app
 
-		glob __dirname + "/core/global/start/**/*.coffee", (er, files) ->
+		glob __dirname + '/core/global/start/**/*.coffee', (er, files) ->
 			files.forEach (file) ->
 				require file
-
-	app.on 'middleware:after:session', (eventargs) ->
-		# Flash session (store data in sessions to the next page only)
-		app.use flash()
-		# Check if user is authentificated and is allowed to access the requested URL
-		app.use auth.isAuthenticated
-		# Allow to set and get cookies in routes methods
-		secret = 'kjsqdJL7KSU9DEU78_Zjsq0KJD23LKSQ_lkjdzij1sqodqZE325dZDKJP-QD'
-		app.use cookieParser(secret)
-		# Store sessions in Memcached
-		###
-		app.use(session(
-			secret: config.session.module.arguments[0].secret
-			key: config.session.module.arguments[0].key
-			store: new MemcachedStore
-				hosts: ['127.0.0.1:11211']
-		))
-		###
 
 	# Handle errors and print in the console
 	if port is 443

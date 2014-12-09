@@ -4,7 +4,30 @@ useCdn = false
 piwik = true
 googleAnalytics = true
 
-module.exports = (port) ->
+flash = require('connect-flash')
+cookieParser = require('cookie-parser')
+
+module.exports = (app, port) ->
+
+	app.on 'middleware:after:session', (eventargs) ->
+		# Flash session (store data in sessions to the next page only)
+		app.use flash()
+		# Allow to set and get cookies in routes methods
+		secret = 'kjsqdJL7KSU9DEU78_Zjsq0KJD23LKSQ_lkjdzij1sqodqZE325dZDKJP-QD'
+		app.use cookieParser(secret)
+
+		# Check if user is authentificated and is allowed to access the requested URL
+		app.use auth.isAuthenticated
+
+		# Store sessions in Memcached
+		###
+		app.use(session(
+			secret: config.session.module.arguments[0].secret
+			key: config.session.module.arguments[0].key
+			store: new MemcachedStore
+				hosts: ['127.0.0.1:11211']
+		))
+		###
 
 	trackers: ->
 		trackers = {}
