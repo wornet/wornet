@@ -1,7 +1,6 @@
 'use strict'
 
 root = __dirname + '/../../'
-config = require root + 'config/config.json'
 autoloadDirectories = config.wornet.autoloadDirectories
 
 global.extend = require 'extend'

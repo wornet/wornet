@@ -311,6 +311,17 @@ module.exports = (router) ->
 					next()
 			true
 
+	router.delete '/photo', (req, res) ->
+		userModifications = {}
+		userModifications.photoId = null
+		userModifications.thumb = null
+		for size in config.wornet.thumbSizes
+			userModifications['thumb' + size] = null
+		extend req.session.user, userModifications
+		extend req.user, userModifications
+		updateUser req, photoId: null, (err) ->
+			res.json err: err
+
 	router.post '/first/:query', (req, res) ->
 		query = req.params.query
 		UserPackage.search 1, [req.user.id], query, (err, users) ->

@@ -279,12 +279,13 @@ Controllers =
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 			$scope.loadedMedia = media
 			delay 1000, ->
-				$('#status-view iframe[data-ratio]').ratio()
+				$('#media-view iframe[data-ratio]').ratio()
 			refreshScope $scope
 			return
 
 		window.loadMedia = (type, media) ->
 			$scope.loadMedia type, media
+			$('#media-view').modal()
 			return
 
 		return
@@ -317,6 +318,13 @@ Controllers =
 				success: ->
 					location.reload()
 			return
+
+		$scope.deletePhoto = ($event) ->
+			Ajax.delete '/user/photo'
+			$($event.target)
+				.parents('[ng-controller]:first')
+				.find('.upload-thumb')
+				.prop('src', '/img/default-photo.jpg')
 
 		return
 

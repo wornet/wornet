@@ -1,11 +1,37 @@
 .well(ng-controller="ProfileCtrl")
-	.profile-edit(class=(edit ? null : "hidden"))
+	.profile-edit(class=(edit ? "hidden" : null))
 		.profileError
 			if ! empty(friendAsked)
 				.alert.alert-success
 					=friendAsked
-		#profile-photo
-			img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
+		#profile-photo.photo-options
+			img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view alt=profile.fullName)
+	.profile-edit(class=(edit ? null : "hidden"))
+		iframe(name="upload")
+		.photo-options
+			+form("/user/photo", "FILE")#profile-photo(target="upload")
+				.progress-radial: .overlay
+					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
+					.btn
+						=s("Changer de photo")
+					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
+			.btn(ng-click="deletePhoto($event)")
+				=s("Supprimer ma photo")
+	if isMe
+		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
+			=s("Modifier mon profil")
+			| &nbsp;
+			+glyph('edit')
+		.profile-edit(class=(edit ? null : "hidden"))
+			+form("/user/profile/edit")
+				.btn-group
+					input(type="button" value=s("Annuler")).btn.glued.profile-edit-btn
+					input(type="submit" value=s("Modifier")).btn.glued
+				.input-group
+					+formControl(name="name.first" value=profile.firstName).glued
+				.input-group
+					+formControl(name="name.last" value=profile.lastName)
+	else
 		.aside
 			a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
 				=s("Discuter")
@@ -17,25 +43,6 @@
 					| &nbsp;
 					+glyph('minus')
 	.profile-edit(class=(edit ? "hidden" : null))
-		if isMe
-			iframe(name="upload")
-			+form("/user/photo", "FILE")#profile-photo(target="upload")
-				.progress-radial: .overlay
-					img.upload-thumb(src=profile.thumb200 alt=profile.fullName)
-					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
-			a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
-				=s("Modifier mon profil")
-				| &nbsp;
-				+glyph('edit')
-			.profile-edit(class=(edit ? null : "hidden"))
-				+form("/user/profile/edit")
-					.btn-group
-						input(type="button" value=s("Annuler")).btn.glued.profile-edit-btn
-						input(type="submit" value=s("Modifier")).btn.glued
-					.input-group
-						+formControl(name="name.first" value=profile.firstName).glued
-					.input-group
-						+formControl(name="name.last" value=profile.lastName)
 		h3
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend && ! isAFriend

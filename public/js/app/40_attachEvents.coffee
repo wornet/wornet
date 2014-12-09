@@ -71,11 +71,20 @@ $.each [
 			$loader = $form.find '.loader'
 			$loader.fadeOut 'fast', $loader.remove
 			if $form.length
-				$img = $ 'img', $iframe.prop('contentWindow')
+				$img = $ 'img', $iframe.prop 'contentWindow'
 			if $img.length && $img[0].width > 0
-				$form.find('img.upload-thumb').prop 'src', $img.prop 'src'
+				$form.find('img.upload-thumb').thumbSrc $img.prop 'src', src
 			else
 				$('.errors').errors $form.find('input.upload').data 'error'
+			return
+	]
+	[
+		'click'
+		'[data-view-src], [data-view]'
+		($img) ->
+			loadMedia 'image',
+				src: $img.data('view-src') || $img.prop('src')
+				name: $img.data('view-name') || $img.prop('alt')
 			return
 	]
 	[
@@ -119,7 +128,7 @@ $.each [
 					unless $newImg.is('.error') or $newImg.is('img')
 						$newImg = $newImg.find 'img'
 					if $newImg.is('img')
-						newSource = $newImg.attr('src')
+						newSource = $newImg.prop 'src'
 						album = $newImg.data 'created-album'
 						if album
 							albums = objectResolve JSON.parse sessionStorage.albums
@@ -139,7 +148,7 @@ $.each [
 						$img.fadeOut 'fast', ->
 							$loader = $form.find '.loader'
 							$loader.fadeOut 'fast', $loader.remove
-							$img.attr('src', newSource).fadeIn('fast')
+							$img.thumbSrc(newSource).fadeIn 'fast'
 							return
 					else
 						@onerror()

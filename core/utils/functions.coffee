@@ -520,7 +520,7 @@ module.exports =
 					photoDirectory = __dirname + '/../../public/img/photo/'
 					dst = photoDirectory + id + '.jpg'
 					copy image.path, dst
-					sizes = [50, 90, 200]
+					sizes = config.wornet.thumbSizes
 					pending = sizes.length
 					for size in sizes
 						thumb = photoDirectory + size + 'x' + id + '.jpg'
@@ -543,6 +543,7 @@ module.exports =
 								else
 									userModifications = {}
 									userModifications.photoId = photo.id
+									userModifications.photo = photo.photo
 									userModifications.thumb = photo.thumb
 									for size in sizes
 										userModifications['thumb' + size] = photo['thumb' + size]

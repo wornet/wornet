@@ -36,6 +36,19 @@ if isNaN(port) or port < 1
 # Config load
 config = port: port
 
+getConfig = (name) ->
+	try
+		config = require __dirname + '/config/' + name + '.json'
+	catch e
+	config || {}
+
+global.mainConfig = getConfig 'config'
+global.customConfig = getConfig 'custom'
+global.envConfig = getConfig app.settings.env
+deepextend config, mainConfig
+deepextend config, envConfig
+deepextend config, customConfig
+
 
 process.on 'uncaughtException', (err) ->
 	if err.code is 'EADDRINUSE'

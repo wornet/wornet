@@ -369,7 +369,8 @@ module.exports = (app, port) ->
 
 		# Add config.json configuration
 		deepextend config, localConfig._store
-		deepextend config, require __dirname + '/../../config/custom.json'
+		if customConfig
+			deepextend config, customConfig
 
 		# Initialize packages
 		MailPackage.init()

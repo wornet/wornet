@@ -74,3 +74,17 @@ $.fn.extend
 			unless isNaN(ratio)
 				$block.height $block.width() / ratio
 			return
+	# Update the src attribute of a thumb and all other thumbs with the same id
+	thumbSrc: (src) ->
+		userThumb = @data 'user-thumb'
+		if userThumb
+			src = src.replace /\/photo\/[0-9]+x/g, '/photo/'
+			$('img[data-user-thumb="' + userThumb + '"]').each ->
+				$img = $ @
+				thumbSize = $img.data 'thumb-size'
+				$img.prop 'src',
+					if thumbSize
+						src.replace /\/photo\//g, '/photo/' + thumbSize + 'x'
+					else
+						src
+		@

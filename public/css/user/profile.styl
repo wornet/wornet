@@ -31,11 +31,23 @@ $progressRadialWidth = 4px
 		padding $smallPadding
 		clear left
 
+.photo-options
+	float left
+	margin 0 $mainPadding 0 0
+
+	.btn
+		margin $smallPadding 0 0
+		width 100%
+
 #profile-photo
 	size($photoWidth + 2 * $progressRadialWidth, $photoHeight + 2 * $progressRadialWidth)
 	position relative
-	float left
-	margin 0 $mainPadding 0 0
+
+	.btn
+		position absolute
+		bottom 0
+		margin $progressRadialWidth
+		width $photoWidth - 2 * $progressRadialWidth
 
 	.progress-radial
 	.progress-radial .overlay
@@ -52,6 +64,7 @@ $progressRadialWidth = 4px
 	.progress-radial
 	.progress-radial .overlay
 	img.upload-thumb
+		cursor pointer
 		if $photoRadius
 			border-radius($photoRadius)
 		transition(all .2s)
@@ -62,10 +75,6 @@ $progressRadialWidth = 4px
 		.overlay
 			position relative
 			background-color white
-
-	&:hover img
-		border-width 0
-		opacity(0.7)
 
 @media (max-width: 767px)
 	#profile-photo

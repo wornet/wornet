@@ -201,6 +201,8 @@
 
         "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
 
+        "thumbSizes": [50, 90, 200],
+
         "timeout": 30,
 
         "uglify": {

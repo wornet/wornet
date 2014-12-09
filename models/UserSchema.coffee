@@ -145,14 +145,12 @@ photoSrc = (prefix) ->
 userSchema.virtual('photo').get ->
 	photoSrc.call @
 
-userSchema.virtual('thumb50').get ->
-	photoSrc.call @, '50x'
-
-userSchema.virtual('thumb90').get ->
+userSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
 
-userSchema.virtual('thumb200').get ->
-	photoSrc.call @, '200x'
+for size in config.wornet.thumbSizes
+	userSchema.virtual('thumb' + size).get ->
+		photoSrc.call @, size + 'x'
 
 userSchema.virtual('present').get ->
 	NoticePackage.isPresent @id

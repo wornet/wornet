@@ -26,14 +26,9 @@ photoSchema.virtual('photo').get ->
 photoSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
 
-photoSchema.virtual('thumb90').get ->
-	photoSrc.call @, '90x'
-
-photoSchema.virtual('thumb50').get ->
-	photoSrc.call @, '50x'
-
-photoSchema.virtual('thumb200').get ->
-	photoSrc.call @, '200x'
+for size in config.wornet.thumbSizes
+	photoSchema.virtual('thumb' + size).get ->
+		photoSrc.call @, size + 'x'
 
 photoSchema.methods.getAlbum = (done) ->
 	Album.findById @album, done
