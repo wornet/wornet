@@ -2,6 +2,7 @@
 
 # No conflict if a 8000 port app is running
 process.env.PORT = 8001
+global.config = require(__dirname + '/../core/global/start/config')('production', process.env.PORT)
 
 request = require 'supertest'
 chai = require 'chai'

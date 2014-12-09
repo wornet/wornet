@@ -27,32 +27,14 @@ extend global,
 global.app = express()
 
 
-port = parseInt process.env.PORT
-
-if isNaN(port) or port < 1
-	port = 8000
-
-
 # Config load
-config = port: port
-
-getConfig = (name) ->
-	try
-		config = require __dirname + '/config/' + name + '.json'
-	catch e
-	config || {}
-
-global.mainConfig = getConfig 'config'
-global.customConfig = getConfig 'custom'
-global.envConfig = getConfig app.settings.env
-deepextend config, mainConfig
-deepextend config, envConfig
-deepextend config, customConfig
+config = require(__dirname + '/core/global/start/config')(app.settings.env, process.env.PORT)
+port = config.port
 
 
 process.on 'uncaughtException', (err) ->
 	if err.code is 'EADDRINUSE'
-		console['log'] 'Attempt to listen ' + config.port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
+		console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
 		throw err
 	console['warn'] 'Caught exception: ' + err
 	console['log'] err.stack || (new Error).stack
@@ -115,7 +97,7 @@ onready ->
 				require file
 
 	# Handle errors and print in the console
-	if port is 443
+	if config.port is 443
 
 		app.all '*', (req, res, next) ->
 			if req.secure
