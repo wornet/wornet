@@ -70,21 +70,21 @@ userSchema = BaseSchema.extend
 		unique: true
 ,
 	toObject:
-		virtuals: true
+		virtuals: false
 	toJSON:
 		virtuals: true
 
-userSchema.virtual('friendAsks').get ->
-	@_friendAsks
+userSchema.virtual('friendAsks')
+	.get ->
+		@_friendAsks
+	.set (friendAsks) ->
+		@_friendAsks = friendAsks
 
-userSchema.virtual('friends').get ->
-	@_friends
-
-userSchema.virtual('friendAsks').set (friendAsks) ->
-	@_friendAsks = friendAsks
-
-userSchema.virtual('friends').set (friends) ->
-	@_friends = friends
+userSchema.virtual('friends')
+	.get ->
+		@_friends
+	.set (friends) ->
+		@_friends = friends
 
 getFullName = ->
 	anonymous = 'Anonyme'
@@ -103,22 +103,23 @@ getFullName = ->
 			@name.first + ' ' + @name.last
 
 
-userSchema.virtual('name.full').get getFullName
-userSchema.virtual('fullName').get getFullName
+for key in ['name.full', 'fullName']
+	userSchema.virtual(key)
+		.get getFullName
+		.set (name) ->
+			unless name is 'Anonyme'
+				if name?
+					split = name.split ' '
+				else
+					split = [null, null]
+				@name.first = split[0]
+				@name.last = split[1]
+			return
+
 userSchema.virtual('firstName').get ->
 	@name.first
 userSchema.virtual('lastName').get ->
 	@name.last
-
-userSchema.virtual('name.full').set (name) ->
-	unless name is 'Anonyme'
-		if name?
-			split = name.split ' '
-		else
-			split = [null, null]
-		@name.first = split[0]
-		@name.last = split[1]
-	return
 
 
 userSchema.virtual('photoUpdateAt').get ->
@@ -134,13 +135,12 @@ userSchema.virtual('age').get ->
 		null
 
 photoSrc = (prefix) ->
-	'/img/' +(
+	jpg(
 		if @photoId?
 			'photo/' + (prefix || '') + @photoId + '/' + @name.full.replace(/[^a-zA-Z0-9-]/g, '-')
 		else
 			'default-photo'
-	) +
-	'.jpg'
+	)
 
 userSchema.virtual('photo').get ->
 	photoSrc.call @

@@ -8,6 +8,7 @@ exports.remember = (res, id) ->
 	res.cookie config.wornet.remember.key, id,
 		maxAge: config.wornet.remember.ttl.days
 		httpOnly: true
+		signed: true
 
 # Get user id remembered with cookie
 exports.remembered = (req, done) ->
@@ -110,7 +111,10 @@ If the user is not known, redirect to the login page. If the role doesn't match,
 ###
 exports.isAuthenticated = (req, res, next) ->
 	if req.isStatic?
-		next()
+		if req.allowedUserId and (! req.user or req.allowedUserId isnt req.user.id)
+			res.notFound()
+		else
+			next()
 	else
 		exports.tryLogin req, res, ->
 
@@ -146,13 +150,13 @@ exports.isAuthenticated = (req, res, next) ->
 						isARouteWithoutMessage = (route is '/')
 						if req.isJSON
 							if isARouteWithoutMessage
-								data.err = s("Connectez-vous pour accéder à cette page.")
-							data = goingTo: req.url
-							res.json data
+								res.serverError new Error s("Connectez-vous pour accéder à cette page.")
+							else
+								res.json goingTo: req.url
 						else
 							req.goingTo req.url
 							if isARouteWithoutMessage
-								req.flash "loginErrors", s("Connectez-vous pour accéder à cette page.")
+								req.flash "loginErrors", new Error s("Connectez-vous pour accéder à cette page.")
 							res.redirect "/"
 
 					# Check blacklist for this user's role

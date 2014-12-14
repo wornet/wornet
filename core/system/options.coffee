@@ -5,16 +5,18 @@ piwik = true
 googleAnalytics = true
 
 flash = require('connect-flash')
-cookieParser = require('cookie-parser')
+cookieParser = require(config.middleware.cookieParser.module.name)
 
 module.exports = (app, port) ->
+
+	cookiesInit = ->
+		cookieParser.apply app, config.middleware.cookieParser.module.arguments
 
 	app.on 'middleware:after:session', (eventargs) ->
 		# Flash session (store data in sessions to the next page only)
 		app.use flash()
 		# Allow to set and get cookies in routes methods
-		secret = 'kjsqdJL7KSU9DEU78_Zjsq0KJD23LKSQ_lkjdzij1sqodqZE325dZDKJP-QD'
-		app.use cookieParser(secret)
+		app.use cookiesInit()
 
 		# Check if user is authentificated and is allowed to access the requested URL
 		app.use auth.isAuthenticated
@@ -147,8 +149,7 @@ module.exports = (app, port) ->
 					if @session.goingTo?
 						url = @session.goingTo
 						delete @session.goingTo
-				else
-					log url
+				else if url isnt '/user/notify'
 					@session.goingTo = url
 				url
 			# Get a cookie value from name or null if it does not exists
@@ -262,6 +263,7 @@ module.exports = (app, port) ->
 		setHeader = app.response.setHeader
 		render = app.response.render
 		end = app.response.end
+		cookie = app.response.cookie
 
 		# Available shorthand methods to all response objects in controllers
 		responseErrors =
@@ -361,7 +363,14 @@ module.exports = (app, port) ->
 						callback()
 					catch e
 						res.serverError e
-
+			cookie: (name, value, options = {}) ->
+				if config.wornet.protocole is 'https' and typeof options.secure is 'undefined'
+					options.secure = true
+				if typeof options.domain is 'object' and options.domain.host
+					options.domain = options.domain.host.replace /^[^\.]+(\.[^\.]+\.[^\.]+)$/g, '$1'
+				params = arguments
+				params[2] = options
+				cookie.apply @, params
 
 
 		# Templates directory

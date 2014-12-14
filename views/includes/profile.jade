@@ -4,8 +4,12 @@
 			if ! empty(friendAsked)
 				.alert.alert-success
 					=friendAsked
-		#profile-photo.photo-options
-			img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view alt=profile.fullName)
+		.photo-options
+			#profile-photo
+				img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view alt=profile.fullName)
+			if profile.photoId
+				.btn(ng-click="deletePhoto($event)")
+					=s("Supprimer ma photo")
 	.profile-edit(class=(edit ? null : "hidden"))
 		iframe(name="upload")
 		.photo-options
@@ -15,8 +19,6 @@
 					.btn
 						=s("Changer de photo")
 					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
-			.btn(ng-click="deletePhoto($event)")
-				=s("Supprimer ma photo")
 	if isMe
 		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
 			=s("Modifier mon profil")
@@ -25,6 +27,7 @@
 		.profile-edit(class=(edit ? null : "hidden"))
 			+form("/user/profile/edit")
 				.btn-group
+					input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
 					input(type="button" value=s("Annuler")).btn.glued.profile-edit-btn
 					input(type="submit" value=s("Modifier")).btn.glued
 				.input-group

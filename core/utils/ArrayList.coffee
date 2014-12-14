@@ -1,7 +1,7 @@
 'use strict'
 
 ###
-Extend Array prototype
+Extend Object (used like Map) and Array prototype
 ###
 
 getKeys = (keys, value = null) ->

@@ -117,4 +117,18 @@ StatusPackage =
 		else
 			done new Error s("Ce statut est vide")
 
+	put: (req, res, done) ->
+		@add req, (err, status) ->
+			if err
+				res.serverError err
+			else
+				status.images.each ->
+					photoId = PhotoPackage.urlToId @src
+					PhotoPackage.publish req, photoId
+				if status.at
+					NoticePackage.notify [status.at], null,
+						action: 'notice'
+						notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
+				done status
+
 module.exports = StatusPackage

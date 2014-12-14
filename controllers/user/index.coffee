@@ -148,17 +148,40 @@ module.exports = (router) ->
 						unless userModifications.name
 							userModifications.name = req.user.name
 						userModifications.name.last = val
-		extend req.user, userModifications
-		extend req.session.user, userModifications
-		res.redirect '/user/profile'
-		User.findById req.user.id, (err, user) ->
-			if user
-				extend user, userModifications
-				user.save (err, user) ->
-					if err
-						throw err
-			if err
-				throw err
+					when 'photoId'
+						if PhotoPackage.allowedToSee req, val
+							userModifications.photoId = val
+		next = ->
+			extend req.user, userModifications
+			extend req.session.user, userModifications
+			updateUser req.user, userModifications, ->
+				res.redirect '/user/profile'
+			###
+			User.findById req.user.id, (err, user) ->
+				if user
+					extend user, userModifications
+					user.save (err, user) ->
+						if err
+							throw err
+				if err
+					throw err
+			###
+		if userModifications.photoId
+			Photo.findOneAndUpdate { _id: userModifications.photoId }, { status: 'published' }, {}, (err, photo) ->
+				if ! err and photo
+					userModifications.photoId = photo.id
+					userModifications.photo = photo.photo
+					userModifications.thumb = photo.thumb
+					for size in config.wornet.thumbSizes
+						userModifications['thumb' + size] = photo['thumb' + size]
+					PhotoPackage.forget req, photo.id
+				else
+					req.flash 'profileError', s("La photo a expirée, veuillez la ré-envoyer.")
+					delete userModifications.photoId
+				next()
+		else
+			next()
+		
 
 	router.get '/notify/read/:notification', (req, res) ->
 		# Delete notification when read
@@ -223,7 +246,10 @@ module.exports = (router) ->
 					next()
 				else
 					res.serverError new Error s("Cet album est privé")
-			Photo.find album: id, (err, foundPhotos) ->
+			Photo.find
+				album: id
+				status: 'published'
+			, (err, foundPhotos) ->
 				if err
 					res.serverError err
 				else

@@ -482,8 +482,7 @@ module.exports =
 			user = user.user
 		for key, val of update
 			user[key] = val
-		User.update _id: user._id, update, multi: false, (updateErr) ->
-			done updateErr
+		User.updateById user._id, update, done
 
 	###
 	Get a user from an object
@@ -517,6 +516,7 @@ module.exports =
 					done createErr, createdAlbum, photo
 				else
 					id = photo.id
+					PhotoPackage.add req, id
 					photoDirectory = __dirname + '/../../public/img/photo/'
 					dst = photoDirectory + id + '.jpg'
 					copy image.path, dst
@@ -538,19 +538,7 @@ module.exports =
 							if resizeErr
 								done resizeErr, createdAlbum, photo
 							else unless --pending
-								if notProfilePhoto
-									done null, createdAlbum, photo
-								else
-									userModifications = {}
-									userModifications.photoId = photo.id
-									userModifications.photo = photo.photo
-									userModifications.thumb = photo.thumb
-									for size in sizes
-										userModifications['thumb' + size] = photo['thumb' + size]
-									extend req.session.user, userModifications
-									extend req.user, userModifications
-									updateUser req, photoId: id, (err) ->
-										done err, createdAlbum, photo
+								done null, createdAlbum, photo
 		if notProfilePhoto
 			next()
 		else
@@ -731,22 +719,25 @@ module.exports =
 		if /https?:\/\//g.test file
 			file + '.' + extension + '?' + version
 		else 
-			source = 'public/' + directory + '/' + file + '.' + extension
+			source = 'public' + profilePhotoUrl '/' + directory + '/' + file + '.' + extension
 			unless keepExtension
 				extension = directory
 			if config.env.development || limit
-				stat = fs.statSync(source)
+				stat = fs.statSync source
 			if limit && limit > stat.size
 				switch extension
 					when 'js' then type = 'text/javascript'
 					when 'js' then type = 'text/style'
-					else type = 'image/' + extension.replace('jpg', 'jpeg')
-				"data:" + type + ";base64," + fs.readFileSync(source).toString('base64')
+					else type = 'image/' + extension.replace 'jpg', 'jpeg'
+				"data:" + type + ";base64," + fs.readFileSync(source).toString 'base64'
 			else
 				if config.env.development
 					version = stat.mtime.getTime()
 				file = file.replace /^\//g, ''
-				'/' + directory + '/' + file + '.' + extension + '?' + version
+				appendVersion = ''
+				unless file.indexOf('photo/') is 0
+					appendVersion = '?' + version
+				(config.wornet.staticServer || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
 
 	###
 	Generate an style URL (automaticaly compiled with stylus)
@@ -806,6 +797,15 @@ module.exports =
 	###
 	bigImg: (file) ->
 		config.wornet.bigImagesServer + file
+
+	###
+	Convert profile photo URL to real photo path
+	@param string url
+
+	@return string rewrited url
+	###
+	profilePhotoUrl: (url) ->
+		url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
 
 	###
 	Wrap text with quotes and escape quotes and backslashes within it

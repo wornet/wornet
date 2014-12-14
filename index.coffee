@@ -39,15 +39,15 @@ process.on 'uncaughtException', (err) ->
 	console['warn'] 'Caught exception: ' + err
 	console['log'] err.stack || (new Error).stack
 
-options = require('./core/system/options')(app, port)
 session = require('express-session')
 MemcachedStore = require('connect-memcached')(session)
 RedisStore = require('connect-redis')(session)
 
 # Make config usables everywhere
-extend global,
-	config: config,
-	options: options
+global.config = config
+
+# Set application options
+global.options = require('./core/system/options')(app, port)
 
 defer = []
 app.onready = (done) ->

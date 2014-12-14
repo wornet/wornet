@@ -10,15 +10,21 @@ photoSchema = BaseSchema.extend
 	album:
 		type: ObjectId
 		ref: 'AlbumSchema'
+	status:
+		type: String
+		default: 'uploaded'
+		enum: [
+			'uploaded'
+			'published'
+		]
 
 photoSrc = (prefix) ->
-	'/img/' + (
+	jpg(
 		if @_id?
 			'photo/' + (prefix || '') + @_id
 		else
 			'default-photo'
-	) +
-	'.jpg'
+	)
 
 photoSchema.virtual('photo').get ->
 	photoSrc.call @
@@ -39,13 +45,15 @@ photoSchema.pre 'save', (next) ->
 		if preview.album and preview.photos
 			preview.album.preview = preview.photos
 			preview.album.save()
-	Photo.find album: @album
-		.sort '-id'
-		.limit 4
-		.exec (err, photos) ->
-			unless err
-				preview.photos = photos.column '_id'
-				savePreview()
+	Photo.find
+		album: @album
+		status: 'published'
+	.sort '-id'
+	.limit 4
+	.exec (err, photos) ->
+		unless err
+			preview.photos = photos.column '_id'
+			savePreview()
 	@getAlbum (err, album) ->
 		unless err
 			preview.album = album

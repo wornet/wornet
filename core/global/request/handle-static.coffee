@@ -8,6 +8,10 @@ module.exports = (app) ->
 	# Before each request
 	app.use (req, res, done) ->
 
+		req.res = res
+		req.response = res
+		res.req = req
+		res.request = req
 		res.setTimeLimit config.wornet.timeout
 		res.on 'finish', ->
 			clearTimeout res.excedeedTimeout
@@ -34,7 +38,7 @@ module.exports = (app) ->
 			if ie
 				ie = intval ie[0].substr 5
 			else
-				ie = 0
+				ie = 0 
 			req.ie = ie
 			methods =
 				js: uglifyJs
@@ -65,7 +69,16 @@ module.exports = (app) ->
 					return
 			req.url = req.urlWithoutParams
 			if req.url.startWith '/img/photo/'
-				req.url = req.url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
+				req.url = profilePhotoUrl req.url
+				photoId = PhotoPackage.urlToId req.url
+				if photoId
+					_done = done
+					done = ->
+						cookiesInit() req, res, ->
+							if PhotoPackage.restricted req, photoId
+								res.notFound()
+							else
+								_done()
 			else if req.url.startWith '/fonts/glyphicons'
 				req.url = '/components/bootstrap' + req.url
 			done()

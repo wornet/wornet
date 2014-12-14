@@ -201,6 +201,8 @@
 
         "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
 
+        "staticServer": "http://static.wornet.fr",
+
         "thumbSizes": [50, 90, 200],
 
         "timeout": 30,
@@ -216,6 +218,7 @@
         "onlyAuthoredByAFriend": false,
 
         "upload": {
+            "ttl": 172800,
             "maxsize": 5000000
         },
 

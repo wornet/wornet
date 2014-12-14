@@ -15,7 +15,10 @@ albumSchema = BaseSchema.extend
 		type: Array
 
 albumSchema.methods.firstPhoto = (done, thumbSize = null) ->
-	Photo.findOne album: @id, (err, photo) ->
+	Photo.findOne
+		album: @id
+		status: 'published'
+	, (err, photo) ->
 		if err
 			done err
 		else

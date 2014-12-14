@@ -22,6 +22,9 @@ module.exports = (router) ->
 			else unless status
 				res.serverError standartError()
 			else
+				status.images.each ->
+					PhotoPackage.delete PhotoPackage.urlToId(@src), 'published'
+					true
 				unless equals status.author, req.user.id
 					NoticePackage.notify [status.author], null,
 						action: 'notice'
@@ -29,19 +32,9 @@ module.exports = (router) ->
 				res.json deletedStatus: status
 
 	router.put '/add/:id', (req, res) ->
-		StatusPackage.add req, (err, status) ->
-			if err
-				res.serverError err
-			else
-				StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status
+		StatusPackage.put req, res, (status) ->
+			StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status
 
 	router.put '/add', (req, res) ->
-		StatusPackage.add req, (err, status) ->
-			if err
-				res.serverError err
-			else
-				if status.at
-					NoticePackage.notify [status.at], null,
-						action: 'notice'
-						notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
-				StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status
+		StatusPackage.put req, res, (status) ->
+			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status

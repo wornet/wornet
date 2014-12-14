@@ -129,6 +129,11 @@ $.each [
 						$newImg = $newImg.find 'img'
 					if $newImg.is('img')
 						newSource = $newImg.prop 'src'
+						regExp = /\/photo\/[0-9]+x([^\/\.]+)[\/\.]/g
+						match = newSource.match regExp
+						if match
+							id = match[0].replace regExp, '$1'
+							$('#uploadedPhotoId').val id
 						album = $newImg.data 'created-album'
 						if album
 							albums = objectResolve JSON.parse sessionStorage.albums
