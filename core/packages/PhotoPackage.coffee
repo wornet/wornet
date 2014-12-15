@@ -2,6 +2,23 @@
 
 photos = {}
 
+oneDay = 24 * 3600 * 1000
+
+prefix = 'p:'
+
+setCookie = (req, photoId, value, unset = false) ->
+	maxAge = oneDay
+	if unset
+		maxAge *= -1
+		value = ''
+	req.res.cookie prefix + photoId, value,
+		domain: req
+		httpOnly: true
+		maxAge: maxAge
+
+deleteCookie = (req, photoId) ->
+	setCookie req, photoId, '', true
+
 PhotoPackage =
 
 	urlToId: (url) ->
@@ -16,23 +33,22 @@ PhotoPackage =
 		! @allowedToSee req, photoId
 
 	restrictedAndAllowedToSee: (req, photoId) ->
-		token = req.cookie 'p:' + photoId
+		token = req.cookie prefix + photoId
 		photoId = strval photoId
 		photos[photoId] and photos[photoId] is token
 
 	allowedToSee: (req, photoId) ->
-		token = req.cookie 'p:' + photoId
 		photoId = strval photoId
-		! photos[photoId] or photos[photoId] is token
+		if photos[photoId]
+			req.getHeader('cookie').indexOf(prefix + photoId + '=' + photos[photoId]) isnt -1
+		else
+			true
 
 	forget: (req, photoId) ->
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
 			delete photos[photoId]
-			req.res.cookie 'p:' + photoId, '',
-				domain: req
-				signed: true
-				maxAge: - 24 * 3600
+			deleteCookie req, photoId
 
 	publish: (req, photoId) ->
 		photoId = strval photoId
@@ -55,9 +71,7 @@ PhotoPackage =
 
 	add: (req, photoId) ->
 		token = generateSalt 32
-		req.res.cookie 'p:' + photoId, token,
-			domain: req
-			signed: true
+		setCookie req, photoId, token
 		photoId = strval photoId
 		unless photos[photoId]
 			photos[photoId] = token

@@ -71,14 +71,9 @@ module.exports = (app) ->
 			if req.url.startWith '/img/photo/'
 				req.url = profilePhotoUrl req.url
 				photoId = PhotoPackage.urlToId req.url
-				if photoId
-					_done = done
+				if photoId and PhotoPackage.restricted req, photoId
 					done = ->
-						cookiesInit() req, res, ->
-							if PhotoPackage.restricted req, photoId
-								res.notFound()
-							else
-								_done()
+						res.notFound()
 			else if req.url.startWith '/fonts/glyphicons'
 				req.url = '/components/bootstrap' + req.url
 			done()

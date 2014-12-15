@@ -367,7 +367,11 @@ module.exports = (app, port) ->
 				if config.wornet.protocole is 'https' and typeof options.secure is 'undefined'
 					options.secure = true
 				if typeof options.domain is 'object' and options.domain.host
-					options.domain = options.domain.host.replace /^[^\.]+(\.[^\.]+\.[^\.]+)$/g, '$1'
+					host = options.domain.host.replace /^[^\.]+(\.[^\.]+\.[^\.]+)$/g, '$1'
+					if host is options.domain.host
+						delete options.domain
+					else
+						options.domain = host
 				params = arguments
 				params[2] = options
 				cookie.apply @, params
