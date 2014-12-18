@@ -1,4 +1,8 @@
 {
+    "express": {
+        "view cache": false
+    },
+
     "wornet": {
 
         "bigImagesServer": "",

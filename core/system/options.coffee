@@ -433,4 +433,11 @@ module.exports = (app, port) ->
 			console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
 			console['warn'] e
 
+		deepextend localConfig._store, middleware: logger: module: arguments: [
+			"combined",
+			skip: (req, res) ->
+				unless config.env.development
+					res.statusCode < 400
+		]
+
 		next null, localConfig

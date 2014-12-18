@@ -73,8 +73,6 @@ onready ->
 	redisStore = new RedisStore
 	global.redis = redisStore.client
 
-	app.use require('compression')()
-
 	app.use session
 		# Express session options
 		resave: true,

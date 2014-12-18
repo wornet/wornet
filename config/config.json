@@ -1,10 +1,15 @@
 {
 
     "express": {
+        "view cache": true,
         "view engine": "jade"
     },
 
     "middleware": {
+
+        "compress": {
+            "enabled": true
+        },
 
         "devtools": {
             "enabled": true,
