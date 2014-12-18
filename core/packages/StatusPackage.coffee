@@ -82,7 +82,7 @@ StatusPackage =
 								res.json data
 			else
 				warn [connectedPeopleAndMe, 'does not contains', id]
-				res.serverError new Error s("Vous ne pouvez pas voir les statuts de ce profil")
+				res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
 
 	add: (req, done) ->
 		if req.data.status
@@ -115,7 +115,7 @@ StatusPackage =
 			catch err
 				done err
 		else
-			done new Error s("Ce statut est vide")
+			done new PublicError s("Ce statut est vide")
 
 	put: (req, res, done) ->
 		@add req, (err, status) ->

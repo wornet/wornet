@@ -156,6 +156,8 @@ module.exports = (app, port) ->
 			cookie: (name) ->
 				if @cookies[name]?
 					@cookies[name]
+				else if @signedCookies[name]?
+					@signedCookies[name]
 				else
 					null
 			# Get from cache if present in user session, else calculate
@@ -210,7 +212,7 @@ module.exports = (app, port) ->
 					req.user.notifications = notifications
 					done null, notifications
 				else
-					done new Error "No notifications"
+					done new PublicError s("Aucune notification")
 			# get users from friend, me
 			getKnownUsersByIds: (ids, done) ->
 				@getUsersByIds ids, done, false
@@ -245,14 +247,14 @@ module.exports = (app, port) ->
 										err = (if otherUsers.length is idsToFind.length
 											null
 										else
-											new Error s("Impossible de trouver tous les utilisateurs")
+											new PublicError s("Impossible de trouver tous les utilisateurs")
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
 											true
 										done err, usersMap, true
 							else
-								err = new Error s("Impossible de trouver tous les utilisateurs")
+								err = new PublicError s("Impossible de trouver tous les utilisateurs")
 								done err, null, false
 						else
 							done null, usersMap, false
@@ -274,7 +276,7 @@ module.exports = (app, port) ->
 		for key, val of responseErrors
 			app.response[key] = ((key, val) ->
 				(model = {}) ->
-					if typeof(model) is 'string' or model instanceof Error
+					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err
@@ -330,7 +332,10 @@ module.exports = (app, port) ->
 				res = @
 				params = arguments
 				if params[1] and params[1].err and ! config.env.development
-					delete params[1].err
+					if params[1].err instanceof PublicError
+						params[1].err = strval params[1].err
+					else
+						delete params[1].err
 				@safeHeader ->
 					render.apply res, params
 			end: ->
@@ -355,7 +360,7 @@ module.exports = (app, port) ->
 				if time > 0
 					res = @
 					@excedeedTimeout = delay time.seconds, ->
-						res.serverError new Error s("Navré, nous n'avons pas pu traiter votre demande, veuillez réessayer ultérieurement.")
+						res.serverError new PublicError s("Navré, nous n'avons pas pu traiter votre demande, veuillez réessayer ultérieurement.")
 			catch: (callback) ->
 				res = @
 				->

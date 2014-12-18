@@ -150,13 +150,13 @@ exports.isAuthenticated = (req, res, next) ->
 						isARouteWithoutMessage = (route is '/')
 						if req.isJSON
 							if isARouteWithoutMessage
-								res.serverError new Error s("Connectez-vous pour accéder à cette page.")
+								res.serverError new PublicError s("Connectez-vous pour accéder à cette page.")
 							else
 								res.json goingTo: req.url
 						else
 							req.goingTo req.url
 							if isARouteWithoutMessage
-								req.flash "loginErrors", new Error s("Connectez-vous pour accéder à cette page.")
+								req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
 							res.redirect "/"
 
 					# Check blacklist for this user's role

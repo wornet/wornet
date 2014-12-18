@@ -4,8 +4,13 @@ block inner-body
 	h3
 		=s("Oups...")
 	if err
-		pre
-			!=strval(err.stack || err || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/([^\n\r]+[\/\\][^\/\\]+\.coffee[^\n\r]*)/g, '<b style="color: blue;">$1</b>')
+		if err.stack
+			pre
+				!=strval(err.stack).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/([^\n\r]+[\/\\][^\/\\]+\.coffee[^\n\r]*)/g, '<b style="color: blue;">$1</b>')
+		else
+			p
+				=strval(err || '')
+			+redirectHome()
 	else
 		p
 			=s("Nous sommes désolés une erreur indépendante de notre volonté est survenue. Nos équipes travaillent à la résolution du problème.")

@@ -274,6 +274,7 @@ Controllers =
 
 	MediaView: ($scope) ->
 		$scope.loadMedia = (type, media) ->
+			media = $.extend {}, media
 			media.type = type
 			if type is 'image'
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
@@ -285,7 +286,7 @@ Controllers =
 
 		window.loadMedia = (type, media) ->
 			$scope.loadMedia type, media
-			$('#media-view').modal()
+			delay 1, $('#media-view').modal
 			return
 
 		return

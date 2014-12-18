@@ -16,19 +16,6 @@ module.exports = (router) ->
 
 	pm = new PagesManager router, templateFolder
 
-	# GET /user/profile > see controllers/index.coffee
-	# GET /user/login > see controllers/index.coffee
-	# GET /user/login (pre-signin) > see controllers/index.coffee
-
-	router.get '/profile/:id/:name', (req, res) ->
-		res.locals.friendAsked = req.flash 'friendAsked'
-		UserPackage.renderProfile req, res, req.params.id
-
-
-	# GET /user/profile
-	router.get '/profile', (req, res) ->
-		UserPackage.renderProfile req, res
-
 	# When user submit his e-mail and password to log in
 	router.post '/login', (req, res) ->
 		# Log in user
@@ -130,94 +117,6 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
-	router.post '/profile/edit', (req, res) ->
-		# When user edit his profile
-		userModifications = {}
-		for key, val of req.body
-			unless empty val
-				switch key
-					when 'birthDate'
-						birthDate = inputDate val
-						if birthDate.isValid()
-							userModifications.birthDate = birthDate
-					when 'name.first'
-						unless userModifications.name
-							userModifications.name = req.user.name
-						userModifications.name.first = val
-					when 'name.last'
-						unless userModifications.name
-							userModifications.name = req.user.name
-						userModifications.name.last = val
-					when 'photoId'
-						if PhotoPackage.allowedToSee req, val
-							userModifications.photoId = val
-		next = ->
-			extend req.user, userModifications
-			extend req.session.user, userModifications
-			updateUser req.user, userModifications, ->
-				res.redirect '/user/profile'
-			###
-			User.findById req.user.id, (err, user) ->
-				if user
-					extend user, userModifications
-					user.save (err, user) ->
-						if err
-							throw err
-				if err
-					throw err
-			###
-		if userModifications.photoId
-			Photo.findOneAndUpdate { _id: userModifications.photoId }, { status: 'published' }, {}, (err, photo) ->
-				if ! err and photo
-					userModifications.photoId = photo.id
-					userModifications.photo = photo.photo
-					userModifications.thumb = photo.thumb
-					for size in config.wornet.thumbSizes
-						userModifications['thumb' + size] = photo['thumb' + size]
-					PhotoPackage.forget req, photo.id
-				else
-					req.flash 'profileError', s("La photo a expirée, veuillez la ré-envoyer.")
-					delete userModifications.photoId
-				next()
-		else
-			next()
-		
-
-	router.get '/notify/read/:notification', (req, res) ->
-		# Delete notification when read
-		req.deleteNotification req.params.id, (err, notifications) ->
-			if err
-				res.serverError err
-			else
-				res.json notifications: notifications
-
-	router.get '/notify', (req, res) ->
-		# Wait for new notifications
-		NoticePackage.waitForJson req.user.id, req, res
-
-	router.post '/notify', (req, res) ->
-		# Send a notification
-		try
-			data = req.body.data
-			userIds = (cesarRight id for id in req.body.userIds.split(','))
-			switch data.action || ''
-				when 'message'
-					data.from = req.user.publicInformations()
-					data.date = new Date
-					Message.create
-						content: data.content
-						author: req.user._id
-					, (err, message) ->
-						for id in userIds
-							MessageRecipient.create
-								message: message._id
-								recipient: id
-			NoticePackage.notify userIds, null, data, true
-			res.json()
-		catch err
-			log err
-			res.serverError err
-
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
 		Album.find user: req.user.id, (err, albums) ->
@@ -245,7 +144,7 @@ module.exports = (router) ->
 					album = foundAlbum
 					next()
 				else
-					res.serverError new Error s("Cet album est privé")
+					res.serverError new PublicError s("Cet album est privé")
 			Photo.find
 				album: id
 				status: 'published'

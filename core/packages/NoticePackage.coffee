@@ -106,38 +106,46 @@ NoticePackage =
 		res.setTimeLimit 0
 		self = @
 		responsesToNotify = @responsesToNotify
-		id = @waitForNotification userId, (err, notifications = []) ->
-			unless notifications instanceof Array
-				notifications = [[err, notifications]]
-			for notification in notifications
-				if notification[1]
-					if notification[1].userId?
-						delete notification[1].userId
-					if notification[1].deleteFriendAsk?
-						delete req.user.friendAsks[notification[1].deleteFriendAsk]
-						req.session.user.friendAsks = req.user.friendAsks
-						req.session.user.notifications = req.session.user.notifications.filter (data) ->
-							if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
-								true
-							else
-								data[1].hashedId isnt cesarRight userId
-						req.user.notifications = notifications
-						delete notification[1].deleteFriendAsk
-					if notification[1].addFriend?
-						req.addFriend notification[1].addFriend
-						delete notification[1].addFriend
-			data = notifications: notifications
-			data.notifyStatus = if err then self.ERROR else self.OK
+		req.session.save (err) ->
 			if err
-				data.err = err
-			res.json data
-		if id
-			@timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
-				res.json
-					notifyStatus: self.TIMEOUT
-					loggedFriends: (req.user.friends || []).find present: true
-				self.remove userId, id
-				delete self.timeouts[userId + '-' + id]
+				throw err
+
+			id = self.waitForNotification userId, (err, notifications = []) ->
+				req.session.reload (err) ->
+					if err
+						throw err
+					unless notifications instanceof Array
+						notifications = [[err, notifications]]
+					for notification in notifications
+						if notification[1]
+							if notification[1].userId?
+								delete notification[1].userId
+							if notification[1].deleteFriendAsk?
+								delete req.user.friendAsks[notification[1].deleteFriendAsk]
+								req.session.user.friendAsks = req.user.friendAsks
+								req.session.user.notifications = req.session.user.notifications.filter (data) ->
+									if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
+										true
+									else
+										data[1].hashedId isnt cesarRight userId
+								req.user.notifications = notifications
+								delete notification[1].deleteFriendAsk
+							if notification[1].addFriend?
+								req.addFriend notification[1].addFriend
+								delete notification[1].addFriend
+					data = notifications: notifications
+					data.notifyStatus = if err then self.ERROR else self.OK
+					if err
+						data.err = err
+					res.json data
+			if id
+				self.timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
+					req.session.reload (err) ->
+						res.json
+							notifyStatus: self.TIMEOUT
+							loggedFriends: (req.user.friends || []).find present: true
+						self.remove userId, id
+						delete self.timeouts[userId + '-' + id]
 
 
 module.exports = NoticePackage

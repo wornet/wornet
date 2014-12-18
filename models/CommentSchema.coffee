@@ -8,7 +8,7 @@ commentSchema = PostSchema.extend
 
 commentSchema.pre 'save', (next) ->
 	if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
-		next new Error s("Ce commentaire est vide")
+		next new PublicError s("Ce commentaire est vide")
 	else
 		Status.findById @status, (err, status) ->
 			if err
@@ -20,7 +20,7 @@ commentSchema.pre 'save', (next) ->
 					else if friends.has(id: at)
 						next()
 					else
-						next new Error s("Vous ne pouvez poster que sur les profils de vos amis")
+						next new PublicError s("Vous ne pouvez poster que sur les profils de vos amis")
 
 
 module.exports = commentSchema
