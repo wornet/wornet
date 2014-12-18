@@ -30,7 +30,7 @@
 	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
 		div(ng-if="status.images.length > 0")
 			h3=s("Images")
-			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-view" ng-click="loadMedia('image', image)")
+			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
 				img(ng-src="{{ image.src }}" alt="{{ image.name }}")
 		div(ng-if="status.videos.length > 0")
 			h3=s("Vidéos")

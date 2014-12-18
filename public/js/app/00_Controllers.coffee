@@ -272,7 +272,7 @@ Controllers =
 
 		return
 
-	MediaView: ($scope) ->
+	MediaViewer: ($scope) ->
 		$scope.loadMedia = (type, media) ->
 			media = $.extend {}, media
 			media.type = type
@@ -280,13 +280,14 @@ Controllers =
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 			$scope.loadedMedia = media
 			delay 1000, ->
-				$('#media-view iframe[data-ratio]').ratio()
+				$('#media-viewer iframe[data-ratio]').ratio()
 			refreshScope $scope
 			return
 
 		window.loadMedia = (type, media) ->
 			$scope.loadMedia type, media
-			delay 1, $('#media-view').modal
+			delay 1, ->
+				$('#media-viewer').modal()
 			return
 
 		return
