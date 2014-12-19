@@ -1,3 +1,7 @@
+# No click delay with phone touch
+if window.FastClick
+	FastClick.attach document.body
+
 ((s) ->
 	# Display a loading animation when page is loading
 	window.onbeforeunload = ->

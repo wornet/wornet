@@ -61,7 +61,8 @@ user-select()
 
 opacity(n)
 	css3-prefix("opacity", n)
-	-ms-filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
+	if $supportMS
+		-ms-filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')
 	filter unquote('alpha(opacity=' + round(n * 100) + ')')
 
 box-shadow()
@@ -80,3 +81,9 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
 	if $supportOpera
 		background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
 	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+
+cover(url)
+	background-image url(bigJpg(unquote(url)))
+	if $supportMS
+		-ms-filter quote("progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bigJpg(unquote(url)) + "', sizingMethod='scale')")
+	filter unquote("progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bigJpg(unquote(url)) + "', sizingMethod='scale')")

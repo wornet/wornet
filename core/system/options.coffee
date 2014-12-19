@@ -78,6 +78,8 @@ module.exports = (app, port) ->
 				#"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"
 				"//angular-ui.github.io/ui-calendar/bower_components/jquery-ui/ui/jquery-ui.js"
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"
+				"//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.3/fastclick.min.js"
+				"//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.3.0/bootbox.min.js"
 				#"//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular-animate.min.js"
 				"//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular-sanitize.min.js"
@@ -111,6 +113,8 @@ module.exports = (app, port) ->
 				"/components/angular/js/angular-sanitize.js"
 				#"//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular-route.js"
 				"/components/bootstrap/js/ui-bootstrap-tpls.min.js"
+				"/components/bootstrap/js/bootbox.min.js"
+				"/components/fastclick/js/fastclick.min.js"
 				"/components/moment/js/moment-with-langs.min.js"
 				script("app")
 				"/components/jquery/js/fullcalendar.min.js"

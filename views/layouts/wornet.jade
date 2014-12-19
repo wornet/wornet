@@ -1,7 +1,7 @@
 - var mainTitle = s("Wornet")
 - var upperTitle = strtoupper(mainTitle)
 block params
-	- var bodyClasses = 'openingTemplate'
+	- var bodyClasses = 'openingTemplate bg' + Math.floor(Math.random() * 3 + 1)
 include ../includes/mixins
 
 if isXHR

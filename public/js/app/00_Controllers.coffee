@@ -451,11 +451,16 @@ Controllers =
 			]
 
 		$scope.delete = (status, $event) ->
-			$($event.target)
-				.parents('ul.dropdown-menu:first').trigger 'click'
-				.parents('.status-block:first').slideUp ->
-					$(@).remove()
-			Ajax.delete '/user/status/' + status._id
+			s = textReplacements
+			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
+				if ok
+					$($event.target)
+						.parents('ul.dropdown-menu:first').trigger 'click'
+						.parents('.status-block:first').slideUp ->
+							$(@).remove()
+							return
+					Ajax.delete '/user/status/' + status._id
+				return
 			return
 
 		$scope.report = (status, $event) ->

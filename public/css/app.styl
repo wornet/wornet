@@ -28,13 +28,23 @@ body
 	// user-select(none)
 
 	&.openingTemplate
+
 		#wrap
 			padding-top 35px
+
 		// Paramètres du fond de la page.
-		background url(bigJpg(background-image-small)) no-repeat center fixed
+		background no-repeat center fixed
 		background-size(cover)
-		filter unquote("progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bigJpg(background-image-small) + "', sizingMethod='scale')")
-		// -ms-filter quote("progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bigJpg(background-image-small) + "', sizingMethod='scale')")
+		transition background-image 1s ease-in-out
+
+		&.bg1
+			cover('background-image/big/1')
+			
+		&.bg2
+			cover('background-image/big/2')
+			
+		&.bg3
+			cover('background-image/big/3')
 
 
 .well
@@ -133,6 +143,17 @@ footer
 a
 .btn
 	cursor pointer
+
+
+#settings
+	background $lightGray
+	overflow hidden
+	border-left 3px solid $gray
+
+
+#view
+#settings
+	transition width .2s
 
 
 .navbar
@@ -241,13 +262,18 @@ select.form-control
 
 // Champs de texte au focus.
 .btn:focus
+.btn-primary:focus
+.btn:hover
+.btn-primary:hover
 .form-control:focus
 	// Correcteur d'orthographe et ombres.
 	outline(none)
 	border-color #D7752E
 	box-shadow(0px 0px 3px 1px #F7852E)
+	background-linear-gradient(top, #ffea20, 10%, #ff8520, 90%)
 
 .btn
+.btn-primary
 	line-height 18px
 
 	// Bordures.
@@ -528,16 +554,31 @@ fieldset.tab .btn
 
 // Media Queries.
 @media (max-width: 767px)
+	body.openingTemplate
+
+		&.bg1
+			cover('background-image/small/1')
+			
+		&.bg2
+			cover('background-image/small/2')
+			
+		&.bg3
+			cover('background-image/small/3')
+
 	.navbar h1
 	.desktop
 		display none
+
 	#createAccountTitle
 		padding-bottom $bigPadding
+
 	img#logo
 		margin auto
+
 	#slogan
 		padding-top $bigPadding * 1.5
 		padding-bottom $smallPadding
+
 	.mobile-field
 		padding $fieldVPadding $fieldHPadding
 		margin $mainPadding 0
@@ -545,6 +586,7 @@ fieldset.tab .btn
 		display block
 		background rgba(255, 255, 255, 0.8)
 		border-radius(4px)
+
 	span.form-control
 	div.form-control
 	a.form-control
@@ -553,45 +595,58 @@ fieldset.tab .btn
 	.btn
 		line-height $fieldLineHeight + $mobileIncrease*0.5
 		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2
+
 	.icon-bar
 		background white
+
 	#underbar .navbar-form
 		margin 0
 		padding $smallPadding $mainPadding
+
 		.glyphicon
 			margin 0 6px -999px
 			top -23px
 			float right
+
 	footer
 		.row
 			margin 0
 			padding-top 3px
+
 		a.link
 		.copytag
 			padding $smallPadding
 			margin $smallPadding 0 0
 
+
 @media (min-width: 768px)
 	.pad-right
 		padding-right $mainPadding
+
 	.pad-left
 		padding-left $mainPadding
+
 	.navbar-header
 	.mobile
 	.nav>li.mobile
 		display none
+
 	.navbar h1
 		margin 4px 0 (- $headerHeight) 0
 		padding-left 30px
 		text-align center
+
 	#navbar .container-fluid
 		padding-left 0
+
 	#underbar .navbar-form
 		margin-bottom 0
 		width 33.33333333%
+
 		label
 		.form-control
 			width 100%
+
 		.glyphicon
 			margin-left -28px
 			top 5px
@@ -599,13 +654,14 @@ fieldset.tab .btn
 @media (max-width: 991px)
 	img#logo
 		margin $bigPadding auto
-	
+
 	.album
 		h4
 			font-size 13px
 
 		.preview
 			size(2 * (30 + $smallPadding), 2 * (30 + $smallPadding))
+
 			img
 				size(30px, 30px)
 				margin  0 $smallPadding $smallPadding 0
