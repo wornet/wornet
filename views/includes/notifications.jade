@@ -25,7 +25,7 @@ mixin notifications(classes)
 							br
 							.btn.accept-friend
 								=s("Accepter")
-							&nbsp; &nbsp;
+							| &nbsp;
 							.btn.ignore-friend
 								=s("Ignorer")
 						else
@@ -46,7 +46,7 @@ mixin notifications(classes)
 					br
 					.btn.accept-friend
 						=s("Accepter")
-					&nbsp; &nbsp;
+					| &nbsp; 
 					.btn.ignore-friend
 						=s("Ignorer")
 				a(ng-switch-default href="/notification/{{ $index }}")
