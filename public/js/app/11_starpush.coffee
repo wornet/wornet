@@ -25,7 +25,7 @@ unless window["note_jaime_fonctions_chargees"]
 		return
 	note_jaime_retour = (id, note, total, notes, min, max, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10) ->
 		note_jaime_memo.id = id
-		out = undefined
+		out = ""
 		if note > 0
 			out = "\t<a style=\"" + note_jaime_style("star jaimeg") + "\">&nbsp;</a> <span style=\"" + note_jaime_style("cote") + "\">" + n1 + "</span>"
 		else if total > 0
