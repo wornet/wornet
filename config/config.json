@@ -172,7 +172,8 @@
             "friendsOnProfile": 18,
             "maxTabs": 5,
             "userMaxAge": 150,
-            "userMinAge": 0
+            "userMinAge": 0,
+            "biographyLength": 250
         },
 
         "mail": {

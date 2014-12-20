@@ -26,14 +26,40 @@
 			+glyph('edit')
 		.profile-edit(class=(edit ? null : "hidden"))
 			+form("/user/profile/edit")
+				input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
+				mixin profileText(name)
+					- var key = name.replace(/^([^\.]+)\.([^\.]+)$/g, function (all, before, after) { return after + before.substr(0, 1).toUpperCase() + before.substr(1); })
+					label
+						span
+							=userTexts[key]
+						+formControl(name=name value=profile[key])
+				mixin profileEnum(name)
+					label
+						span
+							=userTexts[name]
+						select.form-control(name=name autocomplete="off")
+							option(value="")
+								=userTexts.noDisplay
+							each status in profile.schema.path(name).enumValues
+								option(selected=(profile[name] === status) value=status)
+									=userTexts[status]
+				+profileText("name.first")
+				+profileText("name.last")
+				+profileText("city")
+				+profileText("birthCity")
+				+profileText("job")
+				+profileText("jobPlace")
+				+profileEnum("maritalStatus")
+				+profileEnum("loveInterest")
+				label
+					span
+						=s("Zone créative")
+					textarea.form-control(name="biography" maxlength="250")=profile.biography
 				.btn-group
-					input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
-					input(type="button" value=s("Annuler")).btn.glued.profile-edit-btn
-					input(type="submit" value=s("Modifier")).btn.glued
-				.input-group
-					+formControl(name="name.first" value=profile.firstName).glued
-				.input-group
-					+formControl(name="name.last" value=profile.lastName)
+					input(type="submit" value=s("Modifier")).btn
+				.btn-group
+					input(type="button" value=s("Annuler")).btn.profile-edit-btn
+					| &nbsp;
 	else if isAFriend
 		.aside
 			a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
@@ -58,5 +84,43 @@
 					+glyph('plus')
 		if isMe && profile.birthDate
 			p
-				=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", { date: profile.birthDate.humanDate(), age: user.age }, user.age)
+				- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
+				if profile.birthCity
+					if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
+						- infos.city = profile.birthCity.substr(3)
+						=s("Né le {date} ({age} an) au {city}|Né le {date} ({age} ans) au {city}", infos, profile.age)
+					else
+						- infos.city = profile.birthCity
+						=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
+				else
+					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
+			if profile.city
+				p
+					if profile.city.toLowerCase().substr(0, 3) === 'le '
+						=s("Habite au {city}", { city: profile.city.substr(3) })
+					else
+						=s("Habite à {city}", { city: profile.city })
+			if profile.job
+				p
+					if profile.jobPlace
+						=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
+					else
+						=s("{job}", { job: profile.job })
+			else if profile.jobPlace
+				p
+					=s("Travail à {place}", { place: profile.jobPlace })
+			if profile.maritalStatus
+				p
+					=colon(userTexts.maritalStatus)
+					=userTexts[profile.maritalStatus]
+			if profile.loveInterest
+				p
+					=userTexts.loveInterest
+					| 
+					=userTexts[profile.loveInterest]
+			if profile.biography
+				p
+					=userTexts.biography
+					br
+					=profile.biography
 	.cb

@@ -220,8 +220,8 @@ div.form-control
 a.form-control
 button.form-control
 input.form-control
+select.form-control
 .btn
-	// Marges internes et externes.
 	padding $fieldVPadding $fieldHPadding
 	margin $mainPadding 0
 	line-height $fieldLineHeight * 0.7
@@ -233,16 +233,13 @@ input.form-control
 	display block
 	margin 0 $mainPadding
 
-// Champs de texte.
 .form-control
-	// Bordures.
 	border 1px solid rgba(156, 156, 156, 0.35)
-
-	// Réduction de padding due au border
 	padding $fieldVPadding - 1 $fieldHPadding - 1
-
-	// Fond, police de charactères et ombres.
 	font-family $fonts
+
+select.form-control
+	padding $fieldVPadding 40px $fieldVPadding $smallPadding
 
 ::-webkit-input-placeholder
 	line-height $fieldLineHeight
@@ -256,20 +253,19 @@ input.form-control
 :-ms-input-placeholder
 	line-height $fieldLineHeight
 
-// Barre de sélection.
-select.form-control
-	padding-left 0px
-
-// Champs de texte au focus.
 .btn:focus
 .btn-primary:focus
 .btn:hover
 .btn-primary:hover
 .form-control:focus
-	// Correcteur d'orthographe et ombres.
 	outline(none)
 	border-color #D7752E
 	box-shadow(0px 0px 3px 1px #F7852E)
+
+.btn:focus
+.btn-primary:focus
+.btn:hover
+.btn-primary:hover
 	background-linear-gradient(top, #ffea20, 10%, #ff8520, 90%)
 
 .btn

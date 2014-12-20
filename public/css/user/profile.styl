@@ -9,8 +9,22 @@ $progressRadialWidth = 4px
 .profile-edit
 	.btn-group
 		float right
-	input.form-control
-		min-width 170px
+	label
+		margin-left $photoWidth + 2 * $progressRadialWidth + $mainPadding
+		display block
+		position relative
+		span
+			display block
+			float left
+			width 50%
+			padding-top 2px
+		textarea.form-control
+		select.form-control
+		input.form-control
+			min-width 170px
+			width 50%
+		&:first .form-control
+			margin-top 0
 
 .status-author
 	a
@@ -79,3 +93,13 @@ $progressRadialWidth = 4px
 @media (max-width: 767px)
 	#profile-photo
 		size($photoWidth / 2 + 2 * $progressRadialWidth, $photoHeight / 2 + 2 * $progressRadialWidth)
+	.profile-edit
+		label
+			margin-left $photoWidth / 2 + 2 * $progressRadialWidth + $mainPadding
+			span
+				float none
+			span
+			textarea.form-control
+			select.form-control
+			input.form-control
+				width 100%

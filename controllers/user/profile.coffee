@@ -13,23 +13,30 @@ module.exports = (router) ->
 		# When user edit his profile
 		userModifications = {}
 		for key, val of req.body
-			unless empty val
-				switch key
-					when 'birthDate'
-						birthDate = inputDate val
-						if birthDate.isValid()
-							userModifications.birthDate = birthDate
-					when 'name.first'
-						unless userModifications.name
-							userModifications.name = req.user.name
-						userModifications.name.first = val
-					when 'name.last'
-						unless userModifications.name
-							userModifications.name = req.user.name
-						userModifications.name.last = val
-					when 'photoId'
-						if PhotoPackage.allowedToSee req, val
-							userModifications.photoId = val
+			if empty val
+				val = null
+			switch key
+				when 'birthDate'
+					birthDate = inputDate val
+					if birthDate.isValid()
+						userModifications.birthDate = birthDate
+				when 'name.first'
+					unless userModifications.name
+						userModifications.name = req.user.name
+					userModifications.name.first = val
+				when 'name.last'
+					unless userModifications.name
+						userModifications.name = req.user.name
+					userModifications.name.last = val
+				when 'photoId'
+					if PhotoPackage.allowedToSee req, val
+						userModifications.photoId = val
+				when 'maritalStatus', 'loveInterest'
+					unless User.schema.path(key).enumValues.contains val
+						val = null
+					userModifications[key] = val
+				when 'city', 'birthCity', 'job', 'jobPlace', 'biography'
+					userModifications[key] = val
 		next = ->
 			extend req.user, userModifications
 			extend req.session.user, userModifications

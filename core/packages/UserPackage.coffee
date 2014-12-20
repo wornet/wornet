@@ -189,6 +189,7 @@ UserPackage =
 							numberOfFriends: friends.length
 							friends: friendsThumb
 							friendAsks: friendAsks
+							userTexts: userTexts()
 							users: users
 			if isMe
 				done req.user

@@ -68,6 +68,41 @@ userSchema = BaseSchema.extend
 		trim: true
 		set: strtolower
 		unique: true
+	city:
+		type: String
+		trim: true
+	birthCity:
+		type: String
+		trim: true
+	job:
+		type: String
+		trim: true
+	jobPlace:
+		type: String
+		trim: true
+	maritalStatus:
+		type: String
+		enum: [
+			'celibate'
+			'fiance'
+			'married'
+			'other'
+		]
+	loveInterest:
+		type: String
+		enum: [
+			'men'
+			'women'
+			'both'
+		]
+	biography:
+		type: String
+		validate: [
+			(text) ->
+				text.length <= config.limits.biographyLength
+			'too long biography'
+		]
+		trim: true
 ,
 	toObject:
 		virtuals: false

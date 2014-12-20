@@ -662,6 +662,15 @@ module.exports =
 		(local lang(), text, replacements, count).replace(/'/g, '’')
 
 	###
+	Append colon with locale language rule
+	@param string text to complete
+
+	@return string complete text
+	###
+	colon: (text) ->
+		text + s(" : ") 
+
+	###
 	Return current display locale
 
 	@return string locale identifier
