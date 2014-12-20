@@ -1,6 +1,4 @@
-###
 # Change background every 10 seconds
-setInterval ->
+# setInterval ->
 
-, 10000
-###
+# , 10000
