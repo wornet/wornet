@@ -143,7 +143,7 @@ module.exports =
 				ast = jsp.parse code, config.wornet.uglify || {}
 				ast = pro.ast_mangle ast
 				ast = pro.ast_squeeze ast
-				minifiedCode = ';' + pro.gen_code ast
+				minifiedCode = pro.gen_code ast
 				unless config.wornet.uglify.minifyOnRate and minifiedCode.length / code.length > config.wornet.uglify.minRate
 					output = minifiedCode
 			catch e
@@ -188,6 +188,11 @@ module.exports =
 				concatCallback content, lst, proceed, end,
 					i: i + 1
 					ie: ie
+			concat = (data) ->
+				content += proceed(strval(data))
+				if content.charAt(content.length - 1) isnt ';'
+					content += ';'
+				content += '\n'
 			if file
 				pathWithoutParams = file
 				if file.indexOf('?') isnt -1
@@ -217,7 +222,7 @@ module.exports =
 										if data.indexOf('<!DOCTYPE html>') is 0
 											warn path + ' return HTML'
 										else
-											content += proceed(strval(data)) + '\n'
+											concat data
 										done()
 								else
 									warn pathWithoutParams + ' : Error ' + res.statusCode
@@ -227,7 +232,7 @@ module.exports =
 							warn err
 							done()
 					else
-						content += proceed(strval(data)) + '\n'
+						concat data
 						done()
 			else
 				done()
