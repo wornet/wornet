@@ -143,11 +143,9 @@ module.exports =
 				ast = jsp.parse code, config.wornet.uglify || {}
 				ast = pro.ast_mangle ast
 				ast = pro.ast_squeeze ast
-				minifiedCode = pro.gen_code ast
+				minifiedCode = ';' + pro.gen_code ast
 				unless config.wornet.uglify.minifyOnRate and minifiedCode.length / code.length > config.wornet.uglify.minRate
 					output = minifiedCode
-					if output.charAt(minifiedCode.length - 1) isnt ';'
-						output += ';'
 			catch e
 		output
 
