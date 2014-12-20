@@ -146,6 +146,8 @@ module.exports =
 				minifiedCode = pro.gen_code ast
 				unless config.wornet.uglify.minifyOnRate and minifiedCode.length / code.length > config.wornet.uglify.minRate
 					output = minifiedCode
+					if output.charAt(minifiedCode.length - 1) isnt ';'
+						output += ';'
 			catch e
 		output
 
