@@ -2,7 +2,7 @@ $.fn.extend
 	# Append alerts/messages to the given jQuery block
 	# Then slide them out
 	messages: (messages, type = 'info') ->
-		messages = messages || "Info"
+		messages ||= "Info"
 		if typeof(messages) isnt 'object'
 			messages = [messages]
 		@html('') # Get and empty the #loginErrors block
@@ -35,7 +35,7 @@ $.fn.extend
 		@
 	# Circular progress load animation
 	circularProgress: (ratio, color) ->
-		color = color || ($('<div class="ref-color"></div>').css('color') || '#ff8800')
+		color ||= ($('<div class="ref-color"></div>').css('color') || '#ff8800')
 		bgCol = @css('background-color')
 		if ratio < 0.5
 			@css('background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')')

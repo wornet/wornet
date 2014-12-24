@@ -4,7 +4,13 @@ mixin statusForm(tabindex)
 	+form()(ng-submit="send(status)")
 		block
 		.input-group
-			+formControl()(autofocus tabindex=strval(tabindex+1) ng-model="status.content" placeholder=s("Entrez votre message ici"))
+			+formControl()(
+				maxlength=config.wornet.limits.displayStatusLength
+				autofocus
+				tabindex=strval(tabindex+1)
+				ng-model="status.content"
+				placeholder=s("Entrez votre message ici")
+			)
 			span.input-group-btn
 				input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Envoyer")).btn
 

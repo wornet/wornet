@@ -145,17 +145,6 @@ a
 	cursor pointer
 
 
-#settings
-	background $lightGray
-	overflow hidden
-	border-left 3px solid $gray
-
-
-#view
-#settings
-	transition width .2s
-
-
 .navbar
 	font-size 17px
 	color white
@@ -302,13 +291,66 @@ label
 		top 2px
 		margin-right $smallPadding
 
-.loggedFriends
+.loggedFriends li
 	.thumb
 		float left
 		size($notificationThumbWidth, $notificationThumbHeight)
 		margin 0
 	.glyphicon
 		color #35AC19
+
+#wrap
+#navbar
+	transition margin-right .2s
+
+	&.opened-shutter
+		margin-right 300px
+
+#shutter
+	position fixed
+	top 0
+	right 0
+	size(0, 100%)
+	overflow hidden
+	transition width .2s
+
+	&.opened-shutter
+	.inner-shutter
+	.nav
+	a
+		width 300px
+
+	a
+		display block
+		color $black
+		padding $mainPadding
+		&:hover
+			text-decoration none
+			background $nearlyWhite
+
+	.nav
+		margin 0 0 0 (- $shutterBorderWidth)
+		background $ultraLight
+		a
+			height 52px
+			line-height 32px
+			text-align right
+			font-size 18px
+			border-left $shutterBorderWidth solid $darkOrange
+			.glyphicon
+				top 2px
+
+	.inner-shutter
+		height 100%
+		background white
+		border-left $shutterBorderWidth solid $darkGray
+
+	.footer
+		color $black
+		border 1px solid $lightGray
+		border-radius(4px)
+		padding $mainPadding
+		margin $mainPadding
 
 // Formulaire de connexion.	
 form#login

@@ -118,4 +118,6 @@
 		(new d).log()
 	d.fromId = (id) ->
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
+	d.year = ->
+		(new d).getFullYear()
 )(Date)

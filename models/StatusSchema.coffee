@@ -5,6 +5,9 @@ statusSchema = PostSchema.extend
 		type: ObjectId
 		ref: 'UserSchema'
 
+statusSchema.path('content').validate (text) ->
+	text.length < config.wornet.limits.realStatusLength
+
 statusSchema.pre 'save', (next) ->
 	if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
 		next new PublicError s("Ce statut est vide")

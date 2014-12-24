@@ -117,6 +117,58 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
+	pm.page '/settings', (req) ->
+		settingsAlerts:
+			danger: req.flash 'settingsError'
+			success: req.flash 'settingsSuccess'
+		userTexts: userTexts()
+
+	router.post '/settings', (req, res) ->
+		userModifications = UserPackage.getUserModificationsFromRequest req
+		###
+		for setting in ['newsletter', 'noticeFriendAsk', 'noticePublish', 'noticeMessage']
+			userModifications[setting] = !! req.body[setting]
+		###
+		updateUser req.user, userModifications, (err) ->
+			err = humanError err
+			if req.xhr
+				if err
+					res.serverError err
+				else
+					res.json()
+			else
+				if err
+					if err instanceof PublicError
+						req.flash 'settingsError', err.toString()
+					else
+						switch err.code
+							when 11000
+								req.flash 'settingsError', s("Adresse e-mail non disponible.")
+							else
+								req.flash 'settingsError', s("Erreur d'enregistrement.")
+				else
+					extend req.user, userModifications
+					extend req.session.user, userModifications
+					req.flash 'settingsSuccess', s("Modifications enregistrées.")
+				res.redirect '/user/settings'
+
+	toggleShutter = (req, res, opened) ->
+		res.json()
+		updateUser req.user, openedShutter: opened, (err) ->
+			if err
+				throw err
+			else
+				req.session.reload ->
+					req.user.openedShutter = opened
+					req.session.user.openedShutter = opened
+					req.session.save()
+
+	router.post '/shutter/open', (req, res) ->
+		toggleShutter req, res, true
+
+	router.post '/shutter/close', (req, res) ->
+		toggleShutter req, res, false
+
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
 		Album.find user: req.user.id, (err, albums) ->

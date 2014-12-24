@@ -66,7 +66,7 @@ userSchema = BaseSchema.extend
 			'invalid e-mail address'
 		]
 		trim: true
-		set: strtolower
+		lowercase: true
 		unique: true
 	city:
 		type: String
@@ -83,6 +83,7 @@ userSchema = BaseSchema.extend
 	maritalStatus:
 		type: String
 		enum: [
+			null
 			'celibate'
 			'fiance'
 			'married'
@@ -91,6 +92,7 @@ userSchema = BaseSchema.extend
 	loveInterest:
 		type: String
 		enum: [
+			null
 			'men'
 			'women'
 			'both'
@@ -99,10 +101,25 @@ userSchema = BaseSchema.extend
 		type: String
 		validate: [
 			(text) ->
-				text.length <= config.limits.biographyLength
+				text.length <= config.wornet.limits.biographyLength
 			'too long biography'
 		]
 		trim: true
+	openedShutter:
+		type: Boolean
+		default: false
+	newsletter:
+		type: Boolean
+		default: false
+	noticeFriendAsk:
+		type: Boolean
+		default: false
+	noticePublish:
+		type: Boolean
+		default: false
+	noticeMessage:
+		type: Boolean
+		default: false
 ,
 	toObject:
 		virtuals: false
@@ -189,6 +206,12 @@ for size in config.wornet.thumbSizes
 
 userSchema.virtual('present').get ->
 	NoticePackage.isPresent @id
+
+preRegistration = null
+userSchema.methods.preRegistered = ->
+	if preRegistration is null
+		preRegistration = require(__dirname + '/../core/system/preRegistration')()
+	preRegistration.contains @email
 
 userSchema.methods.publicInformations = (thumbSizes = null) ->
 	values = ['hashedId', 'present']

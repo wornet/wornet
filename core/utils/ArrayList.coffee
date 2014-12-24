@@ -29,7 +29,7 @@ ArrayList =
 		if typeof @indexOf is 'function' and ! compare
 			@indexOf(needle) isnt -1
 		else
-			compare = compare || (val, needle) ->
+			compare ||= (val, needle) ->
 				val is needle
 			result = false
 			@each ->
@@ -73,7 +73,7 @@ ArrayList =
 
 	values: (keys = null, preserveKeys = false) ->
 		list = (if preserveKeys then {} else [])
-		keys  = keys || Object.keys @
+		keys ||= Object.keys @
 		self = @
 		keys.each ->
 			if preserveKeys

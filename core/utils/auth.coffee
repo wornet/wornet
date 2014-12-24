@@ -49,7 +49,7 @@ exports.auth = (req, res, user) ->
 	req.session.user = user
 
 exports.login = (req, res, done) ->
-	#Retrieve the user from the database by login
+	# Retrieve the user from the database by login
 	User.findOne
 		email: req.body.email
 	, (err, user) ->

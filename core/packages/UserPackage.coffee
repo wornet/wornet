@@ -14,10 +14,10 @@ UserPackage =
 				done = arg
 			else
 				query = strval arg
-		exclude = exclude || []
-		done = done || ->
-		query = query || "-"
-		limit = limit || 8
+		exclude ||= []
+		done ||= ->
+		query ||= "-"
+		limit ||= 8
 		regexp = new RegExp query, 'gi'
 		User.find
 			$or: [
@@ -199,5 +199,37 @@ UserPackage =
 						res.notFound()
 					else
 						done user
+
+	getUserModificationsFromRequest: (req) ->
+		userModifications = {}
+		for key, val of req.body
+			if empty val
+				val = undefined
+			switch key
+				when 'birthDate'
+					birthDate = inputDate val
+					if birthDate.isValid()
+						userModifications.birthDate = birthDate
+				when 'name.first'
+					unless userModifications.name
+						userModifications.name = req.user.name
+					userModifications.name.first = val
+				when 'name.last'
+					unless userModifications.name
+						userModifications.name = req.user.name
+					userModifications.name.last = val
+				when 'photoId'
+					if PhotoPackage.allowedToSee req, val
+						userModifications.photoId = val
+				when 'maritalStatus', 'loveInterest'
+					unless User.schema.path(key).enumValues.contains val
+						val = undefined
+					userModifications[key] = val
+				when 'email', 'password'
+					if val?
+						userModifications[key] = val
+				when 'city', 'birthCity', 'job', 'jobPlace', 'biography'
+					userModifications[key] = val
+		userModifications
 
 module.exports = UserPackage

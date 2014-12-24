@@ -7,7 +7,7 @@ class PagesManager
 		@_router = router
 		@_templateFolder = templateFolder || ''
 	page: (url, callback, method) ->
-		method = method || 'get'
+		method ||= 'get'
 		template = (@_templateFolder + url).replace(/^\//g, '')
 		@_router[method] url, (req, res) ->
 			rendered = false

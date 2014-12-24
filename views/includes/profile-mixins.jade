@@ -1,0 +1,17 @@
+mixin profileText(name)
+	- var key = name.replace(/^([^\.]+)\.([^\.]+)$/g, function (all, before, after) { return after + before.substr(0, 1).toUpperCase() + before.substr(1); })
+	label
+		span
+			=userTexts[key]
+		+formControl(name=name value=profile[key])
+
+mixin profileEnum(name)
+	label
+		span
+			=userTexts[name]
+		select.form-control(name=name autocomplete="off")
+			option(value="")
+				=userTexts.noDisplay
+			each status in profile.schema.path(name).enumValues
+				option(selected=(profile[name] === status) value=status)
+					=userTexts[status]

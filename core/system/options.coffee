@@ -285,6 +285,7 @@ module.exports = (app, port) ->
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err
 					model.err = err
+					model.httpStatus = val
 					@status val
 					if @isJSON
 						model.statusCode = val

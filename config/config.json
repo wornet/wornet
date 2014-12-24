@@ -173,7 +173,9 @@
             "maxTabs": 5,
             "userMaxAge": 150,
             "userMinAge": 0,
-            "biographyLength": 250
+            "biographyLength": 140,
+            "displayStatusLength": 614,
+            "realStatusLength": 1228
         },
 
         "mail": {

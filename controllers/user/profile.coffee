@@ -11,36 +11,14 @@ module.exports = (router) ->
 
 	router.post '/edit', (req, res) ->
 		# When user edit his profile
-		userModifications = {}
-		for key, val of req.body
-			if empty val
-				val = null
-			switch key
-				when 'birthDate'
-					birthDate = inputDate val
-					if birthDate.isValid()
-						userModifications.birthDate = birthDate
-				when 'name.first'
-					unless userModifications.name
-						userModifications.name = req.user.name
-					userModifications.name.first = val
-				when 'name.last'
-					unless userModifications.name
-						userModifications.name = req.user.name
-					userModifications.name.last = val
-				when 'photoId'
-					if PhotoPackage.allowedToSee req, val
-						userModifications.photoId = val
-				when 'maritalStatus', 'loveInterest'
-					unless User.schema.path(key).enumValues.contains val
-						val = null
-					userModifications[key] = val
-				when 'city', 'birthCity', 'job', 'jobPlace', 'biography'
-					userModifications[key] = val
+		userModifications = UserPackage.getUserModificationsFromRequest req
 		next = ->
-			extend req.user, userModifications
-			extend req.session.user, userModifications
-			updateUser req.user, userModifications, ->
+			updateUser req.user, userModifications, (err) ->
+				if err
+					req.flash 'profileError', err
+				else
+					extend req.user, userModifications
+					extend req.session.user, userModifications
 				res.redirect '/user/profile'
 			###
 			User.findById req.user.id, (err, user) ->

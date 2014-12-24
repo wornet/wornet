@@ -91,6 +91,9 @@ $.each [
 		'submit'
 		'#profile-photo'
 		($form, e) ->
+			enable = (enabled = true) ->
+				$form.find('input[type="submit"]').prop 'disabled', ! enabled
+			enable false
 			$img = $form.find 'img.upload-thumb'
 			$img.fadeOut('fast')
 			if typeof(FormData) is 'function'
@@ -110,6 +113,7 @@ $.each [
 					return
 
 				xhr.onerror = ->
+					enable()
 					$error = $ @responseText
 					unless $error.is '.error'
 						$error = $error.find '.error'
@@ -120,6 +124,8 @@ $.each [
 					return
 
 				xhr.onload = ->
+					enable()
+					$form.find('input[type="submit"]').prop 'disabled', true
 					$newImg = $(@responseText
 						.replace /[\n\r\t]/g, ''
 						.replace /^.*<body[^>]*>/ig, ''
@@ -168,6 +174,9 @@ $.each [
 		'submit'
 		'.status-images'
 		($form, e) ->
+			enable = (enabled = true) ->
+				$form.find('input[type="submit"]').prop 'disabled', ! enabled
+			enable false
 			if typeof(FormData) is 'function'
 				prevent e
 				$scope = $form.scope()
@@ -188,6 +197,7 @@ $.each [
 				xhr.open 'POST', $form.prop('action'), true
 
 				complete = ->
+					enable()
 					delay 1000, ->
 						$container.html saveHtml
 						$input.show()
@@ -380,6 +390,16 @@ $.each [
 		($btn) ->
 			params = $btn.data 'load-media'
 			loadMedia.apply @, params
+	]
+	[
+		'click'
+		'.open-shutter'
+		($a, e) ->
+			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
+			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+			delay 200, ->
+				$a.blur()
+			cancel e
 	]
 
 ], ->
