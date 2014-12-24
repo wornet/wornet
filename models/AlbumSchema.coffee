@@ -14,6 +14,27 @@ albumSchema = BaseSchema.extend
 	preview:
 		type: Array
 
+albumSchema.methods.refreshPreview = (save = false, done) ->
+	album = @
+	Photo.find
+		album: album._id
+		status: 'published'
+	.sort '-_id'
+	.limit 4
+	.exec (err, photos) ->
+		if err
+			done err
+		else
+			album.preview = photos.column '_id'
+			if save
+				album.save (err) ->
+					if err
+						done err
+					else
+						done null, photos
+			else
+				done null, photos
+
 albumSchema.methods.firstPhoto = (done, thumbSize = null) ->
 	Photo.findOne
 		album: @id
@@ -34,5 +55,18 @@ albumSchema.methods.firstThumb90 = (done) ->
 
 albumSchema.methods.firstThumb200 = (done) ->
 	@firstPhoto done, 200
+
+albumSchema.pre 'save', (next) ->
+	if @isModified 'name'
+		name = @name
+		Status.find album: @_id, (err, statusList) ->
+			if statusList
+				statusList.each ->
+					@albumName = name
+					@save()
+					true
+
+	next()
+
 
 module.exports = albumSchema

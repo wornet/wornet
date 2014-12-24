@@ -4,6 +4,11 @@ statusSchema = PostSchema.extend
 	at:
 		type: ObjectId
 		ref: 'UserSchema'
+	album:
+		type: ObjectId
+		ref: 'AlbumSchema'
+	albumName:
+		type: String
 
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength

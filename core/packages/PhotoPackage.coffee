@@ -50,11 +50,13 @@ PhotoPackage =
 			delete photos[photoId]
 			deleteCookie req, photoId
 
-	publish: (req, photoId) ->
+	publish: (req, photoId, done) ->
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
-			Photo.updateById photoId, status: 'published'
+			Photo.updateById photoId, status: 'published', done
 			@forget req, photoId
+		else
+			done new PublicError s("Non autorisé")
 
 	delete: (photoId, status = 'uploaded') ->
 		photoId = strval photoId

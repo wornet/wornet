@@ -4,17 +4,21 @@
 			=s("Paramètres")
 			| &nbsp; 
 			+glyph('cog')
+
 	a(href="/user/profile")
 		+glyph('user')
 		| &nbsp; 
 		=s("Espace personnel")
-	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en janvier 2016"))
+
+	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue courant 2015"))
 		+glyph('envelope')
 		| &nbsp; 
 		=s("Espace professionnel")
+
 	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en janvier 2016"))
 		+glyph('camera')
 		| &nbsp; 
 		=s("Dailycapture")
+
 	.footer
 		!=s("{copyright} Wornet {year}", { copyright: '&copy;', year: Date.year() })
