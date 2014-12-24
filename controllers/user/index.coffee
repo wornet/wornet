@@ -171,7 +171,10 @@ module.exports = (router) ->
 
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
-		Album.find user: req.user.id, (err, albums) ->
+		Album.find
+			user: req.user.id
+		.sort '_id'
+		.exec (err, albums) ->
 			res.json
 				err: err
 				albums: albums
@@ -275,7 +278,9 @@ module.exports = (router) ->
 						album = lastestAlbum
 						next()
 					else
-						Album.findOne {}, {}, sort: created_at : -1, (err, foundAlbum) ->
+						Album.findOne()
+						.sort '-_id'
+						.exec (err, foundAlbum) ->
 							if err
 								data.error = err
 								warn err

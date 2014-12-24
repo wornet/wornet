@@ -36,28 +36,4 @@ for size in config.wornet.thumbSizes
 	photoSchema.virtual('thumb' + size).get ->
 		photoSrc.call @, size + 'x'
 
-photoSchema.methods.getAlbum = (done) ->
-	Album.findById @album, done
-
-photoSchema.pre 'save', (next) ->
-	preview = {}
-	savePreview = ->
-		if preview.album and preview.photos
-			preview.album.preview = preview.photos
-			preview.album.save()
-	Photo.find
-		album: @album
-		status: 'published'
-	.sort '-id'
-	.limit 4
-	.exec (err, photos) ->
-		unless err
-			preview.photos = photos.column '_id'
-			savePreview()
-	@getAlbum (err, album) ->
-		unless err
-			preview.album = album
-			savePreview()
-	next()
-
 module.exports = photoSchema

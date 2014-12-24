@@ -264,10 +264,14 @@ Controllers =
 			location.href = '/user/album/' + album._id
 			return
 
+		window.setMediaAlbums = (albums) ->
+			$scope.albums = albums
+			refreshScope $scope
+			return
+
 		getAlbums (err, albums) ->
 			unless err
-				$scope.albums = albums
-				refreshScope $scope
+				setMediaAlbums albums
 			return
 
 		return
@@ -511,7 +515,14 @@ Controllers =
 					status: status
 					at: at
 					medias: $scope.medias || null
-				success: setRecentStatus
+				success: (data) ->
+					setRecentStatus data
+					getAlbumsFromServer (err, albums) ->
+						unless err
+							$scope.albums = albums
+							refreshScope $scope
+							setMediaAlbums albums
+						return
 			status.content = ""
 			initMedias()
 

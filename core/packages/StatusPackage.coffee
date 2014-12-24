@@ -39,7 +39,7 @@ StatusPackage =
 					.skip 0
 					.limit 10
 					.sort date: 'desc'
-					.select '_id date author at content status images videos links'
+					.select '_id date author at content status images videos links album albumName'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
@@ -98,9 +98,9 @@ StatusPackage =
 					images: medias.images || []
 					videos: medias.videos || []
 					links: medias.links || []
-				, (err, status) ->
+				, (err, originalStatus) ->
 					unless err
-						status = status.toObject()
+						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
 						next = (usersToNotify) ->
 							NoticePackage.notify usersToNotify, null,
@@ -111,24 +111,49 @@ StatusPackage =
 								next friends.column '_id'
 						else
 							next [status.at]
-					done err, status
+					done err, status, originalStatus
 			catch err
 				done err
 		else
 			done new PublicError s("Ce statut est vide")
 
 	put: (req, res, done) ->
-		@add req, (err, status) ->
+		@add req, (err, status, originalStatus) ->
 			if err
 				res.serverError err
 			else
-				status.images.each ->
-					photoId = PhotoPackage.urlToId @src
-					PhotoPackage.publish req, photoId
 				if status.at
 					NoticePackage.notify [status.at], null,
 						action: 'notice'
 						notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
-				done status
+				albums = []
+				count = status.images.length
+				if count
+					status.images.each ->
+						photoId = PhotoPackage.urlToId @src
+						PhotoPackage.publish req, photoId, (err, photo) ->
+							if photo and ! albums.contains photo.album, equals
+								albums.push photo.album
+							unless --count
+								if albums.length
+									Album.find _id: $in: albums, (err, albums) ->
+										if albums and albums.length
+											if originalStatus
+												originalStatus.album = albums[0]._id
+												originalStatus.albumName = albums[0].name
+												originalStatus.save()
+											count = albums.length
+											albums.each ->
+												@refreshPreview true, ->
+													unless --count
+														done status
+												true
+										else
+											done status
+								else
+									done status
+						true
+				else
+					done status
 
 module.exports = StatusPackage

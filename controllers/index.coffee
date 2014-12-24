@@ -27,12 +27,15 @@ module.exports = (router) ->
 			res.json()
 		else
 			res.render 'report'
-		message = 'Un contenu a été signalé par ' + req.user.fullName + '. L\'id du contenu est : ' + req.params.status
-		MailPackage.send config.wornet.mail.reportTo, "[Wornet] Contenu signalé", message, (err, info) ->
-			if err
-				throw err
-			else
-				console['log'] info
+		id = req.params.status
+		Status.findById id, (err, status) ->
+			if status
+				message = 'Un contenu a été signalé par ' + req.user.fullName + '. L\'id du contenu est : ' + id + '<br>Contenu :<br>' + status.content
+				MailPackage.send config.wornet.mail.reportTo, "[Wornet] Contenu signalé", message, (err, info) ->
+					if err
+						throw err
+					else
+						console['log'] info
 
 	alias =
 		'user/login': ''
