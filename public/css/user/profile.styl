@@ -7,10 +7,14 @@ $progressRadialWidth = 4px
 	width 180px
 
 .profile-edit
+.settings-edit
+	.alert-info
+		padding $smallPadding
+		.glyphicon
+			top 2px
 	.btn-group
 		float right
 	label
-		margin-left $photoWidth + 2 * $progressRadialWidth + $mainPadding
 		display block
 		position relative
 		span
@@ -23,8 +27,13 @@ $progressRadialWidth = 4px
 		input.form-control
 			min-width 170px
 			width 50%
-		&:first .form-control
+		&:first-of-type .form-control
 			margin-top 0
+
+.profile-edit
+	label
+	.alert-info
+		margin-left $photoWidth + 2 * $progressRadialWidth + $mainPadding
 
 .status-author
 	a

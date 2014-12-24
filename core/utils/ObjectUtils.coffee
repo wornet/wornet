@@ -6,12 +6,16 @@ Extend Object prototype
 
 ObjectUtils =
 
-	# override: (key, fct) ->
-
 	updateById: (id, update, done) ->
-		@findById(id).update update, done || (err) ->
+		done ||= (err) ->
 			if err
 				throw err
+		@findById id, (err, self) ->
+			if err
+				done err
+			else
+				extend self, update
+				self.save done
 
 safeExtend Object.prototype, ObjectUtils
 

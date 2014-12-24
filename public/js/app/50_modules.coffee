@@ -19,7 +19,6 @@ if window.FastClick
 # Convert titles attributes to tooltips when elements have a data-toggle="tooltip" atribute
 $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 
-
 # Display loading animation until angular scope is ready
 $('.loading').each ->
 	$loading = $ @

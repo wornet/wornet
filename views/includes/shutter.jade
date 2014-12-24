@@ -1,0 +1,20 @@
+#shutter(class=(user.openedShutter ? 'opened-shutter' : false)): .inner-shutter
+	ul.nav
+		li: a(href="/user/settings")
+			=s("Paramètres")
+			| &nbsp; 
+			+glyph('cog')
+	a(href="/user/profile")
+		+glyph('user')
+		| &nbsp; 
+		=s("Espace personnel")
+	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en janvier 2016"))
+		+glyph('envelope')
+		| &nbsp; 
+		=s("Espace professionnel")
+	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en janvier 2016"))
+		+glyph('camera')
+		| &nbsp; 
+		=s("Dailycapture")
+	.footer
+		!=s("{copyright} Wornet {year}", { copyright: '&copy;', year: Date.year() })

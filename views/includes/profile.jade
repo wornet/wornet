@@ -28,11 +28,10 @@
 			+form("/user/profile/edit")
 				input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
 				mixin profileText(name)
-					- var key = name.replace(/^([^\.]+)\.([^\.]+)$/g, function (all, before, after) { return after + before.substr(0, 1).toUpperCase() + before.substr(1); })
 					label
 						span
-							=userTexts[key]
-						+formControl(name=name value=profile[key])
+							=userTexts[name]
+						+formControl(name=name value=profile[name])
 				mixin profileEnum(name)
 					label
 						span
@@ -43,8 +42,6 @@
 							each status in profile.schema.path(name).enumValues
 								option(selected=(profile[name] === status) value=status)
 									=userTexts[status]
-				+profileText("name.first")
-				+profileText("name.last")
 				+profileText("city")
 				+profileText("birthCity")
 				+profileText("job")
@@ -83,6 +80,11 @@
 				)
 					+glyph('plus')
 		if isMe && profile.birthDate
+			if profile.preRegistered()
+				.alert.alert-info(role="info")
+					+glyph('certificate')
+					|&nbsp;
+					=s("Je me suis pré-inscrit")
 			p
 				- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
 				if profile.birthCity

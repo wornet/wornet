@@ -1,0 +1,58 @@
+extends ../layouts/user
+
+block body
+	.col-xs-12
+		+alert(settingsAlerts)
+		include ../includes/profile-mixins
+
+		.well.settings-edit
+			+form("/user/settings")
+				//- Identity
+				label
+					span
+						=userTexts.firstName
+					+formControl(name="name.first" value=user.firstName)
+				label
+					span
+						=userTexts.lastName
+					+formControl(name="name.last" value=user.lastName)
+				label
+					span
+						=userTexts.email
+					+formControl(name="email" value=user.email pattern=pattern('email'))
+				label
+					span
+						=userTexts.password
+					+formControl("password")(name="password" placeholder=userTexts.password)
+				//- Privacy
+				label
+					span
+						=userTexts.privacy
+					select.form-control(autocomplete="off")
+						option(value="")
+							=userTexts.private
+				//- Notification
+					.opt-group
+						input(type="checkbox" name="newsletter" id="newsletter" checked=user.newsletter)
+						label(for="newsletter")
+							=s("S'abonner à la newsletter Oui ou Non Suivez les évènements et autres manifestations proposées par votre réseau social préféré !")
+					.opt-group
+						input(type="checkbox" name="noticeFriendAsk" id="noticeFriendAsk" checked=user.noticeFriendAsk)
+						label(for="noticeFriendAsk")
+							=s("M'avertir lors d'une demande d'ajout.")
+					.opt-group
+						input(type="checkbox" name="noticePublish" id="noticePublish" checked=user.noticePublish)
+						label(for="noticePublish")
+							=s("M'avertir lors de la publication d'un statut sur mon profil.")
+					.opt-group
+						input(type="checkbox" name="noticeMessage" id="noticeMessage" checked=user.noticeMessage)
+						label(for="noticeMessage")
+							=s("M'avertir lors de la réception d'un message privé.")
+				.btn-group
+					input.btn(type="submit" value=s("Valider les modifications"))
+				.btn-group
+					a.btn(href="/")
+						=s("Retour à l'accueil")
+					| &nbsp; 
+
+				.cb

@@ -156,8 +156,8 @@ module.exports =
 	@return string compressed code
 	###
 	concatCallback: (content, lst, proceed, end, options) ->
-		proceed = proceed || ((s) -> s)
-		options = options || {}
+		proceed ||= ((s) -> s)
+		options ||= {}
 		i = options.i || 0
 		ie = options.ie || 0
 		if i >= lst.length
@@ -476,7 +476,7 @@ module.exports =
 		if global[name]? || global[name + 'Model']?
 			global[name] || global[name + 'Model']
 		else
-			schema = schema || requireSchema name
+			schema ||= requireSchema name
 			model = mongoose.model name, schema
 			global[name] = model
 			global[name + 'Model'] = model
@@ -492,7 +492,11 @@ module.exports =
 			user = user.user
 		for key, val of update
 			user[key] = val
-		User.updateById user._id, update, done
+		# extend user, update
+		try
+			User.updateById user._id, update, done
+		catch err
+			done err
 
 	###
 	Get a user from an object
@@ -507,6 +511,34 @@ module.exports =
 				u = new User
 				extend u, object
 		u
+
+	###
+	Convert known custom/english error to translatable human error
+	@param mixed error
+	@return string humanazied error
+	###
+	humanError: (err) ->
+		if err and err.errors
+			ul = '<ul>'
+			err.errors.each ->
+				ul += '<li>' + (
+						switch @
+							when 'invalid first name'
+								s("Prénom invalide")
+							when 'invalid last name'
+								s("Nom invalide")
+							when 'invalid birth date'
+								s("Date de naissance invalide")
+							when 'invalid phone number'
+								s("Numéro de téléphone invalide")
+							when 'too long biography'
+								s("La zone créative dépasse la taille limite (" + config.wornet.limits.biographyLength + " caractères)")
+							else
+								@
+					) + '</li>'
+			ul += '</ul>'
+			err = new PublicError ul
+		err
 
 	###
 	Add an uploaded photo to user album

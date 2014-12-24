@@ -29,7 +29,8 @@ block params
 	- var bodyClasses = null
 
 block nav
-	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation'): .container-fluid
+	include ../includes/shutter
+	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation' class=(user.openedShutter ? 'opened-shutter' : false)): .container-fluid
 		h1.col-xs-12
 			=upperTitle
 		.navbar-header
@@ -70,7 +71,7 @@ block nav
 									=s("Mon agenda")
 							li: a(href="/user/logout")
 									=s("Déconnexion")
-					li: a(href="#")
+					li: a.open-shutter(href="#")
 						+glyph("list")
 						span.mobile
 							| &nbsp; 

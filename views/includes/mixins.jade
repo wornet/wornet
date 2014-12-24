@@ -37,8 +37,11 @@ mixin alert(data)
 		each key in ['danger', 'success', 'info', 'warning']
 			if data[key]
 				each alert in data[key]
-					.alert(class="alert-" + key)
-						=alert
+					.alert.alert-dismissible(class="alert-" + key role=key)
+						if alert.substr(0, 4) === '<ul>'
+							!=alert
+						else
+							=alert
 
 mixin form(url, method)
 

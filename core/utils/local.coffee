@@ -17,7 +17,7 @@ module.exports = (lang, text, replacements, count) ->
 		if ! isNaN(floatReplacements)
 			count = floatCount
 
-	replacements = replacements || {}
+	replacements ||= {}
 
 	for from, to of replacements
 		reg = new RegExp '\\{' + from + '\\}', 'g'

@@ -1,5 +1,5 @@
 
-#wrap
+#wrap(class=((!httpStatus || httpStatus <= 200) && user && user.openedShutter ? 'opened-shutter' : false))
 	block nav
 	+ie('if lte IE 7')
 		.alert.alert-danger
