@@ -2,7 +2,10 @@
 if window.FastClick
 	FastClick.attach document.body
 
-((s) ->
+do (s = textReplacements) ->
+	# Default errors
+	window.SERVER_ERROR_DEFAULT_MESSAGE = s("Perte de la connexion internet. La dernière action n'a pas pu être effectuée.")
+
 	# Display a loading animation when page is loading
 	window.onbeforeunload = ->
 		$('.loader:last').css('z-index', 99999).removeClass 'preload'
@@ -14,7 +17,18 @@ if window.FastClick
 	$(window).on "online", ->
 		$('.errors').infos s("Connexion Internet rétablie")
 
-)(textReplacements)
+	window.bootboxTexts ||= en: {}
+	bootboxTexts.en =
+		OK: s("Oui")
+		CANCEL: s("Non")
+		CONFIRM: s("Oui")
+	window.confirmButtons = (callback) ->
+		no:
+			label: bootboxTexts.en.CANCEL
+		yes:
+			label: bootboxTexts.en.OK
+			callback: callback
+	return
 
 # Convert titles attributes to tooltips when elements have a data-toggle="tooltip" atribute
 $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()

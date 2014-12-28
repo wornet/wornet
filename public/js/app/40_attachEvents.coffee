@@ -399,6 +399,59 @@ $.each [
 			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
 			delay 200, ->
 				$a.blur()
+				return
+			cancel e
+	]
+	[
+		'click'
+		'#delete-account'
+		($a, e) ->
+			bootbox.dialog
+				message: '<label>' + $a.data('message') + "<br><input type='password' id='delete-account-password' required autofocus></label>"
+				title: $a.data 'title'
+				buttons: confirmButtons ->
+					Ajax.delete '/user',
+						data: password: $('#delete-account-password').val()
+						success: (data) ->
+							if data.goingTo
+								if window.sessionStorage
+									sessionStorage.clear()
+								location.href = data.goingTo
+							return
+					return
+			delay 600, ->
+				$('#delete-account-password').focus()
+				return
+			cancel e
+	]
+	[
+		'click'
+		'[data-delete]'
+		($a, e) ->
+			bootbox.confirm $a.data('message'), (ok) ->
+				if ok
+					if window.sessionStorage
+						clearStorage = $a.data 'clear-storage'
+						if clearStorage
+							if clearStorage is '*'
+								sessionStorage.clear()
+							else
+								delete sessionStorage[clearStorage]
+					Ajax.delete ($a.data('delete') || location.href), (data) ->
+						if data.goingTo
+							location.href = data.goingTo
+						target = $a.data 'slide-up'
+						if target
+							$(target).slideUp ->
+								@remove()
+								return
+						target = $a.data 'fade-out'
+						if target
+							$(target).fadeOut ->
+								@remove()
+								return
+						return
+				return
 			cancel e
 	]
 

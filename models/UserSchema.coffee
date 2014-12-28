@@ -340,5 +340,46 @@ userSchema.pre 'save', (next) ->
 		@password = @encryptPassword()
 	next()
 
+userSchema.pre 'remove', (next) ->
+	parallelRemove [
+		Friend
+		$or: [
+			askedFrom: @id
+		,
+			askedTo: @id
+		]
+	], [
+		Status
+		$or: [
+			author: @id
+		,
+			at: @id
+		]
+	], [
+		Comment
+		author: @id
+	], [
+		Album
+		user: @id
+	], [
+		Event
+		user: @id
+	], [
+		Photo
+		user: @id
+	], [
+		Link
+		user: @id
+	], [
+		Video
+		user: @id
+	], [
+		Message
+		author: @id
+	], [
+		MessageRecipient
+		recipient: @id
+	], next
+
 
 module.exports = userSchema

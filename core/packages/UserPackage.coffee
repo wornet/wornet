@@ -99,7 +99,7 @@ UserPackage =
 			if err
 				done err: err
 			else
-				Friend.findOneAndUpdate { _id: id, askedTo: req.user._id }, { $set: status: status }, {}, (err, friend) ->
+				Friend.findOneAndUpdate { _id: id, askedTo: req.user._id }, { status: status }, {}, (err, friend) ->
 					if ! err and friend and isRequest
 						delete req.user.friendAsks[id]
 						if status is 'accepted'

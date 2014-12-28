@@ -21,4 +21,10 @@ status.forEach (st) ->
 	messageRecipientSchema.virtual(st).get ->
 		@status is st
 
+messageRecipientSchema.pre 'remove', (next) ->
+	parallelRemove [
+		Message
+		id: @message
+	], next
+
 module.exports = messageRecipientSchema

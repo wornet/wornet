@@ -46,7 +46,7 @@ module.exports = (router) ->
 	# When signin step 2 page displays
 	pm.page '/signin', (req) ->
 		# Get errors in flash memory (any if AJAX is used and works on client device)
-		signinErrors: req.flash 'signinErrors' # Will be removed when errors will be displayed on the next step
+		signinAlerts: req.getAlerts 'signin' # Will be removed when errors will be displayed on the next step
 
 	# When user submit his e-mail and password to sign in
 	router.put '/signin', (req, res) ->
@@ -222,6 +222,21 @@ module.exports = (router) ->
 				err: err
 				album: album
 
+	router.delete '/album/:id', (req, res) ->
+		id = req.params.id
+		parallelRemove [
+			Album
+			_id: id
+		], [
+			Status
+			album: id
+		], (err) ->
+			if err
+				res.serverError err
+			else
+				req.flash 'profileSuccess', s("Album supprimé")
+				res.json goingTo: '/'
+
 	router.put '/video/add', (req, res) ->
 		# Create a new video
 		video = extend user: req.user._id, req.body.video
@@ -329,7 +344,7 @@ module.exports = (router) ->
 		id = cesarRight req.params.hashedId
 		if req.user._id and req.user._id isnt id
 			auth.logout req, res
-		User.findOneAndUpdate { _id: id, token: token }, { $set: role: 'confirmed' }, {}, (err, user) ->
+		User.findOneAndUpdate { _id: id, token: token }, { role: 'confirmed' }, {}, (err, user) ->
 			if err or ! user
 				req.flash 'loginErrors', s("Votre adresse n'a pas pu être confirmée")
 				warn [user, err]
@@ -337,3 +352,15 @@ module.exports = (router) ->
 				auth.auth req, res, user
 				req.flash 'profileSuccess', s("Votre adresse a bien été confirmée")
 			res.redirect '/'
+
+	router.delete '/', (req, res) ->
+		if req.user.passwordMatches req.body.password
+			req.user.remove (err) ->
+				if err
+					res.serverError err
+				else
+					auth.logout req, res
+					req.flash 'loginSuccess', s("Votre compte a été correctement supprimé")
+					res.json goingTo: '/'
+		else
+			res.serverError new PublicError s("Mot de passe incorrect")

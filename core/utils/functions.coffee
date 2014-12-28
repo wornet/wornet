@@ -462,6 +462,68 @@ module.exports =
 		str.replace(new RegExp('^' + charlist + '+', 'g'), '').replace(new RegExp(charlist + '+$', 'g'), '')
 
 	###
+	Iterate a value with a callback if value has an `each` method
+	@param value to be iterated
+	@param function callback to iterate on value
+
+	@return true if the array was able to iterate, false else
+	###
+	each: (value, callback) ->
+		if value and value.each and typeof value.each is 'function'
+			value.each callback
+			true
+		else
+			false
+
+	###
+	Exec remove on all model/condition pairs passed in arguments
+	@param Array... [model, conndition] pairs
+	@param function callback executed when all parallel removes ended
+
+	@return void
+	###
+	parallelRemove: ->
+		done = (err) ->
+			if err
+				throw err
+		params = Array.prototype.filter.call arguments, (arg) ->
+			if arg instanceof Array
+				true
+			else
+				if typeof arg is 'function'
+					done = arg
+				else
+					throw new Error 'Invalid argument'
+				false
+		errors = []
+		count = params.length
+		next = (errors) ->
+			err = if errors.length > 0
+				new Error errors.join('\n')
+			else
+				null
+			done err
+		params.each ->
+			model = @[0]
+			condition = @[1]
+			# Model.remove was not able to be used here since it does not trigger the `remove` hook
+			model.find condition, (err, objs) ->
+				if err
+					errors.push err
+				each objs, ->
+					count++
+					@remove (err) ->
+						if err
+							errors.push err
+						unless --count
+							next errors
+					true
+				unless --count
+					next errors
+			true
+		return
+
+	###
 	Load model if it is not already. In any case, return it
 	@param string model name
 	@param Schema schema for generate the model

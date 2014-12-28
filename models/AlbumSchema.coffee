@@ -68,5 +68,16 @@ albumSchema.pre 'save', (next) ->
 
 	next()
 
+albumSchema.pre 'remove', (next) ->
+	parallelRemove [
+		Photo
+		album: @id
+	], [
+		Link
+		album: @id
+	], [
+		Video
+		album: @id
+	], next
 
 module.exports = albumSchema

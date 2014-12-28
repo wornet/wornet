@@ -3,7 +3,7 @@ if (piwikSettings = getData 'piwik')
 	_paq = _paq or []
 	_paq.push ["trackPageView"]
 	_paq.push ["enableLinkTracking"]
-	(->
+	do ->
 		u = ((if ("https:" is document.location.protocol) then "https" else "http")) + "://" + (piwikSettings.host || 'piwik') + "/"
 		_paq.push [
 			"setTrackerUrl"
@@ -22,7 +22,6 @@ if (piwikSettings = getData 'piwik')
 		g.src = u + "piwik.js"
 		s.parentNode.insertBefore g, s
 		return
-	)()
 
 # Google Analytics
 if (googleAnalyticsSettings = getData 'googleAnalytics')
