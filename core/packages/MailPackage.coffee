@@ -2,8 +2,6 @@
 
 nodemailer = require 'nodemailer'
 
-smtpTransport = require 'nodemailer-smtp-transport'
-
 errorMessage = 'Mailer not configured or not initialized'
 
 transporter = null
@@ -20,9 +18,10 @@ MailPackage =
 					user: config.wornet.mail.auth.user
 					pass: config.wornet.mail.auth.pass
 			if options.service is 'OVH'
+				smtpTransport = require 'nodemailer-smtp-transport'
 				options = smtpTransport
 				    host: 'localhost'
-				    port: 465
+				    port: 25
 				    auth: options.auth
 			transporter = nodemailer.createTransport options
 
