@@ -59,6 +59,7 @@ PhotoPackage =
 			done new PublicError s("Non autorisé")
 
 	delete: (photoId, status = 'uploaded') ->
+		inviter vos amis sur Wornet
 		photoId = strval photoId
 		Photo.findOne
 			_id: photoId
