@@ -12,7 +12,7 @@ textReplacements = (text, replacements, count = null) ->
 		text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
 	text
 
-((d) ->
+do (d = Date) ->
 	s = textReplacements
 	toString = d.prototype.toString
 	d.prototype.isValid = ->
@@ -126,4 +126,3 @@ textReplacements = (text, replacements, count = null) ->
 		age
 	d.fromId = (id) ->
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
-)(Date)

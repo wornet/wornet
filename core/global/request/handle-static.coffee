@@ -54,7 +54,8 @@ module.exports = (app) ->
 					file = __dirname + '/../../../.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
 					res.setHeader 'cache-control', 'max-age=259200000, public'
-					fs.readFile file, ((method, list) ->
+					list = options['main' + ucfirst(lang)]()
+					fs.readFile file, do (method, list) ->
 						(err, content) ->
 							if err
 								concatCallback '', list, method, (content) ->
@@ -65,7 +66,6 @@ module.exports = (app) ->
 									ie: req.ie
 							else
 								res.end content
-					)(method, options['main' + ucfirst(lang)]())
 					return
 			req.url = req.urlWithoutParams
 			if req.url.startWith '/img/photo/'

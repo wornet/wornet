@@ -35,5 +35,12 @@ statusSchema.pre 'save', (next) ->
 						else
 							next new PublicError s("Vous ne pouvez poster que sur les profils de vos amis")
 
+statusSchema.pre 'remove', (next) ->
+	PhotoPackage.deleteImages @images
+	parallelRemove [
+		Comment
+		status: @id
+	], next
+
 
 module.exports = statusSchema

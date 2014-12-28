@@ -60,16 +60,23 @@ PhotoPackage =
 
 	delete: (photoId, status = 'uploaded') ->
 		photoId = strval photoId
-		Photo.remove
-			id: photoId
+		Photo.findOne
+			_id: photoId
 			status: status
-		, (err, count) ->
-			if !err and count
-				photoDirectory = __dirname + '/../../public/img/photo/'
-				fs.unlink photoDirectory + photoId + '.jpg'
-				for size in sizes
-					fs.unlink photoDirectory + size + 'x' + photoId + '.jpg'
-				delete self.photos[photoId]
+		, (err, photo) ->
+			if !err and photo
+				photo.remove (err) ->
+					if err
+						throw err
+					else
+						delete photos[photoId]
+
+	deleteImages: (images) ->
+		self = @
+		each images, ->
+			id = self.urlToId @src
+			self.delete id, 'published'
+			true
 
 	add: (req, photoId) ->
 		token = generateSalt 32

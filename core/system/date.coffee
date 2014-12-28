@@ -1,6 +1,6 @@
 'use strict'
 
-((d) ->
+do (d = Date) ->
 	toString = d.prototype.toString
 	d.prototype.log = ->
 		@setHours(@getHours() + 2)
@@ -120,4 +120,3 @@
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
 	d.year = ->
 		(new d).getFullYear()
-)(Date)

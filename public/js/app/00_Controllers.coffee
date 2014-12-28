@@ -374,7 +374,10 @@ Controllers =
 
 	SigninSecondStep: ($scope) ->
 		user = $.parseJSON sessionStorage['user']
-		$scope.user = user
+		if user
+			if user.birthDate
+				user.birthDate = new Date user.birthDate
+			$scope.user = user
 		saveUser $scope
 
 		return
@@ -392,14 +395,13 @@ Controllers =
 			https = href.substr(0, 5) is 'https'
 			href = href.replace /^(https?)?:?\/\//, ''
 			test = href.replace /^www\./, ''
-			video = (->
+			video = do ->
 				for url, regexps of videoHosts
 					for regexp in regexps
 						match = test.match regexp
 						if match and match.length > 1
 							return url.replace '$1', match[1]
 				null
-			)()
 			s = textReplacements
 			if video
 				if sendMedia

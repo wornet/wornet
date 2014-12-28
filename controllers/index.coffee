@@ -9,6 +9,10 @@ module.exports = (router) ->
 		.page '/legals'
 
 
+	# Temporary fix of /undefined request
+	router.get '/undefined', (req, res) ->
+		res.end ''
+
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
 		if req.user
@@ -45,7 +49,6 @@ module.exports = (router) ->
 		profile: 'user/profile'
 
 	for as, route of alias
-		((as, route) ->
+		do (as, route) ->
 			router.get '/' + as, (req, res) ->
 				res.redirect '/' + route
-		)(as, route)

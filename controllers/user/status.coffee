@@ -9,12 +9,14 @@ module.exports = (router) ->
 		StatusPackage.getRecentStatusForRequest req, res
 
 	router.delete '/:id', (req, res) ->
-		Status.findOneAndRemove
+		# We cannot use findOneAndRemove because it does not execute pre-remove hook
+		me = req.user._id
+		Status.findOne
 			_id: req.params.id
 			$or: [
-				at: req.user._id
+				at: me
 			,
-				author: req.user._id
+				author: me
 			]
 		, (err, status) ->
 			if err
@@ -22,14 +24,15 @@ module.exports = (router) ->
 			else unless status
 				res.serverError standartError()
 			else
-				status.images.each ->
-					PhotoPackage.delete PhotoPackage.urlToId(@src), 'published'
-					true
-				unless equals status.author, req.user.id
-					NoticePackage.notify [status.author], null,
-						action: 'notice'
-						notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
-				res.json deletedStatus: status
+				status.remove (err) ->
+					if err
+						res.serverError err
+					else
+						unless equals status.author, me
+							NoticePackage.notify [status.author], null,
+								action: 'notice'
+								notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
+						res.json deletedStatus: status
 
 	router.put '/add/:id', (req, res) ->
 		StatusPackage.put req, res, (status) ->

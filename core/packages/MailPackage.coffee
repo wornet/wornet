@@ -20,12 +20,19 @@ MailPackage =
 				config.wornet.mail
 
 	send: (to, subject, text, html = null, from = null, done = null) ->
-		if done is null
-			done = from
-			from = null
+		if typeof html is 'function'
 			if done is null
+				html = html()
+			else
 				done = html
 				html = null
+		if typeof from is 'function'
+			if done is null
+				from = from()
+			else
+				done = from
+				from = null
+
 		if html is null
 			html = text
 				.replace /&/g, '&amp;'
@@ -36,12 +43,23 @@ MailPackage =
 				.replace /\n/g, '<br>'
 		if from is null
 			from = 'Wornet <contact@wornet.fr>'
+
 		mailOptions =
 			from: from
 			to: to
 			subject: subject
 			text: text
 			html: html
+
+		if done is null
+			done = (err, info) ->
+				if config.wornet.mail.log
+					if err
+						console['log'] ["Send mail failed", mailOptions]
+						warn err
+					else
+						console['log'] ["Send mail succeed", mailOptions]
+						log info
 
 		if transporter is null
 			throw new Error errorMessage
