@@ -2,6 +2,8 @@
 
 nodemailer = require 'nodemailer'
 
+smtpTransport = require 'nodemailer-smtp-transport'
+
 errorMessage = 'Mailer not configured or not initialized'
 
 transporter = null
@@ -12,12 +14,17 @@ MailPackage =
 		if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
 			warn errorMessage
 		else
-			transporter = nodemailer.createTransport
+			options =
 				service: config.wornet.mail.service
 				auth:
 					user: config.wornet.mail.auth.user
 					pass: config.wornet.mail.auth.pass
-				config.wornet.mail
+			if options.service is 'OVH'
+				options = smtpTransport
+				    host: 'localhost'
+				    port: 465
+				    auth: options.auth
+			transporter = nodemailer.createTransport options
 
 	send: (to, subject, text, html = null, from = null, done = null) ->
 		if typeof html is 'function'
