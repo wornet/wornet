@@ -20,8 +20,8 @@ MailPackage =
 			if options.service is 'OVH'
 				smtpTransport = require 'nodemailer-smtp-transport'
 				options = smtpTransport
-				    host: 'localhost'
-				    port: 25
+				    host: 'SSL0.OVH.NET'
+				    port: 465
 				    auth: options.auth
 			transporter = nodemailer.createTransport options
 
