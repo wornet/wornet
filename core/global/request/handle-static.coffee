@@ -12,7 +12,10 @@ module.exports = (app) ->
 		req.response = res
 		res.req = req
 		res.request = req
-		res.setTimeLimit config.wornet.timeout
+		res.setTimeLimit if req.is('multipart/form-data')
+			config.wornet.upload.timeout
+		else
+			config.wornet.timeout
 		res.on 'finish', ->
 			clearTimeout res.excedeedTimeout
 
