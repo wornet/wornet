@@ -391,7 +391,7 @@ Controllers =
 				videos: []
 			return
 
-		scanLink = (href, sendMedia = false) ->
+		scanLink = (href, sendMedia = true) ->
 			https = href.substr(0, 5) is 'https'
 			href = href.replace /^(https?)?:?\/\//, ''
 			test = href.replace /^www\./, ''
@@ -448,11 +448,11 @@ Controllers =
 
 		videoHosts =
 			'//www.dailymotion.com/embed/video/$1': [
-				/^dai\.ly\/([a-z0-9_-]+)/
+				/^dai\.ly\/([a-z0-9_-]+)/i
 				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
 			]
 			'//www.youtube.com/embed/$1': [
-				/^youtu\.be\/([a-z0-9_-]+)/
+				/^youtu\.be\/([a-z0-9_-]+)/i
 				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
 			]
 
@@ -511,7 +511,7 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			status.content = scannAllLinks status.content || ''
+			scannAllLinks status.content || ''
 			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
 				data:
 					status: status
