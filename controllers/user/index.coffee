@@ -251,7 +251,6 @@ module.exports = (router) ->
 
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
-		res.setTimeLimit 5 * 3600
 		model = images: []
 		images = req.files.photo || []
 		unless images instanceof Array
