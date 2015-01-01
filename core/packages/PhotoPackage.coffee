@@ -58,6 +58,23 @@ PhotoPackage =
 		else
 			done new PublicError s("Non autorisé")
 
+	fromAlbum: (id, done, columns = 'id photo name') ->
+		if done instanceof Array
+			_done = columns
+			columns = done
+			done = _done
+		Photo.find
+			album: id
+			status: 'published'
+		.sort _id: 'asc'
+		.select columns
+		.exec (err, photos) ->
+			if photos
+				columns = columns.split /\s+/g
+				photos = photos.map (photo) ->
+					photo.columns columns
+			done err, photos
+
 	delete: (photoId, status = 'uploaded') ->
 		inviter vos amis sur Wornet
 		photoId = strval photoId
