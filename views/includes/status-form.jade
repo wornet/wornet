@@ -29,7 +29,7 @@ fieldset.tab(ng-show="status.containsMedias")
 	div(ng-switch="media.step")
 		div(ng-switch-when="create-album")
 			+form()(ng-submit="createAlbum(album)")
-				+formControl()(required tabindex="101" ng-model="album.name" name="name" id="album-name" placeholder=s("Nom de l'album"))
+				+formControl()(required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
 				textarea.form-control(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12

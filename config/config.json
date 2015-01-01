@@ -173,6 +173,8 @@
             "maxTabs": 5,
             "userMaxAge": 150,
             "userMinAge": 0,
+            "albumNameLength": 240,
+            "albumShortNameLength": 20,
             "biographyLength": 140,
             "displayStatusLength": 614,
             "realStatusLength": 1228
@@ -187,6 +189,11 @@
                 "pass": ""
             },
             "log": true
+        },
+
+        "media": {
+            "displayAlbumTitle": false,
+            "displayPhotoTitle": false
         },
 
         "parseProxyUrl": false,

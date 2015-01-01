@@ -8,8 +8,10 @@
 			span(ng-if="loadedMedia.album")
 				a(href="/user/album/{{ loadedMedia.album.id }}")
 					| {{ loadedMedia.album.name }}
-				=" > "
-			| {{ loadedMedia.name }}
+				if config.wornet.media.displayPhotoTitle
+					=" > "
+			if config.wornet.media.displayPhotoTitle
+				| {{ loadedMedia.name }}
 	.modal-body(ng-switch="loadedMedia.type")
 		div(ng-switch-when="image")
 			img.big(ng-src="{{ loadedMedia.src }}" alt="{{ loadedMedia.name }}")

@@ -8,6 +8,8 @@ albumSchema = BaseSchema.extend
 		type: String
 		trim: true
 		required: true
+		valide: (name) ->
+			name.length <= config.wornet.limits.albumNameLength
 	description:
 		type: String
 		trim: true
