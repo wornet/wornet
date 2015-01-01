@@ -10,10 +10,8 @@ module.exports = (router) ->
 				when "GET"
 					# List all events owned by the logged user
 					Event
-						.find
-							user: req.user._id
-						.sort
-							registerDate: -1
+						.find user: req.user._id
+						.sort registerDate: 'desc'
 						.exec (err, events) ->
 							if err
 								model.err = err

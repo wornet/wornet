@@ -173,7 +173,7 @@ module.exports = (router) ->
 		# Get albums list from the user logged in
 		Album.find
 			user: req.user.id
-		.sort '_id'
+		.sort _id: 'asc'
 		.exec (err, albums) ->
 			res.json
 				err: err
@@ -200,15 +200,11 @@ module.exports = (router) ->
 					next()
 				else
 					res.serverError new PublicError s("Cet album est privé")
-			Photo.find
-				album: id
-				status: 'published'
-			, (err, foundPhotos) ->
+			PhotoPackage.fromAlbum id, (err, foundPhotos) ->
 				if err
 					res.serverError err
 				else
-					photos = foundPhotos.map (photo) ->
-						photo.columns ['photo', 'name']
+					photos = foundPhotos
 					next()
 		catch
 			res.notFound()
@@ -248,6 +244,40 @@ module.exports = (router) ->
 		link = extend user: req.user._id, req.body.link
 		Link.create link, ->
 			res.json()
+
+	router.get '/photo/:id', (req, res) ->
+		Photo.findById req.params.id, (err, photo) ->
+			if err
+				res.serverError err
+			else if photo and photo.status is 'published'
+				info = photo.columns ['name']
+				count = 1
+				next = ->
+					unless --count
+						res.json info
+				if photo.album
+					count++
+					Album.findById photo.album, (err, album) ->
+						if album and ! err
+							info.album =
+								id: album._id
+								name: album.name
+						count++
+						PhotoPackage.fromAlbum album.id, (err, photos) ->
+							if err
+								photos = []
+							info.album.photos = photos
+							next()
+						next()
+				if photo.user
+					count++
+					req.getUserById photo.user, (err, user) ->
+						if user and ! err
+							info.user = user.publicInformations()
+						next()
+				next()
+			else
+				res.notFound()
 
 	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
@@ -293,7 +323,7 @@ module.exports = (router) ->
 						next()
 					else
 						Album.findOne()
-						.sort '-_id'
+						.sort _id: 'desc'
 						.exec (err, foundAlbum) ->
 							if err
 								data.error = err

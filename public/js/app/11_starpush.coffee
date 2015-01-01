@@ -13,10 +13,13 @@ unless window["note_jaime_fonctions_chargees"]
 		note_jaime_gid("note_jaime_" + id).style.backgroundImage = "url('" + note_jaime_infos[id].jaime + "')"
 		return
 	note_jaime_dsl = (src) ->
-		s = document.createElement("script")
-		s.setAttribute "type", "text/javascript"
-		s.setAttribute "src", src
-		document.body.appendChild s
+		starPush.dslList ||= {}
+		unless starPush.dslList[src]
+			s = document.createElement("script")
+			s.setAttribute "type", "text/javascript"
+			s.setAttribute "src", src
+			document.body.appendChild s
+			starPush.dslList[src] = true
 		return
 	note_jaime_js = (id, i) ->
 		" id=\"note_jaime_" + id + "\" onmouseover=\"note_jaime_over('" + id + "'," + i + ");\" onmouseout=\"note_jaime_out('" + id + "');\" onclick=\"note_jaime_clic('" + id + "'," + i + ");\""

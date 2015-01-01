@@ -19,7 +19,7 @@ albumSchema.methods.refreshPreview = (save = false, done) ->
 	Photo.find
 		album: album._id
 		status: 'published'
-	.sort '-_id'
+	.sort _id: 'desc'
 	.limit 4
 	.exec (err, photos) ->
 		if err

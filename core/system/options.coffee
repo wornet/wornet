@@ -220,7 +220,7 @@ module.exports = (app, port) ->
 			# get users from friend, me
 			getKnownUsersByIds: (ids, done) ->
 				@getUsersByIds ids, done, false
-			# get users from friend, me, or from database
+			# get users from friends, me, or from database
 			getUsersByIds: (ids, done, searchInDataBase = true) ->
 				currentUser = @user
 				ids = ids.map strval
@@ -262,6 +262,13 @@ module.exports = (app, port) ->
 								done err, null, false
 						else
 							done null, usersMap, false
+			# get user from friends, me, or from database
+			getUserById: (id, done, searchInDataBase = true) ->
+				@getUsersByIds [id], (err, usersMap) ->
+					if err or ! usersMap or ! usersMap[id]
+						done new PublicError s("Impossible de trouver l'utilisateur demandé")
+					else
+						done null, usersMap[id]
 
 
 		# Save original method(s) that we will override

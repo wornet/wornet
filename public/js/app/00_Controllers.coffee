@@ -277,14 +277,118 @@ Controllers =
 		return
 
 	MediaViewer: ($scope) ->
+
+		getPrev = ->
+			if $scope.loadedMedia.album
+				photos = $scope.loadedMedia.album.photos
+				if photos and photos.length > 1
+					prev = null
+					for photo in photos
+						if photo.id is $scope.loadedMedia.id
+							return prev
+						prev =
+							src: photo.photo
+							name: photo.name
+			null
+
+		getNext = ->
+			if $scope.loadedMedia.album
+				photos = $scope.loadedMedia.album.photos
+				if photos and photos.length > 1
+					prevId = null
+					for photo in photos
+						if prevId is $scope.loadedMedia.id
+							next =
+								src: photo.photo
+								name: photo.name
+							return next
+						prevId = photo.id
+			null
+		
+		$scope.inFade = (action) ->
+			$children = $ '#media-viewer > * > *'
+			$children.fadeOut ->
+				action()
+				delay 20, ->
+					$children.fadeIn()
+					return
+				return
+			return
+
+		$scope.prev = ->
+			if prev = getPrev()
+				$scope.inFade ->
+					$scope.loadMedia 'image', prev
+				return
+			return
+
+		$scope.next = ->
+			if next = getNext()
+				$scope.inFade ->
+					$scope.loadMedia 'image', next
+				return
+			return
+
 		$scope.loadMedia = (type, media) ->
-			media = $.extend {}, media
+			media = $.extend
+				first: true
+				last: true
+			, media
 			media.type = type
 			if type is 'image'
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
+			id = idFromUrl media.src
+			testSize = ->
+				$mediaViewer = $ '#media-viewer'
+				$img = $mediaViewer.find 'img.big'
+				if $img.length
+					w = $img.width()
+					h = $img.height()
+					if w * h
+						$mediaViewer.find('.img-buttons')
+							.css 'margin-top', -h
+							.width w
+						$mediaViewer.find('.img-buttons, .prev, .next').height h
+						between = (min, max, number) ->
+							Math.max min, Math.min max, Math.round number
+						$mediaViewer.find('.prev, .next')
+							.width Math.round w / 2
+							.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
+							.css 'font-size', between 16, 64, (Math.min w / 2, h / 2) - 10
+					else
+						delay 200, testSize
+				return
+			if id
+				$.extend media,
+					date: Date.fromId(id).toISOString()
+					id: id
+				Ajax.get '/user/photo/' + id, (data) ->
+					if data.user
+						if data.album and data.album.photos
+							photos = data.album.photos
+							if photos.length > 1
+								if id isnt photos[0].id
+									media.first = false
+								if id isnt photos[photos.length - 1].id
+									media.last = false
+								delay 100, ->
+									if next = getNext()
+										img = new Image
+										img.onload = ->
+											if prev = getPrev()
+												(new Image).src = prev.src
+										img.src = next.src
+
+						$.extend media, data
+						refreshScope $scope
+						delay 10, testSize
+					return
+			else
+				delay 10, testSize
 			$scope.loadedMedia = media
 			delay 1000, ->
 				$('#media-viewer iframe[data-ratio]').ratio()
+				return
 			refreshScope $scope
 			return
 
@@ -292,6 +396,7 @@ Controllers =
 			$scope.loadMedia type, media
 			delay 1, ->
 				$('#media-viewer').modal()
+				return
 			return
 
 		return
@@ -441,6 +546,15 @@ Controllers =
 		setRecentStatus = (data) ->
 			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
 				$scope.recentStatus = data.recentStatus.map (status) ->
+					status.images.sort (a, b) ->
+						a = (idFromUrl a.src) || a._id
+						b = (idFromUrl b.src) || b._id
+						if a > b
+							1
+						else if a < b
+							-1
+						else
+							0
 					status.content = richText status.content
 					status
 				refreshScope $scope
