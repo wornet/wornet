@@ -1,3 +1,6 @@
 *.log
 *.lnk
+.npm/*
+.config/*
 nodemon.json
+node_modules/*
