@@ -173,7 +173,7 @@
             "maxTabs": 5,
             "userMaxAge": 150,
             "userMinAge": 0,
-            "albumNameLength": 240,
+            "albumNameLength": 100,
             "albumShortNameLength": 20,
             "biographyLength": 140,
             "displayStatusLength": 614,

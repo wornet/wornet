@@ -1,5 +1,5 @@
 .well.loading(ng-controller="MediasCtrl")
-	h3=strtoupper(s("Photos/Vidéos"))
+	h3=strtoupper(s("Mes médias"))
 	.album(ng-repeat="album in albums" ng-click="selectAlbum(album)" ng-if=(config.wornet.media.displayAlbumTitle ? undefined : "album.preview && album.preview.length"))
 		if config.wornet.media.displayAlbumTitle
 			h4 {{ album.name }}

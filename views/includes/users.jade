@@ -1,5 +1,5 @@
 .well
-	h3=strtoupper(s("Utilisateurs"))
+	h3=strtoupper(s("Ils utilisent Wornet"))
 	ul.photos-thumbs
 		each friend in users
 			li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
