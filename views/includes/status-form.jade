@@ -9,18 +9,20 @@ mixin statusForm(tabindex)
 				autofocus
 				tabindex=strval(tabindex+1)
 				ng-model="status.content"
-				placeholder=s("Entrez votre message ici")
+				placeholder=s("Quoi de neuf ?")
 			)
 			span.input-group-btn
 				input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Envoyer")).btn
 
 ul.nav.nav-tabs(role="tablist")
 	li(ng-click="status.containsMedias = false" ng-class="{ active: ! status.containsMedias }")
-		a(title=s("Quoi de neuf ?") data-toggle="tooltip" data-placement="top")
+		//- (title=s("Quoi de neuf ?") data-toggle="tooltip" data-placement="top")
+		a
 			=s("Publier un statut")
 	li(ng-click="containsMedias(status)" ng-class="{ active: status.containsMedias }")
-		a(title=s("Images, vidéos, liens…") data-toggle="tooltip" data-placement="top")
-			=s("Publier un média")
+		//- (title=s("Images, vidéos, liens…") data-toggle="tooltip" data-placement="top")
+		a
+			=s("Publier une image")
 fieldset.tab(ng-show="! status.containsMedias")
 	h3=strtoupper(s("Publier un statut"))
 	+statusForm()
