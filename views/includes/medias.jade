@@ -1,7 +1,8 @@
 .well.loading(ng-controller="MediasCtrl")
 	h3=strtoupper(s("Photos/Vidéos"))
-	.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
-		h4 {{ album.name }}
+	.album(ng-repeat="album in albums" ng-click="selectAlbum(album)" ng-if=(config.wornet.media.displayAlbumTitle ? undefined : "album.preview && album.preview.length"))
+		if config.wornet.media.displayAlbumTitle
+			h4 {{ album.name }}
 		.preview
 			a(href="/user/album/{{ album._id }}")
 				img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
