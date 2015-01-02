@@ -76,7 +76,6 @@ PhotoPackage =
 			done err, photos
 
 	delete: (photoId, status = 'uploaded') ->
-		inviter vos amis sur Wornet
 		photoId = strval photoId
 		Photo.findOne
 			_id: photoId
