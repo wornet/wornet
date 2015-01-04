@@ -269,6 +269,13 @@ Controllers =
 			refreshScope $scope
 			return
 
+		window.refreshMediaAlbums = ->
+			getAlbumsFromServer (err, albums) ->
+				unless err
+					setMediaAlbums albums
+				return
+			return
+
 		getAlbums (err, albums) ->
 			unless err
 				setMediaAlbums albums
@@ -338,16 +345,20 @@ Controllers =
 					if ok
 						media = $.extend {}, deletableMedia
 						key = (media.type || 'image') + 's'
-						if media.mediaId and media.status and media.status[key]
-							media.status[key] = media.status[key].filter (val) ->
-								val._id isnt media.mediaId
+						if media.mediaId and media.statusId
+							for i, status of statusScope.recentStatus
+								if status._id is media.statusId and status[key]
+									status[key] = status[key].filter (val) ->
+										val._id isnt media.mediaId
 							refreshScope statusScope
 						showLoader()
 						Ajax.delete '/user/media',
 							data: media
 							success: ->
 								deletableMedia = null
-								unless media.mediaId
+								if media.mediaId
+									delay 500, refreshMediaAlbums
+								else
 									location.reload()
 								hideLoader()
 							error: ->
@@ -356,7 +367,7 @@ Controllers =
 					return
 			return
 
-		$scope.loadMedia = (type, media, status, mediaId) ->
+		$scope.loadMedia = (type, media) ->
 			media = $.extend
 				first: true
 				last: true
@@ -368,8 +379,8 @@ Controllers =
 			deletableMedia =
 				id: id
 				type: type
-				status: status || null
-				mediaId: mediaId || null
+				statusId: media.statusId || null
+				mediaId: media._id || null
 			testSize = ->
 				$mediaViewer = $ '#media-viewer'
 				$img = $mediaViewer.find 'img.big'
@@ -424,8 +435,8 @@ Controllers =
 			refreshScope $scope
 			return
 
-		window.loadMedia = (type, media, status, mediaId) ->
-			$scope.loadMedia type, media, status, mediaId
+		window.loadMedia = (type, media) ->
+			$scope.loadMedia type, media
 			delay 1, ->
 				$('#media-viewer').modal()
 				return
@@ -587,6 +598,9 @@ Controllers =
 							-1
 						else
 							0
+					for key in ['images', 'links', 'videos']
+						$.each status[key], ->
+							@statusId = status._id
 					status.content = richText status.content
 					status
 				refreshScope $scope
@@ -602,6 +616,18 @@ Controllers =
 				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
 			]
 
+		###
+		@override window.refreshMediaAlbums
+		###
+		refreshMediaAlbums = ->
+			getAlbumsFromServer (err, albums) ->
+				unless err
+					$scope.albums = albums
+					refreshScope $scope
+					setMediaAlbums albums
+				return
+			return
+
 		$scope.delete = (status, $event) ->
 			s = textReplacements
 			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
@@ -611,7 +637,10 @@ Controllers =
 						.parents('.status-block:first').slideUp ->
 							$(@).remove()
 							return
-					Ajax.delete '/user/status/' + status._id
+					Ajax.delete '/user/status/' + status._id, ->
+						if status.images and status.images.length
+							delay 500, refreshMediaAlbums
+						return
 				return
 			return
 
@@ -665,12 +694,7 @@ Controllers =
 					medias: $scope.medias || null
 				success: (data) ->
 					setRecentStatus data
-					getAlbumsFromServer (err, albums) ->
-						unless err
-							$scope.albums = albums
-							refreshScope $scope
-							setMediaAlbums albums
-						return
+					refreshMediaAlbums()
 			status.content = ""
 			initMedias()
 
