@@ -1,5 +1,6 @@
 module.exports = ->
 	celibate: s("Célibataire")
+	couple: s("En couple")
 	fiance: s("Fiancé(e)")
 	married: s("Marié(e)")
 
@@ -17,7 +18,7 @@ module.exports = ->
 	birthCity: s("Ville de naissance")
 	job: s("Métier")
 	jobPlace: s("Lieu de travail")
-	maritalStatus: s("Situation civile")
+	maritalStatus: s("Situation relationnelle")
 	loveInterest: s("Intéressé par")
 	biography: s("Bio")
 
