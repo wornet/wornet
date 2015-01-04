@@ -16,7 +16,6 @@ Wornet = angular.module 'Wornet', [
 		'https://www.youtube.com/embed/**'
 		'http://www.dailymotion.com/embed/video/**'
 		'https://www.dailymotion.com/embed/video/**'
-		'http://starpush.selfbuild.fr/**'
 	]
 
 #Angular Wornet services

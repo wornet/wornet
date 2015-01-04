@@ -244,7 +244,6 @@ refreshScope = ($scope) ->
 	unless $scope.$root.$$phase is '$apply' or $scope.$root.$$phase is '$digest'
 		$scope.$apply()
 	checkDates()
-	starPush()
 	return
 
 # Get albums from server

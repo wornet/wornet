@@ -1,3 +1,4 @@
+###
 unless window["note_jaime_fonctions_chargees"]
 	note_jaime_gid = (id) ->
 		return document.getElementById(id)	if document.getElementById(id)
@@ -155,3 +156,4 @@ unless window["note_jaime_fonctions_chargees"]
 	window["note_jaime_infos"] = {}
 
 starPush = note_jaime_verifie
+###
