@@ -37,7 +37,7 @@ module.exports = (app) ->
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			req.isStatic = true
-			ie = req.getHeader('User-Agent').match /MSIE[\/\s]([0-9\.]+)/g
+			ie = req.getHeader('user-agent').match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
 				ie = intval ie[0].substr 5
 			else
@@ -85,6 +85,9 @@ module.exports = (app) ->
 			done()
 		else
 			unless req.xhr
+				if req.getHeader('host') is 'www.beta.wornet.fr'
+					res.redirect config.wornet.protocole +  '://beta.wornet.fr' + req.url
+					return
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
 			res.locals.isXHR = !!req.xhr
