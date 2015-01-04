@@ -85,6 +85,7 @@ userSchema = BaseSchema.extend
 		enum: [
 			null
 			'celibate'
+			'couple'
 			'fiance'
 			'married'
 			'other'
