@@ -469,3 +469,13 @@ $.each [
 		args.unshift $ @
 		params[2].apply @, args
 	return
+
+$document.keydown (e) ->
+	switch e.which
+		when 37
+			if $('.prev:visible:last').not('.disabled').click().length
+				return cancel e
+		when 39
+			if $('.next:visible:last').not('.disabled').click().length
+				return cancel e
+	return
