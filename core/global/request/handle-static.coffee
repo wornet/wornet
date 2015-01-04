@@ -79,14 +79,14 @@ module.exports = (app) ->
 						res.notFound()
 			else if req.url.startWith '/fonts/glyphicons'
 				req.url = '/components/bootstrap' + req.url
+				# Allow cross-origin from all wornet.fr subdomains
+				res.header 'access-control-allow-origin', '*'
+				res.header 'access-control-allow-methods', 'GET'
 			done()
 		else
 			unless req.xhr
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
-				# Allow cross-origin from all wornet.fr subdomains
-				res.header 'Access-Control-Allow-Origin', 'wornet.fr'
-				res.header 'Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE'
 			res.locals.isXHR = !!req.xhr
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
