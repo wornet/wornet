@@ -30,7 +30,10 @@ controllers/album.coffee
 		# DELETE /album
 		.delete (req, res) ->
 			photoData = req.body.photo
-			Photo.remove _id: photoData.id, (dbError) ->
+			Photo.remove
+				_id: photoData.id
+				user: req.user.id
+			, (dbError) ->
 				res.json # AJAX response
 					error: dbError
 

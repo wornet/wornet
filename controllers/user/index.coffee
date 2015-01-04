@@ -220,12 +220,19 @@ module.exports = (router) ->
 
 	router.delete '/album/:id', (req, res) ->
 		id = req.params.id
+		me = req.uers.id
 		parallelRemove [
 			Album
 			_id: id
+			user: me
 		], [
 			Status
 			album: id
+			$or: [
+				author: me
+			,
+				at: me
+			]
 		], (err) ->
 			if err
 				res.serverError err

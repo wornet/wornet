@@ -122,6 +122,16 @@ module.exports =
 				done value, false
 		null
 	###
+	Unlink file and handle errors
+	###
+	unlink: (file) ->
+		try
+			fs.unlink file, (err) ->
+				if err
+					warn err
+		catch err
+			warn err
+	###
 	Compress JS code
 	@param string intial code
 

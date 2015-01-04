@@ -38,9 +38,9 @@ for size in config.wornet.thumbSizes
 
 photoSchema.pre 'remove', (next) ->
 	photoDirectory = __dirname + '/../public/img/photo/'
-	fs.unlink photoDirectory + @id + '.jpg'
+	unlink photoDirectory + @id + '.jpg'
 	for size in config.wornet.thumbSizes
-		fs.unlink photoDirectory + size + 'x' + @id + '.jpg'
+		unlink photoDirectory + size + 'x' + @id + '.jpg'
 	next()
 
 
