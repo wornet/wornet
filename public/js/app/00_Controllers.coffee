@@ -307,10 +307,10 @@ Controllers =
 		
 		$scope.inFade = (action) ->
 			$children = $ '#media-viewer > * > *'
-			$children.fadeOut ->
+			$children.fadeOut 100, ->
 				action()
 				delay 20, ->
-					$children.fadeIn()
+					$children.fadeIn 100
 					return
 				return
 			return
