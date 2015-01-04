@@ -472,10 +472,13 @@ $.each [
 
 $document.keydown (e) ->
 	switch e.which
-		when 37
+		when 27 # Escape
+			if $('[data-dismiss]:visible:last').not('.disabled').click().length
+				return cancel e
+		when 37 # Left arrow
 			if $('.prev:visible:last').not('.disabled').click().length
 				return cancel e
-		when 39
+		when 39 # Right arrow
 			if $('.next:visible:last').not('.disabled').click().length
 				return cancel e
 	return
