@@ -1,6 +1,31 @@
+$.xhrPool = $.extend [],
+	isWaiting: ->
+		waiting = false
+		ignore = ['get:/user/notify']
+		for i of @
+			if $.xhrUrls[i] and ignore.indexOf($.xhrUrls[i]) is -1
+				waiting = true
+				break
+		waiting
+	abortAll: ->
+		$.each @, ->
+			@abort()
+		$.xhrPool = []
+		$.xhrUrls = []
+		return
+$.xhrUrls = []
+
 $document = $(document)
+	# When send back an AJAX request
+	.ajaxSend (event, xhr, settings) ->
+		$.xhrPool.push xhr
+		$.xhrUrls.push (settings.type || 'get').toLowerCase() + ':' + settings.url
 	# When receive back an AJAX request
 	.ajaxComplete (event, xhr, settings) ->
+		index = $.xhrPool.indexOf xhr
+		if index isnt -1
+			$.xhrPool.splice index, 1
+			$.xhrUrls.splice index, 1
 		# POST is secured by CSRF tokens
 		isPost = (settings.type is "POST")
 		isJson = (settings.dataType? && settings.dataType.toLowerCase() is "json")

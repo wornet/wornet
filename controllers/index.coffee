@@ -13,6 +13,13 @@ module.exports = (router) ->
 	router.get '/undefined', (req, res) ->
 		res.end ''
 
+	if config.env.development
+		# Emulate a long pending with demanded time
+		router.get '/pending/:time', (req, res) ->
+			time = intval req.params.time
+			delay time * 1000, ->
+				res.json {}
+
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
 		if req.user

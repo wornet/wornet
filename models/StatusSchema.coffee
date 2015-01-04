@@ -13,8 +13,11 @@ statusSchema = PostSchema.extend
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength
 
+statusSchema.methods.isEmpty = ->
+	empty(@content) and empty(@images) and empty(@videos) and empty(@links)
+
 statusSchema.pre 'save', (next) ->
-	if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
+	if @isEmpty()
 		next new PublicError s("Ce statut est vide")
 	else
 		if equals @at, @author

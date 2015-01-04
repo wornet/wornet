@@ -49,10 +49,10 @@ block nav
 						+glyph("home")
 						| &nbsp; 
 						=s("Accueil")
-					li: a(href="/")
+					li: a(href="/" data-click-alert!=s("La messagerie sera opérationnelle au mois de mars 2015.<br><br>L'équipe Wornet."))
 						+glyph("envelope")
 						| &nbsp; 
-						=s("Message")
+						=s("Messagerie")
 					li.mobile: +notifications()
 					li.mobile: +friends()
 				ul.nav.navbar-nav.navbar-right

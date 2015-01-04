@@ -454,6 +454,13 @@ $.each [
 				return
 			cancel e
 	]
+	[
+		'click'
+		'[data-click-alert]'
+		($a, e) ->
+			bootbox.alert $a.data 'click-alert'
+			cancel e
+	]
 
 ], ->
 	params = @

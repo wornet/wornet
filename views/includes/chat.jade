@@ -17,9 +17,9 @@
 					| {{ message.content }}
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
 			if config.wornet.chat.multiline
-				textarea.form-control(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+				textarea.form-control.do-not-loose(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
 				button(type="submit")
 					+glyph('arrow-right')
 			else
-				+formControl()(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+				+formControl().do-not-loose(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
 				button(type="submit")
