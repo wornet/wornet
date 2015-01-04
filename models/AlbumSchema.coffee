@@ -18,6 +18,9 @@ albumSchema = BaseSchema.extend
 
 albumSchema.methods.refreshPreview = (save = false, done) ->
 	album = @
+	done ||= (err) ->
+		if err
+			warn err
 	Photo.find
 		album: album._id
 		status: 'published'

@@ -45,7 +45,13 @@ fieldset.tab(ng-show="status.containsMedias")
 					=s("Créer un album")
 		div(ng-switch-when="add")
 			.col-xs-6.fit
-				h4.glued.big-line {{ currentAlbum.name }}
+				h4.glued.big-line
+					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
+						+glyph('folder-open')
+						|&nbsp; {{ currentAlbum.name }}
+					span(ng-if="! currentAlbum._id")
+						+glyph('folder-open')
+						|&nbsp; {{ currentAlbum.name }}
 			.col-xs-6.fit
 				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
 					=s("Sélectionner un autre album")

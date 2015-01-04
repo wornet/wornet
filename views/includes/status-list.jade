@@ -1,4 +1,4 @@
-.status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}")
+.status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}" ng-if="(status.images && status.images.length) || (status.links && status.links.length) || (status.videos && status.videos.length) || (status.content && status.content.length)")
 	//- .nostyle(data-starpush="{{ status._id }}")
 	.aside.continue
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
@@ -35,7 +35,7 @@
 					|&nbsp; {{ status.albumName }}
 			h3(ng-if="! status.album")
 				=s("Images")
-			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image, status, image._id)")
+			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
 				img(ng-src="{{ image.src }}" alt="{{ image.name }}")
 		div(ng-if="status.videos.length > 0")
 			h3=s("Vidéos")
