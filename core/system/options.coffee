@@ -360,8 +360,11 @@ module.exports = (app, port) ->
 				if typeof @ is 'undefined'
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
-					if data.err instanceof Error and config.env.development
-						data.stack = data.err.stack
+					if data.err instanceof Error
+						if equals data.err, "Error: CSRF token mismatch"
+							data.csrfBroken = true
+						if config.env.development
+							data.stack = data.err.stack
 					data.err = strval(data.err || s("Erreur inconnue"))
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
