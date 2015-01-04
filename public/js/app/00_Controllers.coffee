@@ -329,7 +329,34 @@ Controllers =
 				return
 			return
 
-		$scope.loadMedia = (type, media) ->
+		deletableMedia = null
+		$scope.deleteMedia = ->
+			if deletableMedia
+				$('#media-viewer [data-dismiss]:first').click()
+				s = textReplacements
+				bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce média de son album et de son statut ?"), (ok) ->
+					if ok
+						media = $.extend {}, deletableMedia
+						key = (media.type || 'image') + 's'
+						if media.mediaId and media.status and media.status[key]
+							media.status[key] = media.status[key].filter (val) ->
+								val._id isnt media.mediaId
+							refreshScope statusScope
+						showLoader()
+						Ajax.delete '/user/media',
+							data: media
+							success: ->
+								deletableMedia = null
+								unless media.mediaId
+									location.reload()
+								hideLoader()
+							error: ->
+								serverError()
+								hideLoader()
+					return
+			return
+
+		$scope.loadMedia = (type, media, status, mediaId) ->
 			media = $.extend
 				first: true
 				last: true
@@ -338,6 +365,11 @@ Controllers =
 			if type is 'image'
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 			id = idFromUrl media.src
+			deletableMedia =
+				id: id
+				type: type
+				status: status || null
+				mediaId: mediaId || null
 			testSize = ->
 				$mediaViewer = $ '#media-viewer'
 				$img = $mediaViewer.find 'img.big'
@@ -392,8 +424,8 @@ Controllers =
 			refreshScope $scope
 			return
 
-		window.loadMedia = (type, media) ->
-			$scope.loadMedia type, media
+		window.loadMedia = (type, media, status, mediaId) ->
+			$scope.loadMedia type, media, status, mediaId
 			delay 1, ->
 				$('#media-viewer').modal()
 				return

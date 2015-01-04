@@ -124,11 +124,13 @@ module.exports =
 	###
 	Unlink file and handle errors
 	###
-	unlink: (file) ->
+	unlink: ->
+		params = Array.prototype.slice.call arguments
+		params[1] ||= (err) ->
+			if err
+				warn err
 		try
-			fs.unlink file, (err) ->
-				if err
-					warn err
+			fs.unlink.apply fs, params
 		catch err
 			warn err
 	###
@@ -825,6 +827,25 @@ module.exports =
 		null
 
 	###
+	Base 64 encode
+	@param string
+
+	@return string encoded
+	###
+	btoa: (a) ->
+		a.toString 'base64'
+
+	###
+	Base 64 encode
+	@param string
+
+	@return string encoded
+	###
+	atob: (a) ->
+		b = new Buffer a, 'base64'
+		b.toString()
+
+	###
 	Generate an asset URL (style, script, image, etc.) and append a version cache
 	to avoid to have to clear the browser cache
 	@param string file name
@@ -852,7 +873,7 @@ module.exports =
 					when 'js' then type = 'text/javascript'
 					when 'js' then type = 'text/style'
 					else type = 'image/' + extension.replace 'jpg', 'jpeg'
-				"data:" + type + ";base64," + fs.readFileSync(source).toString 'base64'
+				"data:" + type + ";base64," + btoa fs.readFileSync source
 			else
 				if config.env.development
 					version = stat.mtime.getTime()

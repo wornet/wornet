@@ -8,25 +8,40 @@ do (s = textReplacements) ->
 
 	# Display a loading animation when page is loading
 	window.onbeforeunload = ->
-		$('.loader:last').css('z-index', 99999).removeClass 'preload'
+		somethingWaiting = $.xhrPool.isWaiting() or do ->
+			allEmpty = true
+			$('.do-not-loose').each ->
+				if $(@).val()
+					allEmpty = false
+					false
+				else
+					true
+			! allEmpty
+		if somethingWaiting
+			return s("Attention, des modifications n'ont pas encore été sauvegardées.")
+		else
+			$.xhrPool.abortAll()
+			showLoader()
 		return
 
-	$(window).on "offline", ->
-		$('.errors').warnings s("Attention, vous n'êtes plus connecté à Internet")
+	$(window)
+		.on "offline", ->
+			$('.errors').warnings s("Attention, vous n'êtes plus connecté à Internet")
 
-	$(window).on "online", ->
-		$('.errors').infos s("Connexion Internet rétablie")
+		.on "online", ->
+			$('.errors').infos s("Connexion Internet rétablie")
 
 	window.bootboxTexts ||= en: {}
-	bootboxTexts.en =
+	texts = bootboxTexts
+	texts.en =
 		OK: s("Oui")
 		CANCEL: s("Non")
 		CONFIRM: s("Oui")
 	window.confirmButtons = (callback) ->
 		no:
-			label: bootboxTexts.en.CANCEL
+			label: texts.en.CANCEL
 		yes:
-			label: bootboxTexts.en.OK
+			label: texts.en.OK
 			callback: callback
 	return
 

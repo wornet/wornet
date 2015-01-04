@@ -36,12 +36,11 @@ for size in config.wornet.thumbSizes
 	photoSchema.virtual('thumb' + size).get ->
 		photoSrc.call @, size + 'x'
 
-photoSchema.pre 'remove', (next) ->
+photoSchema.post 'remove', ->
 	photoDirectory = __dirname + '/../public/img/photo/'
 	unlink photoDirectory + @id + '.jpg'
 	for size in config.wornet.thumbSizes
 		unlink photoDirectory + size + 'x' + @id + '.jpg'
-	next()
 
 
 module.exports = photoSchema

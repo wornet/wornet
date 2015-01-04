@@ -306,3 +306,8 @@ idFromUrl = (url) ->
 		null
 	else
 		id
+
+showLoader = ->
+	$('.loader:last').css('z-index', 99999).removeClass 'preload'
+hideLoader = ->
+	$('.loader:last').css('z-index', '').addClass 'preload'
