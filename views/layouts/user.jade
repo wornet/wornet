@@ -17,7 +17,7 @@ mixin friends(classes)
 		ul.dropdown-menu(role='menu' ng-controller="ProfileCtrl")
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
-					li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
+					li: a(ng-click="chatWith(" + JSON.stringify(friend.publicInformations()) + ")")
 						img.thumb(src=friend.thumb50 alt=friend.name.full)
 						| &nbsp; 
 						=friend.name.full

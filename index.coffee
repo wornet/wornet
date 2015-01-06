@@ -61,8 +61,21 @@ onready ->
 
 	# Secure with basic authentification in requiered in config
 	if config.basicAuth
+		saveUser = null
+		app.use (req, res, next) ->
+			if req.user
+				saveUser = req.user
+			next()
 		basicAuth = require 'basic-auth-connect'
 		app.use basicAuth config.basicAuth.username, config.basicAuth.password
+		app.use (req, res, next) ->
+			if typeof(req.user) is 'string'
+				req.username = req.user
+				if saveUser
+					req.user = saveUser
+				else
+					delete req.user
+			next()
 
 	# Make functions and config usables in views
 	extend app.locals, functions
