@@ -84,6 +84,23 @@ module.exports = (app) ->
 				res.header 'access-control-allow-methods', 'GET'
 			done()
 		else
+			# Secure with basic authentification in requiered in config
+			if config.basicAuth
+				saveUser = null
+				if req.user
+					saveUser = req.user
+				do (req, res, next) ->
+					basicAuth = require 'basic-auth-connect'
+					step = basicAuth config.basicAuth.username, config.basicAuth.password
+					step req, res, ->
+						if typeof(req.user) is 'string'
+							req.username = req.user
+							if saveUser
+								req.user = saveUser
+							else
+								delete req.user
+						next()
+				return
 			unless req.xhr
 				if req.getHeader('host') is 'www.beta.wornet.fr'
 					res.redirect config.wornet.protocole +  '://beta.wornet.fr' + req.url
