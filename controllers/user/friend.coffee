@@ -10,7 +10,7 @@ module.exports = (router) ->
 			if empty data.err
 				req.flash 'friendAsked', s("Demande envoyée à " + escape(req.params.name))
 			else
-				req.flash 'profileError', s("Erreur : " + data.err)
+				req.flash 'profileErrors', s("Erreur : " + data.err)
 			res.redirect '/user/profile/' + encodeURIComponent(id) + '/' + encodeURIComponent(req.params.name)
 
 	# With AJAX

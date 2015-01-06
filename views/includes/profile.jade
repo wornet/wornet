@@ -40,8 +40,9 @@
 							option(value="")
 								=userTexts.noDisplay
 							each status in profile.schema.path(name).enumValues
-								option(selected=(profile[name] === status) value=status)
-									=userTexts[status]
+								if status
+									option(selected=(profile[name] === status) value=status)
+										=userTexts[status]
 				+profileText("city")
 				+profileText("birthCity")
 				+profileText("job")

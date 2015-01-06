@@ -102,25 +102,107 @@ module.exports = (router) ->
 					auth.auth req, res, user
 					url = '/user/welcome'
 					res.redirect if user then '/user/welcome' else signinUrl
-					confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-					confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-					MailPackage.send user.email, s("Bienvenue sur Wornet"), confirmUrl, '<a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
+					unless user.role is 'confirmed'
+						confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+						confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+						console['log'] ['confirm link', user.email, user._id, confirmUrl]
+						message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
+						MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
 
-	pm.page '/forgotten-password'
+	forgottenPasswordUrl = '/forgotten-password'
 
-	pm.page '/forgotten-password', null, 'post'
+	pm.page forgottenPasswordUrl, (req) ->
+		resetPasswordAlerts: req.getAlerts 'resetPassword'
+
+	router.post forgottenPasswordUrl, (req, res) ->
+		fail = ->
+			req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
+			res.redirect req.originalUrl
+		User.findOne email: req.body.email, (err, user) ->
+			if ! err and user
+				ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
+					if err
+						warn err
+					ResetPassword.find user: user.id, (err, tokens) ->
+						if err or tokens.length > 1
+							fail()
+						else
+							ResetPassword.create user: user.id, (err, reset) ->
+								if err
+									fail()
+								else
+									resetUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+									resetUrl += '/user/reset-password/' + user.hashedId + '/' + reset.token
+									message = s("Si vous souhaitez choisir un nouveau mot de passe pour votre compte Wornet {email}, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", email: user.email)
+									console['log'] ['reset link', user.email, user._id, resetUrl]
+									MailPackage.send user.email, s("Réinitialisation de mot de passe"), message + '\n\n' + resetUrl, message + '<br><br><a href="' + resetUrl + '">' + s("Réinitialiser le mot de passe de mon compte") + '</a>'
+									req.flash 'resetPasswordSuccess', s("Un mail vous permettant de choisir un nouveau mot de passe vous a été envoyé.")
+									res.redirect req.originalUrl
+			else
+				fail()
+
+	resetPasswordUrl = '/reset-password/:user/:token'
+
+	router.get resetPasswordUrl, (req, res) ->
+		userId = cesarRight req.params.user
+		ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
+			if err
+				warn err
+			ResetPassword.findOne
+				user: userId
+				token: req.params.token
+			, (err, reset) ->
+				if reset and ! err
+					res.render 'user/reset-password', resetPasswordAlerts: req.getAlerts 'resetPassword'
+				else
+					res.serverError new PublicError s("Lien invalide ou expiré")
+
+	router.post resetPasswordUrl, (req, res) ->
+		fail = (err) ->
+			req.flash 'resetPasswordErrors', err
+			res.redirect req.originalUrl
+		if empty(req.body.password) or empty(req.body.passwordCheck)
+			fail s("Veuillez entrer votre nouveau mot de passe dans les deux champs.")
+		else if req.body.password isnt req.body.passwordCheck
+			fail UserErrors.INVALID_PASSWORD_CONFIRM
+		else
+			userId = cesarRight req.params.user
+			ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
+				if err
+					warn err
+				ResetPassword.findOne
+					user: userId
+					token: req.params.token
+				, (err, reset) ->
+					if reset and ! err
+						User.findById userId, (err, user) ->
+							if user and ! err
+								user.password = req.body.password
+								user.save (err) ->
+									if err
+										if err and strval(err).indexOf('ValidationError:') is 0
+											fail s("Format du mot de passe incorrect")
+										else
+											fail err
+									else
+										auth.auth req, res, user
+										req.flash 'profileSuccess', s("Mot de passe modifié avec succès.")
+										res.redirect '/'
+										reset.remove()
+							else
+								fail s("Lien invalide ou expiré")
+					else
+						fail s("Lien invalide ou expiré")
 
 	pm.page '/welcome', (req) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
 	pm.page '/settings', (req) ->
-		settingsAlerts:
-			danger: req.flash 'settingsError'
-			success: req.flash 'settingsSuccess'
+		settingsAlerts: req.getAlerts 'settings'
 		userTexts: userTexts()
 
 	router.post '/settings', (req, res) ->
@@ -139,13 +221,13 @@ module.exports = (router) ->
 			else
 				if err
 					if err instanceof PublicError
-						req.flash 'settingsError', err.toString()
+						req.flash 'settingsErrors', err.toString()
 					else
 						switch err.code
 							when 11000
-								req.flash 'settingsError', s("Adresse e-mail non disponible.")
+								req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
 							else
-								req.flash 'settingsError', s("Erreur d'enregistrement.")
+								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
 				else
 					extend req.user, userModifications
 					extend req.session.user, userModifications

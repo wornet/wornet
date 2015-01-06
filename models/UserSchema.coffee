@@ -29,7 +29,7 @@ userSchema = BaseSchema.extend
 			generateSalt 50
 	role:
 		type: String
-		default: 'user'
+		default: 'confirmed'
 		enum: [
 			'user'
 			'confirmed'
@@ -380,6 +380,9 @@ userSchema.pre 'remove', (next) ->
 	], [
 		MessageRecipient
 		recipient: @id
+	], [
+		ResetPassword
+		user: @id
 	], next
 
 

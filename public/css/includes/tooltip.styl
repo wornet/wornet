@@ -13,15 +13,19 @@
 	display none
 	width $tooltipWidth
 
-.tooltip.tooltip-focus .tooltip-arrow
-	top 15px
+.tooltip.tooltip-focus.left .tooltip-arrow
+.tooltip.tooltip-focus.right .tooltip-arrow
 	margin-right -5px
+	top 15px
 
 .tooltip-focus.left
 	margin-left - $tooltipWidth - $mainPadding
 
 .tooltip-focus.right
 	right $mainPadding - $tooltipWidth
+
+.tooltip.tooltip-focus.bottom
+	margin-top 28px
 
 .tooltip-inner
 	padding 0

@@ -6,7 +6,8 @@ block inner-nav
 		ul.nav.navbar-nav.navbar-right
 			li.dropdown
 				a.dropdown-toggle(href="/" data-toggle="dropdown")
-					=s("Vous avez déjà un compte ? Connectez-vous !")
+					block home-link-text
+						=s("Vous avez déjà un compte ? Connectez-vous !")
 
 
 block body
