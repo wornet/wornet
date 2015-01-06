@@ -15,7 +15,7 @@ module.exports = (router) ->
 		next = ->
 			updateUser req.user, userModifications, (err) ->
 				if err
-					req.flash 'profileError', err
+					req.flash 'profileErrors', err
 				else
 					extend req.user, userModifications
 					extend req.session.user, userModifications
@@ -40,7 +40,7 @@ module.exports = (router) ->
 						userModifications['thumb' + size] = photo['thumb' + size]
 					PhotoPackage.forget req, photo.id
 				else
-					req.flash 'profileError', s("La photo a expirée, veuillez la ré-envoyer.")
+					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
 					delete userModifications.photoId
 				next()
 		else

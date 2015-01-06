@@ -95,7 +95,7 @@ do (d = Date) ->
 		else
 			s("Il y a {seconds} secondes", { seconds: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 1000)) })
 	d.prototype.humanDateTime = (plain) ->
-		if plain or @ < (new d).yesterday().midnight()
+		if plain or @ < d.yesterday().midnight()
 			@toString s("DD/MM/YYYY à HH:ii")
 		else if @ < (new d).midnight()
 			s("Hier à {time}", { time: @toString(s("HH:ii")) })
@@ -118,5 +118,7 @@ do (d = Date) ->
 		(new d).log()
 	d.fromId = (id) ->
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
+	d.yesterday = ->
+		(new d).yesterday()
 	d.year = ->
 		(new d).getFullYear()

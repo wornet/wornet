@@ -43,6 +43,8 @@ exports.logout = (req, res) ->
 
 # Store user in session, and append to the request object
 exports.auth = (req, res, user) ->
+	unless user
+		throw new Error 'Missing user, auth.auth() excpect 3 parameters: request, response, user object'
 	user = objectToUser user
 	res.locals.user = user
 	req.user = user
@@ -130,6 +132,7 @@ exports.isAuthenticated = (req, res, next) ->
 
 				whitelist = [
 					"/user/forgotten-password"
+					"/user/reset-password"
 					"/user/login"
 					"/user/signin"
 				]

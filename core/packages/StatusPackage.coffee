@@ -37,7 +37,7 @@ StatusPackage =
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0
-					.limit 10
+					.limit 100
 					.sort date: 'desc'
 					.select '_id date author at content status images videos links album albumName'
 					.exec (err, recentStatus) ->
