@@ -659,15 +659,15 @@ module.exports =
 			next()
 		else
 			defaultName = s("Photos de profil")
-			Album.findOne name: defaultName, (err, album) ->
+			albumProperties =
+				user: req.user.id
+				name: defaultName
+			Album.findOne albumProperties, (err, album) ->
 				if album
 					albumId = album.id
 					next album
 				else
-					Album.create
-						user: req.user.id
-						name: defaultName
-					, (err, album) ->
+					Album.create albumProperties, (err, album) ->
 						if err
 							done err
 						else
