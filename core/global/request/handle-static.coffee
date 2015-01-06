@@ -19,10 +19,13 @@ module.exports = (app) ->
 		res.on 'finish', ->
 			clearTimeout res.excedeedTimeout
 
+		basicAuth = config.basicAuth || null
 		if req.connection.remoteAddress is '127.0.0.1'
+			basicAuth = null
 			switch req.url
 				when '/status'
 					return res.end 'OK'
+		else
 
 		next = ->
 			# Parse body from requests
@@ -85,14 +88,12 @@ module.exports = (app) ->
 			done()
 		else
 			# Secure with basic authentification in requiered in config
-			if config.basicAuth
+			if basicAuth
 				saveUser = null
 				if req.user
 					saveUser = req.user
 				do (req, res, next) ->
-					basicAuth = require 'basic-auth-connect'
-					step = basicAuth config.basicAuth.username, config.basicAuth.password
-					step req, res, ->
+					(require 'basic-auth-connect')(basicAuth.username, basicAuth.password) req, res, ->
 						if typeof(req.user) is 'string'
 							req.username = req.user
 							if saveUser
