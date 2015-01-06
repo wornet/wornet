@@ -59,6 +59,11 @@ onready ->
 
 	# When no more directory need to be loaded
 
+	# Secure with basic authentification in requiered in config
+	if config.basicAuth
+		basicAuth = require 'basic-auth-connect'
+		app.use basicAuth config.basicAuth.username, config.basicAuth.password
+
 	# Make functions and config usables in views
 	extend app.locals, functions
 	extend app.locals,
@@ -96,6 +101,15 @@ onready ->
 			files.forEach (file) ->
 				require file
 
+	listen = (port) ->
+
+		app.listen port, (err) ->
+			if err
+				throw err
+			else
+				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
+
+
 	# Handle errors and print in the console
 	if config.port is 443
 
@@ -105,22 +119,9 @@ onready ->
 			else
 				res.redirect 'https://' + req.hostname + req.url
 
-		app.listen 80, (err) ->
-			if err
-				throw err
-			else
-				console['log'] '[%s] Redirect on http://localhost:%d', app.settings.env, 80
-
-		app.listen 443, (err) ->
-			if err
-				throw err
-			else
-				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, 443
+		listen 80
+		listen 443
 	else
-		app.listen port, (err) ->
-			if err
-				throw err
-			else
-				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
+		listen port
 
 exports = module.exports = app
