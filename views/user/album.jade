@@ -10,5 +10,5 @@ block body
 		.medias
 			each image in photos
 				a(data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image])
-					img(src=image.photo alt=image.name)
+					img(src=image.thumb50 alt=image.name)
 			.cb
