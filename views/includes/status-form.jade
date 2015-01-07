@@ -12,7 +12,7 @@ mixin statusForm(tabindex)
 				placeholder=s("Quoi de neuf ?")
 			)
 			span.input-group-btn
-				input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Envoyer")).btn
+				input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Publier")).btn
 
 ul.nav.nav-tabs(role="tablist")
 	li(ng-click="status.containsMedias = false" ng-class="{ active: ! status.containsMedias }")

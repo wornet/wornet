@@ -3,9 +3,15 @@
 module.exports = (router) ->
 
 	router.get '/recent/:id', (req, res) ->
-		StatusPackage.getRecentStatusForRequest req, res, req.params.id
+		StatusPackage.getRecentStatusForRequest req, res, req.params.id, chat: []
 
 	router.get '/recent', (req, res) ->
+		StatusPackage.getRecentStatusForRequest req, res, null, chat: []
+
+	router.get '/and/chat/:id', (req, res) ->
+		StatusPackage.getRecentStatusForRequest req, res, req.params.id
+
+	router.get '/and/chat', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res
 
 	router.delete '/:id', (req, res) ->

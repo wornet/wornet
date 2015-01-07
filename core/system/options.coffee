@@ -230,6 +230,8 @@ module.exports = (app, port) ->
 			getUsersByIds: (ids, done, searchInDataBase = true) ->
 				currentUser = @user
 				ids = ids.map strval
+				if ids.contains 'undefined'
+					throw new Error 'ids must not contain undefined'
 				idsToFind = []
 				usersMap = {}
 				req = @
@@ -297,10 +299,9 @@ module.exports = (app, port) ->
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err
 					model.err = err
-					model.httpStatus = val
+					model.statusCode = val
 					@status val
 					if @isJSON
-						model.statusCode = val
 						@json model
 					else
 						@render 'errors/' + val, model

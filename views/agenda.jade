@@ -7,8 +7,6 @@ block body
 	else
 		.container(ng-app)
 			section#directives-calendar(ng-controller='CalendarCtrl')
-				=uid
-				- console.log([user, user.openedShutter])
 				.well(class=(user.openedShutter ? "col-xs-9" : false)): .row-fluid
 					.col-sm-5
 						.btn-group.calTools
