@@ -396,6 +396,7 @@ $.each [
 		'.open-shutter'
 		($a, e) ->
 			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
+			$('#directives-calendar > .well').toggleClass 'col-xs-9'
 			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
 			delay 200, ->
 				$a.blur()
