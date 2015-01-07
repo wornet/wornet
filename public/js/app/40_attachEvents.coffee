@@ -80,7 +80,7 @@ $.each [
 	]
 	[
 		'click'
-		'[data-view-src], [data-view]'
+		'[data-view-src]'
 		($img) ->
 			loadMedia 'image',
 				src: $img.data('view-src') || $img.prop('src')

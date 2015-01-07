@@ -6,7 +6,7 @@
 					=friendAsked
 		.photo-options
 			#profile-photo
-				img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view alt=profile.fullName)
+				img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view-src=profile.photo alt=profile.fullName)
 			if isMe && profile.photoId
 				.btn(ng-click="deletePhoto($event)")
 					=s("Supprimer ma photo")

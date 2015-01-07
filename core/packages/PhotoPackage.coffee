@@ -58,7 +58,7 @@ PhotoPackage =
 		else
 			done new PublicError s("Non autorisé")
 
-	fromAlbum: (id, done, columns = 'id photo name') ->
+	fromAlbum: (id, done, columns = 'id photo thumb50 name') ->
 		if done instanceof Array
 			_done = columns
 			columns = done

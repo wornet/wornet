@@ -12,6 +12,12 @@ module.exports = (app, port) ->
 	cookiesInit = ->
 		cookieParser.apply app, config.middleware.cookieParser.module.arguments
 
+	# Trace the error in log when user(s) are not found
+	someUsersNotFound = ->
+		err = new PublicError s("Impossible de trouver tous les utilisateurs")
+		warn err
+		err
+
 	app.on 'middleware:after:session', (eventargs) ->
 		# Flash session (store data in sessions to the next page only)
 		app.use flash()
@@ -192,7 +198,7 @@ module.exports = (app, port) ->
 				@cache 'friends', (done) ->
 					user.getFriends (err, friends, friendAsks) ->
 						done err, [friends, friendAsks]
-				, (err, result, cached) ->
+				, (err, result) ->
 					if err
 						done err, {}, {}
 					else
@@ -251,22 +257,21 @@ module.exports = (app, port) ->
 										err = (if otherUsers.length is idsToFind.length
 											null
 										else
-											new PublicError s("Impossible de trouver tous les utilisateurs")
+											someUsersNotFound()
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
 											true
 										done err, usersMap, true
 							else
-								err = new PublicError s("Impossible de trouver tous les utilisateurs")
-								done err, null, false
+								done someUsersNotFound(), null, false
 						else
 							done null, usersMap, false
 			# get user from friends, me, or from database
 			getUserById: (id, done, searchInDataBase = true) ->
 				@getUsersByIds [id], (err, usersMap) ->
 					if err or ! usersMap or ! usersMap[id]
-						done new PublicError s("Impossible de trouver l'utilisateur demandé")
+						done someUsersNotFound()
 					else
 						done null, usersMap[id]
 

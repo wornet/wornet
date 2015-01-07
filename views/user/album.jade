@@ -9,6 +9,6 @@ block body
 		p=album.description
 		.medias
 			each image in photos
-				a(data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image])
+				a(data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
 					img(src=image.thumb50 alt=image.name)
 			.cb

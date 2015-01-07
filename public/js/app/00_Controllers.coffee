@@ -367,8 +367,9 @@ Controllers =
 					return
 			return
 
-		$scope.loadMedia = (type, media) ->
+		$scope.loadMedia = (type, media, concernMe) ->
 			media = $.extend
+				concernMe: concernMe
 				first: true
 				last: true
 			, media
@@ -435,8 +436,8 @@ Controllers =
 			refreshScope $scope
 			return
 
-		window.loadMedia = (type, media) ->
-			$scope.loadMedia type, media
+		window.loadMedia = (type, media, concerMe) ->
+			$scope.loadMedia type, media, concerMe
 			delay 1, ->
 				$('#media-viewer').modal()
 				return
@@ -601,6 +602,7 @@ Controllers =
 					for key in ['images', 'links', 'videos']
 						$.each status[key], ->
 							@statusId = status._id
+							@concernMe = status.concernMe
 					status.content = richText status.content
 					status
 				refreshScope $scope
