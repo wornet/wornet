@@ -123,12 +123,12 @@ NoticePackage =
 							if notification[1].deleteFriendAsk?
 								delete req.user.friendAsks[notification[1].deleteFriendAsk]
 								req.session.user.friendAsks = req.user.friendAsks
-								req.session.user.notifications = req.session.user.notifications.filter (data) ->
+								req.session.user.notifications = (req.session.user.notifications || []).filter (data) ->
 									if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
 										true
 									else
 										data[1].hashedId isnt cesarRight userId
-								req.user.notifications = notifications
+								req.user.notifications = req.session.user.notifications
 								delete notification[1].deleteFriendAsk
 							if notification[1].addFriend?
 								req.addFriend notification[1].addFriend
@@ -137,7 +137,10 @@ NoticePackage =
 					data.notifyStatus = if err then self.ERROR else self.OK
 					if err
 						data.err = err
-					res.json data
+					req.session.save (err) ->
+						if err
+							throw err
+						res.json data
 			if id
 				self.timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
 					req.session.reload (err) ->
