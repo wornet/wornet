@@ -16,14 +16,19 @@ block body
 					span
 						=userTexts.lastName
 					+formControl(name="name.last" value=user.lastName)
+				hr.cb
 				label
 					span
 						=userTexts.email
-					+formControl(name="email" value=user.email pattern=pattern('email'))
+					+formControl(autocomplete="off" name="email" value=user.email pattern=pattern('email'))
 				label
 					span
-						=userTexts.password
-					+formControl("password")(name="password" placeholder=userTexts.password)
+						=s("Changement de mot de passe")
+						br
+						small: i
+							=s("Si vide, pas de changement de mot de passe.")
+					+formControl("password")(autocomplete="off" name="password" placeholder=userTexts.password)
+				hr.cb
 				//- Privacy
 				label
 					span
