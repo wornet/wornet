@@ -82,7 +82,7 @@ block nav
 		nav#underbar.nav.navbar.cb
 			+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
 			+form("{{ query.action }}")(ng-controller="SearchCtrl" role="search" ng-submit="search(query)").loading.navbar-form.navbar-left.col-sm-4.col-xs-12
-				label
+				label.search
 					+formControl()(
 						ng-model="query.content"
 						ng-change="change(query)"
