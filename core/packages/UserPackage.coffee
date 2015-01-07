@@ -4,7 +4,7 @@ UserPackage =
 
 	search: ->
 		for arg in arguments
-			if arg instanceof ObjectId
+			if arg instanceof mongoose.Types.ObjectId
 				exclude = [arg]
 			else if arg instanceof Array
 				exclude = arg

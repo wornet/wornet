@@ -208,6 +208,33 @@ Controllers =
 			refreshScope $scope
 			return
 
+		$scope.$on 'all', (e, users, message) ->
+			modified = false
+			ids = (user.hashedId for user in users)
+			id = ids.join ','
+			if chats[id]
+				currentChat = chats[id]
+				unless chats[id].open
+					chats[id].open = true
+					modified = true
+			else
+				currentChat =
+					open: true
+					users: users
+					messages: []
+				chats[id] = currentChat
+				modified = true
+			if chat.minimized?
+				delete chat.minimized
+				modified = true
+			if message
+				currentChat.messages.push message
+				modified = true
+			if modified
+				saveChats chats
+			refreshScope $scope
+			return
+
 		$scope.close = (chat) ->
 			chat.open = false
 			saveChats chats
@@ -588,7 +615,11 @@ Controllers =
 			scannAllLinks safeHtml(text), true
 
 		setRecentStatus = (data) ->
-			if data.recentStatus and typeof data.recentStatus is 'object' and data.recentStatus.length
+			has = (key) ->
+				data[key] and typeof data[key] is 'object' and data[key].length
+			if has 'chat'
+				chatService.all data.chat
+			if has 'recentStatus'
 				$scope.recentStatus = data.recentStatus.map (status) ->
 					status.images.sort (a, b) ->
 						a = (idFromUrl a.src) || a._id
@@ -719,7 +750,12 @@ Controllers =
 		$scope.status = containsMedias: false
 		$scope.media = step: null
 
-		Ajax.get '/user/status/recent' + (if at then '/' + at else ''), setRecentStatus
+		select = if window.sessionStorage and sessionStorage.chats
+			'recent'
+		else
+			'and/chat'
+
+		Ajax.get '/user/status/' + select + (if at then '/' + at else ''), setRecentStatus
 
 		getAlbums (err, albums) ->
 			unless err

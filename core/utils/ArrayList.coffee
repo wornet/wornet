@@ -11,10 +11,17 @@ getKeys = (keys, value = null) ->
 		keys[key] = value
 	keys
 
+differ = (a, b) ->
+	if a instanceof mongoose.Types.ObjectId
+		a = strval a
+	if b instanceof mongoose.Types.ObjectId
+		b = strval b
+	a isnt b
+
 objectMatch = (obj, keys) ->
 	if typeof obj is 'object'
-		for key, val of keys 
-			if typeof obj[key] is 'undefined' or obj[key] isnt val
+		for key, val of keys
+			if typeof obj[key] is 'undefined' or differ obj[key], val
 				return false
 	true
 
@@ -91,6 +98,12 @@ ArrayList =
 		@each ->
 			list.push @[key]
 		list
+
+	merge: (values) ->
+		if @ instanceof Array
+			Array.prototype.push.apply @, values
+		else
+			extend @, values
 
 	getLength: ->
 		if @ instanceof Array

@@ -7,9 +7,18 @@ StatusPackage =
 		@getRecentStatus req, res, id, data, onProfile
 
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
+		next = ->
+			if data.recentStatus and data.chat
+				res.json data
+		unless data.chat
+			ChatPackage.all req, (err, chat) ->
+				if err
+					warn err
+				else
+					data.chat = chat
+					next()
 		req.getFriends (err, friends, friendAsks) ->
 			id = req.getRequestedUserId id
-			me = req.user.id
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.copy()
 			connectedPeopleAndMe.push req.user.id
@@ -49,6 +58,8 @@ StatusPackage =
 							if recentStatus and typeof recentStatus is 'object'
 								add = (val) ->
 									val = strval val
+									if val is 'undefined'
+										throw new Error 'val must not be undefined'
 									unless missingIds.contains val
 										missingIds.push val
 								recentStatus.each ->
@@ -68,18 +79,18 @@ StatusPackage =
 											status.author = usersMap[strval @author].publicInformations()
 											if @at
 												status.at = usersMap[strval @at].publicInformations()
-											status.concernMe = [@at, @author].contains me, equals
+											status.concernMe = [@at, @author].contains req.user.id, equals
 											status.status = @status
 											if @status is 'blocked'
 												status.content = ''
 											recentStatusPublicData.push status
 											true
 										data.recentStatus = recentStatusPublicData
-										res.json data
+										next()
 								req.getUsersByIds missingIds, done #, searchInDataBase
 							else
 								data.recentStatus = recentStatusPublicData
-								res.json data
+								next()
 			else
 				warn [connectedPeopleAndMe, 'does not contains', id]
 				res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")

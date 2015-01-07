@@ -24,6 +24,9 @@ Wornet = angular.module 'Wornet', [
 		chatWith: (user, message) ->
 			$rootScope.$broadcast 'chatWith', user, message
 			return
+		all: (messages) ->
+			$rootScope.$broadcast 'all', messages
+			return
 	chatService
 ]
 
