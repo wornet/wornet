@@ -279,9 +279,18 @@ module.exports = (router) ->
 					res.notFound()
 				else if equals foundAlbum.user, req.user.id
 					album = foundAlbum
+					album.isMine = true
 					next()
 				else
-					res.serverError new PublicError s("Cet album est privé")
+					req.getFriends (err, friends) ->
+						if err
+							res.serverError err
+						else if friends.column('_id').contains(foundAlbum.user, equals)
+							album = foundAlbum
+							album.isMine = false
+							next()
+						else
+							res.serverError new PublicError s("Cet album est privé")
 			PhotoPackage.fromAlbum id, (err, foundPhotos) ->
 				if err
 					res.serverError err
