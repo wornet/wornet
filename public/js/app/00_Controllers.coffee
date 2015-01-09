@@ -208,30 +208,40 @@ Controllers =
 			refreshScope $scope
 			return
 
-		$scope.$on 'all', (e, users, message) ->
-			modified = false
-			ids = (user.hashedId for user in users)
-			id = ids.join ','
-			if chats[id]
-				currentChat = chats[id]
-				unless chats[id].open
-					chats[id].open = true
-					modified = true
-			else
-				currentChat =
-					open: true
-					users: users
-					messages: []
-				chats[id] = currentChat
-				modified = true
-			if chat.minimized?
-				delete chat.minimized
-				modified = true
-			if message
-				currentChat.messages.push message
-				modified = true
-			if modified
-				saveChats chats
+		$scope.$on 'all', (e, messages) ->
+			chats = getChats()
+			messageDates = []
+			usersToChats = {}
+			for id, chat of chats
+				for user in chat.users
+					usersToChats[user.hashedId] = id
+				for message in chat.messages
+					messageDates.push message.date
+			for message in messages
+				message.date = Date.fromId message.id
+				delete message.id
+				if messageDates.indexOf(message.date) is -1
+					if message.from
+						unless usersToChats[message.from.hashedId]
+							usersToChats[message.from.hashedId] = message.from.hashedId
+							chats[message.from.hashedId] =
+								users: [message.from]
+								messages: []
+						chat = chats[usersToChats[message.from.hashedId]]
+						chat.messages.push message
+						chat.open = true
+						chat.minimized = false
+					else if message.to
+						unless usersToChats[message.to.hashedId]
+							usersToChats[message.to.hashedId] = message.to.hashedId
+							chats[message.to.hashedId] =
+								users: [message.to]
+								messages: []
+						chat = chats[usersToChats[message.to.hashedId]]
+						chat.messages.push message
+						chat.open = true
+						chat.minimized = false
+			$scope.chats = saveChats chats
 			refreshScope $scope
 			return
 
