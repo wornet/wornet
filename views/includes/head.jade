@@ -18,12 +18,12 @@ block css
 		if typeof(style) === 'object'
 			if style[0] === 'non-ie'
 				+non-ie()
-					link(media="all" rel="stylesheet" href=style[1])
+					+style(href=style[1])
 			else
 				+ie(style[0])
-					link(media="all" rel="stylesheet" href=style[1])
+					+style(style[1])
 		else
-			link(media="all" rel="stylesheet" href=style)
+			+style(style)
 block link
 	link(rel="shortcut icon" href="/favicon.ico")
 block id

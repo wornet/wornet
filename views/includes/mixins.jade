@@ -15,8 +15,11 @@ mixin link(href, name)
 	a.link&attributes(attributes)(href=href)
 		=name
 
-mixin script(src, name)
+mixin script(src)
 	script(src=src)
+
+mixin style(href)
+	link(media="all" rel="stylesheet" href=href)
 
 mixin redirectHome()
 	p
