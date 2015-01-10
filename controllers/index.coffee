@@ -3,7 +3,7 @@
 module.exports = (router) ->
 
 
-	new PagesManager router
+	pm = new PagesManager router
 		.page '/newsroom'
 		.page '/jobs'
 		.page '/legals'
@@ -14,6 +14,8 @@ module.exports = (router) ->
 		res.end ''
 
 	if config.env.development
+		# Client-side tests
+		pm.page '/test'
 		# Emulate a long pending with demanded time
 		router.get '/pending/:time', (req, res) ->
 			time = intval req.params.time
