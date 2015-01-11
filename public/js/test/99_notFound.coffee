@@ -1,6 +1,4 @@
 
-# url '/not-found', (it) ->
-
 describe "Not found page", ->
 
 	w = null

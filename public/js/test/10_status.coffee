@@ -1,6 +1,4 @@
 
-# url '/', (it) ->
-
 describe "Mobile", ->
 
 	w = null
