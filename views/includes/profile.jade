@@ -48,11 +48,11 @@
 				+profileText("job")
 				+profileText("jobPlace")
 				+profileEnum("maritalStatus")
-				+profileEnum("loveInterest")
+				//- +profileEnum("loveInterest")
 				label
 					span
-						=s("Zone créative")
-					textarea.form-control(name="biography" maxlength="250")=profile.biography
+						=s("Biographie")
+					textarea.form-control.counter(name="biography" maxlength="250")=profile.biography
 				.btn-group
 					input(type="submit" value=s("Enregistrer")).btn
 				.btn-group

@@ -4,7 +4,7 @@ mixin statusForm(tabindex)
 	+form()(ng-submit="send(status)")
 		block
 		.input-group
-			+formControl().do-not-loose(
+			+formControl().do-not-loose.counter(
 				maxlength=config.wornet.limits.displayStatusLength
 				autofocus
 				tabindex=strval(tabindex+1)
@@ -31,7 +31,7 @@ fieldset.tab(ng-show="status.containsMedias")
 	div(ng-switch="media.step")
 		div(ng-switch-when="create-album")
 			+form()(ng-submit="createAlbum(album)")
-				+formControl().do-not-loose(required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
+				+formControl().do-not-loose.counter(required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
 				textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12
