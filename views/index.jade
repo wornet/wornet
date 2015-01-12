@@ -2,14 +2,8 @@ extends layouts/user
 
 block body
 	.col-sm-4.col-xs-12.pad-right
-		//- Friends
-		if isMe
-			include includes/friends.jade
-			include includes/asks-for-friend.jade
 		//- Users
 		include includes/users.jade
-		//- Photos/Videos
-		include includes/medias.jade
 	.col-sm-8.col-xs-12.pad-left
 		+alert(profileAlerts)
 		//- Publications
