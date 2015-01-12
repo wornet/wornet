@@ -462,6 +462,25 @@ $.each [
 			bootbox.alert $a.data 'click-alert'
 			cancel e
 	]
+	[
+		'keyup change'
+		'.counter'
+		($field) ->
+			val = $field.val() || ''
+			max = $field.prop 'maxlength'
+			$('.static-tooltip').remove()
+			if val and max
+				s = textReplacements
+				$field.before('<div class="static-tooltip"><div class="tooltip top"><div class="tooltip-arrow"></div><div class="tooltip-inner">' +
+				s("Caractères restants : {remains}", { remains: max - val.length }) +
+				'</div></div></div>')
+	]
+	[
+		'blur'
+		'.counter'
+		->
+			$('.static-tooltip').remove()
+	]
 
 ], ->
 	params = @
