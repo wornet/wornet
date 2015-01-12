@@ -4,9 +4,9 @@ module.exports = ->
 	fiance: s("Fiancé(e)")
 	married: s("Marié(e)")
 
-	men: s("H")
-	women: s("F")
-	both: s("Les deux")
+	men: s("Hommes")
+	women: s("Femmes")
+	both: s("Hommes et Femmes")
 
 	other: s("Autre")
 
