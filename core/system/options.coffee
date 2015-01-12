@@ -252,7 +252,7 @@ module.exports = (app, port) ->
 							true
 						if idsToFind.length > 0
 							if searchInDataBase
-								User.find id: $in: idsToFind, (err, otherUsers) ->
+								User.find _id: $in: idsToFind, (err, otherUsers) ->
 									if err
 										done err, null, true
 									else
