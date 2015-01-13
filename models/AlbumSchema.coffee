@@ -69,7 +69,6 @@ albumSchema.pre 'save', (next) ->
 				statusList.each ->
 					@albumName = name
 					@save()
-					true
 
 	next()
 

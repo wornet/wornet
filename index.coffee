@@ -36,8 +36,7 @@ process.on 'uncaughtException', (err) ->
 	if err.code is 'EADDRINUSE'
 		console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
 		throw err
-	console['warn'] 'Caught exception: ' + err
-	console['log'] err.stack || (new Error).stack
+	warn 'Caught exception: ' + err
 
 session = require('express-session')
 MemcachedStore = require('connect-memcached')(session)

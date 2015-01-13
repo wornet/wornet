@@ -177,7 +177,8 @@
             "albumShortNameLength": 20,
             "biographyLength": 140,
             "displayStatusLength": 614,
-            "realStatusLength": 1228
+            "realStatusLength": 1228,
+            "mailsAtOnce": 10
         },
 
         "mail": {

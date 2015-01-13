@@ -64,7 +64,6 @@ NoticePackage =
 					done()
 			else
 				done()
-			true
 		true
 
 	# Delete a notification if id is specified or all the notifications to a user if not

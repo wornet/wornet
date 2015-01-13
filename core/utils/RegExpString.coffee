@@ -1,13 +1,15 @@
 'use strict'
 
 simpleText = '[^><&\\n\\r\"]+'
+emailPattern = '[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.+_-]+\\.[a-zA-Z]{2,}'
 
 RegExpString =
 
 	simpleText: simpleText
 	fullname: simpleText + '(\\s' + simpleText + ')+'
 	phone: '(\\+\\d+(\\s|-))?0\\d(\\s|-)?(\\d{2}(\\s|-)?){4}'
-	email: '[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.+_-]+\\.[a-zA-Z]{2,}'
+	email: emailPattern
+	emailMultiple: emailPattern + '(\\s*,\\s*' + emailPattern + ')*'
 
 	get: (name) ->
 		name = name.replace /-([a-z])/g, (m) -> m[1].toUpperCase()

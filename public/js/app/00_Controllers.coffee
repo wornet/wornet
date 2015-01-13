@@ -559,12 +559,19 @@ Controllers =
 		return
 
 	SigninSecondStep: ($scope) ->
-		user = $.parseJSON sessionStorage['user']
+		try
+			user = $.parseJSON sessionStorage['user']
+		catch e
 		if user
 			if user.birthDate
 				user.birthDate = new Date user.birthDate
 			$scope.user = user
 		saveUser $scope
+		$scope.user ||= {}
+		unless $scope.user.email
+			value = $('input[ng-model="user.email"]').attr 'value'
+			if value
+				$scope.user.email = value
 
 		return
 
@@ -667,7 +674,8 @@ Controllers =
 				unless err
 					$scope.albums = albums
 					refreshScope $scope
-					setMediaAlbums albums
+					if window.setMediaAlbums
+						setMediaAlbums albums
 				return
 			return
 

@@ -34,6 +34,30 @@ module.exports = (router) ->
 				loginAlerts: req.getAlerts 'login' # Will be removed when errors will be displayed on the next step
 
 
+	# Invite friends to join Wornet
+	router.put '/invite', (req, res) ->
+		req.flash 'profileSuccess', s("Invitations envoyées")
+		res.redirect '/'
+		delay 1, ->
+			count = config.wornet.limits.mailsAtOnce
+			req.body.emails.split(/\s*,\s*/g).each ->
+				sended = null
+				if count--
+					subject = s("{name} vous invite à rejoindre Wornet", name: req.user.fullName)
+					signinUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+					signinUrl += '/user/signin/with/' + encodeURIComponent @
+					message = s("{name} vous invite à rejoindre Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", name: req.user.fullName)
+					MailPackage.send req.user.email, subject, message + '\n\n' + signinUrl, message + '<br><br><a href="' + signinUrl + '">' + s("Devenir un wornet") + '</a>'
+					sended = new Date
+				Invitation.create
+					host: req.user.id
+					email: @
+					sended: sended
+				, (err) ->
+					if err
+						warn err
+
+
 	# Report a non-appropriated content
 	router.get '/report/:status', (req, res) ->
 		if req.xhr

@@ -213,13 +213,13 @@ module.exports = (app, port) ->
 				@session.user.numberOfFriends = @session.user.friends.length
 			# delete a notification
 			deleteNotification: (id) ->
-				if req.session.user.notifications
+				if @session.user.notifications
 					notifications = []
-					for notification in req.session.user.notifications
+					for notification in @session.user.notifications
 						unless notification[0] is id
 							notifications.push notification
-					req.session.user.notifications = notifications
-					req.user.notifications = notifications
+					@session.user.notifications = notifications
+					@user.notifications = notifications
 					done null, notifications
 				else
 					done new PublicError s("Aucune notification")
@@ -249,7 +249,6 @@ module.exports = (app, port) ->
 								usersMap[@] = objectToUser user
 							else
 								idsToFind.push @
-							true
 						if idsToFind.length > 0
 							if searchInDataBase
 								User.find _id: $in: idsToFind, (err, otherUsers) ->
@@ -263,7 +262,6 @@ module.exports = (app, port) ->
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
-											true
 										done err, usersMap, true
 							else
 								done someUsersNotFound(), null, false

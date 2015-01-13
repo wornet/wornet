@@ -25,6 +25,8 @@ objectMatch = (obj, keys) ->
 				return false
 	true
 
+global.EACH_BREAK = 'EACH_BREAK'
+
 ArrayList =
 	copy: ->
 		if @ instanceof Array
@@ -42,19 +44,17 @@ ArrayList =
 			@each ->
 				if compare @, needle
 					result = true
-					false
-				else
-					true
+					EACH_BREAK
 			result
 
 	each: (callback) ->
 		if @ instanceof Array
 			for obj, i in @
-				if false is callback.call obj, i, obj
+				if EACH_BREAK is callback.call obj, i, obj
 					return false
 		else
 			for k, obj of @
-				if false is callback.call obj, k, obj
+				if EACH_BREAK is callback.call obj, k, obj
 					return false
 		true
 
@@ -64,7 +64,7 @@ ArrayList =
 		@each ->
 			if objectMatch @, keys
 				result = @
-				return false
+				EACH_BREAK
 		result
 
 	has: (keys, value = null) ->
@@ -87,7 +87,6 @@ ArrayList =
 				list[@] = self[@]
 			else
 				list.push self[@]
-			true
 		list
 
 	columns: (keys = null, preserveKeys = true) ->
