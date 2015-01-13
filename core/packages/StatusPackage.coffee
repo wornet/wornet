@@ -66,7 +66,6 @@ StatusPackage =
 									if @at
 										add @at
 									add @author
-									true
 								searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
 								done = (err, usersMap) ->
 									if err
@@ -84,7 +83,6 @@ StatusPackage =
 											if @status is 'blocked'
 												status.content = ''
 											recentStatusPublicData.push status
-											true
 										data.recentStatus = recentStatusPublicData
 										next()
 								req.getUsersByIds missingIds, done #, searchInDataBase
@@ -158,12 +156,10 @@ StatusPackage =
 												@refreshPreview true, ->
 													unless --count
 														done status
-												true
 										else
 											done status
 								else
 									done status
-						true
 				else
 					done status
 

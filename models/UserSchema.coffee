@@ -222,7 +222,6 @@ userSchema.methods.publicInformations = (thumbSizes = null) ->
 		thumbSizes = Array.prototype.slice.call arguments
 	thumbSizes.each ->
 		values.push 'thumb' + @
-		true
 	informations = @columns values
 	informations.name = @name.toObject()
 	informations.name.full = @name.full

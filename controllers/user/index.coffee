@@ -48,6 +48,11 @@ module.exports = (router) ->
 		# Get errors in flash memory (any if AJAX is used and works on client device)
 		signinAlerts: req.getAlerts 'signin' # Will be removed when errors will be displayed on the next step
 
+	router.get '/signin/with/:email', (req, res) ->
+		res.render 'user/signin',
+			email: req.params.email
+			signinAlerts: req.getAlerts 'signin'
+
 	# When user submit his e-mail and password to sign in
 	router.put '/signin', (req, res) ->
 
@@ -433,7 +438,6 @@ module.exports = (router) ->
 								next()
 				else
 					next()
-			true
 
 	router.delete '/photo', (req, res) ->
 		userModifications = {}

@@ -474,12 +474,24 @@ $.each [
 				$field.before('<div class="static-tooltip"><div class="tooltip top"><div class="tooltip-arrow"></div><div class="tooltip-inner">' +
 				s("Caractères restants : {remains}", { remains: max - val.length }) +
 				'</div></div></div>')
+			return
 	]
 	[
 		'blur'
 		'.counter'
 		->
 			$('.static-tooltip').remove()
+			return
+	]
+	[
+		'submit'
+		'form'
+		($form) ->
+			window.$lastForm = $form
+			delay 1000, ->
+				delete window.$lastForm
+				return
+			return
 	]
 
 ], ->

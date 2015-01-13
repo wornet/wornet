@@ -7,10 +7,14 @@ do (s = textReplacements) ->
 	window.SERVER_ERROR_DEFAULT_MESSAGE = s("Perte de la connexion internet. La dernière action n'a pas pu être effectuée.")
 
 	# Display a loading animation when page is loading
-	window.onbeforeunload = ->
+	window.onbeforeunload = (event) ->
+		window._e = event
 		somethingWaiting = $.xhrPool.isWaiting() or do ->
 			allEmpty = true
-			$('.do-not-loose').each ->
+			$selection = $ '.do-not-loose'
+			if window.$lastForm
+				$selection = $selection.not window.$lastForm.find '.do-not-loose'
+			$selection.each ->
 				if $(@).val()
 					allEmpty = false
 					false
@@ -34,7 +38,7 @@ do (s = textReplacements) ->
 	window.bootboxTexts ||= en: {}
 	texts = bootboxTexts
 	texts.en =
-		OK: s("Oui")
+		OK: s("OK")
 		CANCEL: s("Non")
 		CONFIRM: s("Oui")
 	window.confirmButtons = (callback) ->

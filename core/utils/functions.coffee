@@ -261,6 +261,18 @@ module.exports =
 					configurable: true
 
 	###
+	Return a stack trace as string or parse a given stack trace
+	@param string|Error error (optionnal)
+
+	@return string
+	###
+	trace: (message) ->
+		message ||= (new Error).stack
+		if config.debug and config.debug.skipJsFiles
+			message = strval(message).replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
+		message
+
+	###
 	Display a message or variable and stack trace if on a development environment
 	@param mixed message or vairbale to print in console log
 
@@ -268,11 +280,11 @@ module.exports =
 	###
 	log: (message) ->
 		if config.env.development
-			console['log'] '=========================='
-			console['log']  message
-			console['log'] '--------------------------\n' + Date.log()
-			console.trace()
-			console['log'] '=========================='
+			console['log'] '==========================' +
+			trace(message) +
+			'--------------------------\n' +
+			Date.log() + trace() +
+			'=========================='
 	###
 	Display a warning message and stack trace
 	@param mixed message or vairbale to print in console warn
@@ -280,9 +292,10 @@ module.exports =
 	@return void
 	###
 	warn: (message) ->
-		console['warn']  message
-		console['log'] '--------------------------\n' + Date.log()
-		console.trace()
+
+		console['warn'] trace message
+		console['log'] '--------------------------\n' +
+		Date.log() + trace()
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
@@ -529,10 +542,8 @@ module.exports =
 							errors.push err
 						unless --count
 							next errors
-					true
 				unless --count
 					next errors
-			true
 		return
 
 	###

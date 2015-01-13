@@ -31,7 +31,6 @@ status.each ->
 	s = @
 	friendSchema.methods['is' + ucfirst(s)] = ->
 		@status is s
-	true
 
 
 module.exports = friendSchema
