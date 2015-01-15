@@ -415,6 +415,10 @@ module.exports = (app, port) ->
 		# Initialize packages
 		MailPackage.init()
 
+		# Start tasks
+		glob __dirname + '/../tasks/*.coffee', (er, files) ->
+			files.map require
+
 		# Prettify or minify the HTML output as configured
 		app.locals.pretty = true if config.wornet.prettyHtml
 
