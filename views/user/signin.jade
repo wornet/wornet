@@ -103,32 +103,8 @@ block body
 					input(type="hidden" ng-model="user.step" name="step" value="2")
 				.cb
 
-		#legals.modal.fade: .modal-dialog: .modal-content
-			.modal-header
-				button.close(type='button', data-dismiss='modal')
-					span(aria-hidden='true') ×
-					span.sr-only
-						=s("Fermer")
-				h4.modal-title
-					=s("Conditions générales")
-			.modal-body
-				p
-					=s("Blablabla")
-			.modal-footer
-				button.btn(type='button', data-dismiss='modal')
-					=s("Fermer")
+		+simpleModal(s("Conditions générales"))#legals: p
+			=s("Blablabla")
 
-		#privacyPolicy.modal.fade: .modal-dialog: .modal-content
-			.modal-header
-				button.close(type='button', data-dismiss='modal')
-					span(aria-hidden='true') ×
-					span.sr-only
-						=s("Fermer")
-				h4.modal-title
-					=s("Politique de confidentialité")
-			.modal-body
-				p
-					=s("Blablabla")
-			.modal-footer
-				button.btn(type='button', data-dismiss='modal')
-					=s("Fermer")
+		+simpleModal(s("Politique de confidentialité"))#privacyPolicy: p
+			=s("Blablabla")

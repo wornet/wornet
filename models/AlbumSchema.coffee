@@ -1,12 +1,7 @@
 'use strict'
 
-albumSchema = BaseSchema.extend
-	user:
-		type: ObjectId
-		ref: 'UserSchema'
+albumSchema = OwnedSchema.extend
 	name:
-		type: String
-		trim: true
 		required: true
 		valide: (name) ->
 			name.length <= config.wornet.limits.albumNameLength

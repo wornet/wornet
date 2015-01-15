@@ -169,6 +169,8 @@
 
         "defaultHost": "www.wornet.fr",
 
+        "errorsToIssue": 3,
+
         "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",
 
         "limits": {

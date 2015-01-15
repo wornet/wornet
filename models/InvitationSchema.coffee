@@ -13,6 +13,7 @@ invitationSchema = BaseSchema.extend
 		default: 'invited'
 	sended:
 		type: Date
+		default: null
 	email:
 		type: String
 		required: true

@@ -1,12 +1,6 @@
 'use strict'
 
-photoSchema = BaseSchema.extend
-	user:
-		type: ObjectId
-		ref: 'UserSchema'
-	name:
-		type: String
-		trim: true
+photoSchema = OwnedSchema.extend
 	album:
 		type: ObjectId
 		ref: 'AlbumSchema'

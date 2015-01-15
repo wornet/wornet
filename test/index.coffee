@@ -4,7 +4,7 @@ onready = require './test'
 
 describe "/", ->
 
-	@timeout 12000
+	@timeout 12.seconds
 
 	app = undefined
 	agent = undefined

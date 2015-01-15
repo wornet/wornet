@@ -2,12 +2,10 @@
 
 photos = {}
 
-oneDay = 24 * 3600 * 1000
-
 prefix = 'p:'
 
 setCookie = (req, photoId, value, unset = false) ->
-	maxAge = oneDay
+	maxAge = 1.day
 	if unset
 		maxAge *= -1
 		value = ''

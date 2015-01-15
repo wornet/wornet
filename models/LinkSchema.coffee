@@ -1,13 +1,7 @@
 'use strict'
 
-linkSchema = BaseSchema.extend
-	user:
-		type: ObjectId
-		ref: 'UserSchema'
+linkSchema = OwnedSchema.extend
 	https:
-		type: String
-		trim: true
-	name:
 		type: String
 		trim: true
 	url:
