@@ -279,23 +279,25 @@ module.exports =
 	@return void
 	###
 	log: (message) ->
-		if config.env.development
-			console['log'] '==========================' +
+		if ! config.env or config.env.development
+			console['log'] '==========================\n' +
 			trace(message) +
-			'--------------------------\n' +
-			Date.log() + trace() +
-			'=========================='
+			'\n--------------------------\n' +
+			Date.log() + '\n' + trace() +
+			'\n=========================='
 	###
 	Display a warning message and stack trace
 	@param mixed message or vairbale to print in console warn
 
 	@return void
 	###
-	warn: (message) ->
-
-		console['warn'] trace message
+	warn: (message, gitlab = true) ->
+		message = trace message
+		if gitlab
+			GitlabPackage.error message
+		console['warn'] message
 		console['log'] '--------------------------\n' +
-		Date.log() + trace()
+		Date.log() + '\n' + trace()
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
@@ -724,6 +726,17 @@ module.exports =
 	###
 	delay: (ms, cb) ->
 		setTimeout cb, ms
+
+	###
+	Execute a task at a given interval
+	@param integer delay
+	@param function callback
+
+	@return integer interval identifier (could be passed to a clearInterval function)
+	###
+	regularTask: (ms, cb) ->
+		do cb
+		setInterval cb, ms
 
 	###
 	Test if a value is empty in a very tolerant way

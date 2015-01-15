@@ -19,7 +19,7 @@ module.exports = (router) ->
 		# Emulate a long pending with demanded time
 		router.get '/pending/:time', (req, res) ->
 			time = intval req.params.time
-			delay time * 1000, ->
+			delay time.seconds, ->
 				res.json {}
 
 	# When login/signin/profile page displays
@@ -41,21 +41,23 @@ module.exports = (router) ->
 		delay 1, ->
 			count = config.wornet.limits.mailsAtOnce
 			req.body.emails.split(/\s*,\s*/g).each ->
-				sended = null
-				if count--
-					subject = s("{name} vous invite à rejoindre Wornet", name: req.user.fullName)
-					signinUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-					signinUrl += '/user/signin/with/' + encodeURIComponent @
-					message = s("{name} vous invite à rejoindre Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", name: req.user.fullName)
-					MailPackage.send req.user.email, subject, message + '\n\n' + signinUrl, message + '<br><br><a href="' + signinUrl + '">' + s("Devenir un wornet") + '</a>'
-					sended = new Date
-				Invitation.create
-					host: req.user.id
-					email: @
-					sended: sended
-				, (err) ->
-					if err
-						warn err
+				email = @
+				Invitation.count email: email, (err, alreadyInvited) ->
+					unless alreadyInvited
+						if count--
+							subject = s("{name} vous invite à rejoindre Wornet", name: req.user.fullName)
+							signinUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+							signinUrl += '/user/signin/with/' + encodeURIComponent email
+							message = s("{name} vous invite à rejoindre Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", name: req.user.fullName)
+							MailPackage.send email, subject, message + '\n\n' + signinUrl, message + '<br><br><a href="' + signinUrl + '">' + s("Devenir un wornet") + '</a>'
+							sended = new Date
+						Invitation.create
+							host: req.user.id
+							email: email
+							sended: sended
+						, (err) ->
+							if err
+								warn err
 
 
 	# Report a non-appropriated content
