@@ -145,6 +145,7 @@
 
         "autoloadDirectories": [
             "core/utils",
+            "core/tasks",
             "core/packages",
             "models/abstract",
             "models"
@@ -165,6 +166,8 @@
             "host": "localhost",
             "basename": "wornet"
         },
+
+        "defaultHost": "www.wornet.fr",
 
         "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",
 
