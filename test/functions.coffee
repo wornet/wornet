@@ -4,7 +4,7 @@ onready = require './test'
 
 describe "functions", ->
 
-	@timeout 5000
+	@timeout 5.seconds
 
 	beforeEach (done) ->
 		onready.utils ->

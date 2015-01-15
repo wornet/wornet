@@ -96,15 +96,13 @@ $.each [
 			enable false
 			$img = $form.find 'img.upload-thumb'
 			$img.fadeOut('fast')
-			if typeof(FormData) is 'function'
+			withFormData (formData, xhr) ->
 				$progress = $form.find '.progress-radial'
 				prevent e
-				formData = new FormData()
 				file = $form.find('input[type="file"]')[0].files[0]
 				formData.append 'photo', file
 				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
-				xhr = new XMLHttpRequest()
 				xhr.open 'POST', $form.prop('action'), true
 
 				xhr.upload.onprogress = (e) ->
@@ -164,11 +162,8 @@ $.each [
 					else
 						@onerror()
 					return
-
-				xhr.send formData
-				false
-			else
-				true
+				return
+			return
 	]
 	[
 		'submit'
@@ -177,8 +172,7 @@ $.each [
 			enable = (enabled = true) ->
 				$form.find('input[type="submit"]').prop 'disabled', ! enabled
 			enable false
-			if typeof(FormData) is 'function'
-				prevent e
+			withFormData (formData, xhr) ->
 				$scope = $form.scope()
 				$container = $form.find '.upload-container'
 				saveHtml = $container.html()
@@ -186,14 +180,12 @@ $.each [
 				$input = $container.find 'input[type="file"]'
 				$input.hide()
 				$progress = $('<div class="progress-bar"></div>').prependTo $container
-				formData = new FormData()
 				$.each $form.find('input[type="file"]')[0].files, (index) ->
 					formData.append 'images[' + index + ']', @
 					return
 				formData.append 'album', $scope.currentAlbum._id || "new"
 				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
-				xhr = new XMLHttpRequest()
 				xhr.open 'POST', $form.prop('action'), true
 
 				complete = ->
@@ -231,11 +223,8 @@ $.each [
 						return
 					$scope.$apply()
 					return
-
-				xhr.send formData
-				false
-			else
-				true
+				return
+			return
 	]
 	[
 		'click'

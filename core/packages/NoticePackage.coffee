@@ -47,7 +47,7 @@ NoticePackage =
 						self.notificationsToSend[userId] = {}
 					id = Date.log()
 					self.notificationsToSend[userId][id] = [err, data]
-					delay 5000, ->
+					delay 5.seconds, ->
 						if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
 							if self.responsesToNotify[userId].getLength() > 0
 								delete self.notificationsToSend[userId][id]

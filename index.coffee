@@ -36,7 +36,8 @@ process.on 'uncaughtException', (err) ->
 	if err.code is 'EADDRINUSE'
 		console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
 		throw err
-	warn 'Caught exception: ' + err
+	warn 'Caught exception: ' + err, false
+	GitlabPackage.issue err
 
 session = require('express-session')
 MemcachedStore = require('connect-memcached')(session)

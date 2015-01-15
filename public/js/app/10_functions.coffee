@@ -327,5 +327,17 @@ idFromUrl = (url) ->
 
 showLoader = ->
 	$('.loader:last').css('z-index', 99999).removeClass 'preload'
+
 hideLoader = ->
 	$('.loader:last').css('z-index', '').addClass 'preload'
+
+withFormData = (done) ->
+	if typeof(FormData) is 'function'
+		prevent e
+		formData = new FormData()
+		xhr = new XMLHttpRequest()
+		done formData, xhr
+		xhr.send formData
+		false
+	else
+		true

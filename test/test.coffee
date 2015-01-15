@@ -18,8 +18,6 @@ require('extend') global,
 
 module.exports =
 	utils: (done) ->
-		global.BaseSchema = require '../models/abstract/BaseSchema'
-		global.InvitationSchema = require '../models/InvitationSchema'
 		autoload = require __dirname + '/../core/system/autoload'
 		autoload ->
 			done()

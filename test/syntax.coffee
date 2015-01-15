@@ -5,7 +5,7 @@ fs = require 'fs'
 
 describe "syntax", ->
 
-	@timeout 10000
+	@timeout 10.seconds
 
 	files = []
 	filesContents = {}
