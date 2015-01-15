@@ -145,7 +145,6 @@
 
         "autoloadDirectories": [
             "core/utils",
-            "core/tasks",
             "core/packages",
             "models/abstract",
             "models"

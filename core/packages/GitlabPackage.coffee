@@ -8,7 +8,7 @@ logging.configure
 	token: 'sshuxyuqg8Ux3FxLyQui'
 	project_id: 3
 	assignee_id: 2
-	environment: 'production'   
+	environment: 'production'
 
 errors = {}
 
