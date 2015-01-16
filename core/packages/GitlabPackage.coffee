@@ -13,10 +13,13 @@ logging.configure
 errors = {}
 
 GitlabPackage =
+	format: (error) ->
+		strval error.stack || error
 	issue: (error) ->
-		logging.handle error
+		logging.handle @format error
 		console['log'] "Error issued"
 	error: (error) ->
+		error = @format error
 		code = sha1 error
 		if errors[code]
 			for err, k of errors[code]
