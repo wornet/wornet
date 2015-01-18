@@ -42,6 +42,7 @@ StatusPackage =
 					]
 			else
 				author: $in: connectedPeopleAndMe
+				at: $in: connectedPeopleAndMe.merge [null]
 			)
 			if connectedPeopleAndMe.contains id
 				Status.find where
