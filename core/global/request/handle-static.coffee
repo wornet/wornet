@@ -1,7 +1,7 @@
 'use strict'
 
-methodOverride = require('method-override')()
-bodyParser = require('body-parser')()
+methodOverride = do require 'method-override'
+bodyParser = do require 'body-parser'
 
 module.exports = (app) ->
 
@@ -12,7 +12,7 @@ module.exports = (app) ->
 		req.response = res
 		res.req = req
 		res.request = req
-		res.setTimeLimit if req.is('multipart/form-data')
+		res.setTimeLimit if req.is 'multipart/form-data'
 			config.wornet.upload.timeout
 		else
 			config.wornet.timeout
