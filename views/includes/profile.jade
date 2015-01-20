@@ -86,7 +86,16 @@
 					+glyph('certificate')
 					|&nbsp;
 					=s("Je me suis pré-inscrit")
-			p
+			if profile.birthCity
+				p
+					- var infos = { date: profile.birthDate.humanDate() }
+					if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
+						- infos.city = profile.birthCity.substr(3)
+						=s("Né au {city}", infos)
+					else
+						- infos.city = profile.birthCity
+						=s("Né à {city}", infos)
+			//- p
 				- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
 				if profile.birthCity
 					if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
