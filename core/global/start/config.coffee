@@ -25,4 +25,6 @@ module.exports = (env, port) ->
 	deepextend config, envConfig
 	deepextend config, customConfig
 
+	config.env ||= {}
+
 	config
