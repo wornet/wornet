@@ -112,3 +112,41 @@ describe "functions", ->
 			strrev("abc").should.equal "cba"
 			strrev(" @9_").should.equal "_9@ "
 			strrev("ggg").should.equal "ggg"
+
+	describe "standartError", ->
+
+		it "must return a PublicError", ->
+			standartError().should.be.an.instanceof PublicError
+
+	describe "objectResolve", ->
+
+		it "must preserve objects", ->
+			objectResolve( a: b: 42 ).a.b.should.equal 42
+
+		it "must convert dates", ->
+			date = objectResolve( a: '2014-10-06T21:34:23.091Z' ).a
+			date.should.be.an.instanceof Date
+			date.getDate().should.equal 6
+
+		it "must convert dates in deep nested arrays and objects", ->
+			obj = objectResolve [
+				'2014-10-06T21:34:23.091Z'
+				['2014-10-06T21:34:23.091Z']
+				a: '2014-10-06T21:34:23.091Z'
+				b: ['2014-10-06T21:34:23.091Z']
+			]
+			obj[0].should.be.an.instanceof Date
+			obj[1][0].should.be.an.instanceof Date
+			obj[2].a.should.be.an.instanceof Date
+			obj[2].b[0].should.be.an.instanceof Date
+
+	describe "codeId", ->
+
+		it "must return a string", ->
+			code = codeId()
+			code.should.be.a 'string'
+			code.length.should.be.above 10
+
+		it "must be unique", ->
+			code = codeId()
+			code.should.not.equal codeId()
