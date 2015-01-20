@@ -105,7 +105,6 @@ module.exports = (router) ->
 						auth.remember res, user._id
 					# Put user in session
 					auth.auth req, res, user
-					url = '/user/welcome'
 					res.redirect if user then '/user/welcome' else signinUrl
 					unless user.role is 'confirmed'
 						confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
