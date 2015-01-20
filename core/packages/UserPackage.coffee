@@ -85,6 +85,7 @@ UserPackage =
 								if user
 									req.user.friendAsks[data.friend.id] = user
 									req.session.user.friendAsks = req.user.friendAsks
+									req.cacheFlush 'friends'
 								next()
 						else
 							next()
@@ -117,6 +118,7 @@ UserPackage =
 						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,
 								deleteFriendAsk: id
+						req.cacheFlush 'friends'
 						Friend.count
 							$or: [
 								askedTo: req.user._id

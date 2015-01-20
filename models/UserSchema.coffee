@@ -29,7 +29,7 @@ userSchema = BaseSchema.extend
 			generateSalt 50
 	role:
 		type: String
-		default: 'confirmed'
+		default: 'user'
 		enum: [
 			'user'
 			'confirmed'
