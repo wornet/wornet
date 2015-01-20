@@ -15,21 +15,25 @@ errors = {}
 GitlabPackage =
 	format: (error) ->
 		strval error.stack || error
+	enabled: ->
+		config.env.production
 	issue: (error) ->
-		logging.handle @format error
-		console['log'] "Error issued"
+		if @enabled()
+			logging.handle @format error
+			console['log'] "Error issued"
 	error: (error) ->
-		error = @format error
-		code = sha1 error
-		if errors[code]
-			for err, k of errors[code]
-				if k < Date.yesterday().getTime()
-					delete errors[code]
-		else
-			errors[code] = {}
-		errors[code][time()] = error
-		if errors[code].getLength() is config.wornet.errorsToIssue
-			@issue error
-		console['log'] "Error recorded"
+		if @enabled()
+			error = @format error
+			code = sha1 error
+			if errors[code]
+				for err, k of errors[code]
+					if k < Date.yesterday().getTime()
+						delete errors[code]
+			else
+				errors[code] = {}
+			errors[code][time()] = error
+			if errors[code].getLength() is config.wornet.errorsToIssue
+				@issue error
+			console['log'] "Error recorded"
 
 module.exports = GitlabPackage
