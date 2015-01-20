@@ -104,6 +104,11 @@ ArrayList =
 		else
 			extend @, values
 
+	with: (values) ->
+		result = @copy()
+		result.merge values
+		result
+
 	getLength: ->
 		if @ instanceof Array
 			@length

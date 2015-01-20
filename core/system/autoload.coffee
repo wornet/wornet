@@ -1,6 +1,5 @@
 'use strict'
 
-root = __dirname + '/../../'
 autoloadDirectories = config.wornet.autoloadDirectories
 
 global.extend = require 'extend'
@@ -9,14 +8,10 @@ global.mongoose = require 'mongoose'
 global.Schema = mongoose.Schema
 global.ObjectId = Schema.ObjectId
 
-# Get functions
-functions = require root + 'core/utils/functions'
 
 # Extends RegExp class
-require root + 'core/utils/RegExpString'
+require coreDir + 'utils/RegExpString'
 
-# Make functions and config usables in controllers and other stuff
-extend global, functions
 
 defer = []
 models = []
@@ -35,7 +30,7 @@ autoloadDirectories.forEach (directory) ->
 		pendingFiles = files.length
 		if pendingFiles
 			files.forEach (file) ->
-				loadedValue = require root + file
+				loadedValue = require rootDir + file
 				if typeof(loadedValue.name) is 'undefined' || empty(loadedValue.name)
 					name = file.substr(directory.length + 1).replace(/\.[^\.]+$/g, '')
 				else

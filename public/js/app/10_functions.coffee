@@ -35,7 +35,7 @@ objectResolve = (value) ->
 			switch typeof(value)
 				when 'object'
 					unless value[key]
-						for v, i in value
+						for i, v of value
 							value[i] = enter value[i]
 						value[key] = true
 				when 'string'
@@ -49,7 +49,7 @@ objectResolve = (value) ->
 		leave = (value) ->
 			if typeof(value) is 'object' and value[key]
 				delete value[key]
-				for v, i in value
+				for i, v of value
 					value[i] = leave value[i]
 			value
 

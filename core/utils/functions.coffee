@@ -24,7 +24,7 @@ module.exports =
 			switch typeof(value)
 				when 'object'
 					unless value[key]
-						for v, i in value
+						for i, v of value
 							value[i] = enter value[i]
 						value[key] = true
 				when 'string'
@@ -38,7 +38,7 @@ module.exports =
 		leave = (value) ->
 			if typeof(value) is 'object' and value[key]
 				delete value[key]
-				for v, i in value
+				for i, v of value
 					value[i] = leave value[i]
 			value
 
@@ -283,7 +283,7 @@ module.exports =
 			console['log'] '==========================\n' +
 			trace(message) +
 			'\n--------------------------\n' +
-			Date.log() + '\n' + trace() +
+			Date.log() + '\n' + (message.stack || trace()) +
 			'\n=========================='
 	###
 	Display a warning message and stack trace
@@ -297,7 +297,7 @@ module.exports =
 			GitlabPackage.error message
 		console['warn'] message
 		console['log'] '--------------------------\n' +
-		Date.log() + '\n' + trace()
+		Date.log() + '\n' + (message.stack || trace())
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
