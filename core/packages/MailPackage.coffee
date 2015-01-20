@@ -8,11 +8,11 @@ transporter = null
 
 MailPackage =
 
-	init: ->
+	init: (options) ->
 		if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
 			warn errorMessage
 		else
-			options =
+			options ||=
 				service: config.wornet.mail.service
 				auth:
 					user: config.wornet.mail.auth.user
