@@ -140,7 +140,10 @@ module.exports = (app, port) ->
 		extend app.request,
 			# get objets of the different alert types for a given key
 			getAlerts: (key) ->
-				danger: @flash key + 'Errors'
+				errors = @flash key + 'Errors'
+				unless empty errors
+					errors.map GitlabPackage.error
+				danger: errors
 				success: @flash key + 'Success'
 				info: @flash key + 'Infos'
 				warning: @flash key + 'Warnings'
@@ -296,7 +299,7 @@ module.exports = (app, port) ->
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err, false
-					GitlabPackage.error 'Error ' + val + '\n' + @req.getHeader('referrer') + '\n' + err
+					GitlabPackage.error 'Error ' + val + '\n' + @req.url + '\n' + @req.getHeader('referrer') + '\n' + err
 					model.err = err
 					model.statusCode = val
 					@status val
@@ -349,6 +352,7 @@ module.exports = (app, port) ->
 				res = @
 				params = arguments
 				if params[1] and params[1].err and ! config.env.development
+					GitlabPackage.error params[1].err
 					if params[1].err instanceof PublicError
 						params[1].err = strval params[1].err
 					else
@@ -371,6 +375,8 @@ module.exports = (app, port) ->
 						if config.env.development
 							data.stack = data.err.stack
 					data.err = strval(data.err || s("Erreur inconnue"))
+				if data.err
+					GitlabPackage.error data.err
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
 				@end JSON.stringify data
