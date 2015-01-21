@@ -16,6 +16,12 @@ module.exports = (router) ->
 	if config.env.development
 		# Client-side tests
 		pm.page '/test'
+		# Store tests results
+		router.post '/test/results', (req, res) ->
+			functionExists = !! global.clitentSideUnitTestsCallback
+			res.json functionExists: functionExists
+			if functionExists
+				clitentSideUnitTestsCallback req.body
 		# Emulate a long pending with demanded time
 		router.get '/pending/:time', (req, res) ->
 			time = intval req.params.time

@@ -161,6 +161,9 @@ jasmineRequire.HtmlReporter = function(j$) {
       checkbox.checked = !env.catchingExceptions();
       checkbox.onclick = onRaiseExceptionsClick;
 
+      if (window.jasmineComplete) {
+        jasmineComplete(totalSpecsDefined, specsExecuted, failureCount);
+      }
       if (specsExecuted < totalSpecsDefined) {
         var skippedMessage = 'Ran ' + specsExecuted + ' of ' + totalSpecsDefined + ' specs - run all';
         alert.appendChild(
