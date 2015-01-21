@@ -22,6 +22,7 @@ module.exports =
 			done()
 
 	app: (done) ->
+		global.stopCatchException = true
 		app = rootRequire 'index'
 		agent = request.agent app
 		app.onready ->
