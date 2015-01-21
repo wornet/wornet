@@ -23,12 +23,14 @@ do ->
 
 	session = require 'express-session'
 
+	# Get functions
+	extend global, require coreDir + 'utils/functions'
 	extend global,
-		# Get functions
-		require coreDir + 'utils/functions',
 		# Store engines
 		MemcachedStore: require('connect-memcached') session
 		RedisStore: require('connect-redis') session
+
+	console.log [MemcachedStore, RedisStore]
 
 	# Config load
 	global.config = require(coreDir + 'global/start/config') app.settings.env, process.env.PORT
