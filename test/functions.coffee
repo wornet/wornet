@@ -48,20 +48,20 @@ describe "functions", ->
 	describe "empty", ->
 
 		it "must return true only if the value is empty", ->
-			empty(0).should.equal true, "0"
-			empty(false).should.equal true, "false"
-			empty(null).should.equal true, "null"
-			empty(undefined).should.equal true, "undefined"
-			empty("").should.equal true, '""'
-			empty({}).should.equal true, "{}"
-			empty([]).should.equal true, "[]"
+			empty(0).should.be.true "0"
+			empty(false).should.be.true "false"
+			empty(null).should.be.true "null"
+			empty(undefined).should.be.true "undefined"
+			empty("").should.be.true '""'
+			empty({}).should.be.true "{}"
+			empty([]).should.be.true "[]"
 
-			empty("e12").should.equal false, "e12"
-			empty(-1).should.equal false, "-1"
-			empty(0.2).should.equal false, "0.2"
-			empty(" ").should.equal false, '" "'
-			empty({ foo: "" }).should.equal false, '{ foo: "" }'
-			empty([""]).should.equal false, '[""]'
+			empty("e12").should.be.false "e12"
+			empty(-1).should.be.false "-1"
+			empty(0.2).should.be.false "0.2"
+			empty(" ").should.be.false '" "'
+			empty({ foo: "" }).should.be.false '{ foo: "" }'
+			empty([""]).should.be.false '[""]'
 
 	describe "trim", ->
 

@@ -468,8 +468,7 @@ module.exports = (app, port) ->
 		deepextend localConfig._store, middleware: logger: module: arguments: [
 			"combined",
 			skip: (req, res) ->
-				unless config.env.development
-					res.statusCode < 400
+				global.muteLog or (! config.env.development and res.statusCode < 400)
 		]
 
 		next null, localConfig
