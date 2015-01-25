@@ -27,7 +27,6 @@ module.exports = (router) ->
 					birthDate: (new Date).subYears 20
 				, ->
 					done {}
-			null
 		# Store tests results
 		router.post '/test/results', (req, res) ->
 			functionExists = !! global.clitentSideUnitTestsCallback

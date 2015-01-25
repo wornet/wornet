@@ -10,16 +10,13 @@ describe "client-side unit tests", ->
 	save = {}
 
 	beforeEach (done) ->
-		global.muteLog = true
-		for k, v of console
-			save[k] = v
-			console[k] = ->
 		onready.app ->
 			MailPackage.exec = (options, done) ->
 				html = options.html || options.text || ''
 				link = html.match /https?:\/\/[^"'\s]/g
 				link = if link then link[0] else null
-				console.log [html, link]
+				# TO DO: Check the link
+				console['log'] [html, link]
 				done()
 			done()
 
@@ -28,9 +25,6 @@ describe "client-side unit tests", ->
 
 		global.clitentSideUnitTestsCallback = (data) ->
 			delay 1, ->
-				delete global.muteLog
-				for k, v of save
-					console[k] = v
 				totalSpecsDefined = intval data.totalSpecsDefined
 				specsExecuted = intval data.specsExecuted
 				failureCount = intval data.failureCount

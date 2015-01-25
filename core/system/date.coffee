@@ -115,7 +115,7 @@ do (d = Date) ->
 			age--
 		age
 	d.log = ->
-		(new d).log()
+		console['log'] (new d).log()
 	d.fromId = (id) ->
 		new d(parseInt(id.toString().slice(0,8), 16)*1000)
 	d.yesterday = ->

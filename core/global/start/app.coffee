@@ -32,7 +32,7 @@ module.exports = (defer, start) ->
 
 	app.on 'start', ->
 
-		console['log'] 'Wornet is ready  ' + Date.log()
+		console['log'] 'Wornet is ready  ' + (new Date).log()
 		defer.forEach (done) ->
 			done app
 

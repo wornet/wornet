@@ -268,8 +268,9 @@ module.exports =
 	###
 	trace: (message) ->
 		message ||= (new Error).stack
+		message = strval message
 		if config.debug and config.debug.skipJsFiles
-			message = strval(message).replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
+			message = message.replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
 		message
 
 	###
@@ -280,10 +281,11 @@ module.exports =
 	###
 	log: (message) ->
 		if ! config.env or config.env.development
-			console['log'] '==========================\n' +
-			trace(message) +
-			'\n--------------------------\n' +
-			Date.log() + '\n' + (message.stack || trace()) +
+			console['log'] '==========================\n'
+			console['log'] message
+			console['log'] '\n--------------------------\n'
+			Date.log()
+			console['log'] trace(message) +
 			'\n=========================='
 	###
 	Display a warning message and stack trace
@@ -296,8 +298,9 @@ module.exports =
 		if gitlab
 			GitlabPackage.error message
 		console['warn'] message
-		console['log'] '--------------------------\n' +
-		Date.log() + '\n' + (message.stack || trace())
+		console['log'] '--------------------------\n'
+		Date.log()
+		console['log'] trace(message)
 
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
