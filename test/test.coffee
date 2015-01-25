@@ -6,6 +6,10 @@ rootRequire = (file) ->
 	require __dirname + '/../' + file
 rootRequire 'core/global/start/bootstrap'
 
+fs.exists 'mongod.lnk', (exists) ->
+	if exists
+		(require __dirname + '/../core/system/command.js') 'mongod.lnk'
+
 request = require 'supertest'
 chai = require 'chai'
 chai.should()

@@ -30,8 +30,6 @@ do ->
 		MemcachedStore: require('connect-memcached') session
 		RedisStore: require('connect-redis') session
 
-	console.log [MemcachedStore, RedisStore]
-
 	# Config load
 	global.config = require(coreDir + 'global/start/config') app.settings.env, process.env.PORT
 	port = config.port
@@ -39,14 +37,18 @@ do ->
 	# Set application options
 	global.options = require(coreDir + 'system/options') app, port
 
-	process.on 'uncaughtException', (err) ->
-		if err.code is 'EADDRINUSE'
-			console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
-			throw err
-		prefix = 'Caught exception: '
-		if err.message
-			err.message = prefix + err.message
-		else
-			err = prefix + err
-		warn err, false
-		GitlabPackage.issue err
+	unless global.stopCatchException
+		process.on 'uncaughtException', (err) ->
+			if err.code is 'EADDRINUSE'
+				console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
+				throw err
+			prefix = 'Caught exception: '
+			if err.message
+				err.message = prefix + err.message
+			else
+				err = prefix + err
+			warn err, false
+			if global.GitlabPackage
+				GitlabPackage.issue err
+			else
+				throw err

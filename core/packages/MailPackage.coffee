@@ -70,6 +70,9 @@ MailPackage =
 		if transporter is null
 			throw new Error errorMessage
 
+		@exec mailOptions, done
+
+	exec: (mailOptions, done) ->
 		transporter.sendMail mailOptions, done
 
 module.exports = MailPackage

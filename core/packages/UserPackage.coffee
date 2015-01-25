@@ -102,6 +102,30 @@ UserPackage =
 			else
 				Friend.findOneAndUpdate { _id: id, askedTo: req.user._id }, { status: status }, {}, (err, friend) ->
 					if ! err and friend and isRequest
+						end = ->
+							req.cacheFlush 'friends'
+							Friend.count
+								$or: [
+									askedTo: req.user._id
+								,
+									askedFrom: req.user._id
+								]
+								status: 'accepted'
+							, (err, count) ->
+								unless err
+									req.user.numberOfFriends = count
+									req.user.save()
+							Friend.count
+								$or: [
+									askedTo: friend.askedFrom
+								,
+									askedFrom: friend.askedFrom
+								]
+								status: 'accepted'
+							, (err, count) ->
+								unless err
+									friend.numberOfFriends = count
+									friend.save()
 						delete req.user.friendAsks[id]
 						if status is 'accepted'
 							User.findById friend.askedFrom, (err, user) ->
@@ -115,32 +139,11 @@ UserPackage =
 										addFriend: req.user
 										user: req.user.publicInformations()
 										notification: img + " " + s("{username} fait maintenant partie de vos amis.", dataWithUser)
+									end()
 						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,
 								deleteFriendAsk: id
-						req.cacheFlush 'friends'
-						Friend.count
-							$or: [
-								askedTo: req.user._id
-							,
-								askedFrom: req.user._id
-							]
-							status: 'accepted'
-						, (err, count) ->
-							unless err
-								req.user.numberOfFriends = count
-								req.user.save()
-						Friend.count
-							$or: [
-								askedTo: friend.askedFrom
-							,
-								askedFrom: friend.askedFrom
-							]
-							status: 'accepted'
-						, (err, count) ->
-							unless err
-								friend.numberOfFriends = count
-								friend.save()
+							end()
 					done
 						err: err
 						friend: friend
