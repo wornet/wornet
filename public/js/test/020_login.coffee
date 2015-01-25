@@ -22,13 +22,19 @@ describe "Login", ->
 			expect(url w).toBe '/'
 			shouldExists '#login'
 			$form = w.$ '#login'
-			$tester.complete
-				email: 'unit-test@selfbuild.fr'
-				password: 'azer8Ty'
-			.form ->
+			fail = ->
+				shouldExists '.alert-danger'
 				shouldExists '#login'
 				shouldNotExists '#search'
 				done()
+			$tester.complete '#login',
+				email: 'unit-test@selfbuild.fr'
+				password: 'azer8Ty'
+			.form '#login', ->
+				expect('Page loading').toBe 'ko'
+				done()
+			, fail
+			w.$document.ajaxComplete fail
 
 	describe "Good login", ->
 
@@ -36,11 +42,23 @@ describe "Login", ->
 
 			expect(url w).toBe '/'
 			shouldExists '#login'
-			$form = w.$ '#login'
-			$form.complete
-				email: 'unit-test-login@selfbuild.fr'
-				password: 'azer8Ty'
-			.form ->
+			success = ->
+				shouldNotExists '.alert-danger'
 				shouldNotExists '#login'
 				shouldExists '#search'
 				done()
+			$tester.complete '#login',
+				email: 'unit-test-login@selfbuild.fr'
+				password: 'azer8Ty'
+			.form '#login', success, ->
+				expect('Page loading').toBe 'ok'
+				done()
+			w.$document.ajaxComplete (event, xhr) ->
+				goTo = 'undefined'
+				try
+					data = $.parseJSON xhr.responseText
+					goTo = data.goingTo
+				catch e
+				expect(goTo).toBe '/'
+				unless goTo is '/'
+					success

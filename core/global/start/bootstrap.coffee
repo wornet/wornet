@@ -5,7 +5,7 @@ do ->
 	global.coreDir = __dirname + '/../../'
 	global.rootDir = coreDir + '../'
 	require coreDir + 'system/date'
-	console['log'] 'Starting Wornet  ' + Date.log()
+	console['log'] 'Starting Wornet  ' + (new Date).log()
 
 	# Dependancies to load
 	'kraken-js child_process extend glob express path connect fs mongoose crypto passport stylus imagemagick deep-extend'

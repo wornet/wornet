@@ -8,16 +8,18 @@ class PagesManager
 		@_templateFolder = templateFolder || ''
 	page: (url, callback, method) ->
 		method ||= 'get'
-		template = (@_templateFolder + url).replace(/^\//g, '')
+		template = (@_templateFolder + url).replace /^\//g, ''
 		@_router[method] url, (req, res) ->
 			rendered = false
+			haveThreeParameters = false
 			if typeof(callback) is 'function'
+				haveThreeParameters = /^[^,{]+,[^,{]+,[^,{]+\{/g.test callback.toString()
 				model = callback req, res, (model) ->
 					unless rendered
 						res.render template, model
 			else
 				model = {}
-			unless model is null
+			unless haveThreeParameters or model is null
 				rendered = true
 				res.render template, model
 		@
