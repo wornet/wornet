@@ -15,7 +15,19 @@ module.exports = (router) ->
 
 	if config.env.development
 		# Client-side tests
-		pm.page '/test'
+		pm.page '/test', (req, res, done) ->
+			User.remove email: $in: ['unit-test@selfbuild.fr', 'unit-test-login@selfbuild.fr'], ->
+				User.create
+					name:
+						first: 'Good'
+						last: 'Login'
+					email: 'unit-test-login@selfbuild.fr'
+					password: 'azer8Ty'
+					role: 'confirmed'
+					birthDate: (new Date).subYears 20
+				, ->
+					done {}
+			null
 		# Store tests results
 		router.post '/test/results', (req, res) ->
 			functionExists = !! global.clitentSideUnitTestsCallback

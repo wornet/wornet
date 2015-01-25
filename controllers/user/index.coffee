@@ -4,6 +4,7 @@ UserErrors =
 	INVALID_DATE: s("Veuillez entrer votre date de naissance au format jj/mm/aaaa ou aaaa-mm-jj.")
 	WRONG_EMAIL: s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
 	INVALID_PASSWORD_CONFIRM: s("Veuillez entrer des mots de passe identiques.")
+	AGREEMENT_REQUIRED: s("Veuillez prendre connaissance et accepter les conditions générales d’utilisation et la politique de confidentialité.")
 
 inputDate = (str) ->
 	str = strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
@@ -67,6 +68,9 @@ module.exports = (router) ->
 			res.redirect signinUrl
 		else if req.body.password isnt req.body.passwordCheck
 			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
+			res.redirect signinUrl
+		else if empty req.body.legals
+			req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
 			res.redirect signinUrl
 		# If no error
 		else if req.body.step is "2"

@@ -18,12 +18,12 @@ GitlabPackage =
 	enabled: ->
 		config.env.production
 	issue: (error) ->
-		if @enabled()
-			logging.handle @format error
+		if GitlabPackage.enabled()
+			logging.handle GitlabPackage.format error
 			console['log'] "Error issued"
 	error: (error) ->
-		if @enabled()
-			error = @format error
+		if GitlabPackage.enabled()
+			error = GitlabPackage.format error
 			code = sha1 error
 			if errors[code]
 				for err, k of errors[code]
@@ -33,7 +33,7 @@ GitlabPackage =
 				errors[code] = {}
 			errors[code][time()] = error
 			if errors[code].getLength() is config.wornet.errorsToIssue
-				@issue error
+				GitlabPackage.issue error
 			console['log'] "Error recorded"
 
 module.exports = GitlabPackage

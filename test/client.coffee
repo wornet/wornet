@@ -2,11 +2,10 @@
 
 onready = require './test'
 command = require __dirname + '/../core/system/command.js'
-isProbablyUnix = __dirname.charAt(0) is '/'
 
 describe "client-side unit tests", ->
 
-	@timeout 1.minute
+	@timeout 5.minutes
 
 	save = {}
 
@@ -16,11 +15,16 @@ describe "client-side unit tests", ->
 			save[k] = v
 			console[k] = ->
 		onready.app ->
+			MailPackage.exec = (options, done) ->
+				html = options.html || options.text || ''
+				link = html.match /https?:\/\/[^"'\s]/g
+				link = if link then link[0] else null
+				console.log [html, link]
+				done()
 			done()
 
 	it "must pass all the tests", (done) ->
 		url = 'http://localhost:' + process.env.PORT + '/test'
-		program = if isProbablyUnix then 'xdg-open' else 'start'
 
 		global.clitentSideUnitTestsCallback = (data) ->
 			delay 1, ->
@@ -31,11 +35,10 @@ describe "client-side unit tests", ->
 				specsExecuted = intval data.specsExecuted
 				failureCount = intval data.failureCount
 				successCount = intval data.successCount
-				totalSpecsDefined.should.be.above 1
-				specsExecuted.should.be.above 1
-				specsExecuted.should.equal totalSpecsDefined
-				failureCount.should.equal 0
-				successCount.should.equal specsExecuted
+				totalSpecsDefined.should.be.above 1 # Several specs must be defined
+				specsExecuted.should.equal totalSpecsDefined # All the specs must be executed
+				failureCount.should.equal 0 # No tests must fail
+				successCount.should.equal specsExecuted # All the tests must succeed
 				done()
 
-		command program + ' ' + url
+		command.open url
