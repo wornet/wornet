@@ -333,7 +333,6 @@ hideLoader = ->
 
 withFormData = (done) ->
 	if typeof(FormData) is 'function'
-		prevent e
 		formData = new FormData()
 		xhr = new XMLHttpRequest()
 		done formData, xhr
