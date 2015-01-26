@@ -173,6 +173,7 @@ $.each [
 				$form.find('input[type="submit"]').prop 'disabled', ! enabled
 			enable false
 			withFormData (formData, xhr) ->
+				prevent e
 				$scope = $form.scope()
 				$container = $form.find '.upload-container'
 				saveHtml = $container.html()
