@@ -38,17 +38,27 @@ exports.logout = (req, res) ->
 	delete res.locals.user
 	delete req.user
 	delete req.session.user
+	delete req.session.friends
+	delete req.session.friendAsks
 	req.cacheFlush()
 	exports.remember res, config.wornet.remember.off
 
 # Store user in session, and append to the request object
-exports.auth = (req, res, user) ->
+exports.auth = (req, res, user, done) ->
 	unless user
 		throw new Error 'Missing user, auth.auth() excpect 3 parameters: request, response, user object'
 	user = objectToUser user
 	res.locals.user = user
 	req.user = user
 	req.session.user = user
+	req.getFriends (err, friends, friendAsks) ->
+		unless err
+			user.friends = friends
+			user.friendAsks = friendAsks
+			req.session.friends = friends
+			req.session.friendAsks = friendAsks
+			user.numberOfFriends = friends.length
+		done err, user
 
 exports.login = (req, res, done) ->
 	# Retrieve the user from the database by login
@@ -77,25 +87,23 @@ exports.login = (req, res, done) ->
 			exports.remember res, user._id
 
 		# If everything passes, return the retrieved user object.
-		exports.auth req, res, user
-		done null, user
+		exports.auth req, res, user, done
 
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
 	if req.session.user?
-		exports.auth req, res, req.session.user
-		next()
+		exports.auth req, res, req.session.user, next
 	else
 		exports.remembered req, (user, err, id) ->
 			if user
-				exports.auth req, res, user
 				exports.remember res, id
+				exports.auth req, res, user, next
 			else
 				if exports.isNewVisitor req
 					res.locals.isNewVisitor = true
 				exports.remember res, config.wornet.remember.off
-			next()
+				next()
 
 ###
 Return true if a value is in a list (after solving jokers)
@@ -187,17 +195,13 @@ exports.isAuthenticated = (req, res, next) ->
 					req.user.numberOfFriends = friends.length
 					req.session.user.friendAsks = friendAsks
 					req.session.user.friends = friends
+					req.session.friendAsks = friendAsks
+					req.session.friends = friends
 					req.session.user.numberOfFriends = friends.length
 					if err
 						res.serverError err
 					else
-						unless req.session.user.notifications
-							notifications = []
-							for id, friend of friendAsks
-								if friend.askedTo
-									notifications.push [id, friend, id]
-							req.session.user.notifications = notifications
-						req.user.notifications = req.session.user.notifications
+						req.session.notifications ||= []
 						done()
 			else
 				done()

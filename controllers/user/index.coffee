@@ -69,53 +69,54 @@ module.exports = (router) ->
 		else if req.body.password isnt req.body.passwordCheck
 			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
 			res.redirect signinUrl
-		else if empty req.body.legals
-			req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
-			res.redirect signinUrl
 		# If no error
 		else if req.body.step is "2"
-			# A full name must contains a space but is not needed at the first step
-			User.create
-				name:
-					first: req.body['name.first']
-					last: req.body['name.last']
-				registerDate: new Date
-				email: req.body.email
-				password: req.body.password
-				birthDate: inputDate req.body.birthDate
-			, (saveErr, user) ->
-				if saveErr
-					switch (saveErr.code || 0)
-						when Errors.DUPLICATE_KEY
-							req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-						else
-							err = saveErr.err || strval(saveErr)
-							valErr = 'ValidationError:'
-							if err.indexOf(valErr) is 0
-								err = s("Erreur de validation :") + err.substr(valErr.length)
-								errors =
-									'invalid first name': s("prénom invalide")
-									'invalid last name': s("nom invalide")
-									'invalid birth date': s("date de naissance invalide")
-									'invalid phone number': s("numéro de téléphone invalide")
-									'invalid e-mail address': s("adresse e-mail invalide")
-								for code, message of errors
-									err = err.replace code, message
-							req.flash 'signinErrors', err
-					res.redirect signinUrl
-				else
-					# if "Se souvenir de moi" est coché
-					if req.body.remember?
-						auth.remember res, user._id
-					# Put user in session
-					auth.auth req, res, user
-					res.redirect if user then '/user/welcome' else signinUrl
-					unless user.role is 'confirmed'
-						confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-						confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-						console['log'] ['confirm link', user.email, user._id, confirmUrl]
-						message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
-						MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
+			if empty req.body.legals
+				req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
+				res.redirect signinUrl
+			else
+				# A full name must contains a space but is not needed at the first step
+				User.create
+					name:
+						first: req.body['name.first']
+						last: req.body['name.last']
+					registerDate: new Date
+					email: req.body.email
+					password: req.body.password
+					birthDate: inputDate req.body.birthDate
+				, (saveErr, user) ->
+					if saveErr
+						switch (saveErr.code || 0)
+							when Errors.DUPLICATE_KEY
+								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+							else
+								err = saveErr.err || strval(saveErr)
+								valErr = 'ValidationError:'
+								if err.indexOf(valErr) is 0
+									err = s("Erreur de validation :") + err.substr(valErr.length)
+									errors =
+										'invalid first name': s("prénom invalide")
+										'invalid last name': s("nom invalide")
+										'invalid birth date': s("date de naissance invalide")
+										'invalid phone number': s("numéro de téléphone invalide")
+										'invalid e-mail address': s("adresse e-mail invalide")
+									for code, message of errors
+										err = err.replace code, message
+								req.flash 'signinErrors', err
+						res.redirect signinUrl
+					else
+						# if "Se souvenir de moi" est coché
+						if req.body.remember?
+							auth.remember res, user._id
+						# Put user in session
+						auth.auth req, res, user, ->
+							res.redirect if user then '/user/welcome' else signinUrl
+							unless user.role is 'confirmed'
+								confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+								confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+								console['log'] ['confirm link', user.email, user._id, confirmUrl]
+								message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
+								MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
@@ -196,10 +197,10 @@ module.exports = (router) ->
 										else
 											fail err
 									else
-										auth.auth req, res, user
-										req.flash 'profileSuccess', s("Mot de passe modifié avec succès.")
-										res.redirect '/'
-										reset.remove()
+										auth.auth req, res, user, ->
+											req.flash 'profileSuccess', s("Mot de passe modifié avec succès.")
+											res.redirect '/'
+											reset.remove()
 							else
 								fail s("Lien invalide ou expiré")
 					else

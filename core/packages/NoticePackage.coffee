@@ -110,24 +110,31 @@ NoticePackage =
 				throw err
 
 			id = self.waitForNotification userId, (err, notifications = []) ->
-				req.session.reload (err) ->
-					if err
-						throw err
+				req.session.reload (sessErr) ->
+					if sessErr
+						throw sessErr
 					unless notifications instanceof Array
 						notifications = [[err, notifications]]
+					mustRefreshFriends = false
 					for notification in notifications
 						if notification[1]
+							if notification[1].askForFriend?
+								req.cacheFlush 'friends'
+								req.user.friendAsks[notification[1].id] = notification[1].askForFriend
+								req.session.user.friendAsks = req.user.friendAsks
+								req.session.friendAsks = req.user.friendAsks
+								delete notification[1].askForFriend
 							if notification[1].userId?
 								delete notification[1].userId
 							if notification[1].deleteFriendAsk?
 								delete req.user.friendAsks[notification[1].deleteFriendAsk]
 								req.session.user.friendAsks = req.user.friendAsks
-								req.session.user.notifications = (req.session.user.notifications || []).filter (data) ->
+								req.session.friendAsks = req.user.friendAsks
+								req.session.notifications = (req.session.notifications || []).filter (data) ->
 									if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
 										true
 									else
 										data[1].hashedId isnt cesarRight userId
-								req.user.notifications = req.session.user.notifications
 								delete notification[1].deleteFriendAsk
 							if notification[1].addFriend?
 								req.addFriend notification[1].addFriend

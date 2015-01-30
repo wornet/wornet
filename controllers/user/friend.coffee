@@ -52,4 +52,5 @@ module.exports = (router) ->
 						! equals user.id, him
 					req.user.numberOfFriends = req.user.friends.length
 					req.session.user.friends = req.user.friends
+					req.session.friends = req.user.friends
 					req.session.user.numberOfFriends = req.session.user.friends.length

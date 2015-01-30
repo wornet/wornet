@@ -26,14 +26,11 @@ describe "Mobile", ->
 		shouldNotExists '.open-shutter:hidden', '[role="menu"]:hidden must not exist in 800px-width'
 		done()
 
-###
+describe "Status", ->
 
-	describe "Status", ->
+	describe "Status loading", ->
 
-		describe "Status loading", ->
+		it "need a Status controller", ->
 
-			it "need a Status controller", ->
+			shouldExists '[ng-controller="StatusCtrl"]', 'StatusCtrl must exist'
 
-				expect(w.exists '[ng-controller="StatusCtrl"]', 'StatusCtrl must exist'
-
-###
