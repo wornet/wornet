@@ -129,9 +129,11 @@ userSchema = BaseSchema.extend
 
 userSchema.virtual('friendAsks')
 	.get ->
-		@_friendAsks
+		@_friendAsks ||= {}
 	.set (friendAsks) ->
-		@_friendAsks = friendAsks
+		for k, v of @_friendAsks
+			delete @_friendAsks[k]
+		extend @_friendAsks, friendAsks
 
 userSchema.virtual('friends')
 	.get ->
@@ -253,20 +255,6 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 					done
 						err: err
 						friend: friend
-
-userSchema.methods.getNotifications = ->
-	@notifications.sort (a, b) ->
-		unless a[0] instanceof Date
-			warn a[0] + " n'est pas de type Date"
-		unless b[0] instanceof Date
-			warn b[0] + " n'est pas de type Date"
-		if a[0] < b[0]
-			-1
-		else if a[0] > b[0]
-			1
-		else
-			0
-	@notifications || []
 
 userSchema.methods.getFriends = (done) ->
 	if @friends? and @friendAsks?

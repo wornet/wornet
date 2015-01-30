@@ -59,6 +59,10 @@ UserPackage =
 				req.user.numberOfFriends = friends.length
 				req.user.friends = friends
 				req.user.friendAsks = friendAsks
+				req.session.user.friends = friends
+				req.session.user.friendAsks = friendAsks
+				req.session.friends = friends
+				req.session.friendAsks = friendAsks
 				done err
 
 	askForFriend: (id, req, done) ->
@@ -76,6 +80,7 @@ UserPackage =
 							dataWithUser = username: jd 'span.username ' + req.user.fullName
 							NoticePackage.notify [data.friend.askedTo], null,
 								action: 'askForFriend'
+								askForFriend: req.user
 								user: req.user.publicInformations()
 								id: data.friend.id
 						if empty data.err
@@ -83,9 +88,16 @@ UserPackage =
 								if err
 									data.err = err
 								if user
-									req.user.friendAsks[data.friend.id] = user
-									req.session.user.friendAsks = req.user.friendAsks
-									req.cacheFlush 'friends'
+									req.session.reload (err) ->
+										if err
+											throw err
+										req.cacheFlush 'friends'
+										req.user.friendAsks[data.friend.id] = user
+										req.session.user.friendAsks = req.user.friendAsks
+										req.session.friendAsks = req.user.friendAsks
+										req.session.save (err) ->
+											if err
+												throw err
 								next()
 						else
 							next()
@@ -127,6 +139,8 @@ UserPackage =
 									friend.numberOfFriends = count
 									friend.save()
 						delete req.user.friendAsks[id]
+						delete req.session.user.friendAsks[id]
+						delete req.session.friendAsks[id]
 						if status is 'accepted'
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
@@ -178,6 +192,10 @@ UserPackage =
 							if isMe or !req.user? or empty req.user.friendAsks
 								askedForFriend = false
 							else
+								console.log [
+									req.user.friendAsks.has hashedId: cesarLeft profile.id
+									req.session.friendAsks.has hashedId: cesarLeft profile.id
+								]
 								askedForFriend = req.user.friendAsks.has hashedId: cesarLeft profile.id
 							if isMe or !req.user? or empty friends
 								isAFriend = false

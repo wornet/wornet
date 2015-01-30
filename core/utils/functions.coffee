@@ -260,6 +260,32 @@ module.exports =
 					writable: true
 					configurable: true
 
+
+	###
+	Get listed notifications
+
+	@param notifications array
+	@param friend asks map
+
+	@return ordered notifications list
+	###
+	getNotifications: (notifications, friendAsks = {}) ->
+		for id, friend of friendAsks
+			if friend.askedTo
+				notifications.push [id, friend, id]
+		notifications.sort (a, b) ->
+			unless a[0] instanceof Date
+				warn a[0] + " n'est pas de type Date"
+			unless b[0] instanceof Date
+				warn b[0] + " n'est pas de type Date"
+			if a[0] < b[0]
+				-1
+			else if a[0] > b[0]
+				1
+			else
+				0
+		notifications
+
 	###
 	Return a stack trace as string or parse a given stack trace
 	@param string|Error error (optionnal)
@@ -267,8 +293,9 @@ module.exports =
 	@return string
 	###
 	trace: (message) ->
-		message ||= (new Error).stack
-		message = strval message
+		message.stack ||= (new Error).stack
+		message = strval message.stack
+		console['log'] message
 		if config.debug and config.debug.skipJsFiles
 			message = message.replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
 		message
@@ -279,14 +306,14 @@ module.exports =
 
 	@return void
 	###
-	log: (message) ->
+	log: (message, method = 'log') ->
 		if ! config.env or config.env.development
-			console['log'] '==========================\n'
-			console['log'] message
-			console['log'] '\n--------------------------\n'
+			console['log'] '=========================='
+			console[method] message
+			console['log'] '--------------------------'
 			Date.log()
-			console['log'] trace(message) +
-			'\n=========================='
+			# console['log'] trace message
+			console['log'] '=========================='
 	###
 	Display a warning message and stack trace
 	@param mixed message or vairbale to print in console warn
@@ -297,11 +324,7 @@ module.exports =
 		message = trace message
 		if gitlab
 			GitlabPackage.error message
-		console['warn'] message
-		console['log'] '--------------------------\n'
-		Date.log()
-		console['log'] trace(message)
-
+		log message, 'warn'
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
 	@param Date if you specify a date, the time will be extracted from it, else current timestamp is returned
@@ -580,9 +603,9 @@ module.exports =
 	updateUser: (user, update, done) ->
 		unless user instanceof User
 			user = user.user
-		for key, val of update
-			user[key] = val
-		# extend user, update
+		# for key, val of update
+		# 	user[key] = val
+		extend user, update
 		try
 			User.updateById user._id, update, done
 		catch err

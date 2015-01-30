@@ -194,6 +194,13 @@ module.exports = (app, port) ->
 				if key is null
 					@session.cache = {}
 				else
+					if key is 'friends'
+						delete @user.friends
+						delete @user.friendAsks
+						delete @session.user.friends
+						delete @session.user.friendAsks
+						delete @session.friends
+						delete @session.friendAsks
 					delete @session.cache[key]
 			# get friends of the user logged in
 			getFriends: (done) ->
@@ -201,7 +208,7 @@ module.exports = (app, port) ->
 				@cache 'friends', (done) ->
 					user.getFriends (err, friends, friendAsks) ->
 						done err, [friends, friendAsks]
-				, (err, result) ->
+				, (err, result, fromCache) ->
 					if err
 						done err, {}, {}
 					else
@@ -210,19 +217,27 @@ module.exports = (app, port) ->
 						done err, friends, friendAsks
 			# add a friend to the current user
 			addFriend: (user) ->
-				@user.friends.push user
-				@user.numberOfFriends = @user.friends.length
-				@session.user.friends = @user.friends
-				@session.user.numberOfFriends = @session.user.friends.length
+				req = @
+				@session.reload (err) ->
+					if err
+						throw err
+					req.cacheFlush 'friends'
+					req.user.friends.push user
+					req.user.numberOfFriends = req.user.friends.length
+					req.session.user.friends = req.user.friends
+					req.session.friends = req.user.friends
+					req.session.user.numberOfFriends = req.session.user.friends.length
+					req.session.save (err) ->
+						if err
+							throw err
 			# delete a notification
 			deleteNotification: (id) ->
-				if @session.user.notifications
+				if @session.notifications
 					notifications = []
-					for notification in @session.user.notifications
+					for notification in @session.notifications
 						unless notification[0] is id
 							notifications.push notification
-					@session.user.notifications = notifications
-					@user.notifications = notifications
+					@session.notifications = notifications
 					done null, notifications
 				else
 					done new PublicError s("Aucune notification")
@@ -357,6 +372,7 @@ module.exports = (app, port) ->
 						params[1].err = strval params[1].err
 					else
 						delete params[1].err
+				@locals.notifications = getNotifications @req.session.notifications || [], @req.session.friendAsks
 				@safeHeader ->
 					render.apply res, params
 			end: ->
