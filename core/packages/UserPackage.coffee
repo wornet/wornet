@@ -192,10 +192,6 @@ UserPackage =
 							if isMe or !req.user? or empty req.user.friendAsks
 								askedForFriend = false
 							else
-								console.log [
-									req.user.friendAsks.has hashedId: cesarLeft profile.id
-									req.session.friendAsks.has hashedId: cesarLeft profile.id
-								]
 								askedForFriend = req.user.friendAsks.has hashedId: cesarLeft profile.id
 							if isMe or !req.user? or empty friends
 								isAFriend = false
