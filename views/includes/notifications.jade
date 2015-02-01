@@ -15,6 +15,7 @@ mixin notifications(classes)
 					- var askingFriend = objectToUser(notification[1])
 					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 						i.date(data-date=trim(notification[0], '"'))
+							|&nbsp;
 						| &nbsp; 
 						if askingFriend && askingFriend.hashedId
 							img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
@@ -32,11 +33,13 @@ mixin notifications(classes)
 			li(ng-repeat="notification in notifications" ng-switch="notification[3]")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					i.date(data-date="{{ notification[0] }} ")
+						|&nbsp;
 					| &nbsp; 
 					=" "
 					span(ng-bind-html="notification[1]")
 				a(ng-switch-when="askForFriend" href="/notification/{{ $index }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
 					i.date(data-date="{{ notification[0] }} ")
+						|&nbsp;
 					| &nbsp; 
 					img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].name.full }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].name.full }}").thumb
 					=" "
@@ -50,5 +53,6 @@ mixin notifications(classes)
 						=s("Ignorer")
 				a(ng-switch-default href="/notification/{{ $index }}")
 					i.date(data-date="{{ notification[0] }} ")
+						|&nbsp;
 					| &nbsp; 
 					span(ng-bind-html="notification[1]")

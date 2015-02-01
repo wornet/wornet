@@ -7,6 +7,7 @@
 				- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
 				.shift
 					i.date(data-date=trim(Date.fromId(id), '"'))
+						|&nbsp;
 					br
 					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 					br

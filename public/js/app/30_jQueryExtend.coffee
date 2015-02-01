@@ -48,7 +48,7 @@ $.fn.extend
 			$date = $date.find '[data-date]:first'
 		date = $date.data 'date'
 		if date and date.length
-			date
+			date.replace /["']/g, ''
 		else
 			defaultValue
 	# Get date if the element contains [data-date] within it or its children

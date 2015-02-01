@@ -27,6 +27,7 @@
 			=s("posté chez")
 			+link("/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}", "{{ status.at.name.full }}")
 	.date(data-date="{{ status.date }}")
+		|&nbsp;
 	.status-content
 		.alert.alert-info.glued(ng-if="status.status === 'blocked'")
 			=s("Ce contenu a été bloqué.")
