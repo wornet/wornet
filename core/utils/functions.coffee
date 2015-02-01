@@ -511,8 +511,11 @@ module.exports =
 	@return string text without spaces
 	###
 	trim: (str, charlist = '\\s') ->
-		str += ''
-		str.replace(new RegExp('^' + charlist + '+', 'g'), '').replace(new RegExp(charlist + '+$', 'g'), '')
+		begin = new RegExp '^' + charlist + '+', 'g'
+		end = new RegExp charlist + '+$', 'g'
+		strval str
+			.replace begin, ''
+			.replace end, ''
 
 	###
 	Convert a date form input into a Date object
@@ -521,8 +524,7 @@ module.exports =
 	@return Date output same date
 	###
 	inputDate: (str) ->
-		str = strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
-		new Date str
+		new Date strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
 
 	###
 	Iterate a value with a callback if value has an `each` method

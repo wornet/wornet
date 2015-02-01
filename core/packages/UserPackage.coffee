@@ -2,6 +2,21 @@
 
 UserPackage =
 
+	getAlbums: (userIds, done) ->
+		Album.find
+			user: $in: userIds
+		.sort _id: 'asc'
+		.exec (err, albums) ->
+			if err
+				done err
+			else
+				result = {}
+				for id in userIds
+					result[id] = []
+				for album in albums
+					result[album.user].push album
+				done null, result
+
 	search: ->
 		for arg in arguments
 			if arg instanceof mongoose.Types.ObjectId

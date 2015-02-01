@@ -257,15 +257,28 @@ module.exports = (router) ->
 	router.post '/shutter/close', (req, res) ->
 		toggleShutter req, res, false
 
+	router.get '/albums/with/:owner', (req, res) ->
+		# Get albums list from the user logged in and the owner of displayed profile
+		userIds = [req.user.id]
+		owner = cesarRight req.params.owner
+		if req.user.id isnt owner
+			userIds.push owner
+		else
+			owner = null
+		UserPackage.getAlbums userIds, (err, albums) ->
+			data =
+				err: err
+				albums: albums[req.user.id]
+			if owner
+				data.withAlbums = albums[owner]
+			res.json data
+
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
-		Album.find
-			user: req.user.id
-		.sort _id: 'asc'
-		.exec (err, albums) ->
+		UserPackage.getAlbums [req.user.id], (err, albums) ->
 			res.json
 				err: err
-				albums: albums
+				albums: albums[req.user.id]
 
 	# Display images in an album
 	router.get '/album/:id', (req, res) ->

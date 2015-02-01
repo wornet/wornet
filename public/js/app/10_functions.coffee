@@ -271,10 +271,13 @@ getAlbumsFromServer = (done) ->
 		window.getAlbumsFromServer.waitingCallbacks.push done
 	else
 		window.getAlbumsFromServer.waitingCallbacks = [done]
-		Ajax.get '/user/albums', (data) ->
+		at = (getData 'at') || ''
+		if at
+			at = '/with/' + at
+		Ajax.get '/user/albums' + at, (data) ->
 			err = data.err || null
 			if data.albums
-				albums = data.albums
+				albums = data.withAlbums || data.albums
 				sessionStorage.albums = JSON.stringify albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
 				done err, albums
@@ -288,12 +291,13 @@ getAlbumsFromServer = (done) ->
 # Get albums from local storage or server
 getAlbums = (done) ->
 	albums = null
-	try
-		albums = objectResolve JSON.parse sessionStorage.albums
-	catch e
-		albums = null
-	if typeof(albums) isnt 'object'
-		albums = null
+	if exists '.myMedias'
+		try
+			albums = objectResolve JSON.parse sessionStorage.albums
+		catch e
+			albums = null
+		if typeof(albums) isnt 'object'
+			albums = null
 	if albums is null
 		getAlbumsFromServer done
 	else
