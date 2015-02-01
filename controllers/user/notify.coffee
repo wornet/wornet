@@ -31,10 +31,8 @@ module.exports = (router) ->
 					res.json()
 				else
 					err = new PublicError s("Vous ne pouvez discuter qu'avec vos amis, si vous avez envoyé une demande, il faut d'abord qu'elle soit validée.")
-					log err
 					res.serverError err
 		catch err
-			log err
 			res.serverError err
 
 	router.get '/read/:notification', (req, res) ->

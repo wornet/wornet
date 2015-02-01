@@ -295,9 +295,10 @@ module.exports =
 	@return string
 	###
 	trace: (message) ->
-		message.stack ||= (new Error).stack
-		message = strval message.stack
-		console['log'] message
+		if message and message.stack
+			message = message.stack
+		else
+			message += '\n' + (new Error).stack.replace /^Error:/g, 'Stack trace:'
 		if config.debug and config.debug.skipJsFiles
 			message = message.replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
 		message
@@ -314,7 +315,7 @@ module.exports =
 			console[method] message
 			console['log'] '--------------------------'
 			Date.log()
-			# console['log'] trace message
+			console['log'] trace message
 			console['log'] '=========================='
 	###
 	Display a warning message and stack trace
@@ -323,7 +324,6 @@ module.exports =
 	@return void
 	###
 	warn: (message, gitlab = true) ->
-		message = trace message
 		if gitlab
 			GitlabPackage.error message
 		log message, 'warn'
