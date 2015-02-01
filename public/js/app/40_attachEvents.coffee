@@ -252,10 +252,10 @@ $.each [
 	]
 	[
 		'click'
-		'[data-click]'
+		'[data-click], [ng-attr-data-click]'
 		($btn) ->
 			i = 0
-			params = while typeof (param = $btn.data("params[" + (i++) + "]")) isnt "undefined"
+			params = while typeof (param = $btn.data("param-" + (i++))) isnt "undefined"
 				param
 			$target = $ $btn.data 'target'
 			$target[$btn.data 'click'].apply $target, params
@@ -263,7 +263,7 @@ $.each [
 	]
 	[
 		'click'
-		'[data-ask-for-friend]'
+		'[data-ask-for-friend], [ng-attr-data-ask-for-friend]'
 		($btn, e) ->
 			Ajax.post '/user/friend', data: userId: $btn.data 'ask-for-friend'
 			if $btn.is '.destroyable'

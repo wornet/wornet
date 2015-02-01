@@ -7,6 +7,15 @@
 *
 	box-sizing(border-box)
 
+input
+.btn
+.input-group
+.form-control
+.nav-tabs > li > a
+.well
+.alert
+.navbar
+	border-radius(0)
 
 // Clear both
 .cb
@@ -23,6 +32,7 @@ body
 	// Police de charactères.
 	font 14px/1.4 $fonts
 	padding-bottom $footerHeight
+	background $lightGray
 	// Bloquage de la séléction sur tous les navigateurs.
 	// -webkit-touch-callout none
 	// user-select(none)
@@ -150,20 +160,30 @@ a
 	color white
 
 #navbar
+	font-size 14px
 	background $orange
 
 .navbar a
+	font-weight bold
 	color inherit
 	text-decoration none
 	display inline
 	transition(all .2s)
 	&:hover
-		color $orange
+		background $darkOrange
 
+.navbar
+.nav > li > a
+.navbar > li > a
+	height $headerHeight
+	line-height $headerHeight / 2
 
 #underbar
-	background $lightGray
-	color $black
+	font-size 14px
+	font-weight bold
+	background $nearlyBlack
+	box-shadow(inset 0 1px 4px -2px $black)
+	color white
 	ul.navbar-right
 		margin-right 0
 	.navbar-form label
@@ -171,9 +191,11 @@ a
 
 .pill
 	display inline-block
-	background $black
-	color $lightGray
-	padding 0 9px 0 8px
+	background white
+	color $orange
+	font-size 12px
+	line-height 20px
+	padding 1px 8px 1px 7px
 	border-radius(100%)
 
 #search
@@ -255,7 +277,7 @@ select.form-control
 .btn-primary:focus
 .btn:hover
 .btn-primary:hover
-	background-linear-gradient(top, #ffea20, 10%, #ff8520, 90%)
+	background $gray
 
 .btn
 .btn-primary
@@ -266,10 +288,10 @@ select.form-control
 
 	// Paramètres relatif au texte.
 	font-weight bold
-	color #000
+	color white
 
 	// Fond
-	background-linear-gradient(top, #ffda00, 10%, #ff7500, 90%)
+	background $darkGray
 
 	&.btn-plain
 		width 100%
@@ -285,7 +307,7 @@ img#logo
 
 label
 	font-weight normal
-	color $linkcolor
+	color $linkColor
 	input[type="checkbox"]
 		position relative
 		top 2px
@@ -322,33 +344,35 @@ label
 
 	a
 		display block
-		color $black
+		background white
+		color $nearlyBlack
 		padding $mainPadding
 		&:hover
 			text-decoration none
-			background $nearlyWhite
+			background $gray
 
 	.nav
-		margin 0 0 0 (- $shutterBorderWidth)
-		background $ultraLight
+		margin 0
 		a
-			height 52px
+			color white
+			background $nearlyBlack
+			height $headerHeight
 			line-height 32px
 			text-align right
 			font-size 18px
-			border-left $shutterBorderWidth solid $darkOrange
+			// border-left $shutterBorderWidth solid $darkOrange
 			.glyphicon
 				top 2px
 
 	.inner-shutter
 		height 100%
 		background white
-		border-left $shutterBorderWidth solid $darkGray
+		// border-left $shutterBorderWidth solid $darkGray
 
 	.footer
-		color $black
+		color $darkGray
 		border 1px solid $lightGray
-		border-radius(4px)
+		// border-radius(4px)
 		padding $mainPadding
 		margin $mainPadding
 
@@ -383,7 +407,7 @@ h2
 
 .album
 	background $ultraLightOrange
-	border-radius(4px)
+	// border-radius(4px)
 	padding $smallPadding
 	transition(.2s all)
 	margin 0 $mainPadding $mainPadding 0
@@ -405,12 +429,12 @@ h2
 		size(2 * (50 + $smallPadding), 2 * (50 + $smallPadding))
 		img
 			margin  0 $smallPadding $smallPadding 0
-			size(50px, 50px)
+			size($thumbWidth, $thumbHeight)
 
 .upload-container
 	margin-top $mainPadding
 	position relative
-	border-radius(4px)
+	// border-radius(4px)
 	border 2px solid $orange
 	box-sizing border-box
 	height 68px
@@ -462,7 +486,7 @@ ul.photos-thumbs
 	height $thumbHeight
 
 .date
-	color $black
+	color $darkGray
 
 .friend-ask
 	.if-accepted
@@ -573,7 +597,7 @@ fieldset.tab .btn
 	background white
 	border 1px solid #ddd
 	border-top-color transparent
-	border-radius(0 0 4px 4px)
+	// border-radius(0 0 4px 4px)
 
 .modal-footer .btn
 	margin 0
@@ -661,7 +685,7 @@ fieldset.tab .btn
 		line-height $fieldLineHeight + $mobileIncrease*0.5
 		display block
 		background rgba(255, 255, 255, 0.8)
-		border-radius(4px)
+		// border-radius(4px)
 
 	span.form-control
 	div.form-control

@@ -66,7 +66,7 @@ UserPackage =
 				done err
 
 	askForFriend: (id, req, done) ->
-		if empty req.body.userId
+		if empty id
 			done err: s("Utilisateur introuvable")
 		else
 			@refreshFriends req, (err) ->
