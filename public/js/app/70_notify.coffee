@@ -37,7 +37,7 @@ waitForNotify = ->
 										'<img class="thumb" src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" data-id="' + friend.hashedId + '">' +
 									'</a>' +
 									'<div class="shift">' +
-										'<i class="date" data-date="' + id + '"></i>' +
+										'<i class="date" data-date="' + id + '">&nbsp;</i>' +
 										'<br>' +
 										s("{username} souhaite vous ajouter à ses amis.", dataWithUser) +
 										'<br>' +

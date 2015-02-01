@@ -29,6 +29,7 @@
 				| &nbsp; {{ loadedMedia.user.name.full }}
 			| &nbsp; | &nbsp; 
 		.date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
+			|&nbsp;
 		a.info(ng-if="loadedMedia.concernMe" ng-click="deleteMedia()")
 			=s("Supprimer ce média")
 		button.btn(type='button', data-dismiss='modal')
