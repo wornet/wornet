@@ -26,10 +26,9 @@ describe "Signin", ->
 				shouldExists '.tooltip:hidden'
 				shouldNotExists '.tooltip:visible'
 				$form = w.$ '#signin'
-				$form.find('input[name="email"]').set('invalid').focus()
-				delay 1, ->
-					shouldExists '.tooltip:visible'
-					$tester.form $form, fulfill, reject
+				$form.find('input[name="email"]').set('invalid').focus().click()
+				shouldExists '.tooltip:visible'
+				$tester.form $form, fulfill, reject
 
 			.then (fulfill, reject) ->
 				expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid'
