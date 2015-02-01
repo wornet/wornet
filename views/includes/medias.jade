@@ -1,5 +1,10 @@
 .well.loading(ng-controller="MediasCtrl")
-	h3=strtoupper(s("Mes médias"))
+	if isMe
+		h3.myMedias
+			=strtoupper(s("Mes médias"))
+	else
+		h3
+			=strtoupper(s("Médias de {owner}", { owner: profile.firstName }))
 	.album(ng-repeat="album in albums" ng-click="selectAlbum(album)" ng-if=(config.wornet.media.displayAlbumTitle ? undefined : "album.preview && album.preview.length"))
 		if config.wornet.media.displayAlbumTitle
 			h4 {{ album.name }}

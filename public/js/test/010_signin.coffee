@@ -28,9 +28,8 @@ describe "Signin", ->
 				$form = w.$ '#signin'
 				$form.find('input[name="email"]').set('invalid').focus().click()
 				existsNow = w.exists '.tooltip:visible'
-				delay 200, ->
-					expect(existsNow || w.exists '.tooltip:visible').toBe true, '.tooltip:visible must exist now or after 200ms'
-					$tester.form $form, fulfill, reject
+				shouldExists '.tooltip:visible'
+				$tester.form $form, fulfill, reject
 
 			.then (fulfill, reject) ->
 				expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid'
