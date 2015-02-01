@@ -6,10 +6,6 @@ UserErrors =
 	INVALID_PASSWORD_CONFIRM: s("Veuillez entrer des mots de passe identiques.")
 	AGREEMENT_REQUIRED: s("Veuillez prendre connaissance et accepter les conditions générales d’utilisation et la politique de confidentialité.")
 
-inputDate = (str) ->
-	str = strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
-	new Date(str)
-
 module.exports = (router) ->
 
 	templateFolder = 'user'
@@ -47,6 +43,7 @@ module.exports = (router) ->
 	# When signin step 2 page displays
 	pm.page '/signin', (req) ->
 		# Get errors in flash memory (any if AJAX is used and works on client device)
+		userTexts: userTexts()
 		signinAlerts: req.getAlerts 'signin' # Will be removed when errors will be displayed on the next step
 
 	router.get '/signin/with/:email', (req, res) ->

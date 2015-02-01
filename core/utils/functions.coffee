@@ -515,6 +515,16 @@ module.exports =
 		str.replace(new RegExp('^' + charlist + '+', 'g'), '').replace(new RegExp(charlist + '+$', 'g'), '')
 
 	###
+	Convert a date form input into a Date object
+	@param string input date
+
+	@return Date output same date
+	###
+	inputDate: (str) ->
+		str = strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
+		new Date str
+
+	###
 	Iterate a value with a callback if value has an `each` method
 	@param value to be iterated
 	@param function callback to iterate on value

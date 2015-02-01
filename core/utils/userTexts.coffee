@@ -12,6 +12,7 @@ module.exports = ->
 
 	firstName: s("Prénom")
 	lastName: s("Nom")
+	birthDate: s("Date de naissance")
 	email: s("Adresse e-mail")
 	password: s("Mot de passe")
 	city: s("Ville actuelle")
