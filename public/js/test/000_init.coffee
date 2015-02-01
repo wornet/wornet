@@ -35,7 +35,11 @@ class Sequence
 				@_state = 'FAILED'
 				@_catch.apply @, arguments
 			params.unshift fulfill.bind(@), reject.bind(@)
-			@_fcts[@_index++].apply @, params
+			try
+				@_fcts[@_index++].apply @, params
+			catch e
+				console['warn'] e
+				reject.bind(@) e
 		else
 			@_state = 'SUCCEEDED'
 	constructor: (fcts) ->
