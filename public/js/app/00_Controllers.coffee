@@ -486,9 +486,10 @@ Controllers =
 		$scope.notifications = {}
 
 		$scope.$on 'receiveNotification', (e, notification) ->
-			$scope.notifications[notification.id] = notification
-			refreshScope $scope
-			delay 1, refreshPill
+			unless exists 'a[href="/notification/' + notification.id + '"]'
+				$scope.notifications[notification.id] = notification
+				refreshScope $scope
+				delay 1, refreshPill
 			return
 
 		$scope.$on 'setNotifications', (e, notifications) ->

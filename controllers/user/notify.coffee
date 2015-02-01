@@ -39,8 +39,10 @@ module.exports = (router) ->
 
 	router.get '/read/:notification', (req, res) ->
 		# Delete notification when read
+		###
 		req.deleteNotification req.params.id, (err, notifications) ->
 			if err
 				res.serverError err
 			else
 				res.json notifications: notifications
+		###

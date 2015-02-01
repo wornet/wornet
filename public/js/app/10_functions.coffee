@@ -306,8 +306,11 @@ loggedFriends = (friends) ->
 		$ul = $ @
 		$ul.find('span.pill').text friends.length
 		ul = ''
+		ids = []
 		$.each friends, ->
-			ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; ' + safeHtml(@name.full) + ' &nbsp; <span class="glyphicon glyphicon-comment"></span></a></li>'
+			if ids.indexOf(@hashedId) is -1
+				ids.push @hashedId
+				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; ' + safeHtml(@name.full) + ' &nbsp; <span class="glyphicon glyphicon-comment"></span></a></li>'
 			return
 		$ul.find('.dropdown-menu').html(ul).find('li a').each (key) ->
 			$(@).click ->
