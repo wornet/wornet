@@ -119,10 +119,12 @@ NoticePackage =
 					for notification in notifications
 						if notification[1]
 							if notification[1].askForFriend?
-								req.cacheFlush 'friends'
-								req.user.friendAsks[notification[1].id] = notification[1].askForFriend
-								req.session.user.friendAsks = req.user.friendAsks
-								req.session.friendAsks = req.user.friendAsks
+								test = hashedId: notification[1].askForFriend.hashedId
+								unless req.session.friendAsks.has(test) or req.session.friends.has(test)
+									req.cacheFlush 'friends'
+									req.user.friendAsks[notification[1].id] = notification[1].askForFriend
+									req.session.user.friendAsks = req.user.friendAsks
+									req.session.friendAsks = req.user.friendAsks
 								delete notification[1].askForFriend
 							if notification[1].userId?
 								delete notification[1].userId
