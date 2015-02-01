@@ -295,10 +295,9 @@ module.exports =
 	@return string
 	###
 	trace: (message) ->
-		if message and message.stack
-			message = message.stack
-		else
-			message += '\n' + (new Error).stack.replace /^Error:/g, 'Stack trace:'
+		if message is undefined
+			throw new Error 'Undefined trace'
+		message += '\n' + (message.stack || (new Error).stack.replace /^Error:/g, 'Stack trace:')
 		if config.debug and config.debug.skipJsFiles
 			message = message.replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
 		message
