@@ -238,7 +238,7 @@
 
         "upload": {
             "ttl": 172800,
-            "maxsize": 5000000,
+            "maxsize": 12000000,
             "timeout": 18000
         },
 

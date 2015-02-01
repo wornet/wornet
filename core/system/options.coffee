@@ -201,7 +201,8 @@ module.exports = (app, port) ->
 						delete @session.user.friendAsks
 						delete @session.friends
 						delete @session.friendAsks
-					delete @session.cache[key]
+					if @session.cache
+						delete @session.cache[key]
 			# get friends of the user logged in
 			getFriends: (done) ->
 				if @session.friends and @session.friendAsks

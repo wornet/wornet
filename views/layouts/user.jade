@@ -33,7 +33,7 @@ block nav
 	include ../includes/shutter
 	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation' class=(user.openedShutter ? 'opened-shutter' : false)): .container-fluid
 		h1.col-xs-12
-			=upperTitle
+			!=upperTitle
 		.navbar-header
 			if user
 				button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
@@ -42,7 +42,7 @@ block nav
 					span.icon-bar
 					span.icon-bar
 			a.navbar-brand(href='#')
-				=upperTitle
+				!=upperTitle
 		if user
 			#mainLinks.collapse.navbar-collapse
 				ul.nav.navbar-nav.navbar-left.col-sm-6
@@ -94,8 +94,18 @@ block nav
 						a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							| {{ user.name.full }}
-						a.col-xs-3.chat-with(ng-click="chatWith(user)")
+						a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
 							+glyph('comment')
+						a.col-xs-3.chat-with(
+							ng-if="! user.isAFriend && ! user.askedForFriend"
+							href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
+							data-target=".errors"
+							data-click="success"
+							data-param-0=s("Demande envoyée à {{ user.name.full }}")
+							data-ask-for-friend="{{ user.hashedId }}"
+						)
+							+glyph('plus')
+						span.col-xs-3.chat-with(ng-if="user.isAFriend && ! user.askedForFriend")
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding

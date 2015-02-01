@@ -513,7 +513,9 @@ module.exports = (router) ->
 				res.serverError err
 			else
 				res.json users: users.map (user) ->
-					user.publicInformations()
+					extend user.publicInformations(),
+						isAFriend: (req.session.friends || []).has id: user.id
+						askedForFriend: (req.session.friendAsks || {}).has hashedId: user.hashedId
 
 	router.get '/confirm/:hashedId/:token', (req, res) ->
 		id = cesarRight req.params.hashedId
