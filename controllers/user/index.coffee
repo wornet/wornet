@@ -35,7 +35,6 @@ module.exports = (router) ->
 		model = {}
 		auth.logout req, res
 		if req.body.goingTo?
-			log req.body.goingTo
 			req.goingTo req.body.goingTo 
 		res.redirect '/'
 
