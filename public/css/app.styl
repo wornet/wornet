@@ -15,6 +15,7 @@ input
 .well
 .alert
 .navbar
+.dropdown-menu
 	border-radius(0)
 
 // Clear both
@@ -66,6 +67,15 @@ h3
 	color $orange
 	text-shadow 0 1px 1px white
 	font-size 18px
+
+.alert-warning
+	background $warningColor
+.alert-success
+	background $successColor
+.alert-info
+	background $infoColor
+.alert-danger
+	background $dangerColor
 
 #logo-content
 .main-padding
@@ -155,6 +165,9 @@ a
 	cursor pointer
 
 
+.dropdown-menu
+	border none
+
 .navbar
 	font-size 17px
 	color white
@@ -162,6 +175,27 @@ a
 #navbar
 	font-size 14px
 	background $orange
+	.dropdown-menu
+	.open > a
+		background $darkOrange
+	.dropdown-menu a
+		&:hover
+		&:focus
+		&:active
+			background lighten($darkOrange, 20%)
+	.navbar
+	.nav
+		& > li > a
+			height $headerHeight
+			line-height $headerHeight / 2
+	& li > a
+	.open > a
+		color white
+		font-weight bold
+		&:hover
+		&:focus
+		&:active
+			background $darkOrange
 
 .navbar a
 	font-weight bold
@@ -171,12 +205,6 @@ a
 	transition(all .2s)
 	&:hover
 		background $darkOrange
-
-.navbar
-.nav > li > a
-.navbar > li > a
-	height $headerHeight
-	line-height $headerHeight / 2
 
 #underbar
 	font-size 14px
@@ -188,6 +216,13 @@ a
 		margin-right 0
 	.navbar-form label
 		display block
+	.glyphicon
+		color $linkColor
+	a
+		&:hover
+		&:focus
+		&:active
+			background lighten($nearlyBlack, 20%)
 
 .pill
 	display inline-block
@@ -199,7 +234,7 @@ a
 	border-radius(100%)
 
 #search
-	margin 2px 0 -1px
+	margin 4px 0 -1px
 	height 32px
 
 .ref-color
@@ -307,7 +342,7 @@ img#logo
 
 label
 	font-weight normal
-	color $linkColor
+	// color $linkColor
 	input[type="checkbox"]
 		position relative
 		top 2px
@@ -334,7 +369,7 @@ label
 	right 0
 	size(0, 100%)
 	overflow hidden
-	transition width .2s
+	transition(width .2s)
 
 	&.opened-shutter
 	.inner-shutter
@@ -345,6 +380,7 @@ label
 	a
 		display block
 		background white
+		transition(background .2s)
 		color $nearlyBlack
 		padding $mainPadding
 		&:hover
@@ -356,6 +392,9 @@ label
 		a
 			color white
 			background $nearlyBlack
+			transition(background .2s)
+			&:hover
+				background lighten($nearlyBlack, 10%)
 			height $headerHeight
 			line-height 32px
 			text-align right
@@ -408,7 +447,7 @@ h2
 .album
 	background $ultraLightOrange
 	// border-radius(4px)
-	padding $smallPadding
+	padding 0 $smallPadding $smallPadding 0
 	transition(.2s all)
 	margin 0 $mainPadding $mainPadding 0
 	cursor pointer
@@ -427,8 +466,11 @@ h2
 
 	.preview
 		size(2 * (50 + $smallPadding), 2 * (50 + $smallPadding))
+		padding 0
 		img
-			margin  0 $smallPadding $smallPadding 0
+			display block
+			float left
+			margin $smallPadding 0 0 $smallPadding
 			size($thumbWidth, $thumbHeight)
 
 .upload-container
@@ -764,4 +806,3 @@ fieldset.tab .btn
 
 			img
 				size(30px, 30px)
-				margin  0 $smallPadding $smallPadding 0
