@@ -65,7 +65,7 @@ MailPackage =
 						warn err
 					else
 						console['log'] ["Send mail succeed", mailOptions]
-						log info
+						log info if info
 
 		if transporter is null
 			throw new Error errorMessage
