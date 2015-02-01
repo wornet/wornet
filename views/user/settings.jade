@@ -16,6 +16,10 @@ block body
 					span
 						=userTexts.lastName
 					+formControl(name="name.last" value=user.lastName)
+				label
+					span
+						=userTexts.birthDate
+					+formControl(type="date" name="birthDate" value=user.birthDate.toString('YYYY-MM-DD'))
 				hr.cb
 				label
 					span

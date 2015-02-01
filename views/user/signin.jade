@@ -65,29 +65,29 @@ block body
 				.col-sm-6.col-xs-12
 					+formControl("name.fisrt")(
 						required
-						title=s("Prénom")
+						title=userTexts.firstName
 						pattern=pattern('simple-text')
 						ng-model="user.name.first"
 						name="name.first"
-						placeholder=s("Prénom")).flash
+						placeholder=userTexts.firstName).flash
 					+formControl("name.last")(
 						required
-						title=s("Nom")
+						title=userTexts.lastName
 						pattern=pattern('simple-text')
 						ng-model="user.name.last"
 						name="name.last"
-						placeholder=s("Nom")).flash
+						placeholder=userTexts.lastName).flash
 					+formControl("birthDate")(
 						required
 						type="date"
-						title=s("Date de naissance")
+						title=userTexts.birthDate
 						min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')
 						max=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
 						ng-model="user.birthDate"
 						name="birthDate"
-						placeholder=s("Date de naissance")
+						placeholder=userTexts.birthDate
 						tooltip!=[
-							s("Date de naissance"),
+							userTexts.birthDate,
 							s("Votre date de naissance est obligatoire. Elle nous permet de vérifier si vous entrez bien dans la tranche d’âge définit par nos conditions générales d’utilisations et permet à vos amis de vous retrouver instantanément.")
 						]).flash
 				.col-sm-6.col-sm-offset-3.col-xs-12
