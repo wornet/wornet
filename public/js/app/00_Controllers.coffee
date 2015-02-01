@@ -604,7 +604,8 @@ Controllers =
 					Ajax.put '/user/video/add', video: url: video
 					return
 				else
-					'<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
+					# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
+					''
 			else
 				if sendMedia
 					$scope.medias.links.push

@@ -269,9 +269,11 @@ module.exports =
 
 	@return ordered notifications list
 	###
-	getNotifications: (notifications, friendAsks = {}) ->
+	getNotifications: (notifications, friendAsks = {}, friends = []) ->
+		friendAskIds = []
 		for id, friend of friendAsks
-			if friend.askedTo
+			if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
+				friendAskIds.push id
 				notifications.push [id, friend, id]
 		notifications.sort (a, b) ->
 			unless a[0] instanceof Date

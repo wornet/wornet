@@ -378,7 +378,7 @@ module.exports = (app, port) ->
 					else
 						delete params[1].err
 				if @req and @req.session
-					@locals.notifications = getNotifications @req.session.notifications || [], @req.session.friendAsks
+					@locals.notifications = getNotifications @req.session.notifications || [], @req.session.friendAsks, @req.session.friends
 				@safeHeader ->
 					render.apply res, params
 			end: ->

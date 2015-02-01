@@ -14,7 +14,7 @@ errors = {}
 
 GitlabPackage =
 	format: (error) ->
-		strval error.stack || error
+		strval error.stack || (error + '\n' + (new Error).stack)
 	enabled: ->
 		config.env.production
 	issue: (error) ->
