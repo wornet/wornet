@@ -6,8 +6,9 @@ block body
 		if isMe
 			include ../includes/friends
 			include ../includes/asks-for-friend
-		//- Photos/Videos
-		include ../includes/medias
+		if isAFriend || isMe
+			//- Photos/Videos
+			include ../includes/medias
 	.col-sm-8.col-xs-12.pad-left
 		+alert(profileAlerts)
 		//- Profile
