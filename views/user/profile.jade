@@ -9,6 +9,9 @@ block body
 		if isAFriend || isMe
 			//- Photos/Videos
 			include ../includes/medias
+		else
+			//- Users
+			include includes/users.jade
 	.col-sm-8.col-xs-12.pad-left
 		+alert(profileAlerts)
 		//- Profile
