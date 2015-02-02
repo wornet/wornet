@@ -115,6 +115,33 @@ ArrayList =
 		else
 			Object.keys(@).length
 
+	unique: (keys = null) ->
+		if keys is null
+			mapper = JSON.stringify
+		else if typeof keys is 'function'
+			mapper = keys
+		else
+			if typeof keys isnt 'object'
+				keys = [keys]
+			mapper = (val) ->
+				JSON.stringify val.values keys
+		if @ instanceof Array
+			index = @map mapper
+			@filter (val, i, arr) ->
+				i is index.lastIndexOf index[i], i
+		else
+			index = {}
+			@each (k) ->
+				index.push mapper @
+			result = {}
+			pos = 0
+			@each (k) ->
+				if pos is index.lastIndexOf index[pos], pos
+					result[k] = @
+				pos++
+			result
+
+
 safeExtend Array.prototype, ArrayList
 safeExtend Object.prototype, ArrayList
 
