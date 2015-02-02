@@ -80,12 +80,12 @@
 					data-ask-for-friend=profile.hashedId
 				)
 					+glyph('plus')
-		if isMe && profile.birthDate
-			if profile.preRegistered()
-				.alert.alert-info(role="info")
-					+glyph('certificate')
-					|&nbsp;
-					=s("Je me suis pré-inscrit")
+		if profile.preRegistered()
+			.alert.alert-info(role="info")
+				+glyph('certificate')
+				|&nbsp;
+				=s("Je me suis pré-inscrit")
+		if ! profile.birthDate
 			if profile.birthCity
 				p
 					- var infos = { date: profile.birthDate.humanDate() }
@@ -95,7 +95,8 @@
 					else
 						- infos.city = profile.birthCity
 						=s("Né à {city}", infos)
-			//- p
+		else
+			p
 				- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
 				if profile.birthCity
 					if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
@@ -106,33 +107,33 @@
 						=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
 				else
 					=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
-			if profile.city
-				p
-					if profile.city.toLowerCase().substr(0, 3) === 'le '
-						=s("Habite au {city}", { city: profile.city.substr(3) })
-					else
-						=s("Habite à {city}", { city: profile.city })
-			if profile.job
-				p
-					if profile.jobPlace
-						=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
-					else
-						=s("{job}", { job: profile.job })
-			else if profile.jobPlace
-				p
-					=s("Travail à {place}", { place: profile.jobPlace })
-			if profile.maritalStatus
-				p
-					=colon(userTexts.maritalStatus)
-					=userTexts[profile.maritalStatus]
-			if profile.loveInterest
-				p
-					=userTexts.loveInterest
-					| 
-					=userTexts[profile.loveInterest]
-			if profile.biography
-				p
-					=userTexts.biography
-					br
-					=profile.biography
+		if profile.city
+			p
+				if profile.city.toLowerCase().substr(0, 3) === 'le '
+					=s("Habite au {city}", { city: profile.city.substr(3) })
+				else
+					=s("Habite à {city}", { city: profile.city })
+		if profile.job
+			p
+				if profile.jobPlace
+					=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
+				else
+					=s("{job}", { job: profile.job })
+		else if profile.jobPlace
+			p
+				=s("Travail à {place}", { place: profile.jobPlace })
+		if profile.maritalStatus
+			p
+				=colon(userTexts.maritalStatus)
+				=userTexts[profile.maritalStatus]
+		if profile.loveInterest
+			p
+				=userTexts.loveInterest
+				| 
+				=userTexts[profile.loveInterest]
+		if profile.biography
+			p
+				=userTexts.biography
+				br
+				=profile.biography
 	.cb
