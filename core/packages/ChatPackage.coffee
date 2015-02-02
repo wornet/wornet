@@ -34,6 +34,9 @@ ChatPackage =
 									userIds.merge recipients.column('recipient').map strval
 									req.getUsersByIds userIds, (err, usersMap) ->
 										if err
+											log
+												userIds: userIds
+												usersMap: usersMap
 											next err
 										else
 											next null, messages.map (message) ->
