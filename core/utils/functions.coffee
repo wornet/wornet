@@ -277,9 +277,17 @@ module.exports =
 				notifications.push [id, friend, id]
 		notifications.sort (a, b) ->
 			unless a[0] instanceof Date
-				warn a[0] + " n'est pas de type Date"
+				d = Date.fromId a[0]
+				if d.isValid()
+					a[0] = d
+				else
+					warn new Error a[0] + " n'est pas de type Date"
 			unless b[0] instanceof Date
-				warn b[0] + " n'est pas de type Date"
+				d = Date.fromId b[0]
+				if d.isValid()
+					b[0] = d
+				else
+					warn new Error b[0] + " n'est pas de type Date"
 			if a[0] < b[0]
 				-1
 			else if a[0] > b[0]
