@@ -116,10 +116,10 @@ ArrayList =
 			Object.keys(@).length
 
 	isFirst: (index) ->
-		if index
-			-1 is @indexOf @[index], index - 1
+		if @ instanceof Array
+			-1 is @slice(0, index).indexOf @[index]
 		else
-			true
+			throw new Error 'isFirst is not implemented for objects'
 
 	unique: (keys = null) ->
 		if keys is null
@@ -133,16 +133,16 @@ ArrayList =
 				JSON.stringify val.values keys
 		if @ instanceof Array
 			index = @map mapper
-			@filter (val, i, arr) ->
+			@filter (val, i) ->
 				index.isFirst i
 		else
-			index = {}
+			index = []
 			@each (k) ->
 				index.push mapper @
 			result = {}
 			pos = 0
 			@each (k) ->
-				index.isFirst pos
+				if index.isFirst pos
 					result[k] = @
 				pos++
 			result
