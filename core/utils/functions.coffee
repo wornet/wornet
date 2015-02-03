@@ -317,13 +317,13 @@ module.exports =
 	@return void
 	###
 	log: (message, method = 'log') ->
-		if ! config.env or config.env.development
-			console['log'] '=========================='
-			console[method] message
-			console['log'] '--------------------------'
-			Date.log()
-			console['log'] trace message
-			console['log'] '=========================='
+		# if ! config.env or config.env.development
+		console['log'] '=========================='
+		console[method] message
+		console['log'] '--------------------------'
+		Date.log()
+		console['log'] trace message
+		console['log'] '=========================='
 	###
 	Display a warning message and stack trace
 	@param mixed message or vairbale to print in console warn
