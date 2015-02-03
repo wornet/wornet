@@ -308,7 +308,6 @@ getAlbums = (done) ->
 loggedFriends = (friends) ->
 	$('.loggedFriends').each ->
 		$ul = $ @
-		$ul.find('span.pill').text friends.length
 		ul = ''
 		ids = []
 		$.each friends, ->
@@ -316,6 +315,7 @@ loggedFriends = (friends) ->
 				ids.push @hashedId
 				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; ' + safeHtml(@name.full) + ' &nbsp; <span class="glyphicon glyphicon-comment"></span></a></li>'
 			return
+		$ul.find('span.pill').text ids.length
 		$ul.find('.dropdown-menu').html(ul).find('li a').each (key) ->
 			$(@).click ->
 				chatService.chatWith [objectResolve friends[key]]

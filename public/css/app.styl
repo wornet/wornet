@@ -219,11 +219,23 @@ a
 		display block
 	.glyphicon
 		color $linkColor
+	.dropdown-menu
+	.open > a
+		background $hoverGray
 	a
 		&:hover
 		&:focus
 		&:active
-			background lighten($nearlyBlack, 20%)
+			background $hoverGray
+	& li > a
+	.open > a
+		color white
+		font-weight bold
+	& li li > a
+		&:hover
+		&:focus
+		&:active
+			background lighten($hoverGray, 10%)
 
 .pill
 	display inline-block
