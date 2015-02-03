@@ -115,6 +115,12 @@ ArrayList =
 		else
 			Object.keys(@).length
 
+	isFirst: (index) ->
+		if index
+			-1 is @indexOf @[index], index - 1
+		else
+			true
+
 	unique: (keys = null) ->
 		if keys is null
 			mapper = JSON.stringify
@@ -128,7 +134,7 @@ ArrayList =
 		if @ instanceof Array
 			index = @map mapper
 			@filter (val, i, arr) ->
-				i is index.lastIndexOf index[i], i
+				index.isFirst i
 		else
 			index = {}
 			@each (k) ->
@@ -136,7 +142,7 @@ ArrayList =
 			result = {}
 			pos = 0
 			@each (k) ->
-				if pos is index.lastIndexOf index[pos], pos
+				index.isFirst pos
 					result[k] = @
 				pos++
 			result
