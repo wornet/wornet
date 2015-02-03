@@ -273,6 +273,7 @@ module.exports = (app, port) ->
 							else
 								idsToFind.push @
 						idsToFind = idsToFind.unique()
+						log idsToFind
 						if idsToFind.length > 0
 							if searchInDataBase
 								User.find _id: $in: idsToFind, (err, otherUsers) ->
