@@ -12,6 +12,11 @@ jasmineComplete = (totalSpecsDefined, specsExecuted, failureCount) ->
 			if data.functionExists
 				console['log'] 'Receive results'
 				$('iframe').remove()
-				window.close()
+				if failureCount isnt 0
+					alert 'There are failures in client-side unit tests'
+				else if totalSpecsDefined isnt specsExecuted
+					alert 'All the specs defined have not been executed'
+				else
+					window.close()
 			else
 				console.warn 'Standalone test page'
