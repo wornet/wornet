@@ -272,6 +272,7 @@ module.exports = (app, port) ->
 								usersMap[@] = objectToUser user
 							else
 								idsToFind.push @
+						idsToFind = idsToFind.unique()
 						if idsToFind.length > 0
 							if searchInDataBase
 								User.find _id: $in: idsToFind, (err, otherUsers) ->
