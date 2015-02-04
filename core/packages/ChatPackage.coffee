@@ -39,17 +39,22 @@ ChatPackage =
 												usersMap: usersMap
 											next err
 										else
-											console.log me
-											next null, messages.map (message) ->
-												message = message.columns ['id', 'content', 'author']
-												addUser = (key, id) ->
-													message[key] = usersMap[id].publicInformations()
-												if equals message.author, me
-													addUser 'to', recipients.findOne(message: message.id).recipient
-												else
-													addUser 'from', message.author
-												delete message.author
-												message
+											next null,
+												messages.map (message) ->
+													message = message.columns ['id', 'content', 'author']
+													addUser = (key, id) ->
+														if usersMap[id]
+															message[key] = usersMap[id].publicInformations()
+														else
+															message.invalid = true
+													if equals message.author, me
+														addUser 'to', recipients.findOne(message: message.id).recipient
+													else
+														addUser 'from', message.author
+													delete message.author
+													message
+												.filter (message) ->
+													! message.invalid
 						else
 							next null, []
 
