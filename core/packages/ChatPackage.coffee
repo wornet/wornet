@@ -48,7 +48,11 @@ ChatPackage =
 														else
 															message.invalid = true
 													if equals message.author, me
-														addUser 'to', recipients.findOne(message: message.id).recipient
+														record = recipients.findOne(message: message.id)
+														if record
+															addUser 'to', record.recipient || null
+														else
+															message.invalid = true
 													else
 														addUser 'from', message.author
 													delete message.author
