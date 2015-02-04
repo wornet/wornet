@@ -154,7 +154,7 @@ NoticePackage =
 					req.session.reload (err) ->
 						res.json
 							notifyStatus: self.TIMEOUT
-							loggedFriends: (req.user.friends || []).find present: true
+							loggedFriends: (req.session.friends || []).find present: true
 						self.remove userId, id
 						delete self.timeouts[userId + '-' + id]
 

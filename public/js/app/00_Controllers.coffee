@@ -211,7 +211,7 @@ Controllers =
 		$scope.$on 'all', (e, messages) ->
 			chats = getChats()
 			messageDates = []
-			usersToChats = {}
+			window.usersToChats = {}
 			for id, chat of chats
 				for user in chat.users
 					usersToChats[user.hashedId] = id
@@ -260,6 +260,7 @@ Controllers =
 			chats[id].messages.push chatData
 			notify id, postData, ->
 				chatData.ok = true
+				return
 			message.content = ""
 			saveChats chats
 			return
@@ -268,6 +269,11 @@ Controllers =
 			chat.minimized = !(chat.minimized || false)
 			saveChats chats
 			return
+
+		unless exists '[ng-controller="StatusCtrl"]'
+			Ajax.get '/user/chat', (data) ->
+				chatService.all data.chat
+				return
 
 		return
 

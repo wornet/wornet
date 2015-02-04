@@ -1,12 +1,14 @@
 .well.loading
 	h3=strtoupper(s("Inviter vos amis sur Wornet"))
 	+form("/invite", "PUT")
-		.input-group
-			+formControl().do-not-loose(
-				name="emails"
-				required
-				pattern=pattern('emailMultiple')
-				placeholder=s("Adresse e-mail de vos amis séparées par des virgules")
-			)
-			span.input-group-btn
-				input(type="submit" value=s("Inviter")).btn
+		label
+			=s("Indiquez les adresses électroniques de vos amis (séparés par des virgules) afin qu'ils puissent vous rejoindre sur le réseau social.")
+			.input-group
+				+formControl().do-not-loose(
+					name="emails"
+					required
+					pattern=pattern('emailMultiple')
+					placeholder=s("Adresse e-mail de vos amis séparées par des virgules")
+				)
+				span.input-group-btn
+					input(type="submit" value=s("Inviter")).btn

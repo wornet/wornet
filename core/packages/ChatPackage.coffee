@@ -39,12 +39,13 @@ ChatPackage =
 												usersMap: usersMap
 											next err
 										else
+											console.log me
 											next null, messages.map (message) ->
 												message = message.columns ['id', 'content', 'author']
 												addUser = (key, id) ->
-													message[key] = usersMap[r.recipient].publicInformations()
+													message[key] = usersMap[id].publicInformations()
 												if equals message.author, me
-													addUser 'to', recipients.findOne message: message.id
+													addUser 'to', recipients.findOne(message: message.id).recipient
 												else
 													addUser 'from', message.author
 												delete message.author
