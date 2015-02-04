@@ -117,18 +117,14 @@ UserPackage =
 						else
 							next()
 
-	setFriendStatus: (req, status, done) ->
-		isRequest = typeof req is 'object' and req.body? and req.body.id?
-		if isRequest
-			id = req.body.id
-		else
-			id = strval req
+	setFriendStatus: (req, id, status, done) ->
+		id = strval id
 		@refreshFriends req, (err) ->
 			if err
 				done err: err
 			else
 				Friend.findOneAndUpdate { _id: id, askedTo: req.user._id }, { status: status }, {}, (err, friend) ->
-					if ! err and friend and isRequest
+					if ! err and friend and typeof req.body? and req.body.id?
 						end = ->
 							req.cacheFlush 'friends'
 							Friend.count

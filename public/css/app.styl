@@ -221,12 +221,10 @@ a
 		color $linkColor
 	.dropdown-menu
 	.open > a
+	a:hover
+	a:focus
+	a:active
 		background $hoverGray
-	a
-		&:hover
-		&:focus
-		&:active
-			background $hoverGray
 	& li > a
 	.open > a
 		color white
@@ -236,6 +234,8 @@ a
 		&:focus
 		&:active
 			background lighten($hoverGray, 10%)
+	.date
+		color $lightGray
 
 .pill
 	display inline-block

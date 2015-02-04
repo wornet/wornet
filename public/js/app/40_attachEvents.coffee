@@ -255,7 +255,7 @@ $.each [
 		'[data-click], [ng-attr-data-click]'
 		($btn) ->
 			i = 0
-			params = while typeof (param = $btn.data("param-" + (i++))) isnt "undefined"
+			params = while typeof (param = $btn.data("param" + (i++))) isnt "undefined"
 				param
 			$target = $ $btn.data 'target'
 			$target[$btn.data 'click'].apply $target, params
@@ -277,32 +277,37 @@ $.each [
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
 			id = $message.data 'id'
+			$img = $message.find 'img'
+			if exists $img
+				userId = $img.data 'id'
+				userUrl = '/user/profile/' + userId+ '/' + encodeURIComponent $img.prop 'alt'
 			if $btn.is '.accept-friend'
-				$friends = $ '#friends'
-				if exists $friends
-					$li = $('<li>').appendTo $friends
-					$a = $message.find 'a'
-					if exists $a
-						$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
-					else
-						$img = $message.find 'img'
-						if exists $img
+				if userId and userId is getData 'at'
+					location.href = '/user/friend/accept/' + id + '?goingTo=' + encodeURIComponent userUrl
+				else
+					$friends = $ '#friends'
+					if exists $friends
+						$li = $('<li>').appendTo $friends
+						$a = $message.find 'a'
+						if exists $a
+							$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
+						else if exists $img
 							$a = $ '<a>'
-							$a.attr('href', '/user/profile/' + $img.data('id') + '/' + encodeURIComponent($img.prop('alt')))
+							$a.attr 'href', userUrl
 							$img.clone(true).appendTo $a
 							$a.appendTo($li).fadeOut(0).fadeIn()
-					numberOfFriends = $friends.find('li').length
-					s = textReplacements
-					text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
-					$('.numberOfFriends').text text
-				$message.find('.shift').slideUp()
-				$message.find('.if-accepted').slideDown()
-				delay 3000, ->
-					$message.slideUp ->
-						$(@).remove()
+						numberOfFriends = $friends.find('li').length
+						s = textReplacements
+						text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+						$('.numberOfFriends').text text
+					$message.find('.shift').slideUp()
+					$message.find('.if-accepted').slideDown()
+					delay 3000, ->
+						$message.slideUp ->
+							$(@).remove()
+							return
 						return
-					return
-				Ajax.post '/user/friend/accept', data: id: id
+					Ajax.post '/user/friend/accept', data: id: id
 			else
 				Ajax.post '/user/friend/ignore', data: id: id
 				$message.slideUp ->
