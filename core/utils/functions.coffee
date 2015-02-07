@@ -626,9 +626,11 @@ module.exports =
 			user = user.user
 		# for key, val of update
 		# 	user[key] = val
-		extend user, update
 		try
-			User.updateById user._id, update, done
+			User.updateById user._id, update, (err, user) ->
+				unless err
+					extend user, update
+				done err, user
 		catch err
 			done err
 
@@ -656,7 +658,7 @@ module.exports =
 			ul = '<ul>'
 			err.errors.each ->
 				ul += '<li>' + (
-						switch @
+						switch strval @
 							when 'invalid first name'
 								s("Prénom invalide")
 							when 'invalid last name'

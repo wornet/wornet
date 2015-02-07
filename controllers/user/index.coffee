@@ -218,10 +218,14 @@ module.exports = (router) ->
 		###
 		updateUser req.user, userModifications, (err) ->
 			err = humanError err
+			save = ->
+				extend req.user, userModifications
+				extend req.session.user, userModifications
 			if req.xhr
 				if err
 					res.serverError err
 				else
+					save()
 					res.json()
 			else
 				if err
@@ -234,8 +238,7 @@ module.exports = (router) ->
 							else
 								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
 				else
-					extend req.user, userModifications
-					extend req.session.user, userModifications
+					save()
 					req.flash 'settingsSuccess', s("Modifications enregistrées.")
 				res.redirect '/user/settings'
 
