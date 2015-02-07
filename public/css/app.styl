@@ -596,11 +596,15 @@ fieldset.tab .btn
 .suggests
 #underbar .suggests
 	position relative
+	top -3px
 
 	ul
 		display block
 		position absolute
-		padding 0
+		padding 0 $mainPadding
+		background $ultraLight
+		box-shadow(inset 0 2px -2px $gray)
+		box-shadow(0 0 4px $darkGray)
 		width 100%
 		z-index 3
 
@@ -612,15 +616,20 @@ fieldset.tab .btn
 				display block
 				padding 0
 				line-height 58px
-				background $lightGray
-				border 1px solid $nearlyWhite
+				border-bottom 1px solid $gray
 				margin 0 0 -1px -1px
+				color $nearlyBlack
+				&:hover
+					background $lightGray
 			
 			a.chat-with
 				text-align center
 				
 				.glyphicon
 					margin-left 0
+
+		li:last-child a
+			border-bottom none
 
 .cookiesWarning .navbar-right
 	text-align right
