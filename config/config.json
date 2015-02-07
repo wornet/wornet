@@ -176,7 +176,7 @@
             "friendsOnProfile": 18,
             "maxTabs": 5,
             "userMaxAge": 150,
-            "userMinAge": 0,
+            "userMinAge": 13,
             "albumNameLength": 100,
             "albumShortNameLength": 20,
             "biographyLength": 140,
