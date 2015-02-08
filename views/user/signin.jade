@@ -96,9 +96,12 @@ block body
 						=s("Se souvenir de moi")
 					label.mobile-field
 						input(type="checkbox" ng-model="user.legals" name="legals" required).flash
-						- var legals = jd('a(data-toggle="modal" data-target="#legals")\n\t="' + s("les conditions générales d'utilisation") + '"')
-						- var privacyPolicy = jd('a(data-toggle="modal" data-target="#privacyPolicy")\n\t="' + s("la politique de confidentialité") + '"')
-						!=s("J'accepte {legals} et {privacyPolicy}", { legals: legals, privacyPolicy: privacyPolicy })
+						//-
+							- var legals = jd('a(data-toggle="modal" data-target="#legals")\n\t="' + s("les conditions générales d'utilisation") + '"')
+							- var privacyPolicy = jd('a(data-toggle="modal" data-target="#privacyPolicy")\n\t="' + s("la politique de confidentialité") + '"')
+							!=s("J'accepte {legals} et {privacyPolicy}", { legals: legals, privacyPolicy: privacyPolicy })
+						- var legals = jd('a(data-toggle="modal" data-target="#legals")\n\t="' + s("les conditions générales d'utilisation et la politique de confidentialité") + '"')
+						!=s("J'accepte {legals}", { legals: legals })
 					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
 					input(type="hidden" ng-model="user.step" name="step" value="2")
 				.cb
@@ -106,5 +109,5 @@ block body
 		+simpleModal(s("Conditions générales"))#legals: p
 			!=mdIncludeLangFile('cgu')
 
-		+simpleModal(s("Politique de confidentialité"))#privacyPolicy: p
+		//- +simpleModal(s("Politique de confidentialité"))#privacyPolicy: p
 			!=mdIncludeLangFile('privacy')

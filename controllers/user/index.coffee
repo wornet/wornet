@@ -5,6 +5,7 @@ UserErrors =
 	WRONG_EMAIL: s("Cette adresse e-mail n'est pas disponible (elle est déjà prise ou la messagerie n'est pas compatible ou encore son propriétaire a demandé à ne plus recevoir d'email de notre part).")
 	INVALID_PASSWORD_CONFIRM: s("Veuillez entrer des mots de passe identiques.")
 	AGREEMENT_REQUIRED: s("Veuillez prendre connaissance et accepter les conditions générales d’utilisation et la politique de confidentialité.")
+	PRE_REGISTER: s("Inscriptions limitées aux-préinscrits jusqu'au 16 février. Vous êtes invité à vous réinscrire à cette date.")
 
 module.exports = (router) ->
 
@@ -53,101 +54,106 @@ module.exports = (router) ->
 	# When user submit his e-mail and password to sign in
 	router.put '/signin', (req, res) ->
 
-		model = {}
-		# A full name must contains a space but is not needed at the first step
-		# if req.body.name? and req.body.name.full.indexOf(' ') is -1
-		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
-		# 	res.redirect signinUrl
-		# Passwords must be identic
-		if config.wornet.mail.hostsBlackList.indexOf(req.body.email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
-			req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-			res.redirect signinUrl
-		else if req.body.password isnt req.body.passwordCheck
-			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
-			res.redirect signinUrl
-		# If no error
-		else if req.body.step is "2"
-			if empty req.body.legals
-				req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
+		email = req.body.email.toLowerCase()
+		Invitation.count email: email, (err, count) ->
+			model = {}
+			# A full name must contains a space but is not needed at the first step
+			# if req.body.name? and req.body.name.full.indexOf(' ') is -1
+			# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
+			# 	res.redirect signinUrl
+			# Passwords must be identic
+			if config.wornet.mail.hostsBlackList.indexOf(email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
+				req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 				res.redirect signinUrl
-			else
-				# A full name must contains a space but is not needed at the first step
-				User.create
-					name:
-						first: req.body['name.first']
-						last: req.body['name.last']
-					registerDate: new Date
-					email: req.body.email
-					password: req.body.password
-					birthDate: inputDate req.body.birthDate
-				, (saveErr, user) ->
-					if saveErr
-						switch (saveErr.code || 0)
-							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-							else
-								err = saveErr.err || strval(saveErr)
-								valErr = 'ValidationError:'
-								if err.indexOf(valErr) is 0
-									err = s("Erreur de validation :") + err.substr(valErr.length)
-									errors =
-										'invalid first name': s("prénom invalide")
-										'invalid last name': s("nom invalide")
-										'invalid birth date': s("date de naissance invalide")
-										'invalid phone number': s("numéro de téléphone invalide")
-										'invalid e-mail address': s("adresse e-mail invalide")
-									for code, message of errors
-										err = err.replace code, message
-								req.flash 'signinErrors', err
-						res.redirect signinUrl
-					else
-						# if "Se souvenir de moi" est coché
-						if req.body.remember?
-							auth.remember res, user._id
-						# Put user in session
-						auth.auth req, res, user, ->
-							res.redirect if user then '/user/welcome' else signinUrl
-							unless user.role is 'confirmed'
-								confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-								confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-								console['log'] ['confirm link', user.email, user._id, confirmUrl]
-								message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
-								MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
-		else
-			res.redirect signinUrl
-		# res.render templateFolder + '/signin', model
-
-	forgottenPasswordUrl = '/forgotten-password'
-
-	pm.page forgottenPasswordUrl, (req) ->
-		resetPasswordAlerts: req.getAlerts 'resetPassword'
-
-	router.post forgottenPasswordUrl, (req, res) ->
-		fail = ->
-			req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
-			res.redirect req.originalUrl
-		User.findOne email: req.body.email, (err, user) ->
-			if ! err and user
-				ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
-					if err
-						warn err
-					ResetPassword.find user: user.id, (err, tokens) ->
-						if err or tokens.length > 1
-							fail()
-						else
-							ResetPassword.create user: user.id, (err, reset) ->
-								if err
-									fail()
+			else if req.body.password isnt req.body.passwordCheck
+				req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
+				res.redirect signinUrl
+			else if (new Date) < new Date("2015-02-16") and ! count and ! require(__dirname + '/../../core/system/preRegistration')().contains email
+				req.flash 'signinErrors', UserErrors.PRE_REGISTER
+				res.redirect signinUrl
+			# If no error
+			else if req.body.step is "2"
+				if empty req.body.legals
+					req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
+					res.redirect signinUrl
+				else
+					# A full name must contains a space but is not needed at the first step
+					User.create
+						name:
+							first: req.body['name.first']
+							last: req.body['name.last']
+						registerDate: new Date
+						email: req.body.email
+						password: req.body.password
+						birthDate: inputDate req.body.birthDate
+					, (saveErr, user) ->
+						if saveErr
+							switch (saveErr.code || 0)
+								when Errors.DUPLICATE_KEY
+									req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 								else
-									resetUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-									resetUrl += '/user/reset-password/' + user.hashedId + '/' + reset.token
-									message = s("Si vous souhaitez choisir un nouveau mot de passe pour votre compte Wornet {email}, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", email: user.email)
-									console['log'] ['reset link', user.email, user._id, resetUrl]
-									MailPackage.send user.email, s("Réinitialisation de mot de passe"), message + '\n\n' + resetUrl, message + '<br><br><a href="' + resetUrl + '">' + s("Réinitialiser le mot de passe de mon compte") + '</a>'
-									req.flash 'resetPasswordSuccess', s("Un mail vous permettant de choisir un nouveau mot de passe vous a été envoyé.")
-									res.redirect req.originalUrl
+									err = saveErr.err || strval(saveErr)
+									valErr = 'ValidationError:'
+									if err.indexOf(valErr) is 0
+										err = s("Erreur de validation :") + err.substr(valErr.length)
+										errors =
+											'invalid first name': s("prénom invalide")
+											'invalid last name': s("nom invalide")
+											'invalid birth date': s("date de naissance invalide")
+											'invalid phone number': s("numéro de téléphone invalide")
+											'invalid e-mail address': s("adresse e-mail invalide")
+										for code, message of errors
+											err = err.replace code, message
+									req.flash 'signinErrors', err
+							res.redirect signinUrl
+						else
+							# if "Se souvenir de moi" est coché
+							if req.body.remember?
+								auth.remember res, user._id
+							# Put user in session
+							auth.auth req, res, user, ->
+								res.redirect if user then '/user/welcome' else signinUrl
+								unless user.role is 'confirmed'
+									confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+									confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+									console['log'] ['confirm link', user.email, user._id, confirmUrl]
+									message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
+									MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
 			else
-				fail()
+				res.redirect signinUrl
+			# res.render templateFolder + '/signin', model
+
+		forgottenPasswordUrl = '/forgotten-password'
+
+		pm.page forgottenPasswordUrl, (req) ->
+			resetPasswordAlerts: req.getAlerts 'resetPassword'
+
+		router.post forgottenPasswordUrl, (req, res) ->
+			fail = ->
+				req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
+				res.redirect req.originalUrl
+			User.findOne email: req.body.email, (err, user) ->
+				if ! err and user
+					ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
+						if err
+							warn err
+						ResetPassword.find user: user.id, (err, tokens) ->
+							if err or tokens.length > 1
+								fail()
+							else
+								ResetPassword.create user: user.id, (err, reset) ->
+									if err
+										fail()
+									else
+										resetUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+										resetUrl += '/user/reset-password/' + user.hashedId + '/' + reset.token
+										message = s("Si vous souhaitez choisir un nouveau mot de passe pour votre compte Wornet {email}, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", email: user.email)
+										console['log'] ['reset link', user.email, user._id, resetUrl]
+										MailPackage.send user.email, s("Réinitialisation de mot de passe"), message + '\n\n' + resetUrl, message + '<br><br><a href="' + resetUrl + '">' + s("Réinitialiser le mot de passe de mon compte") + '</a>'
+										req.flash 'resetPasswordSuccess', s("Un mail vous permettant de choisir un nouveau mot de passe vous a été envoyé.")
+										res.redirect req.originalUrl
+				else
+					fail()
 
 	resetPasswordUrl = '/reset-password/:user/:token'
 
