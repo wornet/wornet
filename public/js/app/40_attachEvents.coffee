@@ -79,7 +79,7 @@ $.each [
 			return
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-view-src]'
 		($img) ->
 			loadMedia 'image',
@@ -228,14 +228,14 @@ $.each [
 			return
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-toggle="lightbox"]'
 		($btn, e) ->
 			$btn.ekkoLightbox()
 			prevent e
 	]
 	[
-		'click'
+		'click touchstart'
 		'a.dropdown-toggle'
 		($a, e) ->
 			$dropdown = $a.next('ul.dropdown-menu')
@@ -254,12 +254,13 @@ $.each [
 	[
 		'touchstart',
 		'img'
-		($, e) ->
-			e.preventDefault()
+		($img, e) ->
+			unless exists $img.parents 'a, button'
+				e.preventDefault()
 			return
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-click], [ng-attr-data-click]'
 		($btn) ->
 			i = 0
@@ -270,7 +271,7 @@ $.each [
 			return
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-ask-for-friend], [ng-attr-data-ask-for-friend]'
 		($btn, e) ->
 			Ajax.post '/user/friend', data: userId: $btn.data 'ask-for-friend'
@@ -280,7 +281,7 @@ $.each [
 			prevent e
 	]
 	[
-		'click'
+		'click touchstart'
 		'.accept-friend, .ignore-friend'
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
@@ -326,7 +327,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'.notifications ul a'
 		($a, e) ->
 			unless $a.is '[data-id]'
@@ -343,7 +344,7 @@ $.each [
 				cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'a[href][target!="_blank"]'
 		($a, e) ->
 			if $a.is '.ajax'
@@ -363,7 +364,7 @@ $.each [
 			###
 	]
 	[
-		'click'
+		'click touchstart'
 		'.profile-edit-btn'
 		($a, e) ->
 			$('.profile-display').toggle()
@@ -371,7 +372,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'[give-focus]'
 		($a) ->
 			sel = $a.attr 'give-focus'
@@ -388,14 +389,14 @@ $.each [
 			return
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-load-media]'
 		($btn) ->
 			params = $btn.data 'load-media'
 			loadMedia.apply @, params
 	]
 	[
-		'click'
+		'click touchstart'
 		'li.open-shutter a'
 		($a, e) ->
 			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
@@ -407,7 +408,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'#delete-account'
 		($a, e) ->
 			bootbox.dialog
@@ -429,7 +430,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-delete]'
 		($a, e) ->
 			bootbox.confirm $a.data('message'), (ok) ->
@@ -459,7 +460,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click'
+		'click touchstart'
 		'[data-click-alert]'
 		($a, e) ->
 			bootbox.alert $a.data 'click-alert'
