@@ -396,7 +396,7 @@ $.each [
 	]
 	[
 		'click'
-		'.open-shutter'
+		'li.open-shutter a'
 		($a, e) ->
 			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
 			$('#directives-calendar > .well').toggleClass 'col-xs-9'

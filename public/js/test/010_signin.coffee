@@ -98,7 +98,7 @@ describe "Signin", ->
 				shouldExists '.dropdown-toggle:icontains("Bob Dylan")'
 				shouldExists 'h3:icontains("Bob Dylan")'
 				shouldExists '#shutter:hidden'
-				click '.open-shutter'
+				click 'li.open-shutter a'
 				delay 200, ->
 					shouldExists '#shutter:visible'
 					shouldExists 'a[href~="/user/settings"]:visible'
