@@ -860,7 +860,7 @@ module.exports =
 	@return string locale identifier
 	###
 	lang: ->
-		"fr"
+		'fr'
 
 	###
 	Return HTML from Jade code
@@ -869,8 +869,43 @@ module.exports =
 	@return string HTML rendered code
 	###
 	jd: (code) ->
-		jadeRender = require('jade').render
-		jadeRender(code)
+		require('jade').render code
+
+	###
+	Return HTML from Markdown code
+	@param string Markdown input code
+
+	@return string HTML rendered code
+	###
+	md: (code) ->
+		require('node-markdown').Markdown code.toString()
+
+	###
+	Return HTML from Markdown file
+	@param string Markdown input file path
+
+	@return string HTML rendered code
+	###
+	mdFile: (file) ->
+		md fs.readFileSync __dirname + '/../../views/' + file
+
+	###
+	Return HTML from Markdown file
+	@param string Markdown input file path
+
+	@return string HTML rendered code
+	###
+	mdLangFile: (file) ->
+		mdFile file + '/' + lang() + '.md'
+
+	###
+	Return HTML from Markdown file
+	@param string Markdown input file path
+
+	@return string HTML rendered code
+	###
+	mdIncludeLangFile: (file) ->
+		mdLangFile 'includes/' + file
 
 	###
 	Return a HTML hidden tag that contains a named value
