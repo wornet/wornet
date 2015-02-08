@@ -11,6 +11,11 @@ describe "functions", ->
 			done()
 
 	model = [1, 5, 1, 4, 5, 3, 1, 3, 4, 6, 3]
+	objectModel =
+		a: 'a'
+		b: 'b'
+		c: 'c'
+		da: 'da'
 
 	describe "isFirst", ->
 
@@ -37,3 +42,24 @@ describe "functions", ->
 		it "must return arrays as it if already with unique values", ->
 			model.unique().unique().join(',').should.equal "1,5,4,3,6"
 			'a,b,c'.split(/,/g).unique().join(',').should.equal "a,b,c"
+
+	describe "matchFilter", ->
+
+		it "must return filtered values", ->
+			model.matchFilter((v) -> v&1).join(',').should.equal "1,5,1,5,3,1,3,3"
+			firstObject = JSON.stringify objectModel
+			expected = JSON.stringify
+				a: 'a'
+				da: 'da'
+			JSON.stringify(objectModel.matchFilter((v) -> v.indexOf('a') isnt -1)).should.equal expected
+			JSON.stringify(objectModel).should.equal firstObject, "should keep the source object untouched"
+
+	describe "has", ->
+
+		it "must return true if a matched value is found", ->
+			model.has((v) -> v&1).should.be.true "v&1"
+			model.has((v) -> v>10).should.be.false "v>10"
+			objectModel.has((v) -> v.indexOf('a') isnt -1).should.be.true "a"
+			objectModel.has((v) -> v.indexOf('z') isnt -1).should.be.false "z"
+			[{}, objectModel, {}].has(a: 'a').should.be.true "a:a"
+			[{}, objectModel, {}].has(b: 'c').should.be.false "b:c"

@@ -252,13 +252,15 @@ module.exports =
 	###
 	Do extend but hide the property/method to forbbid enumerate on it
 	###
-	safeExtend: (obj, props) ->
-		Object.keys(props).forEach (key) ->
-			if (props.hasOwnProperty key) and (typeof obj[key] is 'undefined')
-				Object.defineProperty obj, key,
-					value: props[key]
-					writable: true
-					configurable: true
+	safeExtend: (obj) ->
+		for i in [1..arguments.length-1]
+			props = arguments[i]
+			Object.keys(props).forEach (key) ->
+				if (props.hasOwnProperty key) and (typeof obj[key] is 'undefined')
+					Object.defineProperty obj, key,
+						value: props[key]
+						writable: true
+						configurable: true
 
 
 	###
@@ -269,12 +271,15 @@ module.exports =
 
 	@return ordered notifications list
 	###
-	getNotifications: (notifications, friendAsks = {}, friends = []) ->
+	getNotifications: (notifications, coreNotifications, friendAsks = {}, friends = []) ->
 		friendAskIds = []
 		for id, friend of friendAsks
-			if friendAskIds.status is 'waiting' and friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
+			if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
 				friendAskIds.push id
 				notifications.push [id, friend, id]
+		for notice in coreNotifications
+			unless notifications.has((v) -> v[1] is notice.content)
+				notifications.push [notice.id, notice.content]
 		notifications.sort (a, b) ->
 			unless a[0] instanceof Date
 				d = Date.fromId a[0]

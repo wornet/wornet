@@ -26,9 +26,24 @@ NoticePackage =
 	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
+		Notice.remove created_at: $lt: (new Date).subMonths 6
 		userIds.each ->
 			userId = strval @
 			data = groupData.copy()
+			if data.notice
+				Notice.create
+					user: userId
+					content: data.notice[0]
+				, (err) ->
+					if err
+						warn err
+			else if data.action is 'status'
+				Notice.create
+					user: userId
+					content: data[0]
+				, (err) ->
+					if err
+						warn err
 			if appendOtherUsers
 				otherUserIds = userIds.filter (id) ->
 					id isnt userId

@@ -378,10 +378,24 @@ module.exports = (app, port) ->
 						params[1].err = strval params[1].err
 					else
 						delete params[1].err
+				next = ->
+					res.safeHeader ->
+						render.apply res, params
 				if @req and @req.session
-					@locals.notifications = getNotifications @req.session.notifications || [], @req.session.friendAsks, @req.session.friends
-				@safeHeader ->
-					render.apply res, params
+					if @req.user
+						sessionInfos = res.req.session.columns ['notifications', 'friendAsks', 'friends']
+						userId = @req.user._id
+						Notice.find user: userId
+							.limit 6
+							.exec (err, coreNotifications) ->
+								if err
+									warn err
+								res.locals.notifications = getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends
+								next()
+					else
+						next()
+				else
+					next()
 			end: ->
 				@endAt = new Error "End here:"
 				res = @
