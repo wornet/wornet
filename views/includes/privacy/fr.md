@@ -1,0 +1,27 @@
+# Politique de confidentialité
+
+L’ensemble des informations et autres fichiers est transmis en donnant à WORNET son consentement exprès et spécifique en vue de leur utilisation pour la durée et les finalités telles que définies dans le cadre des présentes conditions générales.
+
+L’utilisateur concerné donne son consentement exprès et spécifique en vue du traitement et de l’utilisation de ces données par WORNET.
+Le contenu et les informations publiées sur le site WORNET appartiennent à l’utilisateur. Le partage de ces informations peut être modifié grâce aux Paramètres de confidentialité. Lorsque l’utilisateur publie du contenu ou des informations avec le paramètre de confidentialité « Public » cela signifie qu’il permet à tout le monde, y compris aux personnes qui n’utilisent pas le site WORNET, d’accéder à ces informations et de les utiliser, mais aussi de les associer à sa personne (à son nom et à l’image de son profil).
+Sur le site WORNET, chaque utilisateur décide lui-même des informations qu’il souhaite partager, et gère leur diffusion à l’aide des « paramètres de confidentialité ». 
+Par défaut, sur le site WORNET, la sécurité la plus optimale pour l’utilisateur est sélectionnée en terme de confidentialité, à savoir le mode « privé » qui permet à l’utilisateur de partager les informations publiées uniquement avec ses propres « amis ».
+Concrètement, ce mode permet aux utilisateurs :
+-	de voir, sur leurs pages d’accueil les publications de leurs amis, 
+-	de voir, en allant sur les pages profils de leurs amis, les informations qui auront été publiées par des amis de leurs amis sur leurs profils.
+
+WORNET s’engage à ne pas communiquer à des tiers, à titre commercial, les données personnelles figurant sur les comptes de ses utilisateurs.
+Par exception, l’hypothèse du rachat de WORNET et de ses droits par des tiers serait susceptible de permettre la transmission des dites informations à l’éventuel acquéreur qui serait à son tour tenu à la même obligation de conservation et de modification des données vis à vis de l’utilisateur du site WORNET.
+Les informations publiées par les utilisateurs seront simplement susceptibles d’être utilisées par WORNET, notamment à l’occasion d’études statistiques, dans le cadre des partenariats que WORNET sera susceptible de mettre en place avec des annonceurs, sociétés de marketing, etc.
+Pour le contenu protégé par les droits de propriété intellectuelle, comme les photos ou vidéos (propriété intellectuelle), l’utilisateur donne spécifiquement la permission suivante, conformément à ses paramètres de confidentialité : il accorde au propriétaire de WORNET une licence non-exclusive, transférable, sous-licenciable, sans redevance et mondiale pour l’utilisation des contenus de propriété intellectuelle publié par l’utilisateur sur le site WORNET ou en relation avec le site WORNET. 
+Cette licence de propriété intellectuelle prend fin lorsque l’utilisateur supprime ses contenus de propriété intellectuelle ou son compte sur le site sauf si son compte est partagé avec d’autres personnes qui ne l’ont pas supprimé.
+Lorsque l’utilisateur supprime son contenu de propriété intellectuelle, les contenus supprimés peuvent persister dans des copies de sauvegarde pendant un certain temps.
+La transmission de ces données suppose pour l’utilisateur l’acceptation du fait que pour conserver et stocker ces informations, WORNET utilise des cookies et autres technologies ayant pour objet de faciliter l’usage et le fonctionnement du site.
+WORNET se réserve en outre et dans ce cadre la possibilité d’enregistrer, à chaque fois que l’internaute se connecte au site WORNET, des informations telles que : adresse IP, URL,  version du navigateur utilisé, type de système d’exploitation utilisé, date heure et durée de la connexion, etc.
+L’utilisateur du site WORNET en accepte expressément le principe.
+WORNET entend enfin attirer l’attention de ses utilisateurs sur les risques inhérents à tout partage d'informations.
+Il doit en effet être rappelé que malgré les efforts opérés par WORNET en terme de protection de la confidentialité des données communiquées par l’utilisateur, WORNET ne peut s’engager à une obligation de résultat, dans la mesure où il n'existe aucun système de sécurité parfait ou infaillible, et qu’il est impossible de contrôler les actions des utilisateurs « amis » 
+WORNET ne saurait donc engager sa responsabilité en cas de divulgation à des tiers d’informations communiquées via le site, et en cas de non-respect par un tiers des paramètres de confidentialité ou des mesures de sécurité en vigueur sur le site. 
+WORNET rappelle à ses utilisateurs que même s’il prend toutes les précautions pour protéger la confidentialité des informations transmises sur son site, la meilleure façon de se protéger en matière de confidentialité est de veiller à ne pas accepter n’importe qui comme « ami », et rappelle à ses utilisateurs qu’ils peuvent réduire les risques en utilisant des pratiques de sécurité de bon sens telles que la définition d'un mot de passe difficile, l'utilisation de différents mots de passe pour différents services et l'utilisation d'un logiciel antivirus à jour. 
+
+Le site WORNET est en cours de déclaration à la CNIL.

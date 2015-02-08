@@ -46,7 +46,8 @@
 		"nodemailer-smtp-transport": "~0.1.13",
 		"deep-extend": "~0.3.2",
 		"basic-auth-connect": "~1.0.0",
-		"gitlab-logging": "~0.2.2"
+		"gitlab-logging": "~0.2.2",
+		"node-markdown": "~0.1.0"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",
