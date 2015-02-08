@@ -245,6 +245,14 @@ $.each [
 	]
 	[
 		'touchstart',
+		'[ng-click]'
+		($a, e) ->
+			$a.click()
+			e.preventDefault()
+			return
+	]
+	[
+		'touchstart',
 		'img'
 		($, e) ->
 			e.preventDefault()
