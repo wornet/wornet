@@ -208,7 +208,7 @@ Controllers =
 			refreshScope $scope
 			return
 
-		$scope.$on 'all', (e, messages) ->
+		$scope.$on 'all', (e, messages = []) ->
 			chats = getChats()
 			messageDates = []
 			window.usersToChats = {}
@@ -270,7 +270,7 @@ Controllers =
 			saveChats chats
 			return
 
-		unless exists '[ng-controller="StatusCtrl"]'
+		if ! exists('[ng-controller="StatusCtrl"]') and exists('[ng-controller="Chat"]')
 			Ajax.get '/user/chat', (data) ->
 				chatService.all data.chat
 				return
