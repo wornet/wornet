@@ -117,11 +117,22 @@ StatusPackage =
 							NoticePackage.notify usersToNotify, null,
 								action: 'status'
 								status: status
-						if status.at is null
+							NoticePackage.notify usersToNotify, null,
+								action: 'notice'
+								notice: [if at is null
+									s("{username} a publié un statut.", username: req.user.fullName)
+								else
+									s("{username} a publié un statut sur votre profil.", username: req.user.fullName)
+								]
+						at = status.at || null
+						if at is null
 							req.getFriends (err, friends, friendAsks) ->
 								next friends.column '_id'
 						else
-							next [status.at]
+							req.getUserById at, (err, user) ->
+								if user
+									status.at = user.publicInformations()
+								next [at]
 					done err, status, originalStatus
 			catch err
 				done err
@@ -133,10 +144,10 @@ StatusPackage =
 			if err
 				res.serverError err
 			else
-				if status.at
-					NoticePackage.notify [status.at], null,
-						action: 'notice'
-						notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
+				# if status.at
+				# 	NoticePackage.notify [status.at], null,
+				# 		action: 'notice'
+				# 		notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
 				albums = []
 				count = status.images.length
 				if count

@@ -67,8 +67,24 @@ ArrayList =
 				EACH_BREAK
 		result
 
+	matchFilter: (callback) ->
+		if @filter
+			@filter.apply @, arguments
+		else
+			result = {}
+			for k, v of @
+				if callback v, k, @
+					result[k] = v
+			result
+
 	has: (keys, value = null) ->
-		@findOne(keys, value) isnt null
+		if typeof keys is 'function'
+			try
+				@matchFilter(keys).getLength() > 0
+			catch e
+				warn e
+		else
+			@findOne(keys, value) isnt null
 
 	find: (keys, value = null) ->
 		keys = getKeys keys, value
