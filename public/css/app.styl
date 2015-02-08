@@ -184,11 +184,6 @@ a
 		&:focus
 		&:active
 			background lighten($darkOrange, 20%)
-	.navbar
-	.nav
-		& > li > a
-			height $headerHeight
-			line-height $headerHeight / 2
 	& li > a
 	.open > a
 		color white
@@ -733,6 +728,13 @@ fieldset.tab .btn
 	.desktop
 		display none
 
+	#navbar
+		.navbar-header
+			height $headerHeight
+
+		.navbar-brand img
+			margin-top -8px
+
 	#createAccountTitle
 		padding-bottom $bigPadding
 
@@ -784,6 +786,14 @@ fieldset.tab .btn
 
 
 @media (min-width: 768px)
+	#navbar
+		.container-fluid
+			padding-left 0
+		.navbar
+		.nav
+			& > li > a
+				height $headerHeight
+				line-height $headerHeight / 2
 	.pad-right
 		padding-right $mainPadding
 
@@ -799,9 +809,6 @@ fieldset.tab .btn
 		margin 4px 0 (- $headerHeight) 0
 		padding-left 30px
 		text-align center
-
-	#navbar .container-fluid
-		padding-left 0
 
 	#underbar .navbar-form
 		margin-bottom 0
