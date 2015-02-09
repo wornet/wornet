@@ -499,6 +499,12 @@ Controllers =
 	Notifications: ($scope) ->
 		$scope.notifications = {}
 
+		$scope.ifId = (id, defaultValue) ->
+			if /^[0-9a-fA-F]+$/g.test id
+				id
+			else
+				defaultValue
+
 		$scope.$on 'receiveNotification', (e, notification) ->
 			unless exists 'a[href="/notification/' + notification.id + '"]'
 				$scope.notifications[notification.id] = notification
