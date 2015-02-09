@@ -117,7 +117,11 @@ do (d = Date) ->
 	d.log = ->
 		console['log'] (new d).log()
 	d.fromId = (id) ->
-		new d(parseInt(id.toString().slice(0,8), 16)*1000)
+		id = if id and typeof(id.toString) is 'function'
+			id.toString()
+		else
+			''
+		new d(parseInt(id.slice(0,8), 16)*1000)
 	d.yesterday = ->
 		(new d).yesterday()
 	d.year = ->
