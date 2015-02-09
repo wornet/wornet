@@ -272,40 +272,44 @@ module.exports =
 	@return ordered notifications list
 	###
 	getNotifications: (notifications, coreNotifications, friendAsks = {}, friends = []) ->
-		notifications = notifications
-			.filter (n) ->
-				n and n.length and n[1]
-			.map (n) ->
-				if typeof(n[0]) is 'string'
-					n[0] = new Date n[0]
-		friendAskIds = []
-		for id, friend of friendAsks
-			if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
-				friendAskIds.push id
-				notifications.push [id, friend, id]
-		for notice in coreNotifications
-			unless notifications.has((n) -> n[1] is notice.content)
-				notifications.push [notice.id, notice.content]
-		notifications.sort (a, b) ->
-			unless a[0] instanceof Date
-				d = Date.fromId a[0]
-				if d.isValid()
-					a[0] = d
+		try
+			notifications = notifications
+				.filter (n) ->
+					n and n.length and n[1]
+				.map (n) ->
+					if typeof(n[0]) is 'string'
+						n[0] = new Date n[0]
+			friendAskIds = []
+			for id, friend of friendAsks
+				if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
+					friendAskIds.push id
+					notifications.push [id, friend, id]
+			for notice in coreNotifications
+				unless notifications.has((n) -> n[1] is notice.content)
+					notifications.push [notice.id, notice.content]
+			notifications.sort (a, b) ->
+				unless a[0] instanceof Date
+					d = Date.fromId a[0]
+					if d.isValid()
+						a[0] = d
+					else
+						warn new Error a[0] + " n'est pas de type Date"
+				unless b[0] instanceof Date
+					d = Date.fromId b[0]
+					if d.isValid()
+						b[0] = d
+					else
+						warn new Error b[0] + " n'est pas de type Date"
+				if a[0] < b[0]
+					-1
+				else if a[0] > b[0]
+					1
 				else
-					warn new Error a[0] + " n'est pas de type Date"
-			unless b[0] instanceof Date
-				d = Date.fromId b[0]
-				if d.isValid()
-					b[0] = d
-				else
-					warn new Error b[0] + " n'est pas de type Date"
-			if a[0] < b[0]
-				-1
-			else if a[0] > b[0]
-				1
-			else
-				0
-		notifications
+					0
+			notifications
+		catch e
+			warn e
+			[]
 
 	###
 	Return a stack trace as string or parse a given stack trace
