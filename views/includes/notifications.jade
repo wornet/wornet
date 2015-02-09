@@ -13,7 +13,7 @@ mixin notifications(classes)
 			if notificationsCount > 0
 				each notification, id in notifications
 					- var askingFriend = objectToUser(notification[1])
-					li: a(href="/notification/" + id class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+					li: a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 						i.date(data-date=trim(notification[0], '"'))
 							|&nbsp;
 						| &nbsp; 
