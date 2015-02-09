@@ -204,6 +204,7 @@ Controllers =
 				currentChat.messages.push message
 				modified = true
 			if modified
+				saveChatState currentChat
 				saveChats chats
 			refreshScope $scope
 			return
@@ -211,7 +212,7 @@ Controllers =
 		$scope.$on 'all', (e, messages = []) ->
 			chats = getChats()
 			messageDates = []
-			window.usersToChats = {}
+			usersToChats = {}
 			for id, chat of chats
 				for user in chat.users
 					usersToChats[user.hashedId] = id
@@ -229,8 +230,7 @@ Controllers =
 								messages: []
 						chat = chats[usersToChats[message.from.hashedId]]
 						chat.messages.push message
-						chat.open = true
-						chat.minimized = false
+						loadChatState chat
 					else if message.to
 						unless usersToChats[message.to.hashedId]
 							usersToChats[message.to.hashedId] = message.to.hashedId
@@ -239,14 +239,14 @@ Controllers =
 								messages: []
 						chat = chats[usersToChats[message.to.hashedId]]
 						chat.messages.push message
-						chat.open = true
-						chat.minimized = false
+						loadChatState chat
 			$scope.chats = saveChats chats
 			refreshScope $scope
 			return
 
 		$scope.close = (chat) ->
 			chat.open = false
+			saveChatState chat
 			saveChats chats
 			return
 
@@ -267,6 +267,7 @@ Controllers =
 
 		$scope.minimize = (chat) ->
 			chat.minimized = !(chat.minimized || false)
+			saveChatState chat
 			saveChats chats
 			return
 
