@@ -63,8 +63,21 @@ block cookie-banner
 					h4.modal-title
 						=s("Informations sur les cookies")
 				.modal-body
-					p
-						=s("Blablabla")
+					h4 w
+					!=md(s("Le cookie **w** assure le bon fonctionnement du site, il vous permet de vous connecter à Wornet."))
+					!=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
+					!=md(s("Ce cookie expire (est supprimé) lorsque vous cliquez à la fin de votre session (sur la plupart des navigateurs paramétrés par défaut, cela correspond au moment ou vous quittez votre navigateur internet) ou lorsque vous videz manuellement vos cookies."))
+
+					h4 r
+					!=md(s("Le cookie **r** permet de mémoriser votre choix lorsque vous cochez la case **Se souvenir de moi**."))
+					!=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
+					!=md(s("Ce cookie expire (est supprimé) après 6 mois ou lorsque vous videz manuellement vos cookies."))
+
+					h4=s("Encryptage des données")
+					!=md(s("Les cookies sont cryptés de sorte que seul **Wornet** peut en déchiffré le contenu."))
+					
+					h4=s("Autres données stockées localement")
+					!=md(s("Nous utilisons également le stockage local pour accélerer le fonctionnement de certains modules (chat, albums, etc.). Toutes les données personnelles sont supprimées lorsque vous cliquez sur **Déconnexion**. Les données stockées hors-connexion sont anonymisées."))
 				.modal-footer
 					button.btn(type='button', data-dismiss='modal')
 						=s("Fermer")
