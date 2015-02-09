@@ -103,8 +103,8 @@ module.exports = (app) ->
 						next()
 				return
 			unless req.xhr
-				if req.getHeader('host') is 'www.beta.wornet.fr'
-					res.redirect config.wornet.protocole +  '://beta.wornet.fr' + req.url
+				if req.getHeader('host') is config.wornet.redirectToDefaultHost
+					res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
 					return
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
