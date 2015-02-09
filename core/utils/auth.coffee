@@ -58,7 +58,8 @@ exports.auth = (req, res, user, done) ->
 			req.session.friends = friends
 			req.session.friendAsks = friendAsks
 			user.numberOfFriends = friends.length
-		done err, user
+		if typeof(done) is 'function'
+			done err, user
 
 exports.login = (req, res, done) ->
 	# Retrieve the user from the database by login
