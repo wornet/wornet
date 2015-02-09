@@ -272,6 +272,9 @@ module.exports =
 	@return ordered notifications list
 	###
 	getNotifications: (notifications, coreNotifications, friendAsks = {}, friends = []) ->
+		notifications = notifications.map (n) ->
+			if typeof(n[0]) is 'string'
+				n[0] = new Date n[0]
 		friendAskIds = []
 		for id, friend of friendAsks
 			if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
