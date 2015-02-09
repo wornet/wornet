@@ -123,37 +123,38 @@ module.exports = (router) ->
 				res.redirect signinUrl
 			# res.render templateFolder + '/signin', model
 
-		forgottenPasswordUrl = '/forgotten-password'
+	forgottenPasswordUrl = '/forgotten-password'
 
-		pm.page forgottenPasswordUrl, (req) ->
-			resetPasswordAlerts: req.getAlerts 'resetPassword'
+	pm.page forgottenPasswordUrl, (req) ->
+		console.log req
+		resetPasswordAlerts: req.getAlerts 'resetPassword'
 
-		router.post forgottenPasswordUrl, (req, res) ->
-			fail = ->
-				req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
-				res.redirect req.originalUrl
-			User.findOne email: req.body.email, (err, user) ->
-				if ! err and user
-					ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
-						if err
-							warn err
-						ResetPassword.find user: user.id, (err, tokens) ->
-							if err or tokens.length > 1
-								fail()
-							else
-								ResetPassword.create user: user.id, (err, reset) ->
-									if err
-										fail()
-									else
-										resetUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-										resetUrl += '/user/reset-password/' + user.hashedId + '/' + reset.token
-										message = s("Si vous souhaitez choisir un nouveau mot de passe pour votre compte Wornet {email}, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", email: user.email)
-										console['log'] ['reset link', user.email, user._id, resetUrl]
-										MailPackage.send user.email, s("Réinitialisation de mot de passe"), message + '\n\n' + resetUrl, message + '<br><br><a href="' + resetUrl + '">' + s("Réinitialiser le mot de passe de mon compte") + '</a>'
-										req.flash 'resetPasswordSuccess', s("Un mail vous permettant de choisir un nouveau mot de passe vous a été envoyé.")
-										res.redirect req.originalUrl
-				else
-					fail()
+	router.post forgottenPasswordUrl, (req, res) ->
+		fail = ->
+			req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
+			res.redirect req.originalUrl
+		User.findOne email: req.body.email, (err, user) ->
+			if ! err and user
+				ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
+					if err
+						warn err
+					ResetPassword.find user: user.id, (err, tokens) ->
+						if err or tokens.length > 1
+							fail()
+						else
+							ResetPassword.create user: user.id, (err, reset) ->
+								if err
+									fail()
+								else
+									resetUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+									resetUrl += '/user/reset-password/' + user.hashedId + '/' + reset.token
+									message = s("Si vous souhaitez choisir un nouveau mot de passe pour votre compte Wornet {email}, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", email: user.email)
+									console['log'] ['reset link', user.email, user._id, resetUrl]
+									MailPackage.send user.email, s("Réinitialisation de mot de passe"), message + '\n\n' + resetUrl, message + '<br><br><a href="' + resetUrl + '">' + s("Réinitialiser le mot de passe de mon compte") + '</a>'
+									req.flash 'resetPasswordSuccess', s("Un mail vous permettant de choisir un nouveau mot de passe vous a été envoyé.")
+									res.redirect req.originalUrl
+			else
+				fail()
 
 	resetPasswordUrl = '/reset-password/:user/:token'
 
