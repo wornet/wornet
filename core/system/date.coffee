@@ -1,7 +1,7 @@
 'use strict'
 
 do (d = Date) ->
-	toString = d.prototype.toISOString
+	toString = d.prototype.toString
 	d.prototype.log = ->
 		@setHours(@getHours() + 2)
 		@toISOString().replace(/Z$/g, '').replace('T', '  ')
