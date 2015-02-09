@@ -158,7 +158,7 @@
         },
 
         "chat": {
-            "multiline": false
+            "multiline": true
         },
 
         "db": {

@@ -265,6 +265,13 @@ Controllers =
 			saveChats chats
 			return
 
+		$scope.press = ($event, message, id) ->
+			if $event.keyCode is 13
+				$scope.send message, id
+				cancel $event
+			else
+				true
+
 		$scope.minimize = (chat) ->
 			chat.minimized = !(chat.minimized || false)
 			saveChatState chat
