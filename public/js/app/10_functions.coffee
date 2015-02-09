@@ -236,6 +236,31 @@ saveChats = (chats) ->
 	keepScroll '.chat .messages'
 	chats
 
+do (w = window) ->
+
+	minimized = 1
+	close = 2
+
+	key = (chat) ->
+		k = ''
+		for user of chat.users
+			for i, c of user.hashedId
+				if i%3
+					k += c
+		k
+
+	w.saveChatState = (chat) ->
+		if window.localStorage
+			localStorage[key(chat)] =
+				if chat.minimized then minimized else 0 |
+				if chat.open then 0 else close
+
+	w.loadChatState = (chat) ->
+		if window.localStorage
+			opts = localStorage[key(chat.users)] || 0
+			chat.minimized = !! (opts & minimized)
+			chat.open = ! (opts & close)
+
 # Get chat messages and states from local session
 getChats = ->
 	$('.chat').show()

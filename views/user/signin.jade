@@ -4,10 +4,9 @@ extends ../layouts/simple
 block inner-nav
 	#mainLinks.collapse.navbar-collapse
 		ul.nav.navbar-nav.navbar-right
-			li.dropdown
-				a.dropdown-toggle(href="/" data-toggle="dropdown")
-					block home-link-text
-						=s("Vous avez déjà un compte ? Connectez-vous !")
+			li: a(href="/")
+				block home-link-text
+					=s("Vous avez déjà un compte ? Connectez-vous !")
 
 
 block body
