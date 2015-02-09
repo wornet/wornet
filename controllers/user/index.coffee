@@ -126,7 +126,6 @@ module.exports = (router) ->
 	forgottenPasswordUrl = '/forgotten-password'
 
 	pm.page forgottenPasswordUrl, (req) ->
-		console.log req
 		resetPasswordAlerts: req.getAlerts 'resetPassword'
 
 	router.post forgottenPasswordUrl, (req, res) ->
@@ -550,7 +549,7 @@ module.exports = (router) ->
 		id = cesarRight req.params.hashedId
 		if req.user._id and req.user._id isnt id
 			auth.logout req, res
-		User.findOneAndUpdate { _id: id, token: token }, { role: 'confirmed' }, {}, (err, user) ->
+		User.findOneAndUpdate { _id: id, token: req.params.token }, { role: 'confirmed' }, {}, (err, user) ->
 			if err or ! user
 				req.flash 'loginErrors', s("Votre adresse n'a pas pu être confirmée")
 				warn [user, err]
