@@ -25,14 +25,16 @@
 block footer
 	footer
 		.row.col-sm-8.col-sm-offset-2
+			a.link.col-sm-3.col-xs-6(href=(config.wornet.protocole +  '://' + config.wornet.defaultHost))
+				=s("Accueil")
 			a.link.col-sm-3.col-xs-6(href="http://blog.wornet.fr/")
 				=s("Blog")
-			a.link.col-sm-3.col-xs-6(href="/jobs")
+			//- a.link.col-sm-3.col-xs-6(href="/jobs")
 				=s("Offres d'emplois")
 			a.link.col-sm-3.col-xs-6(href="/legals")
 				=s("Mentions légales")
 			span.copytag.col-sm-3.col-xs-6(data="right")
-				!=s("{c} 2014 ", { c: "&#169;" })
+				!=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
 				=mainTitle
 
 
