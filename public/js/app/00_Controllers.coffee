@@ -251,18 +251,19 @@ Controllers =
 			return
 
 		$scope.send = (message, id) ->
-			chatData =
-				date: new Date
-				content: message.content
-			postData =
-				action: 'message'
-				content: message.content
-			chats[id].messages.push chatData
-			notify id, postData, ->
-				chatData.ok = true
-				return
-			message.content = ""
-			saveChats chats
+			if message.content and message.content.length
+				chatData =
+					date: new Date
+					content: message.content
+				postData =
+					action: 'message'
+					content: message.content
+				chats[id].messages.push chatData
+				notify id, postData, ->
+					chatData.ok = true
+					return
+				message.content = ""
+				saveChats chats
 			return
 
 		$scope.press = ($event, message, id) ->

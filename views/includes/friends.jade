@@ -5,6 +5,7 @@
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 	ul#friends.photos-thumbs
 		each friend in friends
-			li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
-				img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
+			if friend
+				li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
+					img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 	.cb
