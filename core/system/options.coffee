@@ -220,6 +220,18 @@ module.exports = (app, port) ->
 				# 		friends = result[0]
 				# 		friendAsks = result[1]
 				# 		done err, friends, friendAsks
+			getLoggedFriends: ->
+				if @session.friends
+					@session.friends
+						.map (friend) ->
+							userId = strval friend._id || friend.id
+							friend = objectToUser(friend).publicInformations()
+							if NoticePackage.isPresent userId
+								friend.present = true
+							friend
+						.find present: true
+				else
+					[]
 			# add a friend to the current user
 			addFriend: (user) ->
 				req = @

@@ -15,7 +15,6 @@ StatusPackage =
 				if err
 					warn err
 				else
-					data._user = req.user.publicInformations()
 					data.chat = chat
 					next()
 		req.getFriends (err, friends, friendAsks) ->
