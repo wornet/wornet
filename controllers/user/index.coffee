@@ -199,8 +199,6 @@ module.exports = (router) ->
 										else
 											fail err
 									else
-										if user.password
-											delete user.password
 										auth.auth req, res, user, ->
 											req.flash 'profileSuccess', s("Mot de passe modifié avec succès.")
 											res.redirect '/'

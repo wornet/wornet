@@ -660,8 +660,6 @@ module.exports =
 				u = object
 			else
 				u = new User
-				if object.password
-					delete object.password
 				extend u, object
 		u
 

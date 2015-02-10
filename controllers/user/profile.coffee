@@ -17,8 +17,6 @@ module.exports = (router) ->
 				if err
 					req.flash 'profileErrors', err
 				else
-					if userModifications.password
-						delete userModifications.password
 					extend req.user, userModifications
 					extend req.session.user, userModifications
 				res.redirect '/user/profile'
