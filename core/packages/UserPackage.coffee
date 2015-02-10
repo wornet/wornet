@@ -180,17 +180,14 @@ UserPackage =
 		id = req.getRequestedUserId id
 		isMe = (req.user?) and (id is req.user.id)
 		cache 'users', 60, (done) ->
-			User.find(
-				if req.user
-					_id: $ne: req.user._id
-				else
-					{}
-			, (err, users) ->
+			where = photoId: $ne: null
+			if req.user
+				where._id = $ne: req.user._id
+			User.find where, (err, users) ->
 				if err
 					res.notFound()
 				else
 					done users
-			)
 		, (users) ->
 			done = (profile) ->
 				profile = objectToUser profile
