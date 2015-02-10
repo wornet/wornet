@@ -135,7 +135,7 @@ NoticePackage =
 						if notification[1]
 							if notification[1].askForFriend?
 								test = hashedId: notification[1].askForFriend.hashedId
-								unless req.session.friendAsks.has(test) or req.session.friends.has(test)
+								unless (req.session.friendAsks || {}).has(test) or (req.session.friends || []).has(test)
 									req.cacheFlush 'friends'
 									req.user.friendAsks[notification[1].id] = notification[1].askForFriend
 									req.session.user.friendAsks = req.user.friendAsks
