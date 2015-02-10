@@ -50,9 +50,9 @@ RandomArray =
 		if count < 1
 			@pick()
 		else if count > @length
-			@.slice()
-		else
 			@pickAndShift count
+		else
+			@.slice()
 
 safeExtend Array.prototype, RandomArray
 

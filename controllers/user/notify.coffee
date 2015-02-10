@@ -23,10 +23,13 @@ module.exports = (router) ->
 								content: data.content
 								author: req.user._id
 							, (err, message) ->
-								for id in userIds
-									MessageRecipient.create
-										message: message._id
-										recipient: id
+								if err
+									warn err
+								if message
+									for id in userIds
+										MessageRecipient.create
+											message: message._id
+											recipient: id
 					NoticePackage.notify userIds, null, data, true
 					res.json()
 				else
