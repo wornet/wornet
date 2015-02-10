@@ -13,6 +13,9 @@ module.exports = (router) ->
 	router.get '/undefined', (req, res) ->
 		res.end ''
 
+	router.get '/ba4b08bd2e99d09b297d0bf0b2a8d98c.txt', ->
+		'ba4b08bd2e99d09b297d0bf0b2a8d98c'
+
 	if config.env.development
 		# Client-side tests
 		pm.page '/test', (req, res, done) ->

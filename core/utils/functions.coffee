@@ -288,18 +288,16 @@ module.exports =
 				unless notifications.has((n) -> n[1] is notice.content)
 					notifications.push [notice.id, notice.content]
 			notifications.sort (a, b) ->
-				unless a[0] instanceof Date
-					d = Date.fromId a[0]
-					if d.isValid()
-						a[0] = d
-					else
-						warn new Error a[0] + " n'est pas de type Date"
-				unless b[0] instanceof Date
-					d = Date.fromId b[0]
-					if d.isValid()
-						b[0] = d
-					else
-						warn new Error b[0] + " n'est pas de type Date"
+				for i in [a, b]
+					unless i[0] instanceof Date
+						d = if i[0]
+							Date.fromId i[0]
+						else
+							new Date
+						if d.isValid()
+							i[0] = d
+						else
+							warn new Error i[0] + " n'est pas de type Date"
 				if a[0] < b[0]
 					-1
 				else if a[0] > b[0]
