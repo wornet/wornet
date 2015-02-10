@@ -156,7 +156,9 @@ NoticePackage =
 							if notification[1].addFriend?
 								req.addFriend notification[1].addFriend
 								delete notification[1].addFriend
-					data = notifications: notifications
+					data =
+						notifications: notifications
+						loggedFriends: req.getLoggedFriends()
 					data.notifyStatus = if err then self.ERROR else self.OK
 					if err
 						data.err = err
@@ -169,7 +171,7 @@ NoticePackage =
 					req.session.reload (err) ->
 						res.json
 							notifyStatus: self.TIMEOUT
-							loggedFriends: (req.session.friends || []).find present: true
+							loggedFriends: req.getLoggedFriends()
 						self.remove userId, id
 						delete self.timeouts[userId + '-' + id]
 
