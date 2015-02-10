@@ -49,10 +49,10 @@ RandomArray =
 		count = intval count
 		if count < 1
 			@pick()
-		else if count > @length
+		else if count < @length
 			@pickAndShift count
 		else
-			@.slice()
+			@slice()
 
 safeExtend Array.prototype, RandomArray
 
