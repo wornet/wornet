@@ -49,6 +49,7 @@ module.exports = (router) ->
 	router.get '/signin/with/:email', (req, res) ->
 		res.render 'user/signin',
 			email: req.params.email
+			userTexts: userTexts()
 			signinAlerts: req.getAlerts 'signin'
 
 	# When user submit his e-mail and password to sign in
@@ -116,9 +117,10 @@ module.exports = (router) ->
 								unless user.role is 'confirmed'
 									confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
 									confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-									console['log'] ['confirm link', user.email, user._id, confirmUrl]
-									message = s("Pour terminer votre inscription sur Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.")
-									MailPackage.send user.email, s("Bienvenue sur Wornet"), message + '\n\n' + confirmUrl, message + '<br><br><a href="' + confirmUrl + '">' + s("Confirmer mon e-mail : {email}", email: user.email) + '</a>'
+									message = jdMail 'welcome',
+										email: email
+										url: confirmUrl
+									MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
 			else
 				res.redirect signinUrl
 			# res.render templateFolder + '/signin', model
