@@ -880,6 +880,37 @@ module.exports =
 		require('jade').render code
 
 	###
+	Return HTML from Jade file
+	@param string Jade input file path
+
+	@return string HTML rendered code
+	###
+	jdFile: (file, replacements = {}) ->
+		html = jd fs.readFileSync __dirname + '/../../views/' + file + '.jade'
+		for from, to of replacements
+			from = new RegExp '\\{' + from + '\\}', 'g'
+			html = html.replace from, to
+		html
+
+	###
+	Return HTML from Jade file with appropriate langage
+	@param string Jade input file path
+
+	@return string HTML rendered code
+	###
+	jdLangFile: (file, replacements = {}) ->
+		jdFile file + '/' + lang(), replacements
+
+	###
+	Return HTML from Jade file in mails directory
+	@param string Jade input file path
+
+	@return string HTML rendered code
+	###
+	jdMail: (file, replacements = {}) ->
+		jdLangFile 'mails/' + file, replacements
+
+	###
 	Return HTML from Markdown code
 	@param string Markdown input code
 
@@ -895,7 +926,7 @@ module.exports =
 	@return string HTML rendered code
 	###
 	mdFile: (file) ->
-		md fs.readFileSync __dirname + '/../../views/' + file
+		md fs.readFileSync __dirname + '/../../views/' + file + '.md'
 
 	###
 	Return HTML from Markdown file
@@ -904,7 +935,7 @@ module.exports =
 	@return string HTML rendered code
 	###
 	mdLangFile: (file) ->
-		mdFile file + '/' + lang() + '.md'
+		mdFile file + '/' + lang()
 
 	###
 	Return HTML from Markdown file

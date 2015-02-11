@@ -14,7 +14,7 @@ module.exports = (router) ->
 		res.end ''
 
 	router.get '/ba4b08bd2e99d09b297d0bf0b2a8d98c.txt', ->
-		'ba4b08bd2e99d09b297d0bf0b2a8d98c'
+		res.end 'ba4b08bd2e99d09b297d0bf0b2a8d98c'
 
 	if config.env.development
 		# Client-side tests
@@ -65,11 +65,11 @@ module.exports = (router) ->
 				Invitation.count email: email, (err, alreadyInvited) ->
 					unless alreadyInvited
 						if count--
-							subject = s("{name} vous invite à rejoindre Wornet", name: req.user.fullName)
+							subject = s("{name} vous invite à rejoindre le réseau social WORNET", name: req.user.fullName)
 							signinUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
 							signinUrl += '/user/signin/with/' + encodeURIComponent email
-							message = s("{name} vous invite à rejoindre Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", name: req.user.fullName)
-							MailPackage.send email, subject, message + '\n\n' + signinUrl, message + '<br><br><a href="' + signinUrl + '">' + s("Devenir un wornet") + '</a>'
+							message = jdMail 'invite', url: signinUrl
+							MailPackage.send email, subject, message
 							sended = new Date
 						Invitation.create
 							host: req.user.id
