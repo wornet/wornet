@@ -28,19 +28,20 @@ MailPackage =
 	send: (to, subject, text, html = null, from = null, done = null) ->
 		if typeof html is 'function'
 			if done is null
-				html = html()
-			else
 				done = html
 				html = null
+			else
+				html = html()
 		if typeof from is 'function'
 			if done is null
-				from = from()
-			else
 				done = from
 				from = null
+			else
+				from = from()
 
 		if html is null
 			html = text
+			text = html
 				.replace /&/g, '&amp;'
 				.replace /</g, '&lt;'
 				.replace />/g, '&gt;'

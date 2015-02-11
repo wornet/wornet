@@ -17,8 +17,6 @@ block body
 			+form("/user/signin", "PUT")(ng-submit="submit(user)")
 				.col-sm-6.col-xs-12
 					label.cb
-						=s("Votre e-mail")
-						br
 						+formControl()(
 							autofocus
 							required
@@ -34,8 +32,6 @@ block body
 								"right"
 							]).flash
 					label.check-pass
-						=s("Votre mot de passe")
-						br
 						+formControl("password")(
 							required
 							title=s("Votre mot de passe")
@@ -54,57 +50,45 @@ block body
 								),
 								"right"
 							]).flash
-					label
-						=s("Confirmez votre mot de passe")
-						br
-						+formControl("password")(
-							required
-							title=s("Confirmez votre mot de passe")
-							ng-model="user.passwordCheck"
-							name="passwordCheck"
-							placeholder=s("Confirmez votre mot de passe")
-							tooltip!=[
-								s("Confirmer le mot de passe"),
-								s("La confirmation du mot de passe permet d’éviter tout erreur de frappe."),
-								"right"
-							]).flash
+					+formControl("password")(
+						required
+						title=s("Confirmez votre mot de passe")
+						ng-model="user.passwordCheck"
+						name="passwordCheck"
+						placeholder=s("Confirmez votre mot de passe")
+						tooltip!=[
+							s("Confirmer le mot de passe"),
+							s("La confirmation du mot de passe permet d’éviter tout erreur de frappe."),
+							"right"
+						]).flash
 				.col-sm-6.col-xs-12
-					label
-						=userTexts.firstName
-						br
-						+formControl("name.fisrt")(
-							required
-							title=userTexts.firstName
-							pattern=pattern('simple-text')
-							ng-model="user.name.first"
-							name="name.first"
-							placeholder=userTexts.firstName).flash
-					label
-						=userTexts.lastName
-						br
-						+formControl("name.last")(
-							required
-							title=userTexts.lastName
-							pattern=pattern('simple-text')
-							ng-model="user.name.last"
-							name="name.last"
-							placeholder=userTexts.lastName).flash
-					label
-						=userTexts.birthDate
-						br
-						+formControl("birthDate")(
-							required
-							type="date"
-							title=userTexts.birthDate
-							min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')
-							max=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
-							ng-model="user.birthDate"
-							name="birthDate"
-							placeholder=userTexts.birthDate
-							tooltip!=[
-								userTexts.birthDate,
-								s("Votre date de naissance est obligatoire. Elle nous permet de vérifier si vous entrez bien dans la tranche d’âge définit par nos conditions générales d’utilisations et permet à vos amis de vous retrouver instantanément.")
-							]).flash
+					+formControl("name.fisrt")(
+						required
+						title=userTexts.firstName
+						pattern=pattern('simple-text')
+						ng-model="user.name.first"
+						name="name.first"
+						placeholder=userTexts.firstName).flash
+					+formControl("name.last")(
+						required
+						title=userTexts.lastName
+						pattern=pattern('simple-text')
+						ng-model="user.name.last"
+						name="name.last"
+						placeholder=userTexts.lastName).flash
+					+formControl("birthDate")(
+						required
+						type="date"
+						title=userTexts.birthDate
+						min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')
+						max=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
+						ng-model="user.birthDate"
+						name="birthDate"
+						placeholder=userTexts.birthDate
+						tooltip!=[
+							userTexts.birthDate,
+							s("Votre date de naissance est obligatoire. Elle nous permet de vérifier si vous entrez bien dans la tranche d’âge définit par nos conditions générales d’utilisations et permet à vos amis de vous retrouver instantanément.")
+						]).flash
 				.col-sm-6.col-sm-offset-3.col-xs-12
 					label.mobile-field
 						input(type="checkbox" ng-model="user.remember" name="remember" tabindex="3" checked).flash
