@@ -5,6 +5,13 @@ Extend Array prototype
 
 RandomArray =
 	###
+	Get a random index from 0 to the length of the array - 1
+	@return integer index
+	###
+	randomIndex: ->
+		Math.floor Math.random() * @length
+
+	###
 	Pick random values from an array
 	@param int count : number of values
 	@return array list of values if count is specified
@@ -13,7 +20,7 @@ RandomArray =
 	pick: (count = 0) ->
 		count = intval count
 		if count < 1
-			@[Math.floor(Math.random() * @length)]
+			@[@randomIndex()]
 		else
 			(@pick() for [1..count])
 
@@ -26,7 +33,7 @@ RandomArray =
 	pickAndShift: (count = 0) ->
 		count = intval count
 		if count < 1
-			index = Math.floor(Math.random() * @length)
+			index = @randomIndex()
 			value = @[index]
 			others = @filter (val, i) ->
 				i isnt index
