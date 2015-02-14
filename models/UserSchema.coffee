@@ -102,7 +102,7 @@ userSchema = BaseSchema.extend
 		type: String
 		validate: [
 			(text) ->
-				text.length <= config.wornet.limits.biographyLength
+				text is null or text.length <= config.wornet.limits.biographyLength
 			'too long biography'
 		]
 		trim: true
