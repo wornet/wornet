@@ -231,7 +231,7 @@ UserPackage =
 		userModifications = {}
 		for key, val of req.body
 			if empty val
-				val = undefined
+				val = null
 			switch key
 				when 'birthDate'
 					birthDate = inputDate val
@@ -250,7 +250,7 @@ UserPackage =
 						userModifications.photoId = val
 				when 'maritalStatus', 'loveInterest'
 					unless User.schema.path(key).enumValues.contains val
-						val = undefined
+						val = null
 					userModifications[key] = val
 				when 'email', 'password'
 					if val?

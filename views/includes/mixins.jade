@@ -41,7 +41,7 @@ mixin alert(data)
 			if data[key]
 				each alert in data[key]
 					.alert.alert-dismissible(class="alert-" + key role=key)
-						if alert.substr(0, 4) === '<ul>'
+						if strval(alert).substr(0, 4) === '<ul>'
 							!=alert
 						else
 							=alert
