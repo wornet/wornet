@@ -546,7 +546,11 @@ module.exports =
 	@return Date output same date
 	###
 	inputDate: (str) ->
-		new Date strval(str).replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
+		str = strval(str)
+			.replace /^([0-9])-([0-9]+)-([0-9]{3,})$/g, '$3-$2-$1'
+			.replace /^([0-9]{3,})\/([0-9]+)\/([0-9]+)$/g, '$1-$2-$3'
+			.replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
+		new Date str
 
 	###
 	Iterate a value with a callback if value has an `each` method
@@ -640,10 +644,10 @@ module.exports =
 		# for key, val of update
 		# 	user[key] = val
 		try
-			User.updateById user._id, update, (err, user) ->
+			User.updateById user._id, update, (err, resultUser) ->
 				unless err
 					extend user, update
-				done err, user
+				done err, resultUser
 		catch err
 			done err
 
