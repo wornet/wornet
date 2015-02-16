@@ -56,74 +56,76 @@ module.exports = (router) ->
 	router.put '/signin', (req, res) ->
 
 		email = req.body.email.toLowerCase()
-		Invitation.count email: email, (err, count) ->
-			model = {}
-			# A full name must contains a space but is not needed at the first step
-			# if req.body.name? and req.body.name.full.indexOf(' ') is -1
-			# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
-			# 	res.redirect signinUrl
-			# Passwords must be identic
-			if config.wornet.mail.hostsBlackList.indexOf(email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
-				req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+		model = {}
+		# A full name must contains a space but is not needed at the first step
+		# if req.body.name? and req.body.name.full.indexOf(' ') is -1
+		# 	req.flash 'signinErrors', s("Veuillez entrer vos prénom et nom séparés d'un espace.")
+		# 	res.redirect signinUrl
+		# Passwords must be identic
+		if config.wornet.mail.hostsBlackList.indexOf(email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
+			req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+			res.redirect signinUrl
+		else if req.body.password isnt req.body.passwordCheck
+			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
+			res.redirect signinUrl
+
+		# Pre-Registration
+		# else if (new Date) < new Date("2015-02-16") and ! count and ! require(__dirname + '/../../core/system/preRegistration')().contains email
+		# 	req.flash 'signinErrors', UserErrors.PRE_REGISTER
+		# 	res.redirect signinUrl
+
+		# If no error
+		else if req.body.step is "2"
+			if empty req.body.legals
+				req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
 				res.redirect signinUrl
-			else if req.body.password isnt req.body.passwordCheck
-				req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
-				res.redirect signinUrl
-			else if (new Date) < new Date("2015-02-16") and ! count and ! require(__dirname + '/../../core/system/preRegistration')().contains email
-				req.flash 'signinErrors', UserErrors.PRE_REGISTER
-				res.redirect signinUrl
-			# If no error
-			else if req.body.step is "2"
-				if empty req.body.legals
-					req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
-					res.redirect signinUrl
-				else
-					# A full name must contains a space but is not needed at the first step
-					User.create
-						name:
-							first: req.body['name.first']
-							last: req.body['name.last']
-						registerDate: new Date
-						email: req.body.email
-						password: req.body.password
-						birthDate: inputDate req.body.birthDate
-					, (saveErr, user) ->
-						if saveErr
-							switch (saveErr.code || 0)
-								when Errors.DUPLICATE_KEY
-									req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-								else
-									err = saveErr.err || strval(saveErr)
-									valErr = 'ValidationError:'
-									if err.indexOf(valErr) is 0
-										err = s("Erreur de validation :") + err.substr(valErr.length)
-										errors =
-											'invalid first name': s("prénom invalide")
-											'invalid last name': s("nom invalide")
-											'invalid birth date': s("date de naissance invalide")
-											'invalid phone number': s("numéro de téléphone invalide")
-											'invalid e-mail address': s("adresse e-mail invalide")
-										for code, message of errors
-											err = err.replace code, message
-									req.flash 'signinErrors', err
-							res.redirect signinUrl
-						else
-							# if "Se souvenir de moi" est coché
-							if req.body.remember?
-								auth.remember res, user._id
-							# Put user in session
-							auth.auth req, res, user, ->
-								res.redirect if user then '/user/welcome' else signinUrl
-								unless user.role is 'confirmed'
-									confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-									confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-									message = jdMail 'welcome',
-										email: email
-										url: confirmUrl
-									MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
 			else
-				res.redirect signinUrl
-			# res.render templateFolder + '/signin', model
+				# A full name must contains a space but is not needed at the first step
+				User.create
+					name:
+						first: req.body['name.first']
+						last: req.body['name.last']
+					registerDate: new Date
+					email: req.body.email
+					password: req.body.password
+					birthDate: inputDate req.body.birthDate
+				, (saveErr, user) ->
+					if saveErr
+						switch (saveErr.code || 0)
+							when Errors.DUPLICATE_KEY
+								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+							else
+								err = saveErr.err || strval(saveErr)
+								valErr = 'ValidationError:'
+								if err.indexOf(valErr) is 0
+									err = s("Erreur de validation :") + err.substr(valErr.length)
+									errors =
+										'invalid first name': s("prénom invalide")
+										'invalid last name': s("nom invalide")
+										'invalid birth date': s("date de naissance invalide")
+										'invalid phone number': s("numéro de téléphone invalide")
+										'invalid e-mail address': s("adresse e-mail invalide")
+									for code, message of errors
+										err = err.replace code, message
+								req.flash 'signinErrors', err
+						res.redirect signinUrl
+					else
+						# if "Se souvenir de moi" est coché
+						if req.body.remember?
+							auth.remember res, user._id
+						# Put user in session
+						auth.auth req, res, user, ->
+							res.redirect if user then '/user/welcome' else signinUrl
+							unless user.role is 'confirmed'
+								confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+								confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+								message = jdMail 'welcome',
+									email: email
+									url: confirmUrl
+								MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
+		else
+			res.redirect signinUrl
+		# res.render templateFolder + '/signin', model
 
 	forgottenPasswordUrl = '/forgotten-password'
 
