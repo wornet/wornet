@@ -1,28 +1,3 @@
-# Piwik
-if (piwikSettings = getData 'piwik')
-	_paq = _paq or []
-	_paq.push ["trackPageView"]
-	_paq.push ["enableLinkTracking"]
-	do ->
-		u = ((if ("https:" is document.location.protocol) then "https" else "http")) + "://" + (piwikSettings.host || 'piwik') + "/"
-		_paq.push [
-			"setTrackerUrl"
-			u + "piwik.php"
-		]
-		_paq.push [
-			"setSiteId"
-			(piwikSettings.id || 1)
-		]
-		d = document
-		g = d.createElement("script")
-		s = d.getElementsByTagName("script")[0]
-		g.type = "text/javascript"
-		g.defer = true
-		g.async = true
-		g.src = u + "piwik.js"
-		s.parentNode.insertBefore g, s
-		return
-
 # Google Analytics
 if (googleAnalyticsSettings = getData 'googleAnalytics')
 	((w, d, s, u, g, a, m) ->

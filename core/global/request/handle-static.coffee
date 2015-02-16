@@ -25,7 +25,12 @@ module.exports = (app) ->
 			switch req.url
 				when '/status'
 					return res.end 'OK'
-		else
+				when '/alive'
+					if User
+						User.find().limit(1).exec (err, user) ->
+							if user and ! err
+								res.end 'alive'
+					return
 
 		next = ->
 			# Parse body from requests
@@ -78,8 +83,8 @@ module.exports = (app) ->
 				req.url = profilePhotoUrl req.url
 				photoId = PhotoPackage.urlToId req.url
 				if photoId and PhotoPackage.restricted req, photoId
-					done = ->
-						res.notFound()
+					res.notFound()
+					return
 			else if req.url.startWith '/fonts/glyphicons'
 				req.url = '/components/bootstrap' + req.url
 				# Allow cross-origin from all wornet.fr subdomains

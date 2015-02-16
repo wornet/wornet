@@ -661,15 +661,19 @@ Controllers =
 				chatService.all data.chat
 			if has 'recentStatus'
 				$scope.recentStatus = data.recentStatus.map (status) ->
-					status.images.sort (a, b) ->
-						a = (idFromUrl a.src) || a._id
-						b = (idFromUrl b.src) || b._id
-						if a > b
-							1
-						else if a < b
-							-1
-						else
-							0
+					status.images
+						.map (image) ->
+							if location.protocol is 'https:' and image.src.indexOf('http:') is 0
+								image.src = image.src.replace /^[a-z]+:\/\/^[\/]+\//g, '/'
+						.sort (a, b) ->
+							a = (idFromUrl a.src) || a._id
+							b = (idFromUrl b.src) || b._id
+							if a > b
+								1
+							else if a < b
+								-1
+							else
+								0
 					for key in ['images', 'links', 'videos']
 						$.each status[key], ->
 							@statusId = status._id

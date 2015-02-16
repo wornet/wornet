@@ -18,6 +18,8 @@ module.exports = (defer, start) ->
 
 	session = require 'express-session'
 
+	if https = config.wornet.protocole is 'https'
+		app.set 'trust proxy', 1
 	app.use session
 		# Express session options
 		resave: true,
@@ -25,6 +27,8 @@ module.exports = (defer, start) ->
 		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
 		key: "w"
 		store: redisStore
+		proxy: https
+		cookie: secure: https
 
 	do start
 

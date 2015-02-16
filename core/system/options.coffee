@@ -1,7 +1,7 @@
 'use strict'
 
 useCdn = false
-piwik = true
+piwik = false
 googleAnalytics = true
 
 flash = require('connect-flash')
@@ -326,7 +326,7 @@ module.exports = (app, port) ->
 			forbidden: 403
 			unautorized: 401
 		for key, val of responseErrors
-			app.response[key] = ((key, val) ->
+			app.response[key] = do (key = key, val = val) ->
 				(model = {}) ->
 					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
@@ -340,7 +340,6 @@ module.exports = (app, port) ->
 						@json model
 					else
 						@render 'errors/' + val, model
-			) key, val
 
 		extend app.response,
 			###
