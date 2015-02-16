@@ -108,7 +108,8 @@ module.exports = (app) ->
 						next()
 				return
 			unless req.xhr
-				if req.getHeader('host') is config.wornet.redirectToDefaultHost or req.secure isnt (config.wornet.protocole is 'https')
+				secure = req.secure or req.getHeader('x-forwarded-proto') is 'https'
+				if req.getHeader('host') is config.wornet.redirectToDefaultHost or secure isnt (config.wornet.protocole is 'https')
 					res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
 					return
 				# Do not re-open connection for resources
