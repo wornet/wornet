@@ -13,6 +13,7 @@ setCookie = (req, photoId, value, unset = false) ->
 		domain: req
 		httpOnly: true
 		maxAge: maxAge
+		secure: (config.wornet.protocole is 'https')
 
 deleteCookie = (req, photoId) ->
 	setCookie req, photoId, '', true
