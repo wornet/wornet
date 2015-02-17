@@ -9,7 +9,8 @@ do (s = textReplacements) ->
 	# Display a loading animation when page is loading
 	window.onbeforeunload = (event) ->
 		window._e = event
-		somethingWaiting = $.xhrPool.isWaiting() or do ->
+		# $.xhrPool.isWaiting() or
+		somethingWaiting = do ->
 			allEmpty = true
 			$selection = $ '.do-not-loose'
 			if window.$lastForm

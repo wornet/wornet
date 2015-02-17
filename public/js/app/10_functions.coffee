@@ -351,7 +351,7 @@ loggedFriends = (friends) ->
 
 # Get id from an image URL
 idFromUrl = (url) ->
-	id = url.replace /^.+\/photo\/([0-9]+x)?([0-9a-f]+)[\/.x].+$/ig, '$2'
+	id = ('' + url).replace /^.+\/photo\/([0-9]+x)?([0-9a-f]+)[\/.x].+$/ig, '$2'
 	if id is url
 		null
 	else
