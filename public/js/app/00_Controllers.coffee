@@ -666,12 +666,15 @@ Controllers =
 							if location.protocol is 'https:' and image.src.indexOf('http:') is 0
 								image.src = image.src.replace /^[a-z]+:\/\/^[\/]+\//g, '/'
 						.sort (a, b) ->
-							a = (idFromUrl a.src) || a._id
-							b = (idFromUrl b.src) || b._id
-							if a > b
-								1
-							else if a < b
-								-1
+							if a.src and b.src
+								a = (idFromUrl a.src) || a._id
+								b = (idFromUrl b.src) || b._id
+								if a > b
+									1
+								else if a < b
+									-1
+								else
+									0
 							else
 								0
 					for key in ['images', 'links', 'videos']
