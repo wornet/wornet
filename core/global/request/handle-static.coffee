@@ -107,7 +107,7 @@ module.exports = (app) ->
 								delete req.user
 						next()
 				return
-			unless req.xhr
+			unless req.xhr or req.connection.remoteAddress is '127.0.0.1'
 				secure = req.secure or req.getHeader('x-forwarded-proto') is 'https'
 				if req.getHeader('host') is config.wornet.redirectToDefaultHost or secure isnt (config.wornet.protocole is 'https')
 					res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
