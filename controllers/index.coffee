@@ -13,8 +13,13 @@ module.exports = (router) ->
 	router.get '/undefined', (req, res) ->
 		res.end ''
 
-	router.get '/ba4b08bd2e99d09b297d0bf0b2a8d98c.txt', ->
-		res.end 'ba4b08bd2e99d09b297d0bf0b2a8d98c'
+	verifs = [
+		'ba4b08bd2e99d09b297d0bf0b2a8d98c'
+		'736d5c56306446a276790dc6a070a70a'
+	]
+	verifs.forEach (key) ->
+		router.get '/' + key + '.txt', ->
+			res.end key
 
 	if config.env.development
 		# Client-side tests

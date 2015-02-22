@@ -1027,15 +1027,15 @@ module.exports =
 			if limit && limit > stat.size
 				switch extension
 					when 'js' then type = 'text/javascript'
-					when 'js' then type = 'text/style'
+					when 'css' then type = 'text/css'
 					else type = 'image/' + extension.replace 'jpg', 'jpeg'
-				"data:" + type + ";base64," + btoa fs.readFileSync source
+				'data:' + type + ';base64,' + btoa fs.readFileSync source
 			else
 				if config.env.development
 					version = stat.mtime.getTime()
 				file = file.replace /^\//g, ''
 				appendVersion = ''
-				unless file.indexOf('photo/') is 0
+				unless file.startWith 'photo/'
 					appendVersion = '?' + version
 				(config.wornet.staticServer || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
 

@@ -326,7 +326,7 @@ module.exports = (app, port) ->
 			forbidden: 403
 			unautorized: 401
 		for key, val of responseErrors
-			app.response[key] = do (key = key, val = val) ->
+			app.response[key] = do (key, val) ->
 				(model = {}) ->
 					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
