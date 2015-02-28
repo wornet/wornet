@@ -371,9 +371,10 @@ module.exports = (app, port) ->
 							warn @endAt
 						else if @setHeaderAt
 							warn @setHeaderAt
-						throw e
+						@serverError e
 					else
-						throw e
+						warn e
+						@serverError e
 			setHeader: ->
 				@setHeaderAt = new Error "End here:"
 				res = @

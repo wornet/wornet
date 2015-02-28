@@ -2,7 +2,6 @@
 
 module.exports = (router) ->
 
-
 	pm = new PagesManager router
 		.page '/newsroom'
 		.page '/jobs'
