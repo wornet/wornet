@@ -184,12 +184,12 @@ UserPackage =
 			if req.user
 				where._id = $ne: req.user._id
 			User.find where
-        .limit config.wornet.limits.theyUseWornet
-        .exec (err, users) ->
-  				if err
-  					res.notFound()
-  				else
-  					done users
+				.limit config.wornet.limits.theyUseWornet
+				.exec (err, users) ->
+					if err
+						res.notFound()
+					else
+						done users
 		, (users) ->
 			done = (profile) ->
 				profile = objectToUser profile
