@@ -30,7 +30,7 @@ module.exports = (router) ->
 						link.https = true
 						modified = true
 				for image in status.images
-					if image.src.startWith 'http://static.wornet.fr/'
+					if image and image.src and image.src.startWith 'http://static.wornet.fr/'
 						image.src = image.src.replace /^http://static\./, 'https://www.'
 						modified = true
 				if status.content.contains 'http://static.wornet.fr'
