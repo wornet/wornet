@@ -5,21 +5,22 @@ module.exports = (router) ->
 	adminOnly = (url, done) ->
 		router.get url, (req, res) ->
 			if req.user.email is 'kylekatarnls@gmail.com'
-				done req, res
+				done (info) ->
+					res.render 'admin/index', info: info
 			else
 				res.notFound()
 
 	# http links to https
-	adminOnly '/port', (req, res) ->
-		res.end config.port
+	adminOnly '/port', (info) ->
+		info config.port
 
 	# http links to https
-	adminOnly '/https', (req, res) ->
+	adminOnly '/https', (info) ->
 		count = 0
 		success = 0
 		failures = 0
 		done = ->
-			res.end success + ' / ' + (success + failures) + ' status modifiés : ' + failures + ' échecs'
+			info success + ' / ' + (success + failures) + ' status modifiés : ' + failures + ' échecs'
 		Status.all (err, statusList) ->
 			for status in statusList
 				modified = false
