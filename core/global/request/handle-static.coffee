@@ -64,7 +64,7 @@ module.exports = (app) ->
 				if req.urlWithoutParams is '/' + lang + '/all.' + lang
 					res.setTimeLimit 200
 					file = __dirname + '/../../../.build/' + lang + '/all-ie-' + req.ie + '.' + lang
-					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'style') + '; charset=utf-8'
+					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
 					list = options['main' + ucfirst(lang)]()
 					fs.readFile file, do (method, list) ->
 						(err, content) ->
