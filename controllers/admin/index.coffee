@@ -21,13 +21,14 @@ module.exports = (router) ->
 		failures = 0
 		done = ->
 			info success + ' / ' + (success + failures) + ' status modifiés : ' + failures + ' échecs'
-		Status.all (err, statusList) ->
+		Status.find (err, statusList) ->
 			for status in statusList
 				modified = false
-				if ! status.https and status.href.startWith 'static.wornet.fr/'
-					status.href = status.href.replace /^static\./, 'www.'
-					status.https = true
-					modified = true
+				for link in status.links
+					if ! link.https and link.href.startWith 'static.wornet.fr/'
+						link.href = link.href.replace /^static\./, 'www.'
+						link.https = true
+						modified = true
 				if status.content.contains 'http://static.wornet.fr'
 					status.content = status.content.replace /http:\/\/static\.wornet\.fr\//g, 'https://www.wornet.fr/'
 					modified = true
