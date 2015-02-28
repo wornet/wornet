@@ -8,6 +8,7 @@ module.exports = (app) ->
 	# Before each request
 	app.use (req, res, done) ->
 
+		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		req.res = res
 		req.response = res
 		res.req = req
@@ -42,8 +43,8 @@ module.exports = (app) ->
 					# To simulate a slow bandwith add a delay like this :
 					# delay 3000, done
 
-		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
+			res.setHeader 'cache-control', 'max-age=' + 90.days + ', public'
 			req.isStatic = true
 			ie = req.getHeader('user-agent').match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
@@ -63,8 +64,7 @@ module.exports = (app) ->
 				if req.urlWithoutParams is '/' + lang + '/all.' + lang
 					res.setTimeLimit 200
 					file = __dirname + '/../../../.build/' + lang + '/all-ie-' + req.ie + '.' + lang
-					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
-					res.setHeader 'cache-control', 'max-age=' + 3.days + ', public'
+					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'style') + '; charset=utf-8'
 					list = options['main' + ucfirst(lang)]()
 					fs.readFile file, do (method, list) ->
 						(err, content) ->
