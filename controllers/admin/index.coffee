@@ -26,12 +26,12 @@ module.exports = (router) ->
 				modified = false
 				for link in status.links
 					if ! link.https and link.href.startWith 'static.wornet.fr/'
-						link.href = link.href.replace /^static\./, 'www.'
+						link.href = 'www.' + link.href.substr ('static.').length
 						link.https = true
 						modified = true
 				for image in status.images
 					if image and image.src and image.src.startWith 'http://static.wornet.fr/'
-						image.src = image.src.replace /^http://static\./, 'https://www.'
+						image.src = 'https://www.' + image.src.substr ('http://static.').length
 						modified = true
 				if status.content.contains 'http://static.wornet.fr'
 					status.content = status.content.replace /http:\/\/static\.wornet\.fr\//g, 'https://www.wornet.fr/'
