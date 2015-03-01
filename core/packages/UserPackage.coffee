@@ -184,20 +184,11 @@ UserPackage =
 		now = time()
 		if now - randomUsersLastRetreive > 30.seconds
 			randomUsersLastRetreive = now
-			exclude = []
 			where = photoId: $ne: null
-			User.count where, (err, count) ->
-				if count > config.wornet.limits.theyUseWornet
-					User.findRandom where
-						.limit config.wornet.limits.theyUseWornet
-						.exec (err, users) ->
-							console.log ['users', users]
-							randomUsers = users
-				else
-					User.find where, (err, users) ->
-						if users and users.length
-							randomUsers = users.shuffle()
-
+			limit = limit: config.wornet.limits.theyUseWornet
+			User.findRandom where, {}, limit, (err, users) ->
+				console.log ['users', users]
+				randomUsers = users
 
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
