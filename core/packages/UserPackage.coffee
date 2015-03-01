@@ -1,5 +1,8 @@
 'use strict'
 
+randomUsers = []
+randomUsersLastRetreive = 0
+
 UserPackage =
 
 	getAlbums: (userIds, done) ->
@@ -176,21 +179,44 @@ UserPackage =
 	renderHome: (req, res, id = null, template = 'index') ->
 		@renderProfile req, res, id, template
 
+	randomUsers: (done) ->
+		done randomUsers
+		now = time()
+		if now - randomUsersLastRetreive > 30.seconds
+			randomUsersLastRetreive = now
+			exclude = []
+			where =
+				photoId: $ne: null
+				id: $ne: $in: exclude
+			User.count where, (err, count) ->
+				if count > config.wornet.limits.theyUseWornet
+					count = config.wornet.limits.theyUseWornet
+					users = []
+					next = ->
+						if count
+							User.findOne where
+								.exec (err, user) ->
+									count--
+									if user
+										exclude.push user.id
+										users.push user
+									next()
+
+						else
+							randomUsers = users.shuffle()
+					next()
+				else
+					User.find where, (err, users) ->
+						if users and users.length
+							randomUsers = users.shuffle()
+
+
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
 		isMe = (req.user?) and (id is req.user.id)
-		cache 'users', 60, (done) ->
-			where = photoId: $ne: null
-			if req.user
-				where._id = $ne: req.user._id
-			User.find where
-				.limit config.wornet.limits.theyUseWornet
-				.exec (err, users) ->
-					if err
-						res.notFound()
-					else
-						done users
-		, (users) ->
+		@randomUsers (users) ->
+			users = users.filter (user) ->
+				user._id isnt req.user._id
 			done = (profile) ->
 				profile = objectToUser profile
 				profile.getFriends (err, friends, friendAsks) ->

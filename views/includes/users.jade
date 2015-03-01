@@ -1,7 +1,7 @@
 .well
 	h3=strtoupper(s("Ils utilisent Wornet"))
 	ul.photos-thumbs
-		each friend in users
-			li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName))
-				img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
+		each randomUser in users
+			li: a(href="/user/profile/" + randomUser.hashedId + "/" + encodeURIComponent(randomUser.fullName))
+				img(src=randomUser.thumb50 alt=randomUser.fullName onerror="$(this).parent().parent().remove()" data-id=randomUser.hashedId data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
 	.cb
