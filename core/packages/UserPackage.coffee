@@ -187,7 +187,7 @@ UserPackage =
 			exclude = []
 			where =
 				photoId: $ne: null
-				$not: id: $in: exclude
+				$not: _id: $in: exclude
 			User.count where, (err, count) ->
 				console.log ['count', count]
 				if count > config.wornet.limits.theyUseWornet
@@ -199,7 +199,7 @@ UserPackage =
 								console.log ['user', user, exclude]
 								count--
 								if user
-									exclude.push user.id
+									exclude.push user._id
 									users.push user
 								next()
 						else
