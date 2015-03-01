@@ -187,8 +187,8 @@ UserPackage =
 			where = photoId: $ne: null
 			limit = limit: config.wornet.limits.theyUseWornet
 			User.findRandom where, {}, limit, (err, users) ->
-				console.log ['users', users]
-				randomUsers = users
+				if users and users.length
+					randomUsers = users
 
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
