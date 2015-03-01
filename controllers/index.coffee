@@ -17,7 +17,7 @@ module.exports = (router) ->
 		'736d5c56306446a276790dc6a070a70a'
 	]
 	verifs.forEach (key) ->
-		router.get '/' + key + '.txt', ->
+		router.get '/' + key + '.txt', (req, res) ->
 			res.end key
 
 	if config.env.development
