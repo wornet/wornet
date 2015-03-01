@@ -372,5 +372,6 @@ userSchema.pre 'remove', (next) ->
 		user: @id
 	], next
 
+userSchema.plugin require 'mongoose-random'
 
 module.exports = userSchema
