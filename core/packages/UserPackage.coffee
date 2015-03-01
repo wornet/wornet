@@ -185,26 +185,14 @@ UserPackage =
 		if now - randomUsersLastRetreive > 30.seconds
 			randomUsersLastRetreive = now
 			exclude = []
-			where =
-				photoId: $ne: null
-				$not: _id: $in: exclude
+			where = photoId: $ne: null
 			User.count where, (err, count) ->
-				console.log ['count', count]
 				if count > config.wornet.limits.theyUseWornet
-					count = config.wornet.limits.theyUseWornet
-					users = []
-					next = ->
-						if count
-							User.findOne where, (err, user) ->
-								console.log ['user', user, exclude]
-								count--
-								if user
-									exclude.push user._id
-									users.push user
-								next()
-						else
-							randomUsers = users.shuffle()
-					next()
+					User.findRandom where
+						.limit config.wornet.limits.theyUseWornet
+						.exec (err, users) ->
+							console.log ['users', users]
+							randomUsers = users
 				else
 					User.find where, (err, users) ->
 						if users and users.length
