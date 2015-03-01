@@ -189,19 +189,19 @@ UserPackage =
 				photoId: $ne: null
 				$not: id: $in: exclude
 			User.count where, (err, count) ->
+				console.log ['count', count]
 				if count > config.wornet.limits.theyUseWornet
 					count = config.wornet.limits.theyUseWornet
 					users = []
 					next = ->
 						if count
-							User.findOne where
-								.exec (err, user) ->
-									count--
-									if user
-										exclude.push user.id
-										users.push user
-									next()
-
+							User.findOne where, (err, user) ->
+								console.log ['user', user, exclude]
+								count--
+								if user
+									exclude.push user.id
+									users.push user
+								next()
 						else
 							randomUsers = users.shuffle()
 					next()
