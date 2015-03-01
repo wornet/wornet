@@ -187,7 +187,7 @@ UserPackage =
 			exclude = []
 			where =
 				photoId: $ne: null
-				id: $ne: $in: exclude
+				$not: id: $in: exclude
 			User.count where, (err, count) ->
 				if count > config.wornet.limits.theyUseWornet
 					count = config.wornet.limits.theyUseWornet
