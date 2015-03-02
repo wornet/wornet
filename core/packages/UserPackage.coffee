@@ -221,8 +221,8 @@ UserPackage =
 							profile: profile
 							profileAlerts: req.getAlerts 'profile'
 							numberOfFriends: friends.length
-							friends: friendsThumb
-							friendAsks: friendAsks
+							friends: if isMe then friendsThumb else []
+							friendAsks: if isMe then friendAsks else []
 							userTexts: userTexts()
 							users: users
 			if isMe

@@ -330,6 +330,10 @@ $.each [
 		'click touchstart'
 		'.notifications ul a'
 		($a, e) ->
+			href = $a.find('[data-href]').data 'href'
+			if href
+				delay 1, ->
+					location.href = href
 			unless $a.is '[data-id]'
 				dateId = $a.dateId()
 				if dateId

@@ -684,6 +684,12 @@ Controllers =
 					status.content = richText status.content
 					status
 				refreshScope $scope
+				if location.hash
+					delay 25, ->
+						id = location.hash.substr 1
+						cursor = $('<div class="scroll-cursor"></div>').prependTo '[data-id="' + id + '"]'
+						cursor[0].scrollIntoView()
+						cursor.remove()
 			return
 
 		videoHosts =

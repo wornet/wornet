@@ -113,24 +113,27 @@ StatusPackage =
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
 						next = (usersToNotify) ->
+							place = status.at || status.author
 							NoticePackage.notify usersToNotify, null,
 								action: 'status'
 								status: status
 							NoticePackage.notify usersToNotify, null,
 								action: 'notice'
-								notice: [if at is null
+								notice: [jd 'span(data-href="/user/profile/' + place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + status._id + '") ' + (if at is null
 									s("{username} a publié un statut.", username: req.user.fullName)
 								else
 									s("{username} a publié un statut sur votre profil.", username: req.user.fullName)
-								]
+								)]
 						at = status.at || null
 						if at is null
 							req.getFriends (err, friends, friendAsks) ->
 								next friends.column '_id'
 						else
 							req.getUserById at, (err, user) ->
-								if user
-									status.at = user.publicInformations()
+								status.at = if user
+									user.publicInformations()
+								else
+									null
 								next [at]
 					done err, status, originalStatus
 			catch err
