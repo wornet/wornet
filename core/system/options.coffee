@@ -367,14 +367,16 @@ module.exports = (app, port) ->
 					done()
 				catch e
 					if equals e, "Error: Can't set headers after they are sent."
-						if @endAt
-							warn @endAt
-						else if @setHeaderAt
-							warn @setHeaderAt
-						@serverError e
+						if config.env.development
+							if @endAt
+								warn @endAt
+							else if @setHeaderAt
+								warn @setHeaderAt
+							throw e
 					else
-						warn e
-						@serverError e
+						if config.env.development
+							warn e
+							@serverError e
 			setHeader: ->
 				@setHeaderAt = new Error "End here:"
 				res = @

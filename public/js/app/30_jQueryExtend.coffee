@@ -55,8 +55,8 @@ $.fn.extend
 	date: (defaultValue = null) ->
 		dateId = @dateId()
 		if dateId
-			date = (if /^[0-9a-f]+$/i.test date
-					Date.fromId date
+			date = (if /^[0-9a-f]+$/i.test dateId
+					Date.fromId dateId
 				else
 					new Date dateId
 			)

@@ -30,7 +30,7 @@ mixin notifications(classes)
 								.btn.ignore-friend
 									=s("Ignorer")
 							else
-								=notification[1]
+								!=notification[1]
 			li(ng-repeat="notification in notifications" ng-switch="notification[3]")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					i.date(data-date="{{ notification[0] }}")

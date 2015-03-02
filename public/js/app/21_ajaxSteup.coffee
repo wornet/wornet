@@ -1,19 +1,19 @@
-$.xhrPool = $.extend [],
-	isWaiting: ->
-		waiting = false
-		ignore = ['get:/user/notify']
-		for i of @
-			if $.xhrUrls[i] and ignore.indexOf($.xhrUrls[i]) is -1
-				waiting = true
-				break
-		waiting
-	abortAll: ->
-		$.each @, ->
-			@abort()
-		$.xhrPool = []
-		$.xhrUrls = []
-		return
-$.xhrUrls = []
+do initXhrPool = ->
+	$.xhrPool = $.extend [],
+		isWaiting: ->
+			waiting = false
+			ignore = ['get:/user/notify']
+			for i of @
+				if $.xhrUrls[i] and ignore.indexOf($.xhrUrls[i]) is -1
+					waiting = true
+					break
+			waiting
+		abortAll: ->
+			$.each @, ->
+				@abort()
+			do initXhrPool
+			return
+	$.xhrUrls = []
 
 $document = $(document)
 	# When send back an AJAX request
