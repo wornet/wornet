@@ -36,16 +36,33 @@ UserPackage =
 		done ||= ->
 		query ||= "-"
 		limit ||= 8
-		regexp = new RegExp query, 'gi'
+		pattern = '(' + query.replace(/\s+/g, '|') + ')'
+		regexp = new RegExp pattern, 'gi'
 		User.find
-			$or: [
-				'name.first': regexp
-			,
-				'name.last': regexp
-			]
-			id: $not: $in: exclude
+			'name.first': regexp
+			'name.last': regexp
+			id: $nin: exclude
 		.limit limit
-		.exec done
+		.exec (err, users) ->
+			remind = limit - users.length
+			if err or remind <= 0
+				done err, users
+			else
+				each users, (user) ->
+					exclude.push user.id
+				User.find
+					$or: [
+						'name.first': regexp
+					,
+						'name.last': regexp
+					]
+					id: $nin: exclude
+				.limit remind
+				.exec (err, moreUsers) ->
+					if moreUsers and moreUsers.length
+						for user in moreUsers
+							users.push user
+					done err, users
 
 		###
 		User.find
@@ -222,7 +239,7 @@ UserPackage =
 							profileAlerts: req.getAlerts 'profile'
 							numberOfFriends: friends.length
 							friends: if isMe then friendsThumb else []
-							friendAsks: if isMe then friendAsks else []
+							friendAsks: if isMe then friendAsks else {}
 							userTexts: userTexts()
 							users: users
 			if isMe
