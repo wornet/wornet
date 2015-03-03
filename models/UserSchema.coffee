@@ -131,8 +131,9 @@ userSchema.virtual('friendAsks')
 	.get ->
 		@_friendAsks ||= {}
 	.set (friendAsks) ->
-		for k, v of @_friendAsks
-			delete @_friendAsks[k]
+		for k, v of @friendAsks
+			unless friendAsks[k]
+				delete @_friendAsks[k]
 		extend @_friendAsks, friendAsks
 
 userSchema.virtual('friends')
@@ -248,7 +249,12 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 		Friend
 			.findOne data
 			.exec (err, friend) ->
-				unless err or friend
+				if err
+					warn err
+				if friend
+					friend.status = 'waiting'
+					friend.save()
+				else unless err
 					friend = new Friend data
 					friend.save()
 				if typeof done is 'function'
