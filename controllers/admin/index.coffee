@@ -20,7 +20,7 @@ module.exports = (router) ->
 				res.redirect '/user/profile'
 
 		# http links to https
-		router.get '/users', (info) ->
+		adminOnly '/users', (info) ->
 			User.find (err, all) ->
 				info if err
 					err
