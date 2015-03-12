@@ -204,22 +204,14 @@ module.exports = (app, port) ->
 					if @session.cache
 						delete @session.cache[key]
 			# get friends of the user logged in
-			getFriends: (done) ->
-				if @session.friends and @session.friendAsks
+			getFriends: (done, forceReload = false) ->
+				if ! forceReload and @session.friends and @session.friendAsks
 					done null, @session.friends, @session.friendAsks
 				else
-					@user.getFriends done
-				# user = @user
-				# @cache 'friends', (done) ->
-				# 	user.getFriends (err, friends, friendAsks) ->
-				# 		done err, [friends, friendAsks]
-				# , (err, result, fromCache) ->
-				# 	if err
-				# 		done err, {}, {}
-				# 	else
-				# 		friends = result[0]
-				# 		friendAsks = result[1]
-				# 		done err, friends, friendAsks
+					@user.getFriends done, forceReload
+			# get friends of the user logged in
+			getFriendsFromDataBase: (done) ->
+				@getFriends done, true
 			getLoggedFriends: ->
 				if @session.friends
 					@session.friends

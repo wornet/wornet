@@ -1023,22 +1023,25 @@ module.exports =
 			source = 'public' + profilePhotoUrl '/' + directory + '/' + file + '.' + extension
 			unless keepExtension
 				extension = directory
-			if config.env.development || limit
-				stat = fs.statSync source
-			if limit && limit > stat.size
-				switch extension
-					when 'js' then type = 'text/javascript'
-					when 'css' then type = 'text/css'
-					else type = 'image/' + extension.replace 'jpg', 'jpeg'
-				'data:' + type + ';base64,' + btoa fs.readFileSync source
+			if fs.existsSync source
+				if config.env.development or limit
+					stat = fs.statSync source
+				if limit && limit > stat.size
+					switch extension
+						when 'js' then type = 'text/javascript'
+						when 'css' then type = 'text/css'
+						else type = 'image/' + extension.replace 'jpg', 'jpeg'
+					'data:' + type + ';base64,' + btoa fs.readFileSync source
+				else
+					if config.env.development
+						version = stat.mtime.getTime()
+					file = file.replace /^\//g, ''
+					appendVersion = ''
+					unless file.startWith 'photo/'
+						appendVersion = '?' + version
+					(config.wornet.staticServer || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
 			else
-				if config.env.development
-					version = stat.mtime.getTime()
-				file = file.replace /^\//g, ''
-				appendVersion = ''
-				unless file.startWith 'photo/'
-					appendVersion = '?' + version
-				(config.wornet.staticServer || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
+				'/img/default-photo.jpg'
 
 	###
 	Generate an style URL (automaticaly compiled with stylus)
