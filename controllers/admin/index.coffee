@@ -10,6 +10,26 @@ module.exports = (router) ->
 			else
 				res.notFound()
 
+	if config.env.development
+
+		# login with any user
+		router.get '/login/:hashedId', (req, res) ->
+			id = cesarRight req.params.hashedId
+			User.findById id, (err, user) ->
+				auth.auth req, res, user
+				res.redirect '/user/profile'
+
+		# http links to https
+		router.get '/users', (info) ->
+			User.find (err, all) ->
+				info if err
+					err
+				else
+					ul = 'ul'
+					for user in all
+						ul += '\n\tli: a(href="/admin/login/' + user.hashedId + '") ' + user.email
+					jd ul
+
 	# http links to https
 	adminOnly '/port', (info) ->
 		info config.port

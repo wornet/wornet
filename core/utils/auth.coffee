@@ -51,7 +51,7 @@ exports.auth = (req, res, user, done) ->
 	res.locals.user = user
 	req.user = user
 	req.session.user = user
-	req.getFriends (err, friends, friendAsks) ->
+	req.getFriendsFromDataBase (err, friends, friendAsks) ->
 		unless err
 			user.friends = friends
 			user.friendAsks = friendAsks

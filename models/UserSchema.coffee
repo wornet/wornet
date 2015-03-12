@@ -262,8 +262,8 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 						err: err
 						friend: friend
 
-userSchema.methods.getFriends = (done) ->
-	if @friends? and @friendAsks?
+userSchema.methods.getFriends = (done, forceReload = false) ->
+	if ! forceReload and @friends? and @friendAsks?
 		done null, @friends, @friendAsks
 	else
 		user = @
@@ -301,7 +301,6 @@ userSchema.methods.getFriends = (done) ->
 		Friend.find
 				askedFrom: @_id
 				status: $in: ['waiting', 'accepted']
-			.limit 10
 			.exec (err, friends) ->
 				unless err
 					for friend in friends
@@ -316,7 +315,6 @@ userSchema.methods.getFriends = (done) ->
 		Friend.find
 				askedTo: @_id
 				status: $in: ['waiting', 'accepted']
-			.limit 10
 			.exec (err, friends) ->
 				unless err
 					for friend in friends
