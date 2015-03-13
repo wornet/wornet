@@ -2,13 +2,24 @@
 
 module.exports = (router) ->
 
-	adminOnly = (url, done) ->
-		router.get url, (req, res) ->
-			if req.user.email is 'kylekatarnls@gmail.com'
-				done (info) ->
-					res.render 'admin/index', info: info
-			else
-				res.notFound()
+	only = (list) ->
+		(url, done) ->
+			router.get url, (req, res) ->
+				if req.user.email in list
+					done (info) ->
+						res.render 'admin/index', info: info
+				else
+					res.notFound()
+
+	godOnly = only [
+		'kylekatarnls@gmail.com'
+	]
+
+	adminOnly = only [
+		'manuel.costes@gmail.com'
+		'bastien.miclo@gmail.com'
+		'kylekatarnls@gmail.com'
+	]
 
 	if config.env.development
 
@@ -34,8 +45,12 @@ module.exports = (router) ->
 	adminOnly '/port', (info) ->
 		info config.port
 
+	adminOnly '/stats', (info) ->
+		Users.count (err, count) ->
+			info 'Nombre d\'inscrits : ' + count + '<br>'
+
 	# http links to https
-	adminOnly '/https', (info) ->
+	godOnly '/https', (info) ->
 		count = 0
 		success = 0
 		failures = 0

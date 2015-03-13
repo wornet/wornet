@@ -3,7 +3,7 @@
 onready = require './test'
 command = require __dirname + '/../core/system/command.js'
 
-describe "client-side unit tests", ->
+xdescribe "client-side unit tests", ->
 
 	@timeout 5.minutes
 
@@ -20,7 +20,7 @@ describe "client-side unit tests", ->
 				done()
 			done()
 
-	xit "must pass all the tests", (done) ->
+	it "must pass all the tests", (done) ->
 
 	 	url = 'http://localhost:' + process.env.PORT + '/test'
 
