@@ -46,7 +46,7 @@ module.exports = (router) ->
 		info config.port
 
 	adminOnly '/stats', (info) ->
-		Users.count (err, count) ->
+		User.count (err, count) ->
 			info 'Nombre d\'inscrits : ' + count + '<br>'
 
 	# http links to https
