@@ -652,6 +652,16 @@ module.exports =
 			done err
 
 	###
+	Search if an e-mail already unsubscribed
+	@param string searched e-mail
+	@param callback done function
+	###
+	emailUnsubscribed: (email, done) ->
+		email = email.toLowerCase()
+		email = sha1 email.substr(0, 3) + '%' + email.substr(3, 3) + '*' + email.substr(6)
+		Unsubscribe.findOne email: email, done
+
+	###
 	Get a user from an object
 	@param Object list of attributes
 	@return User user with given attributes
