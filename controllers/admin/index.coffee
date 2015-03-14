@@ -50,7 +50,8 @@ module.exports = (router) ->
 			User.count (err, count) ->
 				Counter.find email: $in: ['unsubscribe', 'resubscribe'], (err, counters) ->
 					exactAge = $divide: [$subtract: [new Date, "$birthDate"], 31558464000]
-					match = $match: birthDate: $exists: true
+					match = $match:
+						birthDate: $exists: true
 					project = $project:
 						age: $subtract: [exactAge, $mod: [exactAge, 1]]
 					group = $group:
@@ -73,6 +74,8 @@ module.exports = (router) ->
 							unsub = if unsub then unsub.count else 0
 							resub = counters.findOne name: 'resubscribe'
 							resub = if resub then resub.count else 0
+							# ages = ages.filter (age) ->
+							# 	age._id < 150 and age.count > count / 300
 							sum = 0
 							total = 0
 							table = (
