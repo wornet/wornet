@@ -36,6 +36,16 @@ UserPackage =
 		done ||= ->
 		query ||= "-"
 		limit ||= 8
+		letters =
+			a: 'âàäãÂÀÄÃ'
+			e: 'éèêëÉÈÊË'
+			c: 'çÇ'
+			i: 'îïìÎÏÌ'
+			u: 'ùûüÙÛÜ'
+		query = query.toLowerCase()
+		for letter, list of letters
+			list = '[' + letter + list + ']'
+			query = query.replace (new RegExp list, 'gi'), list
 		pattern = '(' + query.replace(/\s+/g, '|') + ')'
 		regexp = new RegExp pattern, 'gi'
 		User.find
