@@ -123,6 +123,11 @@ module.exports = (router) ->
 									email: email
 									url: confirmUrl
 								MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
+						emailUnsubscribed email, (err, unsub) ->
+							if unsub
+								Counter.findOne name: 'resubscribe', (err, counter) ->
+									if counter
+										counter.inc()
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
@@ -564,6 +569,7 @@ module.exports = (router) ->
 
 	router.delete '/', (req, res) ->
 		if req.user.passwordMatches req.body.password
+			email = req.user.email
 			req.user.remove (err) ->
 				if err
 					res.serverError err
@@ -571,5 +577,14 @@ module.exports = (router) ->
 					auth.logout req, res
 					req.flash 'loginSuccess', s("Votre compte a été correctement supprimé")
 					res.json goingTo: '/'
+					emailUnsubscribed email, (err, unsub) ->
+						unless unsub
+							unsub = new Unsubscribe email: email
+						unsub.count++
+						unsub.save()
+						Counter.findOne name: 'unsubscribe', (err, counter) ->
+							if counter
+								counter.inc()
+
 		else
 			res.serverError new PublicError s("Mot de passe incorrect")

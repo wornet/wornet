@@ -502,11 +502,11 @@ module.exports = (app, port) ->
 			# require(__dirname + "/command")("jsdoc -c ./doc/conf.json -r -d ./doc/ .")
 
 		# Initialize DB
-		try
-			mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename
-		catch e
-			console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
-			console['warn'] e
+		mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename, (err) ->
+			if err
+				console['log'] config.wornet.db
+				console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
+				console['warn'] err
 
 		deepextend localConfig._store, middleware: logger: module: arguments: [
 			"combined",
