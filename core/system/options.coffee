@@ -165,6 +165,20 @@ module.exports = (app, port) ->
 				else if url isnt '/user/notify'
 					@session.goingTo = url
 				url
+			# Handle <input type="file" multiple>
+			multiUpload: (done) ->
+				if @multiUploadFiles
+					done @multiUploadFiles
+				else
+					@onMultiUpload = done
+
+			# Trigger after parsing multipart upload
+			triggerMultiUpload: (files = {}) ->
+				if @onMultiUpload
+					@onMultiUpload files
+				else
+					@multiUploadFiles = files
+
 			# Get a cookie value from name or null if it does not exists
 			cookie: (name) ->
 				if @cookies[name]?

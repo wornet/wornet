@@ -1,5 +1,8 @@
 # All global events
 # [ [ "events to catch", "selector to target", callbackFunction ], ... ]
+
+loadIFrameEvents = []
+
 $.each [
 	[
 		'focus'
@@ -63,7 +66,7 @@ $.each [
 	]
 	[
 		'load'
-		'iframe'
+		'iframe[name$="upload"]'
 		($iframe) ->
 			name = $iframe.attr 'name'
 			$form = $ 'form[target="' + name + '"]'
@@ -71,9 +74,11 @@ $.each [
 			$loader = $form.find '.loader'
 			$loader.fadeOut 'fast', $loader.remove
 			if $form.length
-				$img = $ 'img', $iframe.prop 'contentWindow'
-			if $img.length && $img[0].width > 0
-				$form.find('img.upload-thumb').thumbSrc $img.prop 'src', src
+				w = $iframe.prop 'contentWindow'
+				if w and w.document and w.document.body
+					body = w.document.body.innerHTML
+			if body
+				$form.trigger 'upload', [body]
 			else
 				$('.errors').errors $form.find('input.upload').data 'error'
 			return
@@ -88,15 +93,58 @@ $.each [
 			return
 	]
 	[
+		'upload'
+		'#profile-photo'
+		($form, e, body) ->
+			$form.find('input[type="submit"]').prop 'disabled', false
+			$img = $form.find 'img.upload-thumb'
+			$newImg = $(body
+				.replace /[\n\r\t]/g, ''
+				.replace /^.*<body[^>]*>/ig, ''
+				.replace /<\/body>.*$/ig, ''
+			)
+			unless $newImg.is('.error') or $newImg.is('img')
+				$newImg = $newImg.find 'img'
+			if $newImg.is('img')
+				newSource = $newImg.prop 'src'
+				regExp = /\/photo\/[0-9]+x([^\/\.]+)[\/\.]/g
+				match = newSource.match regExp
+				if match
+					id = match[0].replace regExp, '$1'
+					$('#uploadedPhotoId').val id
+				album = $newImg.data 'created-album'
+				if album
+					albums = objectResolve JSON.parse sessionStorage.albums
+					present = false
+					for a in albums
+						if a._id is album._id
+							present = true
+							break
+					unless present
+						albums.push album
+						statusScope.albums = albums
+						sessionStorage.albums = JSON.stringify albums
+						refreshScope statusScope
+					getAlbumsFromServer ->
+						refreshScope statusScope
+						return
+				$img.fadeOut 'fast', ->
+					$loader = $form.find '.loader'
+					$loader.fadeOut 'fast', $loader.remove
+					$img.thumbSrc(newSource).fadeIn 'fast'
+					return
+			else
+				@onerror()
+			return
+	]
+	[
 		'submit'
 		'#profile-photo'
 		($form, e) ->
-			enable = (enabled = true) ->
-				$form.find('input[type="submit"]').prop 'disabled', ! enabled
-			enable false
+			$form.find('input[type="submit"]').prop 'disabled', true
 			$img = $form.find 'img.upload-thumb'
 			$img.fadeOut('fast')
-			withFormData (formData, xhr) ->
+			withFormData $form, (formData, xhr) ->
 				$progress = $form.find '.progress-radial'
 				prevent e
 				file = $form.find('input[type="file"]')[0].files[0]
@@ -122,48 +170,30 @@ $.each [
 					return
 
 				xhr.onload = ->
-					enable()
-					$form.find('input[type="submit"]').prop 'disabled', true
-					$newImg = $(@responseText
-						.replace /[\n\r\t]/g, ''
-						.replace /^.*<body[^>]*>/ig, ''
-						.replace /<\/body>.*$/ig, ''
-					)
-					unless $newImg.is('.error') or $newImg.is('img')
-						$newImg = $newImg.find 'img'
-					if $newImg.is('img')
-						newSource = $newImg.prop 'src'
-						regExp = /\/photo\/[0-9]+x([^\/\.]+)[\/\.]/g
-						match = newSource.match regExp
-						if match
-							id = match[0].replace regExp, '$1'
-							$('#uploadedPhotoId').val id
-						album = $newImg.data 'created-album'
-						if album
-							albums = objectResolve JSON.parse sessionStorage.albums
-							present = false
-							for a in albums
-								if a._id is album._id
-									present = true
-									break
-							unless present
-								albums.push album
-								statusScope.albums = albums
-								sessionStorage.albums = JSON.stringify albums
-								refreshScope statusScope
-							getAlbumsFromServer ->
-								refreshScope statusScope
-								return
-						$img.fadeOut 'fast', ->
-							$loader = $form.find '.loader'
-							$loader.fadeOut 'fast', $loader.remove
-							$img.thumbSrc(newSource).fadeIn 'fast'
-							return
-					else
-						@onerror()
+					$form.trigger 'upload', [@responseText]
 					return
 				return
-			return
+	]
+	[
+		'upload'
+		'.status-images'
+		($form, e, body) ->
+			$form.find('input[type="submit"]').prop 'disabled', false
+			$scope = $form.scope()
+			$('<div>' + body
+				.replace /[\n\r\t]/g, ''
+				.replace /^.*<body[^>]*>/ig, ''
+				.replace /<\/body>.*$/ig, ''
+			+ '</div>').find('.error, img').each ->
+				$tag = $ @
+				if $tag.is '.error'
+					$('.errors').errors $tag.html()
+				else
+					$scope.medias.images.push
+						src: $tag.prop 'src'
+						name: $tag.prop 'alt'
+				return
+			$scope.$apply()
 	]
 	[
 		'submit'
@@ -172,7 +202,7 @@ $.each [
 			enable = (enabled = true) ->
 				$form.find('input[type="submit"]').prop 'disabled', ! enabled
 			enable false
-			withFormData (formData, xhr) ->
+			withFormData $form, (formData, xhr) ->
 				prevent e
 				$scope = $form.scope()
 				$container = $form.find '.upload-container'
@@ -182,7 +212,7 @@ $.each [
 				$input.hide()
 				$progress = $('<div class="progress-bar"></div>').prependTo $container
 				$.each $form.find('input[type="file"]')[0].files, (index) ->
-					formData.append 'images[' + index + ']', @
+					formData.append 'photo', @
 					return
 				formData.append 'album', $scope.currentAlbum._id || "new"
 				formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
@@ -209,23 +239,9 @@ $.each [
 
 				xhr.onload = ->
 					complete()
-					$('<div>' + @responseText
-						.replace /[\n\r\t]/g, ''
-						.replace /^.*<body[^>]*>/ig, ''
-						.replace /<\/body>.*$/ig, ''
-					+ '</div>').find('.error, img').each ->
-						$tag = $ @
-						if $tag.is '.error'
-							$('.errors').errors $tag.html()
-						else
-							$scope.medias.images.push
-								src: $tag.prop 'src'
-								name: $tag.prop 'alt'
-						return
-					$scope.$apply()
+					$form.trigger 'upload', [@responseText]
 					return
 				return
-			return
 	]
 	[
 		'click touchstart'
@@ -504,11 +520,15 @@ $.each [
 
 ], ->
 	params = @
-	$document.on params[0], params[1], ->
-		args = Array.prototype.slice.call arguments
-		args.unshift $ @
-		params[2].apply @, args
-	return
+	if @[0] is 'load'
+		loadIFrameEvents.push [@[1], @[2]]
+	else
+		$document.on params[0], params[1],  ->
+			args = Array.prototype.slice.call arguments
+			args.unshift $ @
+			params[2].apply @, args
+		return
+
 
 $document.keydown (e) ->
 	switch e.which
