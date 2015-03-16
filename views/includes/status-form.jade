@@ -63,7 +63,7 @@ fieldset.tab(ng-show="status.containsMedias")
 							br
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
 						input(type="hidden" name="album" value="{{ currentAlbum._id }}")
-						input.upload(type="file" multiple="multiple" tabindex="112")
+						input.upload(type="file" name="photo" multiple="multiple" tabindex="112")
 				+form()(ng-submit="addMedia(link)")
 					.input-group
 						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))

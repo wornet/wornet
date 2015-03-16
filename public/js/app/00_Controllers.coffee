@@ -540,6 +540,8 @@ Controllers =
 				.find('.upload-thumb')
 				.prop('src', '/img/default-photo.jpg')
 
+		loadNewIFrames()
+
 		return
 
 	Search: ($scope) ->
@@ -748,6 +750,7 @@ Controllers =
 			$scope.currentAlbum = $.extend {}, album
 			initMedias()
 			$scope.media.step = 'add'
+			loadNewIFrames()
 			return
 
 		$scope.createAlbum = (album) ->

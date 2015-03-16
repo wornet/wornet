@@ -6,6 +6,11 @@ class PagesManager
 	constructor: (router, templateFolder) ->
 		@_router = router
 		@_templateFolder = templateFolder || ''
+	multiUpload: (url, callback) ->
+		@_router.post url, (req, res) ->
+			req.multiUpload (files) ->
+				req.files = files
+				callback req, res
 	page: (url, callback, method) ->
 		method ||= 'get'
 		template = (@_templateFolder + url).replace /^\//g, ''

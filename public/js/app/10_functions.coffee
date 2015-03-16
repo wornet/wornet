@@ -357,18 +357,42 @@ idFromUrl = (url) ->
 	else
 		id
 
+loadNewIFrames = ->
+	delay 1, ->
+		$('iframe').each ->
+			$area = $(@).parent()
+			unless $area.hasClass 'iFramesParsed'
+				$area.addClass 'iFramesParsed'
+				for evt in loadIFrameEvents
+					do (evt = evt) ->
+						$iframe = $area.find evt[0]
+						$iframe.load ->
+							args = Array.prototype.slice.call arguments
+							args.unshift $ @
+							evt[1].apply @, args
+							return
+					return
+			return
+		return
+	return
+
 showLoader = ->
 	$('.loader:last').css('z-index', 99999).removeClass 'preload'
 
 hideLoader = ->
 	$('.loader:last').css('z-index', '').addClass 'preload'
 
-withFormData = (done) ->
-	if typeof(FormData) is 'function'
+withFormData = ($form, done) ->
+	if 'function' is typeof $form
+		done = $form
+		$form = null
+	if 'function' is typeof FormData
 		formData = new FormData()
 		xhr = new XMLHttpRequest()
 		done formData, xhr
 		xhr.send formData
 		false
 	else
+		if $form
+			$form[0].submit()
 		true

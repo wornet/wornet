@@ -415,17 +415,13 @@ module.exports = (router) ->
 			else
 				res.notFound()
 
-	router.post '/photo', (req, res) ->
+	# The user upload an image (profile photo, images in status, etc.)
+	pm.multiUpload '/photo', (req, res) ->
 		# When user upload a new profile photo
 		model = images: []
 		images = req.files.photo || []
 		unless images instanceof Array
 			images = [images]
-		unless images.length
-			index = 0
-			while req.files['images[' + index + ']']
-				images.push req.files['images[' + index + ']']
-				index++
 		done = (data) ->
 			model.images.push data
 			if model.images.length is images.length
