@@ -37,11 +37,14 @@ UserPackage =
 		query ||= "-"
 		limit ||= 8
 		letters =
-			a: 'âàäãÂÀÄÃ'
-			e: 'éèêëÉÈÊË'
-			c: 'çÇ'
-			i: 'îïìÎÏÌ'
-			u: 'ùûüÙÛÜ'
+			a: 'âàäã'
+			e: 'éèêë'
+			c: 'ç'
+			i: 'îïì'
+			u: 'ùûü'
+			o: 'ôöòõ'
+			y: 'ÿ'
+			n: 'ñ'
 		query = query.toLowerCase()
 		for letter, list of letters
 			list = '[' + letter + list + ']'
