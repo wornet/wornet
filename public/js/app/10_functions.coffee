@@ -394,5 +394,15 @@ withFormData = ($form, done) ->
 		false
 	else
 		if $form
+			sum = 0
+			$form.find('input[type="file"]').map (input) ->
+				sum += if input and input.files and input.files.length
+					input.files.length
+				else
+					1
+			$form.find('.upload-label').text if sum > 1
+				'Envoi des images en cours...'
+			else
+				'Envoi de l\'image en cours...'
 			$form[0].submit()
 		true
