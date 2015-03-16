@@ -179,6 +179,8 @@ $.each [
 		'.status-images'
 		($form, e, body) ->
 			$form.find('input[type="submit"]').prop 'disabled', false
+			$container = $form.find '.upload-container'
+			$container.html $container.data 'save-html'
 			$scope = $form.scope()
 			$('<div>' + body
 				.replace /[\n\r\t]/g, ''
@@ -202,11 +204,11 @@ $.each [
 			enable = (enabled = true) ->
 				$form.find('input[type="submit"]').prop 'disabled', ! enabled
 			enable false
+			$container = $form.find '.upload-container'
+			$container.data 'save-html', $container.html()
 			withFormData $form, (formData, xhr) ->
 				prevent e
 				$scope = $form.scope()
-				$container = $form.find '.upload-container'
-				saveHtml = $container.html()
 				$label = $container.find '.upload-label'
 				$input = $container.find 'input[type="file"]'
 				$input.hide()
@@ -222,7 +224,6 @@ $.each [
 				complete = ->
 					enable()
 					delay 1000, ->
-						$container.html saveHtml
 						$input.show()
 
 				xhr.upload.onprogress = (e) ->
