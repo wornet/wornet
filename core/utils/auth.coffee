@@ -182,6 +182,9 @@ exports.isAuthenticated = (req, res, next) ->
 					next()
 
 			if req.user
+				unless req.url is '/user/notify'
+					req.user.lastActivity = new Date
+					req.user.save()
 				req.getFriends (err, friends, friendAsks) ->
 					friends.each ->
 						present = NoticePackage.isPresent @id
