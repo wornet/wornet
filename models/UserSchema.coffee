@@ -38,7 +38,7 @@ userSchema = BaseSchema.extend
 	numberOfFriends:
 		type: Number
 		default: 0
-	lastLoginDate: Date
+	lastActivity: Date
 	birthDate:
 		type: Date
 		validate: [
