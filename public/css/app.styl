@@ -50,10 +50,10 @@ body
 
 		&.bg1
 			cover('background-image/big/1')
-			
+
 		&.bg2
 			cover('background-image/big/2')
-			
+
 		&.bg3
 			cover('background-image/big/3')
 
@@ -192,6 +192,11 @@ a
 		&:focus
 		&:active
 			background $darkOrange
+
+	.banner
+		z-index 1
+		rel(1px, 0)
+		background none
 
 .navbar a
 	font-weight bold
@@ -423,7 +428,7 @@ label
 		padding $mainPadding
 		margin $mainPadding
 
-// Formulaire de connexion.	
+// Formulaire de connexion.
 form#login
 	padding 30px 0
 	.narrow
@@ -468,7 +473,7 @@ h2
 		font-weight bold
 		font-size 15px
 		margin 0 0 $smallPadding
-	
+
 	.description
 		margin 2px 0 0
 
@@ -488,12 +493,12 @@ h2
 	border 2px solid $orange
 	box-sizing border-box
 	height 68px
-	
+
 	.progress-bar
 		position absolute
 		height 64px
 		background lighten($lightOrange, 40%)
-	
+
 	.upload
 		opacity(0)
 		position absolute
@@ -507,7 +512,7 @@ h2
 	position absolute
 	top 10px
 	width 100%
-	
+
 	small
 		font-weight normal
 
@@ -581,7 +586,7 @@ fieldset.tab .btn
 	iframe.preview
 		size(480px, 270px)
 		float none
-	
+
 	a
 		display block
 
@@ -607,7 +612,7 @@ fieldset.tab .btn
 		li
 			display block
 			clear both
-			
+
 			a
 				height $thumbHeight + 2 * $smallPadding
 				display block
@@ -618,10 +623,10 @@ fieldset.tab .btn
 				color $nearlyBlack
 				&:hover
 					background $lightGray
-			
+
 			a.chat-with
 				text-align center
-				
+
 				.glyphicon
 					margin-left 0
 
@@ -726,10 +731,10 @@ fieldset.tab .btn
 
 		&.bg1
 			cover('background-image/small/1')
-			
+
 		&.bg2
 			cover('background-image/small/2')
-			
+
 		&.bg3
 			cover('background-image/small/3')
 
