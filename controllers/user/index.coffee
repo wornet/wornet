@@ -22,7 +22,7 @@ module.exports = (router) ->
 			# With AJAX, send JSON
 			if req.xhr
 				if err
-					res.serverError err
+					res.serverError err, true
 				else
 					# url to be redirected in goingTo key of the JSON object
 					res.json goingTo: url

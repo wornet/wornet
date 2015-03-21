@@ -254,14 +254,20 @@ module.exports = (app, port) ->
 						if err
 							throw err
 			# delete a notification
-			deleteNotification: (id) ->
+			deleteNotification: (id, done) ->
 				if @session.notifications
 					notifications = []
 					for notification in @session.notifications
 						unless notification[0] is id
 							notifications.push notification
 					@session.notifications = notifications
-					done null, notifications
+					Notice.remove
+						id: id
+						user: @user.id
+					, (err) ->
+						if err
+							console.warn err
+						done err, notifications
 				else
 					done new PublicError s("Aucune notification")
 			# get users from friend, me
@@ -333,17 +339,19 @@ module.exports = (app, port) ->
 			unautorized: 401
 		for key, val of responseErrors
 			app.response[key] = do (key, val) ->
-				(model = {}) ->
+				(model = {}, noReport) ->
 					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
 					warn err, false
-					GitlabPackage.error 'Error ' + val + '\n' + @req.url + '\n' + @req.getHeader('referrer') + '\n' + err
+					unless noReport
+						GitlabPackage.error 'Error ' + val + '\n' + @req.url + '\n' + @req.getHeader('referrer') + '\n' + err
+						noReport = true
 					model.err = err
 					model.statusCode = val
 					@status val
 					if @isJSON
-						@json model
+						@json model, noReport
 					else
 						@render 'errors/' + val, model
 
@@ -422,7 +430,7 @@ module.exports = (app, port) ->
 				params = arguments
 				@safeHeader ->
 					end.apply res, params
-			json: (data = {}) ->
+			json: (data = {}, noReport) ->
 				if typeof @ is 'undefined'
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
@@ -432,7 +440,7 @@ module.exports = (app, port) ->
 						if config.env.development
 							data.stack = data.err.stack
 					data.err = strval(data.err || s("Erreur inconnue"))
-				if data.err
+				if data.err and ! noReport
 					GitlabPackage.error data.err
 				data._csrf = data._csrf || @locals._csrf
 				@setHeader 'Content-Type', 'application/json'
