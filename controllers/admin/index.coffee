@@ -47,55 +47,63 @@ module.exports = (router) ->
 
 	stats = (sortColumn) ->
 		(info) ->
-			User.count (err, count) ->
-				Counter.find email: $in: ['unsubscribe', 'resubscribe'], (err, counters) ->
-					exactAge = $divide: [$subtract: [new Date, "$birthDate"], 31558464000]
-					match = $match:
-						birthDate: $exists: true
-					project = $project:
-						age: $subtract: [exactAge, $mod: [exactAge, 1]]
-					group = $group:
-						_id: "$age"
-						count: $sum: 1
-					sort = $sort: sortColumn
-					User.aggregate [
-						match
-						project
-						group
-						sort
-					], (err, ages) ->
-						if err
-							info err
-						else unless ages
-							info "ages is empty"
-						else
-							nbUsers = 'Nombre d\'inscrits'
-							unsub = counters.findOne name: 'unsubscribe'
-							unsub = if unsub then unsub.count else 0
-							resub = counters.findOne name: 'resubscribe'
-							resub = if resub then resub.count else 0
-							# ages = ages.filter (age) ->
-							# 	age._id < 150 and age.count > count / 300
-							sum = 0
-							total = 0
-							table = (
-								for age in ages
-									sum += age.count
-									total += age._id * age.count
-									'\n\ttr' +
-									'\n\t\ttd ' + age._id +
-									'\n\t\ttd ' + age.count
-							).join ''
-							age = strval (Math.round 10 * total / sum) / 10
-							info jd 'p\n\t| ' + nbUsers + ' : ' + count +
-								'\np\n\t| Désinscriptions : ' + unsub +
-								'\np\n\t| Résinscriptions : ' + resub +
-								'\np\n\t| Âge moyen : ' + (age.replace '.', ',') +
-								'\ntable' +
+			parallel
+				count: User.count.bind User
+				counters: Counter.find.bind Counter, email: $in: ['unsubscribe', 'resubscribe']
+				activeUsers: User.count.bind User, lastActivity: $gt: (new Date).subDays 30
+			, (results) ->
+				counter = (name) ->
+					results.counters.findOne name: name
+				exactAge = $divide: [$subtract: [new Date, "$birthDate"], 31558464000]
+				match = $match:
+					birthDate: $exists: true
+				project = $project:
+					age: $subtract: [exactAge, $mod: [exactAge, 1]]
+				group = $group:
+					_id: "$age"
+					count: $sum: 1
+				sort = $sort: sortColumn
+				User.aggregate [
+					match
+					project
+					group
+					sort
+				], (err, ages) ->
+					if err
+						info err
+					else unless ages
+						info "ages is empty"
+					else
+						nbUsers = 'Nombre d\'inscrits'
+						unsub = counter 'unsubscribe'
+						unsub = if unsub then unsub.count else 0
+						resub = counter 'resubscribe'
+						resub = if resub then resub.count else 0
+						# ages = ages.filter (age) ->
+						# 	age._id < 150 and age.count > count / 300
+						sum = 0
+						total = 0
+						table = (
+							for age in ages
+								sum += age.count
+								total += age._id * age.count
 								'\n\ttr' +
-								'\n\t\tth: a(href="/admin/stats/ages")!="Âge &nbsp; &nbsp;"' +
-								'\n\t\tth: a(href="/admin/stats") ' + nbUsers +
-								table
+								'\n\t\ttd ' + age._id +
+								'\n\t\ttd ' + age.count
+						).join ''
+						age = strval (Math.round 10 * total / sum) / 10
+						info jd 'p\n\t| ' + nbUsers + ' : ' + results.count +
+							'\np\n\t| Nombre d\'utilisateurs actifs : ' + results.activeUsers +
+							'\np\n\t| Désinscriptions : ' + unsub +
+							'\np\n\t| Résinscriptions : ' + resub +
+							'\np\n\t| Âge moyen : ' + (age.replace '.', ',') +
+							'\ntable' +
+							'\n\ttr' +
+							'\n\t\tth: a(href="/admin/stats/ages")!="Âge &nbsp; &nbsp;"' +
+							'\n\t\tth: a(href="/admin/stats") ' + nbUsers +
+							table
+			, (err, key) ->
+				info 'Error in ' + key + ': ' + err
 
 	adminOnly '/stats', stats count: -1
 
