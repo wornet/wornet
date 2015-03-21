@@ -567,6 +567,34 @@ module.exports =
 			false
 
 	###
+	Exec all functions and associated to each key and give an object with
+	results for each.
+	@param object treatments
+	@param function fulfill called if all treatments fulfill
+	@param function reject called if any treatment fail
+	###
+	parallel: (treatments, fulfill, reject, rejectAll = false) ->
+		ended = false
+		results = {}
+		next = ->
+			if ! ended and Object.keys(treatments).length is Object.keys(results).length
+				fulfill results
+				ended = true
+		treatments.each (key) ->
+			@ (err, result) ->
+				if err
+					unless ended
+						reject err, key
+						unless rejectAll
+							ended = true
+				else
+					results[key] = result
+					do next
+		do next
+
+
+
+	###
 	Exec remove on all model/condition pairs passed in arguments
 	@param Array... [model, conndition] pairs
 	@param function callback executed when all parallel removes ended
@@ -736,6 +764,7 @@ module.exports =
 							width : size,
 							height : size + "^",
 							customArgs: [
+								"-auto-orient"
 								"-gravity", "center"
 								"-extent", size + "x" + size
 							]
