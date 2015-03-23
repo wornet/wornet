@@ -152,25 +152,31 @@ UserPackage =
 
 	setFriendStatus: (req, id, status, done) ->
 		id = strval id
+		me = req.user
 		@refreshFriends req, (err) ->
 			if err
 				done err: err
 			else
-				Friend.findOneAndUpdate { _id: id, askedTo: req.user._id }, { status: status }, {}, (err, friend) ->
+				where =
+					_id: id
+					askedTo: me._id
+					status: $ne: status
+				set = status: status
+				Friend.findOneAndUpdate where, set, {}, (err, friend) ->
 					if ! err and friend and typeof req.body? and req.body.id?
 						end = ->
 							req.cacheFlush 'friends'
 							Friend.count
 								$or: [
-									askedTo: req.user._id
+									askedTo: me._id
 								,
-									askedFrom: req.user._id
+									askedFrom: me._id
 								]
 								status: 'accepted'
 							, (err, count) ->
 								unless err
-									req.user.numberOfFriends = count
-									req.user.save()
+									me.numberOfFriends = count
+									me.save()
 							Friend.count
 								$or: [
 									askedTo: friend.askedFrom
@@ -182,21 +188,33 @@ UserPackage =
 								unless err
 									friend.numberOfFriends = count
 									friend.save()
-						delete req.user.friendAsks[id]
+						delete me.friendAsks[id]
 						delete req.session.user.friendAsks[id]
 						delete req.session.friendAsks[id]
 						if status is 'accepted'
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
 									req.addFriend user
-									dataWithUser = username: jd 'span.username ' + req.user.fullName
-									img = jd 'img(src="' + escape(req.user.thumb50) + '" alt="' + escape(req.user.fullName) + '" data-id="' + req.user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(req.user.fullName) + '").thumb'
+									dataWithUser = username: jd 'span.username ' + me.fullName
+									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
 									NoticePackage.notify [friend.askedFrom], null,
 										action: 'friendAccepted'
 										deleteFriendAsk: id
-										addFriend: req.user
-										user: req.user.publicInformations()
-										notification: img + " " + s("{username} fait maintenant partie de vos amis.", dataWithUser)
+										addFriend: me
+										user: me.publicInformations()
+										notification: '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+											img + " " + s("{username} a accepté votre demande !", dataWithUser) +
+											'</span>'
+									dataWithUser = username: jd 'span.username ' + user.fullName
+									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
+									NoticePackage.notify [friend.askedTo], null,
+										action: 'friendAccepted'
+										deleteFriendAsk: id
+										addFriend: me
+										user: me.publicInformations()
+										notification: '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+											img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
+											'</span>'
 									end()
 						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,
@@ -234,14 +252,14 @@ UserPackage =
 					else
 						friendsThumb = friends.pickUnique config.wornet.limits.friendsOnProfile
 						try
-							if isMe or !req.user? or empty req.user.friendAsks
-								askedForFriend = false
+							askedForFriend = if isMe or !req.user? or empty req.user.friendAsks
+								false
 							else
-								askedForFriend = req.user.friendAsks.has hashedId: cesarLeft profile.id
-							if isMe or !req.user? or empty friends
-								isAFriend = false
+								req.user.friendAsks.has hashedId: cesarLeft profile.id
+							isAFriend = if isMe or !req.user? or empty friends
+								false
 							else
-								isAFriend = friends.has id: req.user.id
+								friends.has id: req.user.id
 						catch err
 							warn err
 						res.render template,
