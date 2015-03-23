@@ -19,23 +19,23 @@ $.each [
 			return
 	]
 	[
-		'keyup focus change click'
+		'keyup focus change click touchstart'
 		'.check-pass'
 		($field) ->
 			$password = $field.find 'input[type="password"]'
 			$security = $field.find('.pass-security').removeClass 'verylow low medium high veryhigh'
 			strongness = passwordStrongness $password.val()
-			switch
+			$security.addClass switch
 				when strongness > 10000000000000000
-					$security.addClass 'veryhigh'
+					'veryhigh'
 				when strongness > 10000000000000
-					$security.addClass 'high'
+					'high'
 				when strongness > 1000000000
-					$security.addClass 'medium'
+					'medium'
 				when strongness > 1000000
-					$security.addClass 'low'
+					'low'
 				else
-					$security.addClass 'verylow'
+					'verylow'
 			return
 	]
 	[
@@ -342,6 +342,19 @@ $.each [
 			deleteFriendAsk id
 			refreshPill()
 			cancel e
+	]
+	[
+		'click touchstart'
+		'.notifications a.dropdown-toggle'
+		($a, e) ->
+			if sessionStorage
+				notifications = ''
+				$a.parent().find('ul.dropdown-menu li a').each (elt) ->
+					notifications += $(elt).text() + ','
+					return
+				sessionStorage.sawNotifications = notifications
+				refreshPill()
+			return
 	]
 	[
 		'click touchstart'

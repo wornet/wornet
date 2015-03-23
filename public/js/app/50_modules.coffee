@@ -69,3 +69,5 @@ $('.loading').each ->
 onResize ->
 	$('[data-ratio]').ratio()
 	return
+
+refreshPill()

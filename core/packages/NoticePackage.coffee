@@ -107,7 +107,6 @@ NoticePackage =
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs
 					break
-				warn 'Maximum of tabs exeeded'
 				responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
 				delete responsesToNotify[userId][id]
 

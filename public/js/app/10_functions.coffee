@@ -104,39 +104,39 @@ passwordStrongness = (mdp) ->
 
 		# Mot de passe numérique
 		when mdp.match(/^[0-9]+$/g)
-			Math.pow(10, mdp.length)
+			Math.pow 10, mdp.length
 
 		# Mot de passe alphabétique mono-casse*
 		when mdp.match(/^[a-z]+$/g) or mdp.match(/^[A-Z]+$/g)
-			Math.pow(26, mdp.length)
+			Math.pow 26, mdp.length
 
 		# Casses courantes :
 		when mdp.match(/^[A-Z][a-z]+$/g) or mdp.match(/^[a-z]+[A-Z]$/g) or mdp.match(/^[a-z][A-Z]+$/g) or mdp.match(/^[A-Z]+[a-z]$/g)
-			4 * Math.pow(26, mdp.length)
+			4 * Math.pow 26, mdp.length
 
 		# Mot de passe dont seule le premier caractère n'est pas une lettre et ou le reste est mono-casse*
 		when mdp.match(/^.[a-z]+$/g) or mdp.match(/^.[A-Z]+$/g) or mdp.match(/^[a-z]+.$/g) or mdp.match(/^[A-Z]+.$/g)
-			50 * Math.pow(26, mdp.length - 1)
+			50 * Math.pow 26, mdp.length - 1
 
 		# Mot de passe alpha-numérique mono-casse*
 		when mdp.match(/^[0-9a-z]+$/g) or mdp.match(/^[0-9A-Z]+$/g)
-			Math.pow(36, mdp.length)
+			Math.pow 36, mdp.length
 
 		# Mot de passe sans lettre
 		when mdp.match(/^[^A-Za-z]+$/g)
-			Math.pow(42, mdp.length)
+			Math.pow 42, mdp.length
 
 		# Mot de passe sans nombre ni minuscule ou sans nombre ni majuscule
 		when mdp.match(/^[^0-9a-z]+$/g) or mdp.match(/^[^0-9A-Z]+$/g)
-			Math.pow(50, mdp.length)
+			Math.pow 50, mdp.length
 
 		# Mot de passe alphabétique
 		when mdp.match(/^[a-zA-Z\s]+$/g)
-			Math.pow(52, mdp.length)
+			Math.pow 52, mdp.length
 
 		# Mot de passe sans nombre ou sans minuscule ou sans majuscule
 		when mdp.match(/^[^0-9]+$/g) or mdp.match(/^[^A-Z]+$/g) or mdp.match(/^[^a-z]+$/g)
-			Math.pow(68, mdp.length)
+			Math.pow 68, mdp.length
 
 		# Mot de passe complexe
 		else
@@ -158,11 +158,11 @@ deleteFriendAsk = (id) ->
 refreshPill = ->
 	$('.notifications').each ->
 		$ul = $ @
-		count = $ul.find('ul li').length
-		if count
-			$ul.find('.pill').show().text count
-		else
-			$ul.find('.pill').hide()
+		count = $ul.find('ul li').filter((val) ->
+				text = encodeURIComponent $(val).text()
+				-1 is ((sessionStorage || {}).sawNotifications || '').indexOf text
+			).length
+		$ul.find('.pill').css('visibility', 'visible').text count
 		return
 	return
 
