@@ -32,9 +32,11 @@ do (s = textReplacements) ->
 	$(window)
 		.on "offline", ->
 			$('.errors').warnings s("Attention, vous n'êtes plus connecté à Internet")
+			return
 
 		.on "online", ->
 			$('.errors').infos s("Connexion Internet rétablie")
+			return
 
 	window.bootboxTexts ||= en: {}
 	texts = bootboxTexts
@@ -69,5 +71,3 @@ $('.loading').each ->
 onResize ->
 	$('[data-ratio]').ratio()
 	return
-
-refreshPill()

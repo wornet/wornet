@@ -194,27 +194,25 @@ UserPackage =
 						if status is 'accepted'
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
+									notice = (userId, notice) ->
+										NoticePackage.notify [userId], null,
+										action: 'friendAccepted'
+										deleteFriendAsk: id
+										addFriend: me
+										user: me.publicInformations()
+										notification: notice
+										notice: [notice]
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
-									NoticePackage.notify [friend.askedFrom], null,
-										action: 'friendAccepted'
-										deleteFriendAsk: id
-										addFriend: me
-										user: me.publicInformations()
-										notification: '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
-											img + " " + s("{username} a accepté votre demande !", dataWithUser) +
-											'</span>'
+									notice friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+										img + " " + s("{username} a accepté votre demande !", dataWithUser) +
+										'</span>'
 									dataWithUser = username: jd 'span.username ' + user.fullName
 									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
-									NoticePackage.notify [friend.askedTo], null,
-										action: 'friendAccepted'
-										deleteFriendAsk: id
-										addFriend: me
-										user: me.publicInformations()
-										notification: '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
-											img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
-											'</span>'
+									notice friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+										img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
+										'</span>'
 									end()
 						else if status isnt 'waiting'
 							NoticePackage.notify [friend.askedFrom], null,

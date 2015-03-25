@@ -349,8 +349,8 @@ $.each [
 		($a, e) ->
 			if sessionStorage
 				notifications = ''
-				$a.parent().find('ul.dropdown-menu li a').each (elt) ->
-					notifications += $(elt).text() + ','
+				$a.parent().find('ul.dropdown-menu li').each ->
+					notifications += notificationPrint @
 					return
 				sessionStorage.sawNotifications = notifications
 				refreshPill()

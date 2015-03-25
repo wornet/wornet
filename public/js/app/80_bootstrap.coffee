@@ -54,7 +54,7 @@ Wornet = angular.module 'Wornet', [
 	['$timeout', ($timeout) ->
 		scope:
 			trigger: '@focus'
-		link: ['$scope', '$element', ($scope, $element) ->
+		link: ($scope, $element) ->
 			$scope.$watch 'trigger', (value) ->
 				if value is "true"
 					$timeout ->
@@ -62,8 +62,13 @@ Wornet = angular.module 'Wornet', [
 						return
 				return
 			return
-		]
 	]
+
+.directive 'pill', ->
+	scope: true
+	link: ($scope, $element) ->
+		refreshPillOfList $element[0]
+		return
 
 .filter 'urlencode', ->
 	window.encodeURIComponent

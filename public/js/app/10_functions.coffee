@@ -154,15 +154,23 @@ deleteFriendAsk = (id) ->
 		return
 	return
 
+notificationPrint = (elt) ->
+	clone = $(elt).clone true
+	clone.detach '.date'
+	encodeURIComponent($(elt).clone().remove('.date').text().replace(/\s/g, '')) + ','
+
+refreshPillOfList = (elt) ->
+	$ul = $ elt
+	count = $ul.find('ul li').filter( ->
+		-1 is ((sessionStorage || {}).sawNotifications || '').indexOf notificationPrint @
+	).length
+	$ul.find('.pill').css('visibility', 'visible').text count
+	return
+
 # Refresh pill counter
 refreshPill = ->
 	$('.notifications').each ->
-		$ul = $ @
-		count = $ul.find('ul li').filter((val) ->
-				text = encodeURIComponent $(val).text()
-				-1 is ((sessionStorage || {}).sawNotifications || '').indexOf text
-			).length
-		$ul.find('.pill').css('visibility', 'visible').text count
+		refreshPillOfList @
 		return
 	return
 
