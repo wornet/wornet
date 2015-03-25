@@ -1,6 +1,6 @@
 mixin notifications(classes)
 	- var notificationsCount = intval(notifications.length)
-	ul.notifications.nav(class=classes): li.btn-group
+	ul.notifications.nav(class=classes pill): li.btn-group
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
 				+glyph('globe')
