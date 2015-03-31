@@ -51,7 +51,26 @@ module.exports = (router) ->
 				count: User.count.bind User
 				counters: Counter.find.bind Counter, email: $in: ['unsubscribe', 'resubscribe']
 				activeUsers: User.count.bind User, lastActivity: $gt: (new Date).subDays 30
+				friends: Friend.find.bind Friend
 			, (results) ->
+				friendsCount = 0
+				friendsErrorsCount = 0
+				friendsList = {}
+				for f in results.friends || []
+					k = if f.askedFrom > f.askedTo
+						f.askedFrom + '-' + f.askedTo
+					else
+						f.askedTo + '-' + f.askedFrom
+					if friendsList[k]
+						friendsErrorsCount++
+					else
+						friendsList[k] = true
+						if f.status is 'accepted'
+							friendsCount++
+				if friendsErrorsCount
+					friendsErrorsCount = '\np(style="color: red;"): b\n\t| Doublons dans les demandes d\'amis : ' + friendsErrorsCount
+				else
+					friendsErrorsCount = ''
 				counter = (name) ->
 					results.counters.findOne name: name
 				exactAge = $divide: [$subtract: [new Date, "$birthDate"], 31558464000]
@@ -94,6 +113,7 @@ module.exports = (router) ->
 						age = strval (Math.round 10 * total / sum) / 10
 						info jd 'p\n\t| ' + nbUsers + ' : ' + results.count +
 							'\np\n\t| Nombre d\'utilisateurs actifs : ' + results.activeUsers +
+							'\np\n\t| Amitiés : ' + friendsCount + friendsErrorsCount
 							'\np\n\t| Désinscriptions : ' + unsub +
 							'\np\n\t| Résinscriptions : ' + resub +
 							'\np\n\t| Âge moyen : ' + (age.replace '.', ',') +

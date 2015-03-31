@@ -46,7 +46,7 @@ waitForNotify = ->
 										'<span class="btn ignore-friend">' + s("Ignorer") + '</span>' +
 									'</div>' +
 									'<div class="shift if-accepted">' +
-										s("{username} fait maitnenant partie de vos amis.", dataWithUser) +
+										s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
 									'</div>' +
 									'<div class="cb"></div>' +
 								'</div>')

@@ -9,9 +9,7 @@ module.exports = (app) ->
 	app.use (req, res, done) ->
 
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
-		req.res = res
 		req.response = res
-		res.req = req
 		res.request = req
 		res.setTimeLimit if req.is 'multipart/form-data'
 			config.wornet.upload.timeout

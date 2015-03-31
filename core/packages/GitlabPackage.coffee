@@ -8,13 +8,13 @@ logging.configure
 	token: 'H9bUs-NLqer7s9pHWETR'
 	project_id: 3
 	assignee_id: 2
-	environment: 'production'
+	environment: config.wornet.env || 'production'
 
 errors = {}
 
 GitlabPackage =
 	format: (error) ->
-		strval error + '\n' + (error.stack || (new Error).stack)
+		strval config.wornet.version + ': ' + error + '\n' + (error.stack || (new Error).stack)
 	enabled: ->
 		config.env.production
 	issue: (error) ->

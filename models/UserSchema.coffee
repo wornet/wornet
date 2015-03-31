@@ -240,14 +240,18 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 	askedFrom = @id
 	if askedFrom is askedTo
 		done
-			err: 'self-ask'
+			err: new PublicError "Vous vous aimez, et vous avez bien raison. Mais nous ne pouvons pas ajouter votre propre profil à vos amis."
 			friend: null
 	else
 		data =
 			askedFrom: askedFrom
 			askedTo: askedTo
 		Friend
-			.findOne data
+			.findOne $or: [
+				askedFrom: askedTo
+				askedTo: askedFrom
+				data
+			]
 			.exec (err, friend) ->
 				if err
 					warn err
@@ -261,6 +265,7 @@ userSchema.methods.aksForFriend = (askedTo, done) ->
 					done
 						err: err
 						friend: friend
+						exists: equals askedTo, friend.askedFrom
 
 userSchema.methods.getFriends = (done, forceReload = false) ->
 	if ! forceReload and @friends? and @friendAsks?
