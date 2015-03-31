@@ -291,7 +291,17 @@ $.each [
 		'click touchstart'
 		'[data-ask-for-friend], [ng-attr-data-ask-for-friend]'
 		($btn, e) ->
-			Ajax.post '/user/friend', data: userId: $btn.data 'ask-for-friend'
+			s = textReplacements
+			name = decodeURIComponent $btn.attr('href').replace(/^.*\/([^\/]+)$/g, '$1')
+			id = $btn.data 'ask-for-friend'
+			Ajax.post '/user/friend',
+				data: userId: id
+				success: (data) ->
+					console.log [data, data.exists]
+					if data.exists
+						bootbox.confirm s(":name vous a déjà demandé en ami, voulez-vous accepter sa demande maintenant ?", name: name), (ok) ->
+							if ok
+								Ajax.post '/user/friend/accept', data: id: id
 			if $btn.is '.destroyable'
 				$btn.fadeOut ->
 					$btn.remove()

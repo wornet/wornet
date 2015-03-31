@@ -330,6 +330,7 @@ module.exports = (app, port) ->
 		render = app.response.render
 		end = app.response.end
 		cookie = app.response.cookie
+		json = app.response.json
 
 		# Available shorthand methods to all response objects in controllers
 		responseErrors =
@@ -443,8 +444,7 @@ module.exports = (app, port) ->
 				if data.err and ! noReport
 					GitlabPackage.error data.err
 				data._csrf = data._csrf || @locals._csrf
-				@setHeader 'Content-Type', 'application/json'
-				@end JSON.stringify data
+				json.call @, data
 			setTimeLimit: (time = 0) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'
 					clearTimeout @excedeedTimeout
