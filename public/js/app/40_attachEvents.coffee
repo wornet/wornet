@@ -297,11 +297,14 @@ $.each [
 			Ajax.post '/user/friend',
 				data: userId: id
 				success: (data) ->
-					console.log [data, data.exists]
 					if data.exists
-						bootbox.confirm s(":name vous a déjà demandé en ami, voulez-vous accepter sa demande maintenant ?", name: name), (ok) ->
+						bootbox.confirm s("{name} vous a déjà demandé en ami, voulez-vous accepter sa demande maintenant ?", name: name), (ok) ->
 							if ok
-								Ajax.post '/user/friend/accept', data: id: id
+								$accept = $ '.friend-ask[data-id="' + id + '"] .accept-friend'
+								if exists $accept
+									$accept.click()
+								else
+									Ajax.post '/user/friend/accept', data: id: id
 			if $btn.is '.destroyable'
 				$btn.fadeOut ->
 					$btn.remove()
@@ -353,19 +356,19 @@ $.each [
 			refreshPill()
 			cancel e
 	]
-	[
-		'click touchstart'
-		'.notifications a.dropdown-toggle'
-		($a, e) ->
-			if sessionStorage
-				notifications = ''
-				$a.parent().find('ul.dropdown-menu li').each ->
-					notifications += notificationPrint @
-					return
-				sessionStorage.sawNotifications = notifications
-				refreshPill()
-			return
-	]
+	# [
+	# 	'click touchstart'
+	# 	'.notifications a.dropdown-toggle'
+	# 	($a, e) ->
+	# 		if sessionStorage
+	# 			notifications = ''
+	# 			$a.parent().find('ul.dropdown-menu li').each ->
+	# 				notifications += notificationPrint @
+	# 				return
+	# 			sessionStorage.sawNotifications = notifications
+	# 			refreshPill()
+	# 		return
+	# ]
 	[
 		'click touchstart'
 		'.notifications ul a'
@@ -383,7 +386,14 @@ $.each [
 				true
 			else
 				unless $a.is '.friend-ask'
-					$a.parents('li:first').remove()
+					notifications = sessionStorage.sawNotifications || ''
+					$a.parents('li:first').each ->
+						print = notificationPrint @
+						if -1 is notifications.indexOf print
+							notifications += print
+						return
+					sessionStorage.sawNotifications = notifications
+					# $a.parents('li:first').remove()
 					refreshPill()
 				cancel e
 	]

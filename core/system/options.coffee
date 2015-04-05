@@ -322,6 +322,21 @@ module.exports = (app, port) ->
 						done someUsersNotFound()
 					else
 						done null, usersMap[id]
+			tryPassword: (user, password, done) ->
+				if 'function' is typeof user
+					done = user
+					password = @body.password
+					user = @user
+				else if 'function' is typeof password
+					done = password
+					password = @body.password
+				ip = @connection.remoteAddress
+				res = @res
+				AntiBruteForcePackage.test ip, user.id, (err) ->
+					if err
+						res.serverError err
+					else
+						user.passwordMatches password, done
 
 
 		# Save original method(s) that we will override

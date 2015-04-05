@@ -391,10 +391,12 @@ label
 	&.opened-shutter
 	.inner-shutter
 	.nav
-	a
+	.inner-shutter > a
+	ul a
 		width 300px
 
-	a
+	.inner-shutter > a
+	ul a
 		display block
 		background white
 		transition(background .2s)
@@ -426,6 +428,7 @@ label
 		// border-left $shutterBorderWidth solid $darkGray
 
 	.footer
+		font-size 13px
 		color $darkGray
 		border 1px solid $lightGray
 		// border-radius(4px)
