@@ -230,11 +230,41 @@ userSchema.methods.publicInformations = (thumbSizes = null) ->
 	informations.name.full = @name.full
 	informations
 
-userSchema.methods.encryptPassword = (plainText) ->
-	sha1 plainText || @password, @token + @_id
+userSchema.methods.sha1Fallback = (plainText) ->
+	sha1 plainText, @token + @_id
 
-userSchema.methods.passwordMatches = (plainText) ->
-	@password is @encryptPassword(plainText)
+userSchema.methods.encryptPassword = (plainText, done) ->
+	if 'function' is typeof plainText
+		done = plainText
+		plainText = @password
+	done = done.bind @
+	fallback = @bind ->
+		done @sha1Fallback plainText
+	try
+		bcrypt = require 'bcrypt'
+		bcrypt.hash pass, config.wornet.security.saltWorkFactor, (err, hash) ->
+			if err
+				warn err
+				fallback()
+			else
+				done hash
+	catch e
+		warn e
+		fallback()
+
+userSchema.methods.passwordMatches = (plainText, done) ->
+	if @password is @sha1Fallback plainText
+		done true
+	else
+		try
+			bcrypt = require 'bcrypt'
+			bcrypt.compare plainText, @password, (err, isMatch) ->
+				if err
+					warn err
+				done isMatch
+		catch e
+			warn e
+			done false
 
 userSchema.methods.aksForFriend = (askedTo, done) ->
 	askedFrom = @id
@@ -334,8 +364,11 @@ userSchema.methods.getFriends = (done, forceReload = false) ->
 
 userSchema.pre 'save', (next) ->
 	if @isModified 'password'
-		@password = @encryptPassword()
-	next()
+		@encryptPassword (hash) ->
+			@password = hash
+			next()
+	else
+		next()
 
 userSchema.pre 'remove', (next) ->
 	parallelRemove [

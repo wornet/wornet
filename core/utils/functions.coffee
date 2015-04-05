@@ -1062,8 +1062,17 @@ module.exports =
 			source = 'public' + profilePhotoUrl '/' + directory + '/' + file + '.' + extension
 			unless keepExtension
 				extension = directory
-			if (config.env.development or limit) and fs.existsSync source
-				stat = fs.statSync source
+			if (config.env.development or limit)
+				assetSource = source.replace /\.coffee$/g, '.js'
+				if fs.existsSync assetSource
+					stat = fs.statSync assetSource
+				else if assetSource isnt source and fs.existsSync source
+					stat = fs.statSync assetSource
+				if /\/app\.styl$/g.test source
+					for dir in ['css', 'css/includes', 'css/lib', 'css/user']
+						dirStat = fs.statSync __dirname + '/../../public/' + dir
+						if dirStat.mtime > stat.mtime
+							stat.mtime = dirStat.mtime
 			if limit and stat and limit > stat.size
 				switch extension
 					when 'js' then type = 'text/javascript'

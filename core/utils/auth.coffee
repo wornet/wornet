@@ -79,16 +79,17 @@ exports.login = (req, res, done) ->
 			return done incorrectLoginMessage, false
 
 		# Make sure that the provided password matches what's in the DB.
-		unless user.passwordMatches req.body.password
-			req.flash "loginErrors", incorrectLoginMessage unless req.xhr
-			return done incorrectLoginMessage, false
+		req.tryPassword user, (ok) ->
+			if ok
+				# If user ask for remember him
+				if req.body.remember
+					exports.remember res, user._id
 
-		# If user ask for remember him
-		if req.body.remember
-			exports.remember res, user._id
-
-		# If everything passes, return the retrieved user object.
-		exports.auth req, res, user, done
+				# If everything passes, return the retrieved user object.
+				exports.auth req, res, user, done
+			else
+				req.flash "loginErrors", incorrectLoginMessage unless req.xhr
+				done incorrectLoginMessage, false
 
 
 # Try to login with session data or remember cookie

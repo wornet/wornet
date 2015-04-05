@@ -37,7 +37,7 @@ mixin notifications(classes)
 						|&nbsp;
 					| &nbsp; 
 					=" "
-					span(ng-bind-html="notification[1]")
+					span(ng-bind-html="trust(notification[1])")
 				a(ng-switch-when="askForFriend" href="/notification/{{ ifId(notification[0], $index) }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
 					i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
@@ -56,4 +56,4 @@ mixin notifications(classes)
 					i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
-					span(ng-bind-html="notification[1]")
+					span(ng-bind-html="trust(notification[1])")

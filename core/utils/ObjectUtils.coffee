@@ -6,6 +6,12 @@ Extend Object prototype
 
 ObjectUtils =
 
+	bind: (method, done = null) ->
+		if done
+			@[method] done.bind @
+		else
+			method.bind @
+
 	updateById: (id, update, done) ->
 		done ||= (err) ->
 			if err

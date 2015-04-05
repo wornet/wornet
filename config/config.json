@@ -223,6 +223,20 @@
 
         "secret": "JhUUsYUQ72Jjj72TGdQSFDLpP82YG1LDYTdsqyud621Egy",
 
+        "security": {
+            "saltWorkFactor": 11,
+            "limit": {
+                "ipUser": 10,
+                "ip": 20,
+                "user": 30
+            },
+            "duration": {
+                "ipUser": 5,
+                "ip": 60,
+                "user": 20
+            }
+        },
+
         "staticServer": "",
 
         "thumbSizes": [50, 90, 200],

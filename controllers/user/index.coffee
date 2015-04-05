@@ -564,23 +564,24 @@ module.exports = (router) ->
 			res.redirect '/'
 
 	router.delete '/', (req, res) ->
-		if req.user.passwordMatches req.body.password
-			email = req.user.email
-			req.user.remove (err) ->
-				if err
-					res.serverError err
-				else
-					auth.logout req, res
-					req.flash 'loginSuccess', s("Votre compte a été correctement supprimé")
-					res.json goingTo: '/'
-					emailUnsubscribed email, (err, unsub) ->
-						unless unsub
-							unsub = new Unsubscribe email: email
-						unsub.count++
-						unsub.save()
-						Counter.findOne name: 'unsubscribe', (err, counter) ->
-							if counter
-								counter.inc()
+		req.tryPassword (ok) ->
+			if ok
+				email = req.user.email
+				req.user.remove (err) ->
+					if err
+						res.serverError err
+					else
+						auth.logout req, res
+						req.flash 'loginSuccess', s("Votre compte a été correctement supprimé")
+						res.json goingTo: '/'
+						emailUnsubscribed email, (err, unsub) ->
+							unless unsub
+								unsub = new Unsubscribe email: email
+							unsub.count++
+							unsub.save()
+							Counter.findOne name: 'unsubscribe', (err, counter) ->
+								if counter
+									counter.inc()
 
-		else
-			res.serverError new PublicError s("Mot de passe incorrect")
+			else
+				res.serverError new PublicError s("Mot de passe incorrect")

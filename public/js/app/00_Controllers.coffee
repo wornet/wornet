@@ -497,7 +497,7 @@ Controllers =
 
 		return
 
-	Notifications: ($scope) ->
+	Notifications: ($scope, $sce) ->
 		$scope.notifications = {}
 
 		$scope.ifId = (id, defaultValue) ->
@@ -505,6 +505,9 @@ Controllers =
 				id
 			else
 				defaultValue
+
+		$scope.trust = (html) ->
+			$sce.trustAsHtml html
 
 		$scope.$on 'receiveNotification', (e, notification) ->
 			unless exists 'a[href="/notification/' + notification.id + '"]'
