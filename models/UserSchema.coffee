@@ -242,7 +242,7 @@ userSchema.methods.encryptPassword = (plainText, done) ->
 		done @sha1Fallback plainText
 	try
 		bcrypt = require 'bcrypt'
-		bcrypt.hash pass, config.wornet.security.saltWorkFactor, (err, hash) ->
+		bcrypt.hash plainText, config.wornet.security.saltWorkFactor, (err, hash) ->
 			if err
 				warn err
 				fallback()
