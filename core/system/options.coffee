@@ -141,7 +141,7 @@ module.exports = (app, port) ->
 		middleware.appsec.module.arguments[0].csrf = impl:
 			create: token.create
 			validate: (req, str) ->
-				if req.url is '/photo' and req.method is 'POST'
+				if req.url is '/user/photo' and req.method is 'POST'
 					true
 				else
 					token.validate req, str
