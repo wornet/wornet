@@ -140,11 +140,11 @@ module.exports = (app, port) ->
 		token = require 'lusca/lib/token'
 		middleware.appsec.module.arguments[0].csrf = impl:
 			create: token.create
-			validate: (req, token) ->
+			validate: (req, str) ->
 				if req.url is '/photo' and req.method is 'POST'
 					true
 				else
-					token.validate req, token
+					token.validate req, str
 		# Available shorthand methods to all request objects in controllers
 		extend app.request,
 			# get objets of the different alert types for a given key
