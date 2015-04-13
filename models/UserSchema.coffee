@@ -244,12 +244,14 @@ userSchema.methods.encryptPassword = (plainText, done) ->
 		bcrypt = require 'bcrypt'
 		bcrypt.hash plainText, config.wornet.security.saltWorkFactor, (err, hash) ->
 			if err
-				warn err
+				if err
+					warn err
 				fallback()
 			else
 				done hash
 	catch e
-		warn e
+		unless e.code is 'MODULE_NOT_FOUND' and config.env.development
+			warn e
 		fallback()
 
 userSchema.methods.passwordMatches = (plainText, done) ->
@@ -263,14 +265,15 @@ userSchema.methods.passwordMatches = (plainText, done) ->
 					warn err
 				done isMatch
 		catch e
-			warn e
+			unless e.code is 'MODULE_NOT_FOUND' and config.env.development
+				warn e
 			done false
 
 userSchema.methods.aksForFriend = (askedTo, done) ->
 	askedFrom = @id
 	if askedFrom is askedTo
 		done
-			err: new PublicError "Vous vous aimez, et vous avez bien raison. Mais nous ne pouvons pas ajouter votre propre profil à vos amis."
+			err: new PublicError s("Vous vous aimez, et vous avez bien raison. Mais nous ne pouvons pas ajouter votre propre profil à vos amis.")
 			friend: null
 	else
 		data =
