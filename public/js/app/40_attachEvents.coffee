@@ -93,6 +93,13 @@ $.each [
 			return
 	]
 	[
+		'touchstart'
+		'.photos-thumbs a'
+		($a) ->
+			$a.click()
+			return
+	]
+	[
 		'upload'
 		'#profile-photo'
 		($form, e, body) ->

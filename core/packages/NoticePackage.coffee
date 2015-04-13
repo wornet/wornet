@@ -37,13 +37,6 @@ NoticePackage =
 				, (err) ->
 					if err
 						warn err
-			else if data.action is 'status'
-				Notice.create
-					user: userId
-					content: data[0]
-				, (err) ->
-					if err
-						warn err
 			if appendOtherUsers
 				otherUserIds = userIds.filter (id) ->
 					id isnt userId

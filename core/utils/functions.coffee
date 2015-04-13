@@ -337,6 +337,9 @@ module.exports =
 		Date.log()
 		console['log'] trace message
 		console['log'] '=========================='
+		unless message.contains('/') or message.contains('\\')
+			console.trace()
+			console['log'] '=========================='
 	###
 	Display a warning message and stack trace
 	@param mixed message or vairbale to print in console warn
