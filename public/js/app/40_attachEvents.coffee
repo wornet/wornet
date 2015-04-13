@@ -110,38 +110,41 @@ $.each [
 				.replace /^.*<body[^>]*>/ig, ''
 				.replace /<\/body>.*$/ig, ''
 			)
-			unless $newImg.is('.error') or $newImg.is('img')
-				$newImg = $newImg.find 'img'
-			if $newImg.is('img')
-				newSource = $newImg.prop 'src'
-				regExp = /\/photo\/[0-9]+x([^\/\.]+)[\/\.]/g
-				match = newSource.match regExp
-				if match
-					id = match[0].replace regExp, '$1'
-					$('#uploadedPhotoId').val id
-				album = $newImg.data 'created-album'
-				if album
-					albums = objectResolve JSON.parse sessionStorage.albums
-					present = false
-					for a in albums
-						if a._id is album._id
-							present = true
-							break
-					unless present
-						albums.push album
-						statusScope.albums = albums
-						sessionStorage.albums = JSON.stringify albums
-						refreshScope statusScope
-					getAlbumsFromServer ->
-						refreshScope statusScope
-						return
-				$img.fadeOut 'fast', ->
-					$loader = $form.find '.loader'
-					$loader.fadeOut 'fast', $loader.remove
-					$img.thumbSrc(newSource).fadeIn 'fast'
-					return
-			else
+			if $newImg.find('h3').length
 				@onerror()
+			else
+				unless $newImg.is('.error') or $newImg.is('img')
+					$newImg = $newImg.find 'img'
+				if $newImg.is('img')
+					newSource = $newImg.prop 'src'
+					regExp = /\/photo\/[0-9]+x([^\/\.]+)[\/\.]/g
+					match = newSource.match regExp
+					if match
+						id = match[0].replace regExp, '$1'
+						$('#uploadedPhotoId').val id
+					album = $newImg.data 'created-album'
+					if album
+						albums = objectResolve JSON.parse sessionStorage.albums
+						present = false
+						for a in albums
+							if a._id is album._id
+								present = true
+								break
+						unless present
+							albums.push album
+							statusScope.albums = albums
+							sessionStorage.albums = JSON.stringify albums
+							refreshScope statusScope
+						getAlbumsFromServer ->
+							refreshScope statusScope
+							return
+					$img.fadeOut 'fast', ->
+						$loader = $form.find '.loader'
+						$loader.fadeOut 'fast', $loader.remove
+						$img.thumbSrc(newSource).fadeIn 'fast'
+						return
+				else
+					@onerror()
 			return
 	]
 	[
@@ -189,19 +192,23 @@ $.each [
 			$container = $form.find '.upload-container'
 			$container.html $container.data 'save-html'
 			$scope = $form.scope()
-			$('<div>' + body
+			$html = $ '<div>' + body
 				.replace /[\n\r\t]/g, ''
 				.replace /^.*<body[^>]*>/ig, ''
 				.replace /<\/body>.*$/ig, ''
-			+ '</div>').find('.error, img').each ->
-				$tag = $ @
-				if $tag.is '.error'
-					$('.errors').errors $tag.html()
-				else
-					$scope.medias.images.push
-						src: $tag.prop 'src'
-						name: $tag.prop 'alt'
-				return
+			+ '</div>'
+			if $html.find('h3').length
+				$('.errors').errors $html.find('h3 + p')
+			else
+				$html.find('.error, img').each ->
+					$tag = $ @
+					if $tag.is '.error'
+						$('.errors').errors $tag.html()
+					else
+						$scope.medias.images.push
+							src: $tag.prop 'src'
+							name: $tag.prop 'alt'
+					return
 			$scope.$apply()
 	]
 	[
