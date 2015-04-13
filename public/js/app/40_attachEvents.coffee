@@ -100,6 +100,15 @@ $.each [
 			cancel e
 	]
 	[
+		'error'
+		'#profile-photo'
+		($form, e, error) ->
+			$form.find('input[type="submit"]').prop 'disabled', false
+			$loader = $form.find '.loader'
+			$loader.fadeOut 'fast', $loader.remove
+			$('.errors').errors error
+	]
+	[
 		'upload'
 		'#profile-photo'
 		($form, e, body) ->
@@ -111,7 +120,7 @@ $.each [
 				.replace /<\/body>.*$/ig, ''
 			)
 			if $newImg.find('h3').length
-				@onerror()
+				$form.trigger 'error', [$newImg.find('h3 + p').text()]
 			else
 				unless $newImg.is('.error') or $newImg.is('img')
 					$newImg = $newImg.find 'img'
@@ -144,7 +153,7 @@ $.each [
 						$img.thumbSrc(newSource).fadeIn 'fast'
 						return
 				else
-					@onerror()
+					$form.trigger 'error', [$newImg.text()]
 			return
 	]
 	[
@@ -169,14 +178,11 @@ $.each [
 					return
 
 				xhr.onerror = ->
-					enable()
 					$error = $ @responseText
 					unless $error.is '.error'
 						$error = $error.find '.error'
 					$error = $error.filter '.error'
-					$loader = $form.find '.loader'
-					$loader.fadeOut 'fast', $loader.remove
-					$('.errors').errors $error.html()
+					$form.trigger 'error', [$error.html()]
 					return
 
 				xhr.onload = ->
@@ -198,7 +204,7 @@ $.each [
 				.replace /<\/body>.*$/ig, ''
 			+ '</div>')
 			if $html.find('h3').length
-				$('.errors').errors $html.find('h3 + p')
+				$('.errors').errors $html.find('h3 + p').text()
 			else
 				$html.find('.error, img').each ->
 					$tag = $ @
