@@ -94,10 +94,10 @@ $.each [
 	]
 	[
 		'touchstart'
-		'.photos-thumbs a'
-		($a) ->
-			$a.click()
-			return
+		'.photos-thumbs a[href][data-toggle="tooltip"]'
+		($a, e) ->
+			location.href = $a.attr 'href'
+			cancel e
 	]
 	[
 		'upload'
