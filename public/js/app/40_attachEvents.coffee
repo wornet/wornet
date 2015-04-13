@@ -192,11 +192,11 @@ $.each [
 			$container = $form.find '.upload-container'
 			$container.html $container.data 'save-html'
 			$scope = $form.scope()
-			$html = $ '<div>' + body
+			$html = $('<div>' + body
 				.replace /[\n\r\t]/g, ''
 				.replace /^.*<body[^>]*>/ig, ''
 				.replace /<\/body>.*$/ig, ''
-			+ '</div>'
+			+ '</div>')
 			if $html.find('h3').length
 				$('.errors').errors $html.find('h3 + p')
 			else
