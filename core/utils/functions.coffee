@@ -744,7 +744,7 @@ module.exports =
 		notProfilePhoto = (albumId and albumId isnt "0")
 		next = (createdAlbum = null) ->
 			Photo.create
-				user: req.user.id
+				user: (req.user || req.session.user).id
 				name: image.name
 				album: albumId
 			, (createErr, photo) ->

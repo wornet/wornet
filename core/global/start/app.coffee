@@ -8,6 +8,9 @@ module.exports = (defer, start) ->
 		config: config
 		options: options
 
+	if https = config.wornet.protocole is 'https'
+		app.set 'trust proxy', 1
+
 	# Get a memcached client to use cache
 	memStore = new MemcachedStore
 	global.mem = memStore.client
@@ -18,8 +21,6 @@ module.exports = (defer, start) ->
 
 	session = require 'express-session'
 
-	if https = config.wornet.protocole is 'https'
-		app.set 'trust proxy', 1
 	app.use session
 		# Express session options
 		resave: true,

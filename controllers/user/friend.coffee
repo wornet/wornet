@@ -27,6 +27,7 @@ module.exports = (router) ->
 		# When user ignore friend ask
 		him = cesarRight req.body.id
 		me = req.user.id
+		UserPackage.cacheFriends me, him, false
 		Friend.remove
 			$or: [
 				askedFrom: me

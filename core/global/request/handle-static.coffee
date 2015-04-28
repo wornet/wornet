@@ -32,18 +32,6 @@ module.exports = (app) ->
 					return
 
 		next = ->
-			# Parse body from requests
-			if req.is 'multipart/form-data'
-				formidable = require 'formidable'
-				form = new formidable.IncomingForm()
-				files = {}
-				form.parse req
-				form.on 'file', (name, file) ->
-					unless files[name]
-						files[name] = []
-					files[name].push file
-				form.on 'end', ->
-					req.triggerMultiUpload files
 			bodyParser req, res, ->
 				# Available PUT and DELETE on old browsers
 				methodOverride req, res, ->

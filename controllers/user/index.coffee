@@ -416,7 +416,7 @@ module.exports = (router) ->
 				res.notFound()
 
 	# The user upload an image (profile photo, images in status, etc.)
-	pm.multiUpload '/photo', (req, res) ->
+	router.post '/photo', (req, res) ->
 		# When user upload a new profile photo
 		model = images: []
 		images = req.files.photo || []
@@ -427,46 +427,49 @@ module.exports = (router) ->
 			if model.images.length is images.length
 				res.render templateFolder + '/upload-photo', model
 		lastestAlbum = null
-		images.each ->
-			image = @
-			data = name: @name
-			if image.size > config.wornet.upload.maxsize
-				data.error = "size-exceeded"
-				warn data.error
-				done data
-			else unless (['image/png', 'image/jpeg']).contains image.type
-				data.error = "wrong-format"
-				warn data.error
-				done data
-			else
-				album =  req.body.album || 0
-				next = ->
-					addPhoto req, image, album, (err, createdAlbum = null, photo) ->
-						data.createdAlbum = createdAlbum
-						if err
-							data.error = err
-							warn err
-						else
-							data.src = photo.thumb200
-						done data
-				if album is "new"
-					if lastestAlbum
-						album = lastestAlbum
-						next()
-					else
-						Album.findOne()
-						.sort _id: 'desc'
-						.exec (err, foundAlbum) ->
+		if images.length > 0
+			images.each ->
+				image = @
+				data = name: @name
+				if image.size > config.wornet.upload.maxsize
+					data.error = "size-exceeded"
+					warn data.error
+					done data
+				else unless (['image/png', 'image/jpeg']).contains image.type
+					data.error = "wrong-format"
+					warn data.error
+					done data
+				else
+					album =  req.body.album || 0
+					next = ->
+						addPhoto req, image, album, (err, createdAlbum = null, photo) ->
+							data.createdAlbum = createdAlbum
 							if err
 								data.error = err
 								warn err
-								done data
 							else
-								album = foundAlbum._id
-								lastestAlbum = album
-								next()
-				else
-					next()
+								data.src = photo.thumb200
+							done data
+					if album is "new"
+						if lastestAlbum
+							album = lastestAlbum
+							next()
+						else
+							Album.findOne()
+							.sort _id: 'desc'
+							.exec (err, foundAlbum) ->
+								if err
+									data.error = err
+									warn err
+									done data
+								else
+									album = foundAlbum._id
+									lastestAlbum = album
+									next()
+					else
+						next()
+		else
+			res.render templateFolder + '/upload-photo', model
 
 	router.delete '/photo', (req, res) ->
 		userModifications = {}

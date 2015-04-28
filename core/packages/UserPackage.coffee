@@ -2,8 +2,24 @@
 
 randomUsers = []
 randomUsersLastRetreive = 0
+friendsCoupleCacheLifeTime = 1.hour
 
 UserPackage =
+
+	getIDCouple: (a, b) ->
+		a = strval a.id || a
+		b = strval b.id || b
+		ids = [a, b]
+		ids.sort()
+		ids.join '-'
+
+	areFriends: (a, b, calculate, done) ->
+		key = @getIDCouple a, b
+		cache 'friends-' + key, friendsCoupleCacheLifeTime, calculate, done
+
+	cacheFriends: (a, b, areFriends = true) ->
+		key = @getIDCouple a, b
+		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
 	getAlbums: (userIds, done) ->
 		Album.find
@@ -153,6 +169,7 @@ UserPackage =
 	setFriendStatus: (req, id, status, done) ->
 		id = strval id
 		me = req.user
+		self = @
 		@refreshFriends req, (err) ->
 			if err
 				done err: err
@@ -192,6 +209,7 @@ UserPackage =
 						delete req.session.user.friendAsks[id]
 						delete req.session.friendAsks[id]
 						if status is 'accepted'
+							self.cacheFriends me, friend.askedFrom, true
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
 									notice = (userId, notice) ->
@@ -239,6 +257,7 @@ UserPackage =
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
 		isMe = (req.user?) and (id is req.user.id)
+		self = @
 		@randomUsers (users) ->
 			users = users.filter (user) ->
 				user._id isnt req.user._id
@@ -249,28 +268,33 @@ UserPackage =
 						res.serverError err
 					else
 						friendsThumb = friends.pickUnique config.wornet.limits.friendsOnProfile
+						end = (isAFriend) ->
+							res.render template,
+								isMe: isMe
+								askedForFriend: askedForFriend
+								isAFriend: isAFriend
+								profile: profile
+								profileAlerts: req.getAlerts 'profile'
+								numberOfFriends: friends.length
+								friends: if isMe then friendsThumb else []
+								friendAsks: if isMe then friendAsks else {}
+								userTexts: userTexts()
+								users: users
 						try
 							askedForFriend = if isMe or !req.user? or empty req.user.friendAsks
 								false
 							else
 								req.user.friendAsks.has hashedId: cesarLeft profile.id
-							isAFriend = if isMe or !req.user? or empty friends
-								false
+							if isMe or !req.user? or empty friends
+								end false
 							else
-								friends.has id: req.user.id
+								self.areFriends req.user, profile, (done) ->
+									log [(typeof req.user.id), req.user.id, friends]
+									done friends.has id: req.user.id
+								, end
 						catch err
 							warn err
-						res.render template,
-							isMe: isMe
-							askedForFriend: askedForFriend
-							isAFriend: isAFriend
-							profile: profile
-							profileAlerts: req.getAlerts 'profile'
-							numberOfFriends: friends.length
-							friends: if isMe then friendsThumb else []
-							friendAsks: if isMe then friendAsks else {}
-							userTexts: userTexts()
-							users: users
+							end false
 			if isMe
 				done req.user
 			else

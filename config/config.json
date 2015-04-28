@@ -51,6 +51,14 @@
             }
         },
 
+        "multipart": {
+            "enabled": true,
+            "module": {
+                "name": "kraken-js/middleware/multipart",
+                "arguments": [ { "multiples": true } ]
+            }
+        },
+
         "router": {
             "module": {
                 "arguments": [{ "directory": "path:./controllers/" }]
