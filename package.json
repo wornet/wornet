@@ -33,7 +33,7 @@
 		"mongoose": "~3.8.21",
 		"mongoose-simple-random": "~0.3.0",
 		"crypto": "~0.0.3",
-		"bcrypt-nodejs": "git://github.com/kylekatarnls/bcrypt-nodejs.git#0.0.4",
+		"bcrypt-nodejs": "git://github.com/kylekatarnls/bcrypt-nodejs.git#master",
 		"method-override": "~1.0.0",
 		"body-parser": "~1.0.0",
 		"connect-flash": "~0.1.1",
