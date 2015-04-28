@@ -3,4 +3,5 @@
 .npm/*
 .config/*
 nodemon.json
+tags
 node_modules/*
