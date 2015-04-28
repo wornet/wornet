@@ -19,6 +19,7 @@ module.exports = (app, port) ->
 		err
 
 	app.on 'middleware:after:session', (eventargs) ->
+
 		# Flash session (store data in sessions to the next page only)
 		app.use flash()
 		# Allow to set and get cookies in routes methods
@@ -174,20 +175,6 @@ module.exports = (app, port) ->
 				else if url isnt '/user/notify'
 					@session.goingTo = url
 				url
-			# Handle <input type="file" multiple>
-			multiUpload: (done) ->
-				if @multiUploadFiles
-					done @multiUploadFiles
-				else
-					@onMultiUpload = done
-
-			# Trigger after parsing multipart upload
-			triggerMultiUpload: (files = {}) ->
-				if @onMultiUpload
-					@onMultiUpload files
-				else
-					@multiUploadFiles = files
-
 			# Get a cookie value from name or null if it does not exists
 			cookie: (name) ->
 				if @cookies[name]?

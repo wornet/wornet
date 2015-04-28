@@ -241,7 +241,7 @@ userSchema.methods.encryptPassword = (plainText, done) ->
 	fallback = @bind ->
 		done @sha1Fallback plainText
 	try
-		bcrypt = require 'bcrypt'
+		bcrypt = require 'bcrypt-nodejs'
 		bcrypt.hash plainText, config.wornet.security.saltWorkFactor, (err, hash) ->
 			if err
 				if err
@@ -259,7 +259,7 @@ userSchema.methods.passwordMatches = (plainText, done) ->
 		done true
 	else
 		try
-			bcrypt = require 'bcrypt'
+			bcrypt = require 'bcrypt-nodejs'
 			bcrypt.compare plainText, @password, (err, isMatch) ->
 				if err
 					warn err
