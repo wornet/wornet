@@ -727,13 +727,17 @@ fieldset.tab .btn
 .scroll-cursor
 	rel(-100px, 0)
 
+.fade-on-load
+	transition all .2s
+	&.not-loaded
+		opacity(0)
+
 // Imports.
 @import "includes/tooltip"
 @import "user/login"
 @import "user/profile"
 @import "user/chat"
 @import "agenda"
-
 
 // Media Queries.
 @media (max-width: 767px)
@@ -752,6 +756,7 @@ fieldset.tab .btn
 	.desktop
 	#shutter
 	li.open-shutter
+	#they-use-wornet
 		display none
 
 	#navbar
