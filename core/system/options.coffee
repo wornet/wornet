@@ -3,6 +3,9 @@
 useCdn = false
 piwik = false
 googleAnalytics = true
+csrfDetect = "Error: CSRF token mismatch"
+csrfReplace = ->
+	s("La session a expiré")
 
 flash = require('connect-flash')
 cookieParser = require(config.middleware.cookieParser.module.name)
@@ -416,6 +419,8 @@ module.exports = (app, port) ->
 					GitlabPackage.error params[1].err
 					if params[1].err instanceof PublicError
 						params[1].err = strval params[1].err
+					else if equals params[1].err, detectCsrf
+						params[1].err = csrfReplace()
 					else
 						delete params[1].err
 				next = ->
@@ -447,8 +452,9 @@ module.exports = (app, port) ->
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
 					if data.err instanceof Error
-						if equals data.err, "Error: CSRF token mismatch"
+						if equals data.err, detectCsrf
 							data.csrfBroken = true
+							data.err = csrfReplace()
 						if config.env.development
 							data.stack = data.err.stack
 					data.err = strval(data.err || s("Erreur inconnue"))
