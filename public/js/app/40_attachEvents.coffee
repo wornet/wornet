@@ -483,6 +483,13 @@ $.each [
 	]
 	[
 		'click touchstart'
+		'.footer a'
+		($a, e) ->
+			window.open $a.attr 'href'
+			cancel e
+	]
+	[
+		'click touchstart'
 		'#delete-account'
 		($a, e) ->
 			bootbox.dialog
