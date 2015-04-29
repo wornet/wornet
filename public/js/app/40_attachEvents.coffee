@@ -596,3 +596,15 @@ $document.keydown (e) ->
 			if $('.next:visible:last').not('.disabled').click().length
 				return cancel e
 	return
+
+delayedSrcAttr = 'delayed-src'
+
+$document.on 'end-of-load', ->
+	$('img[data-' + delayedSrcAttr + ']').each ->
+		$img = $ @
+		$img.attr 'src', $img.data delayedSrcAttr
+		$img.on 'error', ->
+			$img.parent().parent().remove()
+		$img.on 'load', ->
+			$img.parents('.fade-on-load:first').removeClass 'not-loaded'
+		$img.removeAttr delayedSrcAttr

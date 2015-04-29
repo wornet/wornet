@@ -1,7 +1,7 @@
-.well
+#they-use-wornet.well
 	h3=strtoupper(s("Ils utilisent Wornet"))
 	ul.photos-thumbs
 		each randomUser in users
-			li: a(href="/user/profile/" + randomUser.hashedId + "/" + encodeURIComponent(randomUser.fullName) data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
-				img(src=randomUser.thumb50 alt=randomUser.fullName onerror="$(this).parent().parent().remove()" data-id=randomUser.hashedId)
+			li.fade-on-load.not-loaded: a(href="/user/profile/" + randomUser.hashedId + "/" + encodeURIComponent(randomUser.fullName) data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
+				img(data-delayed-src=randomUser.thumb50 alt=randomUser.fullName data-id=randomUser.hashedId)
 	.cb

@@ -55,6 +55,10 @@ do (s = textReplacements) ->
 # Convert titles attributes to tooltips when elements have a data-toggle="tooltip" atribute
 $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 
+countLoaders = ->
+	unless exists '.loading'
+		$document.trigger 'end-of-load'
+
 # Display loading animation until angular scope is ready
 $('.loading').each ->
 	$loading = $ @
@@ -63,8 +67,11 @@ $('.loading').each ->
 		$loading.removeClass 'loading'
 		if $scope
 			refreshScope $scope
+			countLoaders()
 		return
 	return
+
+countLoaders()
 
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
