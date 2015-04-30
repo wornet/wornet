@@ -438,15 +438,18 @@ Controllers =
 				$mediaViewer = $ '#media-viewer'
 				$img = $mediaViewer.find 'img.big'
 				if $img.length
+					$mediaViewer
+						.find 'img.big, a.next, a.prev'
+						.css 'max-height', Math.max(200, window.innerHeight - 200) + 'px'
 					w = $img.width()
 					h = $img.height()
 					if w * h
+						between = (min, max, number) ->
+							Math.max min, Math.min max, Math.round number
 						$mediaViewer.find('.img-buttons')
 							.css 'margin-top', -h
 							.width w
 						$mediaViewer.find('.img-buttons, .prev, .next').height h
-						between = (min, max, number) ->
-							Math.max min, Math.min max, Math.round number
 						$mediaViewer.find('.prev, .next')
 							.width Math.round w / 2
 							.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
