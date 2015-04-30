@@ -1,6 +1,7 @@
 'use strict'
 
 photos = {}
+albumRefreshes = {}
 
 prefix = 'p:'
 
@@ -104,5 +105,17 @@ PhotoPackage =
 		delay config.wornet.upload.ttl * 1000, ->
 			if photos[photoId] and photos[photoId] is token
 				self.delete photoId
+
+	refreshAlbum: (albumId) ->
+		if albumRefreshes[albumId]
+			clearTimeout albumRefreshes[albumId]
+		albumRefreshes[albumId] = delay 1.second, ->
+			Album.findById albumId, (err, album) ->
+				if err
+					warn err
+				if album
+					album.refreshPreview (err) ->
+						if err
+							warn err
 
 module.exports = PhotoPackage
