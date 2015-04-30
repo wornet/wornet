@@ -36,7 +36,7 @@ module.exports = (router) ->
 		model = {}
 		auth.logout req, res
 		if req.body.goingTo?
-			req.goingTo req.body.goingTo 
+			req.goingTo req.body.goingTo
 		res.redirect '/'
 
 
@@ -382,11 +382,13 @@ module.exports = (router) ->
 			res.json()
 
 	router.get '/photo/:id', (req, res) ->
+		me = req.user._id
 		Photo.findById req.params.id, (err, photo) ->
 			if err
 				res.serverError err
 			else if photo and photo.status is 'published'
 				info = photo.columns ['name']
+				info.concernMe = equals(photo.user, me) or (req.session.photosAtMe || []).contains photo.id, equals
 				count = 1
 				next = ->
 					unless --count

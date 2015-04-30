@@ -7,9 +7,15 @@ StatusPackage =
 		@getRecentStatus req, res, id, data, onProfile
 
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
-		next = ->
+		next = _next = ->
 			if data.recentStatus and data.chat
 				res.json data
+		nextWithSession = ->
+			req.session.save (err) ->
+				warn err if err
+				req.session.reload (err) ->
+					warn err if err
+					_next()
 		unless data.chat
 			ChatPackage.all req, (err, chat) ->
 				if err
@@ -80,6 +86,10 @@ StatusPackage =
 											if @at
 												status.at = usersMap[strval @at].publicInformations()
 											status.concernMe = [@at, @author].contains req.user.id, equals
+											if status.concernMe and status.images.length and ! equals req.user.id, @author
+												ids = status.images.column('src').map PhotoPackage.urlToId
+												(req.session.photosAtMe ||= []).merge ids, 'add'
+												next = nextWithSession
 											status.status = @status
 											if @status is 'blocked'
 												status.content = ''

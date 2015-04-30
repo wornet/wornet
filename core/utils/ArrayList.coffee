@@ -114,9 +114,14 @@ ArrayList =
 			list.push @[key]
 		list
 
-	merge: (values) ->
+	add: (val, compare) ->
+		unless @contains val, compare
+			@push val
+		@
+
+	merge: (values, push = 'push') ->
 		if @ instanceof Array
-			Array.prototype.push.apply @, values
+			Array.prototype[push].apply @, values
 		else
 			extend @, values
 
