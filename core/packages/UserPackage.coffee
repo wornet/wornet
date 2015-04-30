@@ -289,7 +289,6 @@ UserPackage =
 								end false
 							else
 								self.areFriends req.user, profile, (done) ->
-									log [(typeof req.user.id), req.user.id, friends]
 									done friends.has id: req.user.id
 								, end
 						catch err
