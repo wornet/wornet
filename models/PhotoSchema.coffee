@@ -35,13 +35,6 @@ photoSchema.post 'remove', ->
 	unlink photoDirectory + @id + '.jpg'
 	for size in config.wornet.thumbSizes
 		unlink photoDirectory + size + 'x' + @id + '.jpg'
-	Album.findById @album, (err, album) ->
-		if err
-			warn err
-		if album
-			album.refreshPreview (err) ->
-				if err
-					warn err
-
+	PhotoPackage.refreshAlbum @album
 
 module.exports = photoSchema

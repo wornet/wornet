@@ -734,6 +734,12 @@ module.exports =
 			err = new PublicError ul
 		err
 
+	resize: (src, dst, opts, done) ->
+		extend opts,
+			srcPath: src
+			dstPath: dst
+		imagemagick.resize opts, done
+
 	###
 	Add an uploaded photo to user album
 	@param HTTPRequest request containing files object (uploaded)
@@ -755,27 +761,34 @@ module.exports =
 					PhotoPackage.add req, id
 					photoDirectory = __dirname + '/../../public/img/photo/'
 					dst = photoDirectory + id + '.jpg'
-					copy image.path, dst
-					sizes = config.wornet.thumbSizes
-					pending = sizes.length
-					for size in sizes
-						thumb = photoDirectory + size + 'x' + id + '.jpg'
-						imagemagick.resize
-							srcPath: image.path
-							dstPath: thumb
-							strip : false,
-							width : size,
-							height : size + "^",
-							customArgs: [
-								"-auto-orient"
-								"-gravity", "center"
-								"-extent", size + "x" + size
-							]
-						, (resizeErr) ->
-							if resizeErr
-								done resizeErr, createdAlbum, photo
-							else unless --pending
-								done null, createdAlbum, photo
+					resize image.path, dst,
+						width : "4096>",
+						height : "4096>",
+						customArgs: [
+							"-auto-orient"
+						]
+					, (resizeErr) ->
+						if resizeErr
+							done resizeErr, createdAlbum, photo
+						else
+							sizes = config.wornet.thumbSizes
+							pending = sizes.length
+							for size in sizes
+								thumb = photoDirectory + size + 'x' + id + '.jpg'
+								resize image.path, thumb,
+									strip : false,
+									width : size,
+									height : size + "^",
+									customArgs: [
+										"-auto-orient"
+										"-gravity", "center"
+										"-extent", size + "x" + size
+									]
+								, (resizeErr) ->
+									if resizeErr
+										done resizeErr, createdAlbum, photo
+									else unless --pending
+										done null, createdAlbum, photo
 		if notProfilePhoto
 			next()
 		else
@@ -906,7 +919,7 @@ module.exports =
 	@return string complete text
 	###
 	colon: (text) ->
-		text + s(" : ") 
+		text + s(" : ")
 
 	###
 	Return current display locale
@@ -1061,7 +1074,7 @@ module.exports =
 		version = config.wornet.version
 		if /https?:\/\//g.test file
 			file + '.' + extension + '?' + version
-		else 
+		else
 			source = 'public' + profilePhotoUrl '/' + directory + '/' + file + '.' + extension
 			unless keepExtension
 				extension = directory
