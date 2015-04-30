@@ -363,7 +363,7 @@ Controllers =
 							return next
 						prevId = photo.id
 			null
-		
+
 		$scope.inFade = (action) ->
 			$children = $ '#media-viewer > * > *'
 			$children.fadeOut 100, ->
@@ -576,6 +576,12 @@ Controllers =
 				$scope.query.users = []
 				query.action = '#'
 			return
+
+		if ~((window.navigator || {}).userAgent || '').indexOf('Safari/')
+			delay 1, ->
+				$('#search').hide()
+				delay 1, ->
+					$('#search').show()
 
 		return
 
