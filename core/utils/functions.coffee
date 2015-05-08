@@ -748,17 +748,16 @@ module.exports =
 		imagemagick.resize opts, done
 
 	###
-	Resize and save an image.
-	@param string source path
-	@param string destination path
-	@param string options
-	@param callback executed when resizing is done
-
+	Return default profile photo name.
 	@return string
 	###
 	photoDefaultName: ->
 		s("Photos de profil")
 
+	###
+	Return true if a name match with the default profile photo name.
+	@return bool
+	###
 	isPhotoDefaultName: (name) ->
 		name is photoDefaultName
 
