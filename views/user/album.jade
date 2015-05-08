@@ -4,12 +4,18 @@ block body
 	.col-xs-12: .well
 		if album.isMine
 			.aside
-				a(href="#" data-delete data-clear-storage="albums" data-message=s("Êtes-vous sûr de vouloir supprimer toutes les photos de cet album ?"))
+				- var message
+				if album.currentPhoto
+					- message = '<div class="alert alert-danger">' + s("Attention, cet album contient votre photo de profil actuelle.") + '</div>'
+					- message += s("Êtes-vous sûr de vouloir le supprimer ainsi que toutes les photos qu'il contient ?")
+				else
+					- message = s("Êtes-vous sûr de vouloir supprimer toutes les photos de cet album ?")
+				a(href="#" data-delete data-clear-storage="albums" data-message=message)
 					=s("Supprimer cet album")
 		h3=album.name
 		p=album.description
 		.medias
 			each image in photos
-				a(data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
+				a(data-current=equals(album.currentPhoto, image.id) data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
 					img(src=image.thumb50 alt=image.name)
 			.cb
