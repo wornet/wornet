@@ -466,6 +466,13 @@ Controllers =
 						if data.album and data.album.photos
 							photos = data.album.photos
 							if photos.length > 1
+								photos.sort (a, b) ->
+									if a.id > b.id
+										-1
+									else if a.id < b.id
+										1
+									else
+										0
 								if id isnt photos[0].id
 									media.first = false
 								if id isnt photos[photos.length - 1].id
@@ -683,9 +690,9 @@ Controllers =
 							if a.src and b.src
 								a = (idFromUrl a.src) || a._id
 								b = (idFromUrl b.src) || b._id
-								if a > b
+								if a < b
 									1
-								else if a < b
+								else if a > b
 									-1
 								else
 									0

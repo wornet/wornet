@@ -734,11 +734,33 @@ module.exports =
 			err = new PublicError ul
 		err
 
+	###
+	Resize and save an image.
+	@param string source path
+	@param string destination path
+	@param string options
+	@param callback executed when resizing is done
+	###
 	resize: (src, dst, opts, done) ->
 		extend opts,
 			srcPath: src
 			dstPath: dst
 		imagemagick.resize opts, done
+
+	###
+	Resize and save an image.
+	@param string source path
+	@param string destination path
+	@param string options
+	@param callback executed when resizing is done
+
+	@return string
+	###
+	photoDefaultName: ->
+		s("Photos de profil")
+
+	isPhotoDefaultName: (name) ->
+		name is photoDefaultName
 
 	###
 	Add an uploaded photo to user album
@@ -765,6 +787,7 @@ module.exports =
 						width : "4096>",
 						height : "4096>",
 						customArgs: [
+							"-flatten"
 							"-auto-orient"
 						]
 					, (resizeErr) ->
@@ -792,7 +815,7 @@ module.exports =
 		if notProfilePhoto
 			next()
 		else
-			defaultName = s("Photos de profil")
+			defaultName = photoDefaultName()
 			albumProperties =
 				user: req.user.id
 				name: defaultName

@@ -301,8 +301,20 @@ module.exports = (router) ->
 
 	# Display images in an album
 	router.get '/album/:id', (req, res) ->
-		done = (model) ->
+		end = (model) ->
 			res.render templateFolder + '/album', model
+		done = (model) ->
+			if model.album and model.album.isMine and req.user.photoId
+				Photo.findById req.user.photoId, (err, photo) ->
+					if err
+						warn err
+						end model
+					else
+						if equals photo.album, model.album.id
+							model.album.currentPhoto = req.user.photoId
+						end model
+			else
+				end model
 		id = req.params.id
 		album = null
 		photos = null
@@ -350,24 +362,31 @@ module.exports = (router) ->
 	router.delete '/album/:id', (req, res) ->
 		id = req.params.id
 		me = req.user.id
-		parallelRemove [
-			Album
-			_id: id
-			user: me
-		], [
-			Status
-			album: id
-			$or: [
-				author: me
-			,
-				at: me
-			]
-		], (err) ->
-			if err
-				res.serverError err
+		end = ->
+			parallelRemove [
+				Album
+				_id: id
+				user: me
+			], [
+				Status
+				album: id
+				$or: [
+					author: me
+				,
+					at: me
+				]
+			], (err) ->
+				if err
+					res.serverError err
+				else
+					req.flash 'profileSuccess', s("Album supprimé")
+					res.json goingTo: '/'
+		Photo.findById req.user.photoId, (err, photo) ->
+			warn err if err
+			if photo and ! err and equals photo.album, id
+				updateUser req, photoId: null, end
 			else
-				req.flash 'profileSuccess', s("Album supprimé")
-				res.json goingTo: '/'
+				end()
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video
