@@ -58,6 +58,7 @@ $('[data-toggle="tooltip"]:not([data-original-title])').tooltip()
 countLoaders = ->
 	unless exists '.loading'
 		$document.trigger 'end-of-load'
+		waitForNotify()
 
 # Display loading animation until angular scope is ready
 $('.loading').each ->
