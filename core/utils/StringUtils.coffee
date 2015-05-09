@@ -1,4 +1,21 @@
 StringUtils =
+	toSearchRegExp: ->
+		letters =
+			a: 'âàäã'
+			e: 'éèêë'
+			c: 'ç'
+			i: 'îïì'
+			u: 'ùûü'
+			o: 'ôöòõ'
+			y: 'ÿ'
+			n: 'ñ'
+		query = @toLowerCase()
+		for letter, list of letters
+			list = '[' + letter + list + ']'
+			query = query.replace (new RegExp list, 'gi'), list
+		pattern = '(' + query.replace(/\s+/g, '|') + ')'
+		new RegExp pattern, 'gi'
+
 	contains: (needle) ->
 		if typeof needle is 'string'
 			@indexOf(needle) isnt -1
