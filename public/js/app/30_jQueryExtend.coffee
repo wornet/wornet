@@ -46,7 +46,7 @@ $.fn.extend
 		$date = $ @
 		unless $date.is '[data-date]'
 			$date = $date.find '[data-date]:first'
-		date = $date.data 'date'
+		date = $date.attr 'data-date'
 		if date and date.length
 			date.replace /["']/g, ''
 		else
