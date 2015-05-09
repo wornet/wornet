@@ -45,7 +45,6 @@ Wornet = angular.module 'Wornet', [
 		setNotifications: (notifications) ->
 			$rootScope.$broadcast 'setNotifications', notifications
 			return
-	waitForNotify()
 	notificationsService
 ]
 

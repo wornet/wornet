@@ -335,7 +335,10 @@ module.exports =
 		console[method] message
 		console['log'] '--------------------------'
 		Date.log()
-		console['log'] trace message
+		try
+			console['log'] trace message
+		catch e
+			console['log'] e
 		console['log'] '=========================='
 		unless message.contains('/') or message.contains('\\')
 			console.trace()

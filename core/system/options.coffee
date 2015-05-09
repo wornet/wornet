@@ -3,7 +3,8 @@
 useCdn = false
 piwik = false
 googleAnalytics = true
-csrfDetect = "Error: CSRF token mismatch"
+csrfDetect = (err) ->
+	(err + '').replace(/^Error:\s/, '') is "CSRF token mismatch"
 csrfReplace = ->
 	s("La session a expiré")
 
@@ -419,8 +420,8 @@ module.exports = (app, port) ->
 					GitlabPackage.error params[1].err
 					if params[1].err instanceof PublicError
 						params[1].err = strval params[1].err
-					else if equals params[1].err, detectCsrf
-						params[1].err = csrfReplace()
+					else if csrfDetect params[1].err
+						params[1].err = new PublicError csrfReplace()
 					else
 						delete params[1].err
 				next = ->
@@ -452,9 +453,9 @@ module.exports = (app, port) ->
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
 					if data.err instanceof Error
-						if equals data.err, detectCsrf
+						if csrfDetect data.err
 							data.csrfBroken = true
-							data.err = csrfReplace()
+							data.err = new PublicError csrfReplace()
 						if config.env.development
 							data.stack = data.err.stack
 					data.err = strval(data.err || s("Erreur inconnue"))
