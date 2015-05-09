@@ -151,6 +151,9 @@ exports.isAuthenticated = (req, res, next) ->
 					"/admin"
 				]
 
+				unless config.wornet.agenda and config.wornet.agenda.enabled
+					blacklist.user.push '/agenda'
+
 				res.locals.noIndex = false
 				route = req.url
 				# Get user role (in any user connected : empty string)

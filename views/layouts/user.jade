@@ -68,8 +68,9 @@ block nav
 						ul.dropdown-menu(role='menu')
 							li: a(href="/user/profile")
 									=s("Mon profil")
-							li: a(href="/agenda")
-									=s("Mon agenda")
+							if config.wornet.agenda && config.wornet.agenda.enabled
+								li: a(href="/agenda")
+										=s("Mon agenda")
 							li: a(href="/user/logout")
 									=s("Déconnexion")
 					li.open-shutter: a(href="#")
