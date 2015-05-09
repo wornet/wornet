@@ -47,10 +47,17 @@ module.exports = (router) ->
 
 	stats = (sortColumn) ->
 		(info) ->
+			starOfMonth = new Date
+			starOfMonth.setDate 1
+			starOfMonth.setHours 0
+			starOfMonth.setMinutes 0
+			starOfMonth.setSeconds 0
+			last30Days = (new Date).subDays 30
 			parallel
 				count: User.count.bind User
 				counters: Counter.find.bind Counter, email: $in: ['unsubscribe', 'resubscribe']
-				activeUsers: User.count.bind User, lastActivity: $gt: (new Date).subDays 30
+				last30DaysUsers: User.count.bind User, lastActivity: $gt: last30Days
+				currentMonthUsers: User.count.bind User, lastActivity: $gt: starOfMonth
 				friends: Friend.find.bind Friend
 			, (results) ->
 				friendsCount = 0
@@ -112,8 +119,9 @@ module.exports = (router) ->
 						).join ''
 						age = strval (Math.round 10 * total / sum) / 10
 						info jd 'p\n\t| ' + nbUsers + ' : ' + results.count +
-							'\np\n\t| Nombre d\'utilisateurs actifs : ' + results.activeUsers +
-							'\np\n\t| Amitiés : ' + friendsCount + friendsErrorsCount
+							'\np\n\t| Nombre d\'utilisateurs actifs (depuis le ' + starOfMonth.toString('D/M/YYYY') + ') : ' + results.currentMonthUsers +
+							'\np\n\t| Nombre d\'utilisateurs actifs (depuis le ' + last30Days.toString('D/M/YYYY') + ') : ' + results.last30DaysUsers +
+							'\np\n\t| Amitiés : ' + friendsCount + friendsErrorsCount +
 							'\np\n\t| Désinscriptions : ' + unsub +
 							'\np\n\t| Résinscriptions : ' + resub +
 							'\np\n\t| Âge moyen : ' + (age.replace '.', ',') +
