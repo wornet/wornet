@@ -569,7 +569,7 @@ module.exports = (router) ->
 			regexp.test user.fullName
 		limit = UserPackage.DEFAULT_SEARCH_LIMIT
 		done = ->
-			res.json users: friends.map (user) ->
+			res.json users: friends.unique('id').map (user) ->
 				isAFriend = (req.session.friends || []).has id: user.id
 				extend user.publicInformations(),
 					isAFriend: isAFriend
