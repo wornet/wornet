@@ -6,6 +6,8 @@ friendsCoupleCacheLifeTime = 1.hour
 
 UserPackage =
 
+	DEFAULT_SEARCH_LIMIT: 8
+
 	getIDCouple: (a, b) ->
 		a = strval a.id || a
 		b = strval b.id || b
@@ -42,6 +44,8 @@ UserPackage =
 				exclude = [arg]
 			else if arg instanceof Array
 				exclude = arg
+			else if arg instanceof RegExp
+				regexp = arg
 			else if typeof arg is 'number'
 				limit = arg
 			else if typeof arg is 'function'
@@ -51,26 +55,12 @@ UserPackage =
 		exclude ||= []
 		done ||= ->
 		query ||= "-"
-		limit ||= 8
-		letters =
-			a: 'âàäã'
-			e: 'éèêë'
-			c: 'ç'
-			i: 'îïì'
-			u: 'ùûü'
-			o: 'ôöòõ'
-			y: 'ÿ'
-			n: 'ñ'
-		query = query.toLowerCase()
-		for letter, list of letters
-			list = '[' + letter + list + ']'
-			query = query.replace (new RegExp list, 'gi'), list
-		pattern = '(' + query.replace(/\s+/g, '|') + ')'
-		regexp = new RegExp pattern, 'gi'
+		limit ||= @DEFAULT_SEARCH_LIMIT
+		regexp ||= query.toSearchRegExp()
 		User.find
 			'name.first': regexp
 			'name.last': regexp
-			id: $nin: exclude
+			_id: $nin: exclude
 		.limit limit
 		.exec (err, users) ->
 			remind = limit - users.length
@@ -85,7 +75,7 @@ UserPackage =
 					,
 						'name.last': regexp
 					]
-					id: $nin: exclude
+					_id: $nin: exclude
 				.limit remind
 				.exec (err, moreUsers) ->
 					if moreUsers and moreUsers.length

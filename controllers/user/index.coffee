@@ -564,15 +564,29 @@ module.exports = (router) ->
 					res.notFound()
 
 	router.get '/search/:query', (req, res) ->
-		query = req.params.query
-		UserPackage.search [req.user.id], query, (err, users) ->
-			if err
-				res.serverError err
-			else
-				res.json users: users.map (user) ->
-					extend user.publicInformations(),
-						isAFriend: (req.session.friends || []).has id: user.id
-						askedForFriend: (req.session.friendAsks || {}).has hashedId: user.hashedId
+		regexp = req.params.query.toSearchRegExp()
+		friends = req.session.friends.filter (user) ->
+			regexp.test user.fullName
+		limit = UserPackage.DEFAULT_SEARCH_LIMIT
+		done = ->
+			res.json users: friends.map (user) ->
+				isAFriend = (req.session.friends || []).has id: user.id
+				extend user.publicInformations(),
+					isAFriend: isAFriend
+					askedForFriend: ! isAFriend and (req.session.friendAsks || {}).has hashedId: user.hashedId
+		if friends.length >= 8
+			friends = friends.slice 0, limit
+			done()
+		else
+			limit -= friends.length
+			exclude = [req.user.id]
+			exclude.merge friends.column 'id'
+			UserPackage.search exclude, regexp, limit, (err, users) ->
+				if err
+					res.serverError err
+				else
+					friends.merge users
+					done()
 
 	router.get '/confirm/:hashedId/:token', (req, res) ->
 		id = cesarRight req.params.hashedId
