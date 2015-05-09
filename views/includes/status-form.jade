@@ -62,7 +62,7 @@ fieldset.tab(ng-show="status.containsMedias")
 							=s("Ajouter des images")
 							br
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
-						input(type="hidden" name="album" value="{{ currentAlbum._id }}")
+						input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
 						input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
 				+form()(ng-submit="addMedia(link)")
 					.input-group
