@@ -170,7 +170,7 @@ UserPackage =
 					status: $ne: status
 				set = status: status
 				Friend.findOneAndUpdate where, set, {}, (err, friend) ->
-					if ! err and friend and typeof req.body? and req.body.id?
+					if ! err and friend and id
 						end = ->
 							req.cacheFlush 'friends'
 							Friend.count
@@ -202,23 +202,23 @@ UserPackage =
 							self.cacheFriends me, friend.askedFrom, true
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
-									notice = (userId, notice) ->
+									sendNotice = (userId, notice) ->
 										NoticePackage.notify [userId], null,
-										action: 'friendAccepted'
-										deleteFriendAsk: id
-										addFriend: me
-										user: me.publicInformations()
-										notification: notice
-										notice: [notice]
+											action: 'friendAccepted'
+											deleteFriendAsk: id
+											addFriend: me
+											user: me.publicInformations()
+											notification: notice
+											notice: [notice]
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
-									notice friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+									sendNotice friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
 										img + " " + s("{username} a accepté votre demande !", dataWithUser) +
 										'</span>'
 									dataWithUser = username: jd 'span.username ' + user.fullName
 									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
-									notice friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+									sendNotice friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
 										img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
 										'</span>'
 									end()

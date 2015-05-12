@@ -432,7 +432,8 @@ module.exports = (app, port) ->
 						sessionInfos = res.req.session.columns ['notifications', 'friendAsks', 'friends']
 						userId = @req.user._id
 						Notice.find user: userId
-							.limit 6
+							.sort '-id'
+							.limit 10
 							.exec (err, coreNotifications) ->
 								if err
 									warn err

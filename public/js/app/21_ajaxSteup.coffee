@@ -10,7 +10,7 @@ do initXhrPool = ->
 			waiting
 		abortAll: ->
 			$.each @, ->
-				@abort()
+				@abort and @abort()
 			do initXhrPool
 			return
 	$.xhrUrls = []

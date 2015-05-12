@@ -72,7 +72,11 @@ Wornet = angular.module 'Wornet', [
 .filter 'urlencode', ->
 	window.encodeURIComponent
 
+.filter 'lastest', ->
+	lastest
+
 ControllersByService =
+	notificationsService: 'Notifications'
 	chatService: 'Profile Chat'
 	statusService: 'Status'
 	$sce: 'Notifications'
@@ -85,3 +89,5 @@ for controller, method of Controllers
 			params.push service
 	params.push method
 	Wornet.controller controller + 'Ctrl', params
+
+countLoaders()

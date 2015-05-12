@@ -168,6 +168,22 @@ ArrayList =
 				pos++
 			result
 
+	###
+	Return lastest elements of an array
+	@param number of elements to get
+	@return array lastest elements
+	###
+	lastest: (count) ->
+		if @ instanceof Array
+			res = if count > @length
+				@slice @length - count
+			else
+				@slice()
+			res.reverse()
+			res
+		else
+			@columns Object.keys(@).lastest count
+
 
 safeExtend Array.prototype, ArrayList
 safeExtend Object.prototype, ArrayList

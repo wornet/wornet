@@ -414,3 +414,16 @@ withFormData = ($form, done) ->
 				'Envoi de l\'image en cours...'
 			$form[0].submit()
 		true
+
+lastest = (arr, count) ->
+	if arr instanceof Array
+		res = if count > arr.length
+			arr.slice arr.length - count
+		else
+			arr.slice()
+		res.reverse()
+		res
+	else
+		res = {}
+		for key in lastest Object.keys(arr), count
+			res[key] = arr[key]

@@ -4,7 +4,7 @@ do (d = Date) ->
 	toString = d.prototype.toString
 	d.prototype.log = ->
 		@setHours(@getHours() + 2)
-		@toISOString().replace(/Z$/g, '').replace('T', '  ')
+		@toISOString().replace(/Z$/g, '').replace('T', ' ')
 	d.prototype.isValid = ->
 		@toString() isnt 'Invalid Date'
 	d.prototype.midnight = ->
