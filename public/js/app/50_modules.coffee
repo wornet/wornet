@@ -72,8 +72,6 @@ $('.loading').each ->
 		return
 	return
 
-countLoaders()
-
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
 onResize ->

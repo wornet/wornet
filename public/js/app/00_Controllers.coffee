@@ -507,7 +507,7 @@ Controllers =
 
 		return
 
-	Notifications: ($scope, $sce) ->
+	Notifications: ($scope, notificationsService, $sce) ->
 		$scope.notifications = {}
 
 		$scope.ifId = (id, defaultValue) ->
@@ -520,8 +520,9 @@ Controllers =
 			$sce.trustAsHtml html
 
 		$scope.$on 'receiveNotification', (e, notification) ->
-			unless exists 'a[href="/notification/' + notification.id + '"]'
-				$scope.notifications[notification.id] = notification
+			id = notification.id || notification[0]
+			unless $scope.notifications[id]
+				$scope.notifications[id] = notification
 				refreshScope $scope
 				delay 1, refreshPill
 			return

@@ -23,6 +23,18 @@ NoticePackage =
 		userIds.filter (id) ->
 			@isPrsent id
 
+	createNotice: (userId, data, done) ->
+		if data.notice
+			Notice.create
+				user: userId
+				content: data.notice[0]
+			, (err, notice) ->
+				if err
+					warn err
+				done err, notice.id
+		else
+			done()
+
 	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
@@ -30,48 +42,44 @@ NoticePackage =
 		userIds.each ->
 			userId = strval @
 			data = groupData.copy()
-			if data.notice
-				Notice.create
-					user: userId
-					content: data.notice[0]
-				, (err) ->
-					if err
-						warn err
-			if appendOtherUsers
-				otherUserIds = userIds.filter (id) ->
-					id isnt userId
-			done = ->
-				if self.responsesToNotify[userId]? and self.responsesToNotify[userId].getLength() > 0
-					self.responsesToNotify[userId].each (id) ->
-						key = userId + '-' + id
-						if self.timeouts[key]
-							clearTimeout self.timeouts[key]
-							delete self.timeouts[key]
-						@ err, data
-						true
-					delete self.responsesToNotify[userId]
-				else
-					unless self.notificationsToSend[userId]
-						self.notificationsToSend[userId] = {}
-					id = (new Date).log()
-					self.notificationsToSend[userId][id] = [err, data]
-					delay 5.seconds, ->
-						if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
-							if self.responsesToNotify[userId].getLength() > 0
-								delete self.notificationsToSend[userId][id]
-							else
-								delete self.notificationsToSend[userId]
-						true
-				true
-			if appendOtherUsers and otherUserIds.length
-				User.find _id: $in: otherUserIds, (err, users) ->
-					if err
-						log err
+			self.createNotice userId, data, (err, noticeId) ->
+				if noticeId
+					data.id = noticeId
+				if appendOtherUsers
+					otherUserIds = userIds.filter (id) ->
+						id isnt userId
+				done = ->
+					if self.responsesToNotify[userId]? and self.responsesToNotify[userId].getLength() > 0
+						self.responsesToNotify[userId].each (id) ->
+							key = userId + '-' + id
+							if self.timeouts[key]
+								clearTimeout self.timeouts[key]
+								delete self.timeouts[key]
+							@ err, data
+							true
+						delete self.responsesToNotify[userId]
 					else
-						data.users = (user.publicInformations() for user in users)
+						unless self.notificationsToSend[userId]
+							self.notificationsToSend[userId] = {}
+						id = (new Date).log()
+						self.notificationsToSend[userId][id] = [err, data]
+						delay 5.seconds, ->
+							if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
+								if self.responsesToNotify[userId].getLength() > 0
+									delete self.notificationsToSend[userId][id]
+								else
+									delete self.notificationsToSend[userId]
+							true
+					true
+				if appendOtherUsers and otherUserIds.length
+					User.find _id: $in: otherUserIds, (err, users) ->
+						if err
+							log err
+						else
+							data.users = (user.publicInformations() for user in users)
+						done()
+				else
 					done()
-			else
-				done()
 		true
 
 	# Delete a notification if id is specified or all the notifications to a user if not
