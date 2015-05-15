@@ -284,9 +284,13 @@ module.exports =
 				if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
 					friendAskIds.push id
 					notifications.push [id, friend, id]
-			for notice in coreNotifications
-				unless notifications.has((n) -> n[1] is notice.content)
-					notifications.push [notice.id, notice.content]
+			if coreNotifications.length
+				sameNotice = (notice) ->
+					hasNoId = ! notice[0]
+					hasNoId and notice[1] is @content
+				for notice in coreNotifications
+					if notice.id or notifications.has sameNotice.bind notice
+						notifications.push [notice.id, notice.content]
 			notifications.sort (a, b) ->
 				for i in [a, b]
 					unless i[0] instanceof Date
@@ -353,6 +357,21 @@ module.exports =
 		if gitlab
 			GitlabPackage.error message
 		log message, 'warn'
+	###
+	Return array/object/anything length or 0
+	@param mixed array/object/anything to count entries
+	@param bool warn if an error occurs
+
+	@return int length
+	###
+	count: (arr, warnOnError = false) ->
+		intval if arr.length
+			arr.length
+		else if arr.getLength
+			arr.getLength()
+		else
+			warn "no length or getLength on " + arr if warnOnError
+			0
 	###
 	Return current timestamp (milliseconds sicne 1/1/1970)
 	@param Date if you specify a date, the time will be extracted from it, else current timestamp is returned

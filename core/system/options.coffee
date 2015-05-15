@@ -322,6 +322,21 @@ module.exports = (app, port) ->
 						done someUsersNotFound()
 					else
 						done null, usersMap[id]
+			# get fresh notifications
+			refreshNotifications: (next) ->
+				if @user
+					sessionInfos = @session.columns ['notifications', 'friendAsks', 'friends']
+					userId = @user._id
+					Notice.find user: userId
+						.sort _id: 'desc'
+						.limit 10
+						.exec (err, coreNotifications) ->
+							if err
+								warn err
+							next getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends
+				else
+					next []
+			# test credentials with anti-brute-force protection
 			tryPassword: (user, password, done) ->
 				if 'function' is typeof user
 					done = user
@@ -428,18 +443,8 @@ module.exports = (app, port) ->
 					res.safeHeader ->
 						render.apply res, params
 				if @req and @req.session
-					if @req.user
-						sessionInfos = res.req.session.columns ['notifications', 'friendAsks', 'friends']
-						userId = @req.user._id
-						Notice.find user: userId
-							.sort '-id'
-							.limit 10
-							.exec (err, coreNotifications) ->
-								if err
-									warn err
-								res.locals.notifications = getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends
-								next()
-					else
+					@req.refreshNotifications (notifications) ->
+						res.locals.notifications = notifications
 						next()
 				else
 					next()
