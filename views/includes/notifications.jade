@@ -1,5 +1,5 @@
 mixin notifications(classes)
-	- var notificationsCount = intval(notifications.length)
+	- var notificationsCount = count(notifications, true)
 	ul.notifications.nav(class=classes pill): li.btn-group
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span.mobile
@@ -37,7 +37,7 @@ mixin notifications(classes)
 					| &nbsp; 
 					span(ng-bind-html="trust(notification[1])")
 			if notificationsCount > 0
-				each notification, id in notifications.slice(0, 10)
+				each notification, id in notifications.lastest(10)
 					if notification && notification.length && notification[0]
 						- var askingFriend = objectToUser(notification[1])
 						li: a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))

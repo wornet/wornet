@@ -162,10 +162,13 @@ NoticePackage =
 					data.notifyStatus = if err then self.ERROR else self.OK
 					if err
 						data.err = err
-					req.session.save (err) ->
-						if err
-							throw err
-						res.json data
+					req.refreshNotifications (notifications) ->
+						if notifications.length
+							req.session.notifications = notifications
+						req.session.save (err) ->
+							if err
+								throw err
+							res.json data
 			if id
 				self.timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
 					req.session.reload (err) ->

@@ -19,7 +19,7 @@
                 "arguments": [
                     "path:./public",
                     "path:./.build",
-                    {   
+                    {
                         "css": {
                             "module": "kraken-devtools/plugins/stylus",
                             "files": "/css/**/*.css"
@@ -32,7 +32,7 @@
                 ]
             }
         },
-        
+
         "expressView": {
             "priority": 100,
             "enabled": true,
@@ -40,7 +40,7 @@
                 "name": "engine-munger/lib/expressView"
             }
         },
-        
+
 
         "fileNotFound": {
             "enabled": true,
@@ -170,7 +170,7 @@
         },
 
         "db": {
-            "host": "localhost",
+            "host": "127.0.0.1",
             "basename": "wornet"
         },
 
