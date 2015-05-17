@@ -263,6 +263,7 @@ UserPackage =
 								isMe: isMe
 								askedForFriend: askedForFriend
 								isAFriend: isAFriend
+								isABestFriend: req.user.isABestFriend profile.hashedId
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length

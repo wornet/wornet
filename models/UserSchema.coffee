@@ -35,6 +35,10 @@ userSchema = BaseSchema.extend
 			'confirmed'
 			'admin'
 		]
+	bestFriends: [
+		type: ObjectId
+		ref: 'UserSchema'
+	]
 	numberOfFriends:
 		type: Number
 		default: 0
@@ -212,158 +216,183 @@ userSchema.virtual('present').get ->
 	NoticePackage.isPresent @id
 
 preRegistration = null
-userSchema.methods.preRegistered = ->
-	if preRegistration is null
-		preRegistration = require(__dirname + '/../core/system/preRegistration')()
-	preRegistration.contains @email
 
-userSchema.methods.publicInformations = (thumbSizes = null) ->
-	values = ['hashedId', 'present']
-	if thumbSizes is null
-		thumbSizes = [50, 90, 200]
-	else unless thumbSizes instanceof Array
-		thumbSizes = Array.prototype.slice.call arguments
-	thumbSizes.each ->
-		values.push 'thumb' + @
-	informations = @columns values
-	informations.name = @name.toObject()
-	informations.name.full = @name.full
-	informations
+extend userSchema.methods,
 
-userSchema.methods.sha1Fallback = (plainText) ->
-	sha1 plainText, @token + @_id
+	preRegistered: ->
+		if preRegistration is null
+			preRegistration = require(__dirname + '/../core/system/preRegistration')()
+		preRegistration.contains @email
 
-userSchema.methods.encryptPassword = (plainText, done) ->
-	if 'function' is typeof plainText
-		done = plainText
-		plainText = @password
-	done = done.bind @
-	fallback = @bind ->
-		done @sha1Fallback plainText
-	try
-		bcrypt = require 'bcrypt-nodejs'
-		bcrypt.hash plainText, config.wornet.security.saltWorkFactor, (err, hash) ->
-			if err
-				if err
-					warn err
-				fallback()
-			else
-				done hash
-	catch e
-		unless e.code is 'MODULE_NOT_FOUND' and config.env.development
-			warn e
-		fallback()
+	publicInformations: (thumbSizes = null) ->
+		values = ['hashedId', 'present']
+		if thumbSizes is null
+			thumbSizes = [50, 90, 200]
+		else unless thumbSizes instanceof Array
+			thumbSizes = Array.prototype.slice.call arguments
+		thumbSizes.each ->
+			values.push 'thumb' + @
+		informations = @columns values
+		informations.name = @name.toObject()
+		informations.name.full = @name.full
+		informations
 
-userSchema.methods.passwordMatches = (plainText, done) ->
-	if @password is @sha1Fallback plainText
-		done true
-	else
+	sha1Fallback: (plainText) ->
+		sha1 plainText, @token + @_id
+
+	isABestFriend: (hashedId) ->
+		(@bestFriends || []).contains hashedId
+
+	saveAsABestFriend: (hashedId, next) ->
+		if @isABestFriend hashedId
+			next()
+		else
+			user = @
+			done = (err, friends) ->
+				if ! err and friends.has(hashedId: hashedId)
+					user.bestFriends ||= []
+					user.bestFriends.push hashedId
+					updateUser user, bestFriends: user.bestFriends, next
+				else
+					next err || new PublicError s("{username} n'est pas dans votre liste d'amis actuellement.", user)
+			@getFriends done, true
+
+	saveAsANormalFriend: (hashedId, next) ->
+		@bestFriends = (@bestFriends || []).filter (id) ->
+			! equals id, hashedId
+		updateUser @, bestFriends: @bestFriends, next
+
+	encryptPassword: (plainText, done) ->
+		if 'function' is typeof plainText
+			done = plainText
+			plainText = @password
+		done = done.bind @
+		fallback = @bind ->
+			done @sha1Fallback plainText
 		try
 			bcrypt = require 'bcrypt-nodejs'
-			bcrypt.compare plainText, @password, (err, isMatch) ->
+			bcrypt.hash plainText, config.wornet.security.saltWorkFactor, (err, hash) ->
 				if err
-					warn err
-				done isMatch
+					if err
+						warn err
+					fallback()
+				else
+					done hash
 		catch e
 			unless e.code is 'MODULE_NOT_FOUND' and config.env.development
 				warn e
-			done false
+			fallback()
 
-userSchema.methods.aksForFriend = (askedTo, done) ->
-	askedFrom = @id
-	if askedFrom is askedTo
-		done
-			err: new PublicError s("Vous vous aimez, et vous avez bien raison. Mais nous ne pouvons pas ajouter votre propre profil à vos amis.")
-			friend: null
-	else
-		data =
-			askedFrom: askedFrom
-			askedTo: askedTo
-		Friend
-			.findOne $or: [
-				askedFrom: askedTo
-				askedTo: askedFrom
-				data
-			]
-			.exec (err, friend) ->
-				if err
-					warn err
-				if friend
-					friend.status = 'waiting'
-					friend.save()
-				else unless err
-					friend = new Friend data
-					friend.save()
-				if typeof done is 'function'
-					done
-						err: err
-						friend: friend
-						exists: equals askedTo, friend.askedFrom
+	passwordMatches: (plainText, done) ->
+		if @password is @sha1Fallback plainText
+			done true
+		else
+			try
+				bcrypt = require 'bcrypt-nodejs'
+				bcrypt.compare plainText, @password, (err, isMatch) ->
+					if err
+						warn err
+					done isMatch
+			catch e
+				unless e.code is 'MODULE_NOT_FOUND' and config.env.development
+					warn e
+				done false
 
-userSchema.methods.getFriends = (done, forceReload = false) ->
-	if ! forceReload and @friends? and @friendAsks?
-		done null, @friends, @friendAsks
-	else
-		user = @
-		ids = []
-		friendAskIds = []
-		friendAskFromIds = []
-		friendAskDates = []
-		pending = 2
-		next = ->
-			User.find
-				_id: $in: ids
-			, (err, users) ->
-				if err
-					done err, {}, {}
-				else
-					friendIds = []
-					friends = []
-					friendAsks = {}
-					users.forEach (user) ->
-						id = strval user.id
-						if friendAskIds.contains id
-							askedFrom = friendAskFromIds.contains id
-							user = user.publicInformations()
-							user.askedFrom = askedFrom
-							user.askedTo = !askedFrom
-							friendAsks[friendAskDates[id]] = user
-						else
-							friends.push user
-							friendIds.push id
-					user.numberOfFriends = friends.length
-					user.friendIds = friendIds
-					user.friends = friends
-					user.friendAsks = friendAsks
-					done null, friends, friendAsks
-		Friend.find
-				askedFrom: @_id
-				status: $in: ['waiting', 'accepted']
-			.exec (err, friends) ->
-				unless err
-					for friend in friends
-						ids.push friend.askedTo
-						if friend.isWaiting()
-							askedTo = strval friend.askedTo
-							friendAskIds.push askedTo
-							friendAskFromIds.push askedTo
-							friendAskDates[askedTo] = friend.id
-				unless --pending
-					next()
-		Friend.find
-				askedTo: @_id
-				status: $in: ['waiting', 'accepted']
-			.exec (err, friends) ->
-				unless err
-					for friend in friends
-						ids.push friend.askedFrom
-						if friend.isWaiting()
-							friendAskIds.push strval friend.askedFrom
-							friendAskDates[friend.askedFrom] = friend.id
-					user.friendAskIds = friendAskIds
-					user.friendAskDates = friendAskDates
-				unless --pending
-					next()
+	aksForFriend: (askedTo, done) ->
+		askedFrom = @id
+		if askedFrom is askedTo
+			done
+				err: new PublicError s("Vous vous aimez, et vous avez bien raison. Mais nous ne pouvons pas ajouter votre propre profil à vos amis.")
+				friend: null
+		else
+			data =
+				askedFrom: askedFrom
+				askedTo: askedTo
+			Friend
+				.findOne $or: [
+					askedFrom: askedTo
+					askedTo: askedFrom
+					data
+				]
+				.exec (err, friend) ->
+					if err
+						warn err
+					if friend
+						friend.status = 'waiting'
+						friend.save()
+					else unless err
+						friend = new Friend data
+						friend.save()
+					if typeof done is 'function'
+						done
+							err: err
+							friend: friend
+							exists: equals askedTo, friend.askedFrom
+
+	getFriends: (done, forceReload = false) ->
+		if ! forceReload and @friends? and @friendAsks?
+			done null, @friends, @friendAsks
+		else
+			user = @
+			ids = []
+			friendAskIds = []
+			friendAskFromIds = []
+			friendAskDates = []
+			pending = 2
+			next = ->
+				User.find
+					_id: $in: ids
+				, (err, users) ->
+					if err
+						done err, {}, {}
+					else
+						friendIds = []
+						friends = []
+						friendAsks = {}
+						users.forEach (user) ->
+							id = strval user.id
+							if friendAskIds.contains id
+								askedFrom = friendAskFromIds.contains id
+								user = user.publicInformations()
+								user.askedFrom = askedFrom
+								user.askedTo = !askedFrom
+								friendAsks[friendAskDates[id]] = user
+							else
+								friends.push user
+								friendIds.push id
+						user.numberOfFriends = friends.length
+						user.friendIds = friendIds
+						user.friends = friends
+						user.friendAsks = friendAsks
+						done null, friends, friendAsks
+			Friend.find
+					askedFrom: @_id
+					status: $in: ['waiting', 'accepted']
+				.exec (err, friends) ->
+					unless err
+						for friend in friends
+							ids.push friend.askedTo
+							if friend.isWaiting()
+								askedTo = strval friend.askedTo
+								friendAskIds.push askedTo
+								friendAskFromIds.push askedTo
+								friendAskDates[askedTo] = friend.id
+					unless --pending
+						next()
+			Friend.find
+					askedTo: @_id
+					status: $in: ['waiting', 'accepted']
+				.exec (err, friends) ->
+					unless err
+						for friend in friends
+							ids.push friend.askedFrom
+							if friend.isWaiting()
+								friendAskIds.push strval friend.askedFrom
+								friendAskDates[friend.askedFrom] = friend.id
+						user.friendAskIds = friendAskIds
+						user.friendAskDates = friendAskDates
+					unless --pending
+						next()
 
 userSchema.pre 'save', (next) ->
 	if @isModified 'password'

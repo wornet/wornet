@@ -298,13 +298,26 @@ $.each [
 	]
 	[
 		'click touchstart'
+		'[data-ajax], [ng-attr-data-ajax]'
+		($btn) ->
+			params = ($btn.attr 'data-ajax') || []
+			if '' + params is params
+				params = [params]
+			method = params[0] || 'get'
+			url = params[1] || $btn.attr 'href'
+			data = params[2] || {}
+			Ajax[method] url, data
+			return
+	]
+	[
+		'click touchstart'
 		'[data-click], [ng-attr-data-click]'
 		($btn) ->
 			i = 0
-			params = while typeof (param = $btn.data("param" + (i++))) isnt "undefined"
+			params = while typeof (param = $btn.attr("data-param" + (i++))) isnt "undefined"
 				param
-			$target = $ $btn.data 'target'
-			$target[$btn.data 'click'].apply $target, params
+			$target = $ $btn.attr 'data-target'
+			$target[$btn.attr 'data-click'].apply $target, params
 			return
 	]
 	[

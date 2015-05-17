@@ -124,16 +124,23 @@ StatusPackage =
 						status.author = req.user.publicInformations()
 						next = (usersToNotify) ->
 							place = status.at || status.author
+							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: place
 							NoticePackage.notify usersToNotify, null,
 								action: 'status'
 								status: status
 							NoticePackage.notify usersToNotify, null,
 								action: 'notice'
-								notice: [jd 'span(data-href="/user/profile/' + place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + status._id + '") ' + (if at is null
-									s("{username} a publié un statut.", username: req.user.fullName)
-								else
-									s("{username} a publié un statut sur votre profil.", username: req.user.fullName)
-								)]
+								author: status.author
+								forBestFriends: at is null
+								notice: [
+									img +
+									jd 'span(data-href="/user/profile/' +
+									place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + status._id + '") ' +
+									if at is null
+										s("{username} a publié un statut.", username: req.user.fullName)
+									else
+										s("{username} a publié un statut sur votre profil.", username: req.user.fullName)
+								]
 						at = status.at || null
 						if at is null
 							req.getFriends (err, friends, friendAsks) ->

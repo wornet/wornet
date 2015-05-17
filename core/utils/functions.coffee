@@ -979,8 +979,8 @@ module.exports =
 
 	@return string HTML rendered code
 	###
-	jd: (code) ->
-		require('jade').render code
+	jd: (code, locals = {}) ->
+		require('jade').render code, locals
 
 	###
 	Return HTML from Jade file
