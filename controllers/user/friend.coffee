@@ -18,6 +18,22 @@ module.exports = (router) ->
 		UserPackage.setFriendStatus req, req.params.friendAskId, 'accepted', ->
 			res.redirect req.data.goingTo
 
+	router.get '/best/:friendHashedId', (req, res) ->
+		# When a user subscribe to all the posts of a friend
+		req.user.saveAsABestFriend req.params.friendHashedId, (err) ->
+			if err
+				res.serverError err
+			else
+				res.json success: true
+
+	router.get '/normal/:friendHashedId', (req, res) ->
+		# When a user subscribe to all the posts of a friend
+		req.user.saveAsANormalFriend req.params.friendHashedId, (err) ->
+			if err
+				res.serverError err
+			else
+				res.json success: true
+
 	router.post '/ignore', (req, res) ->
 		# When user ignore friend ask
 		UserPackage.setFriendStatus req, req.body.id, 'refused', (data) ->
