@@ -446,6 +446,7 @@ module.exports = (router) ->
 		done = (data) ->
 			model.images.push data
 			if model.images.length is images.length
+				model.images.reverse()
 				res.render templateFolder + '/upload-photo', model
 		lastestAlbum = null
 		if images.length > 0
