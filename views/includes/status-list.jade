@@ -40,7 +40,7 @@
 					|&nbsp; {{ status.albumName }}
 			h3(ng-if="! status.album")
 				=s("Images")
-			a(ng-repeat="image in status.images" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
+			a(ng-repeat="image in status.images | orderBy: '-src'" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
 				img(ng-src="{{ image.src }}" alt="{{ image.name }}")
 		div(ng-if="status.videos.length > 0")
 			h3=s("Vidéos")
