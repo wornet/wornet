@@ -50,10 +50,15 @@ PhotoPackage =
 			delete photos[photoId]
 			deleteCookie req, photoId
 
-	publish: (req, photoId, done) ->
+	publish: (req, photoId, statusId, done) ->
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
-			Photo.updateById photoId, status: 'published', done
+			values =
+				status: 'published'
+				$push: statusList: statusId
+			options =
+				safe: true
+			Photo.findByIdAndUpdate photoId, values, options, done
 			@forget req, photoId
 		else
 			done new PublicError s("Non autorisé")
@@ -102,14 +107,14 @@ PhotoPackage =
 		unless photos[photoId]
 			photos[photoId] = token
 		self = @
-		delay config.wornet.upload.ttl * 1000, ->
+		delay config.wornet.upload.ttl.seconds, ->
 			if photos[photoId] and photos[photoId] is token
 				self.delete photoId
 
 	refreshAlbum: (albumId) ->
 		if albumRefreshes[albumId]
 			clearTimeout albumRefreshes[albumId]
-		albumRefreshes[albumId] = delay 1.second, ->
+		albumRefreshes[albumId] = delay 500, ->
 			Album.findById albumId, (err, album) ->
 				if err
 					warn err

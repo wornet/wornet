@@ -1,5 +1,5 @@
 
-#wrap(class=((!statusCode || statusCode <= 200) && user && user.openedShutter ? 'opened-shutter' : false))
+#wrap(class=((!statusCode || statusCode <= 200) && user && user.openedShutter ? 'opened-shutter' : null))
 	block nav
 	+ie('if lte IE 7')
 		.alert.alert-danger
@@ -83,12 +83,13 @@ block cookie-banner
 						=s("Fermer")
 
 
-if datas
-	each value, name in datas
+if allData
+	each value, name in allData
 		+data(name, value)
-- var trackers = options.trackers()
+if trackers.piwik || trackers.googleAnalytics
+	+data("vars", vars)
 if trackers.piwik
-	noscript: p: img(width="1" height="1" src="//" + (trackers.piwik.host || 'piwik') + "/piwik.php?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+	noscript: p: img(width="1" height="1" src=(trackers.piwik.host || '') + "/stat?idsite=" + (trackers.id || 1) style="border:0;" alt="")
 	+data("piwik", trackers.piwik)
 if trackers.googleAnalytics
 	+data("googleAnalytics", trackers.googleAnalytics)

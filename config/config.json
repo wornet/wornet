@@ -251,6 +251,36 @@
 
         "timeout": 30,
 
+        "trackers": {
+            "googleAnalytics": {
+                "enabled": true,
+                "dev": {
+                    "id": "UA-54493690-3"
+                },
+                "preprod": {
+                    "id": "UA-54493690-2"
+                },
+                "production": {
+                    "id": "UA-54493690-1"
+                }
+            },
+            "piwik": {
+                "enabled": true,
+                "dev": {
+                    "target": "http://piwik.selfbuild.fr",
+                    "id": 12
+                },
+                "preprod": {
+                    "target": "http://piwik.selfbuild.fr",
+                    "id": 11
+                },
+                "production": {
+                    "target": "http://piwik.selfbuild.fr",
+                    "id": 8
+                }
+            }
+        },
+
         "uglify": {
             "beautify": true,
             "comments": false,

@@ -11,7 +11,11 @@ albumSchema = OwnedSchema.extend
 	preview:
 		type: Array
 
-albumSchema.methods.refreshPreview = (save = false, done) ->
+albumSchema.methods.refreshPreview = (save = true, done) ->
+	if 'function' is typeof save
+		_save = done
+		done = save
+		save = !! _save
 	album = @
 	done ||= (err) ->
 		if err

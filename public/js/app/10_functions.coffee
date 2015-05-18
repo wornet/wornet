@@ -1,4 +1,4 @@
-# Save user datas on submit
+# Save user data on submit
 saveUser = ($scope) ->
 	$scope.submit = (user) ->
 		user.remember = $('[ng-model="user.remember"]').prop 'checked'
@@ -19,7 +19,7 @@ keepTipedModel = ($scope, selector, modelName) ->
 # Restore date object converted to strings previously (by JSON stringification)
 objectResolve = (value) ->
 
-	if (['null', 'undefined']).indexOf(typeof value) isnt -1
+	if value in [null, undefined]
 
 		null
 
@@ -32,22 +32,23 @@ objectResolve = (value) ->
 
 		# First, convert the date and put the "resolved" key to do not reconvert
 		enter = (value) ->
-			switch typeof(value)
-				when 'object'
-					unless value[key]
-						for i, v of value
-							value[i] = enter value[i]
-						value[key] = true
-				when 'string'
-					if /^[0-9-]+T[0-9:.]+Z$/.test value
-						date = new Date value
-						if `date != 'Invalid Date'`
-							value = date
+			unless value in [null, undefined]
+				switch typeof(value)
+					when 'object'
+						unless value[key]
+							for i, v of value
+								value[i] = enter value[i]
+							value[key] = true
+					when 'string'
+						if /^[0-9-]+T[0-9:.]+Z$/.test value
+							date = new Date value
+							if `date != 'Invalid Date'`
+								value = date
 			value
 
 		# Then, remove all the "resolved" keys
 		leave = (value) ->
-			if typeof(value) is 'object' and value[key]
+			if value not in [null, undefined] and typeof(value) is 'object' and value[key]
 				delete value[key]
 				for i, v of value
 					value[i] = leave value[i]
@@ -303,13 +304,14 @@ getAlbumsFromServer = (done) ->
 	else
 		window.getAlbumsFromServer.waitingCallbacks = [done]
 		at = (getData 'at') || ''
+		key = 'albums-' + at
 		if at
 			at = '/with/' + at
 		Ajax.get '/user/albums' + at, (data) ->
 			err = data.err || null
 			if data.albums
 				albums = data.withAlbums || data.albums
-				sessionStorage.albums = JSON.stringify albums
+				sessionStorage[key] = JSON.stringify albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
 				done err, albums
 			window.getAlbumsFromServer.waitingCallbacks = false
@@ -321,12 +323,15 @@ getAlbumsFromServer = (done) ->
 
 # Get albums from local storage or server
 getAlbums = (done) ->
+	done ||= ->
 	albums = null
 	if exists '.myMedias'
-		try
-			albums = objectResolve JSON.parse sessionStorage.albums
-		catch e
-			albums = null
+		at = getData 'at'
+		if at
+			try
+				albums = objectResolve JSON.parse sessionStorage['albums-' + at]
+			catch e
+				albums = null
 		if typeof(albums) isnt 'object'
 			albums = null
 	if albums is null
@@ -334,6 +339,8 @@ getAlbums = (done) ->
 	else
 		done null, albums
 	return
+
+refreshMediaAlbums = getAlbumsFromServer
 
 # Refresh logged friends menu
 loggedFriends = (friends) ->
@@ -435,3 +442,32 @@ lastest = (arr, count) ->
 readNotification = (id) ->
 	$('[data-id="' + id + '"]').addClass 'read'
 	Ajax.get '/user/notify/read/' + id
+
+# Track an event and send it to analytics tools
+trackEvent = do ->
+	lastKey = ''
+	lastTime = 0
+	elts = 'a,button,img,input[type="button"],input[type="submit"],input[type="file"],[ng-click]'
+	(e, b, c) ->
+		if e.target
+			if @ is e.target
+				$btn = $ @
+				unless $btn.is elts
+					$btn = $btn.parents elts
+				if exists $btn
+					btn = $btn[0]
+					$btn = $ btn
+					id = $btn.attr 'id'
+					id = if id then '#' + id else ''
+					classes = $btn.attr 'class'
+					classes = if classes then '.' + classes.split(/\s+/)[0] else ''
+					selector = btn.tagName.toLowerCase() + id + classes
+					label = $btn.text() || $btn.val() || $btn.attr('title') || $btn.attr('alt') || 'Sans libellé'
+					trackEvent 'Clic', selector, label
+		else
+			time = $.now()
+			key = e + '-' + b + '-' + c
+			if time - lastTime > 500 or lastKey isnt key
+				window['_' + 'paq'].push ['trackEvent', e, b, c]
+				lastTime = time
+				lastKey = key

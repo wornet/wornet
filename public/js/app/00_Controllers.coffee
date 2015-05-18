@@ -409,7 +409,7 @@ Controllers =
 							success: ->
 								deletableMedia = null
 								if media.mediaId
-									delay 500, refreshMediaAlbums
+									delay 600, refreshMediaAlbums
 								else
 									location.reload()
 								hideLoader()
@@ -748,7 +748,7 @@ Controllers =
 							return
 					Ajax.delete '/user/status/' + status._id, ->
 						if status.images and status.images.length
-							delay 500, refreshMediaAlbums
+							delay 600, refreshMediaAlbums
 						return
 				return
 			return

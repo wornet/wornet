@@ -163,16 +163,12 @@ StatusPackage =
 			if err
 				res.serverError err
 			else
-				# if status.at
-				# 	NoticePackage.notify [status.at], null,
-				# 		action: 'notice'
-				# 		notice: [s("{name} a publié un statut sur votre profil.", name: req.user.fullName)]
 				albums = []
 				count = status.images.length
 				if count
 					status.images.each ->
 						photoId = PhotoPackage.urlToId @src
-						PhotoPackage.publish req, photoId, (err, photo) ->
+						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
 							if photo and ! albums.contains photo.album, equals
 								albums.push photo.album
 							unless --count
@@ -185,7 +181,9 @@ StatusPackage =
 												originalStatus.save()
 											count = albums.length
 											albums.each ->
-												@refreshPreview true, ->
+												@refreshPreview (err) ->
+													if err
+														warn err
 													unless --count
 														done status
 										else
