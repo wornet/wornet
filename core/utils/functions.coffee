@@ -652,7 +652,7 @@ module.exports =
 		count = params.length
 		next = (errors) ->
 			err = if errors.length > 0
-				new Error errors.join('\n')
+				new Error errors.join '\n'
 			else
 				null
 			done err

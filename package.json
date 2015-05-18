@@ -52,7 +52,8 @@
 		"node-markdown": "~0.1.0",
 		"phantomjs": "~1.9.16",
 		"formidable": "~1.0.17",
-		"lusca": "~1.0.3"
+		"lusca": "~1.0.3",
+		"http-proxy": "~1.8.1"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",

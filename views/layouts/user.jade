@@ -31,7 +31,7 @@ block params
 
 block nav
 	include ../includes/shutter
-	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation' class=(user.openedShutter ? 'opened-shutter' : false)): .container-fluid
+	nav#navbar.navbar-fixed-top.nav.navbar(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		h1.col-xs-12
 			!=upperTitle
 		.navbar-header

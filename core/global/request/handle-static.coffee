@@ -2,6 +2,7 @@
 
 methodOverride = do require 'method-override'
 bodyParser = do require 'body-parser'
+proxy = require('http-proxy').createProxyServer {}
 
 module.exports = (app) ->
 
@@ -40,14 +41,30 @@ module.exports = (app) ->
 					# To simulate a slow bandwith add a delay like this :
 					# delay 3000, done
 
-		if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
+		if req.urlWithoutParams is '/stat'
+			piwik = options.trackers().piwik
+			if piwik and piwik.target
+				for key in [
+					[req, 'url']
+					[req, 'originalUrl']
+					[req, 'urlWithoutParams']
+					[req._parsedUrl, 'pathname']
+					[req._parsedUrl, 'path']
+					[req._parsedUrl, 'href']
+				]
+					key[0][key[1]] = key[0][key[1]].replace /^\/stat/, '/piwik.php'
+				proxy.web req, res, target: piwik.target, (err) ->
+					warn err
+			else
+				res.notFound()
+		else if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			res.setHeader 'cache-control', 'max-age=' + 90.days + ', public'
 			req.isStatic = true
 			ie = req.getHeader('user-agent').match /MSIE[\/\s]([0-9\.]+)/g
 			if ie
 				ie = intval ie[0].substr 5
 			else
-				ie = 0 
+				ie = 0
 			req.ie = ie
 			methods =
 				js: uglifyJs

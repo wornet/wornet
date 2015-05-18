@@ -1,8 +1,6 @@
 'use strict'
 
 useCdn = false
-piwik = false
-googleAnalytics = true
 csrfDetect = (err) ->
 	(err + '').replace(/^Error:\s/, '') is "CSRF token mismatch"
 csrfReplace = ->
@@ -12,6 +10,8 @@ flash = require('connect-flash')
 cookieParser = require(config.middleware.cookieParser.module.name)
 
 module.exports = (app, port) ->
+
+	trackers = null
 
 	cookiesInit = ->
 		cookieParser.apply app, config.middleware.cookieParser.module.arguments
@@ -43,14 +43,15 @@ module.exports = (app, port) ->
 		###
 
 	trackers: ->
-		trackers = {}
-		if piwik
-			trackers.piwik =
-				id: 8
-				host: 'piwik.selfbuild.fr'
-		if googleAnalytics
-			trackers.googleAnalytics =
-				id: 'UA-54493690-1'
+		unless trackers
+			trackers = {}
+			piwik = config.wornet.trackers.piwik
+			env = config.wornet.env || app.settings.env || 'dev'
+			if piwik.enabled
+				trackers.piwik = piwik[env] || piwik.dev
+			ga = config.wornet.trackers.googleAnalytics
+			if ga.enabled
+				trackers.googleAnalytics = ga[env] || ga.dev
 		trackers
 
 	mainCss: ->
@@ -442,6 +443,11 @@ module.exports = (app, port) ->
 				next = ->
 					res.safeHeader ->
 						render.apply res, params
+				@locals.trackers = options.trackers()
+				@locals.vars = if @req.user
+					@req.user.columns ['role', 'age', 'openedShutter', 'job', 'jobPlace', 'city', 'numberOfFriends']
+				else
+					role: 'visitor'
 				if @req and @req.session
 					@req.refreshNotifications (notifications) ->
 						res.locals.notifications = notifications

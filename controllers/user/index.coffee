@@ -308,11 +308,12 @@ module.exports = (router) ->
 				Photo.findById req.user.photoId, (err, photo) ->
 					if err
 						warn err
-						end model
-					else
+					else if photo
 						if equals photo.album, model.album.id
 							model.album.currentPhoto = req.user.photoId
-						end model
+					else
+						warn new Error req.user.fullName + " a un photoId, mais la photo est introuvable."
+					end model
 			else
 				end model
 		id = req.params.id
@@ -320,6 +321,7 @@ module.exports = (router) ->
 		photos = null
 		next = ->
 			if album and photos
+				photos.reverse()
 				done
 					album: album
 					photos: photos
@@ -530,16 +532,19 @@ module.exports = (router) ->
 					else
 						next()
 				next err
-		if media.type is 'image' and media.id
+		if media.id and media.type is 'image'
 			count++
-			parallelRemove [
-				Photo
+			where =
 				_id: media.id
 				user: me
 				status: 'published'
-			], (err) ->
-				PhotoPackage.forget req, media.id
-				next err
+			Photo.find where, (e) ->
+				parallelRemove [
+					Photo
+					where
+				], (err) ->
+					PhotoPackage.forget req, media.id
+					next e || err
 		next()
 
 	router.get '/chat', (req, res) ->

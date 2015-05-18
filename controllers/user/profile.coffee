@@ -31,7 +31,10 @@ module.exports = (router) ->
 					throw err
 			###
 		if userModifications.photoId
-			Photo.findOneAndUpdate { _id: userModifications.photoId }, { status: 'published' }, {}, (err, photo) ->
+			where = _id: userModifications.photoId
+			values = status: 'published'
+			options = safe: true
+			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
 					userModifications.photoId = photo.id
 					userModifications.photo = photo.photo

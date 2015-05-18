@@ -1,6 +1,8 @@
 # All global events
 # [ [ "events to catch", "selector to target", callbackFunction ], ... ]
 
+$document.on 'click touchstart', '*', trackEvent
+
 loadIFrameEvents = []
 
 $.each [
@@ -580,6 +582,7 @@ $.each [
 	if @[0] is 'load'
 		loadIFrameEvents.push [@[1], @[2]]
 	else
+		# evts = params[0].split /\s/g
 		$document.on params[0], params[1],  ->
 			args = Array.prototype.slice.call arguments
 			args.unshift $ @
