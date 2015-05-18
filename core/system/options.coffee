@@ -81,7 +81,7 @@ module.exports = (app, port) ->
 			main: [style("all")]
 
 	mainJs: ->
-		if useCdn
+		js = if useCdn
 			# CDN resources
 			[
 				['if lt IE 9', "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"]
@@ -134,6 +134,9 @@ module.exports = (app, port) ->
 				"/components/angular/js/calendar-fr.min.js"
 				"/components/angular/js/calendar.min.js"
 			]
+		if options.trackers().piwik
+			js.push "/components/piwik/js/piwik.js"
+		js
 
 	js: ->
 		if config.env.development
