@@ -161,9 +161,7 @@ notificationPrint = (elt) ->
 
 refreshPillOfList = (elt) ->
 	$ul = $ elt
-	count = $ul.find('ul li').filter( ->
-		-1 is ((sessionStorage || {}).sawNotifications || '').indexOf notificationPrint @
-	).length
+	count = $ul.find('ul li').not('.read').length
 	$ul.find('.pill').css('visibility', 'visible').text count
 	return
 
@@ -365,6 +363,7 @@ idFromUrl = (url) ->
 	else
 		id
 
+# Parse iframe contents and append iFramesParsed class to their container
 loadNewIFrames = ->
 	delay 1, ->
 		$('iframe').each ->
@@ -384,12 +383,15 @@ loadNewIFrames = ->
 		return
 	return
 
+# Make loading animations visible
 showLoader = ->
 	$('.loader:last').css('z-index', 99999).removeClass 'preload'
 
+# Make loading animations hidden
 hideLoader = ->
 	$('.loader:last').css('z-index', '').addClass 'preload'
 
+# Send form if FormData is not suported
 withFormData = ($form, done) ->
 	if 'function' is typeof $form
 		done = $form
@@ -415,6 +417,7 @@ withFormData = ($form, done) ->
 			$form[0].submit()
 		true
 
+# Get {count} lastest elements of {arr}
 lastest = (arr, count) ->
 	if arr instanceof Array
 		res = if count > arr.length
@@ -427,3 +430,8 @@ lastest = (arr, count) ->
 		res = {}
 		for key in lastest Object.keys(arr), count
 			res[key] = arr[key]
+
+# Send AJAX status to make a notification read
+readNotification = (id) ->
+	$('[data-id="' + id + '"]').addClass 'read'
+	Ajax.get '/user/notify/read/' + id

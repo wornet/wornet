@@ -277,8 +277,11 @@ module.exports =
 				.filter (n) ->
 					n and n.length and n[1]
 				.map (n) ->
-					if typeof(n[0]) is 'string'
-						n[0] = new Date n[0]
+					# if typeof(n[0]) is 'string'
+					# 	n[0] = new Date n[0]
+					# if n[0] instanceof Date
+					# 	warn n
+					n[0] = strval n[0]
 			friendAskIds = []
 			for id, friend of friendAsks
 				if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
@@ -290,24 +293,30 @@ module.exports =
 					hasNoId and notice[1] is @content
 				for notice in coreNotifications
 					if notice.id or notifications.has sameNotice.bind notice
-						notifications.push [notice.id, notice.content]
-			notifications.sort (a, b) ->
-				for i in [a, b]
-					unless i[0] instanceof Date
-						d = if i[0]
-							Date.fromId i[0]
+						notifications.push extend [notice.id, notice.content], read: notice.isRead
+			if notifications.length
+				getDate = (notice) ->
+					date = new Date
+					if notice[0]
+						date = if notice[0] instanceof Date
+							notice[0]
 						else
-							new Date
-						if d.isValid()
-							i[0] = d
-						else
-							warn new Error i[0] + " n'est pas de type Date"
-				if a[0] < b[0]
-					-1
-				else if a[0] > b[0]
-					1
-				else
-					0
+							Date.fromId notice[0]
+						unless date.isValid()
+							date = new Date
+							warn new Error s("{field} n'est pas de une date valide", field: notice[0])
+					else
+						warn new Error s("{notice} n'a pas de premier paramètre", notice: notice)
+					date
+				notifications.sort (a, b) ->
+					a = getDate a
+					b = getDate b
+					if a < b
+						-1
+					else if a > b
+						1
+					else
+						0
 			notifications
 		catch e
 			warn e

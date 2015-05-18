@@ -78,7 +78,7 @@ NoticePackage =
 						else
 							unless self.notificationsToSend[userId]
 								self.notificationsToSend[userId] = {}
-							id = (new Date).log()
+							id = strval new ObjectId
 							self.notificationsToSend[userId][id] = [err, data]
 							delay 5.seconds, ->
 								if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
@@ -128,7 +128,7 @@ NoticePackage =
 				responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
 				delete responsesToNotify[userId][id]
 
-			id = (new Date).log()
+			id = strval new ObjectId
 			responsesToNotify[userId][id] = callback
 		id
 

@@ -389,45 +389,28 @@ $.each [
 			refreshPill()
 			cancel e
 	]
-	# [
-	# 	'click touchstart'
-	# 	'.notifications a.dropdown-toggle'
-	# 	($a, e) ->
-	# 		if sessionStorage
-	# 			notifications = ''
-	# 			$a.parent().find('ul.dropdown-menu li').each ->
-	# 				notifications += notificationPrint @
-	# 				return
-	# 			sessionStorage.sawNotifications = notifications
-	# 			refreshPill()
-	# 		return
-	# ]
 	[
 		'click touchstart'
 		'.notifications ul a'
 		($a, e) ->
 			href = $a.find('[data-href]').data 'href'
+			id = $a.parents('li:first').attr 'data-id'
 			if href
+				if id
+					sessionStorage.readNotification = id
 				delay 1, ->
 					location.href = href
-			unless $a.is '[data-id]'
-				dateId = $a.dateId()
-				if dateId
-					Ajax.get '/user/notify/read/' + dateId, (data) ->
-						notificationsService.setNotifications notifications
+					hash = href.replace /^[^#]+#/g, ''
+					if hash and hash isnt href
+						$block = $ '#' + hash + ', [data-id=' + hash + ']'
+						if exists $block
+							$document.scrollTop $block.offset().top - 68
+			delay 2, refreshPill
+			if id
+				readNotification id
 			if $a.is '.friend-accepted'
 				true
 			else
-				unless $a.is '.friend-ask'
-					notifications = sessionStorage.sawNotifications || ''
-					$a.parents('li:first').each ->
-						print = notificationPrint @
-						if -1 is notifications.indexOf print
-							notifications += print
-						return
-					sessionStorage.sawNotifications = notifications
-					# $a.parents('li:first').remove()
-					refreshPill()
 				cancel e
 	]
 	[
@@ -620,6 +603,9 @@ $document.keydown (e) ->
 delayedSrcAttr = 'delayed-src'
 
 $document.on 'end-of-load', ->
+	if id = sessionStorage.readNotification
+		readNotification id
+		delete sessionStorage.readNotification
 	$('img[data-' + delayedSrcAttr + ']').each ->
 		$img = $ @
 		$img.attr 'src', $img.data delayedSrcAttr
