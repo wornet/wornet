@@ -114,9 +114,10 @@ ArrayList =
 			list.push @[key]
 		list
 
-	add: (val, compare) ->
-		unless @contains val, compare
-			@push val
+	add: ->
+		for val in arguments
+			unless @contains val
+				@push val
 		@
 
 	merge: (values, push = 'push') ->

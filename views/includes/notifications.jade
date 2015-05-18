@@ -10,7 +10,7 @@ mixin notifications(classes)
 			span.pill
 				=notificationsCount
 		ul.dropdown-menu(role='menu' ng-controller="NotificationsCtrl")
-			li(ng-repeat="notification in notifications | lastest:10" ng-switch="notification[3]")
+			li(ng-repeat="notification in notifications | lastest:10" ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
@@ -40,20 +40,21 @@ mixin notifications(classes)
 				each notification, id in notifications.lastest(10)
 					if notification && notification.length && notification[0]
 						- var askingFriend = objectToUser(notification[1])
-						li: a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-							i.date(data-date=trim(notification[0], '"'))
-								|&nbsp;
-							| &nbsp; 
-							if askingFriend && askingFriend.hashedId
-								img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
-								=" "
-								- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
-								!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-								br
-								.btn.accept-friend
-									=s("Accepter")
-								| &nbsp;
-								.btn.ignore-friend
-									=s("Ignorer")
-							else
-								!=notification[1]
+						li(class=(notification.read ? 'read' : null) data-id=notification[0])
+							a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+								i.date(data-date=trim(notification[0], '"'))
+									|&nbsp;
+								| &nbsp; 
+								if askingFriend && askingFriend.hashedId
+									img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
+									=" "
+									- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
+									!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+									br
+									.btn.accept-friend
+										=s("Accepter")
+									| &nbsp;
+									.btn.ignore-friend
+										=s("Ignorer")
+								else
+									!=notification[1]

@@ -1,10 +1,5 @@
 'use strict'
 
-status = [
-	'unread'
-	'read'
-]
-
 messageRecipientSchema = BaseSchema.extend
 	message:
 		type: ObjectId
@@ -12,14 +7,9 @@ messageRecipientSchema = BaseSchema.extend
 	recipient:
 		type: ObjectId
 		ref: 'UserSchema'
-	status:
-		type: String
-		enum: status
-		default: status[0]
+	status: readOrUnread.type
 
-status.forEach (st) ->
-	messageRecipientSchema.virtual(st).get ->
-		@status is st
+readOrUnread.virtuals messageRecipientSchema
 
 messageRecipientSchema.pre 'remove', (next) ->
 	parallelRemove [

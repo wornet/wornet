@@ -298,6 +298,15 @@ extend userSchema.methods,
 					warn e
 				done false
 
+	countUnreadNotifications: (done) ->
+		Notice.count
+			status: $ne: 'read'
+			user: @id
+		, (err, count) ->
+			if err
+				warn err
+			done count
+
 	aksForFriend: (askedTo, done) ->
 		askedFrom = @id
 		if askedFrom is askedTo

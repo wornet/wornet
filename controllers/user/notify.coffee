@@ -39,9 +39,19 @@ module.exports = (router) ->
 			res.serverError err
 
 	router.get '/read/:notification', (req, res) ->
-		# Delete notification when read
-		# req.deleteNotification req.params.id, (err, notifications) ->
-		# 	if err
-		# 		res.serverError err
-		# 	else
-		# 		res.json notifications: notifications
+		id = req.params.notification
+		Notice.update
+			_id: id
+			user: req.user.id
+		,
+			status: readOrUnread.read
+		, (err, notice) ->
+			if err
+				res.serverError err
+			else if notice
+				req.session.notifications = req.session.notifications.map (notification) ->
+					if notification[0] is id
+						notification.read = true
+				res.json()
+			else
+				res.notFound()
