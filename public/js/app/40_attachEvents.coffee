@@ -1,7 +1,8 @@
 # Handle touch events
 
 do ->
-	touch = false
+	touchTarget = null
+	touch = 0
 	x = 0
 	y = 0
 	_x = 0
@@ -19,18 +20,10 @@ do ->
 		p = pointer e
 		_x = x = p.pageX
 		_y = y = p.pageY
-		touch = true
-		delay 200, ->
-			if ! touch and x is _x and y is _y
-				$(e.target)
-					.trigger 'tap'
-					.trigger if e.type is 'touchstart'
-						'touchtap'
-					else
-						'mousetap'
+		touch = $.now()
+		touchTarget = e.target
 
 	.on 'touchend mouseup touchcancel', (e) ->
-		touch = false
 		dx = x - _x
 		dy = y - _y
 		ax = Math.abs dx
@@ -47,6 +40,14 @@ do ->
 					$(e.target).trigger 'swipedown'
 				else
 					$(e.target).trigger 'swipeup'
+		else if ax < 4 and ay < 4 and $.now() - touch <= 200
+			$(touchTarget)
+				.trigger 'tap'
+				.trigger if e.type is 'touchstart'
+					'touchtap'
+				else
+					'mousetap'
+		touch = 0
 
 	.on 'touchmove mousemove', (e) ->
 		p = pointer e
@@ -404,7 +405,7 @@ $.each [
 			prevent e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'.accept-friend, .ignore-friend'
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
@@ -450,7 +451,7 @@ $.each [
 			cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'.notifications ul a'
 		($a, e) ->
 			href = $a.find('[data-href]').data 'href'
@@ -474,7 +475,7 @@ $.each [
 				cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'a[href][target!="_blank"]'
 		($a, e) ->
 			if $a.is '.ajax'
@@ -494,7 +495,7 @@ $.each [
 			###
 	]
 	[
-		'tap'
+		'touchtap click'
 		'.profile-edit-btn'
 		($a, e) ->
 			$('.profile-display').toggle()
@@ -526,7 +527,7 @@ $.each [
 			loadMedia.apply @, params
 	]
 	[
-		'tap'
+		'touchtap click'
 		'li.open-shutter a'
 		($a, e) ->
 			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
@@ -538,14 +539,14 @@ $.each [
 			cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'.footer a'
 		($a, e) ->
 			window.open $a.attr 'href'
 			cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'#delete-account'
 		($a, e) ->
 			bootbox.dialog
@@ -567,7 +568,7 @@ $.each [
 			cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'[data-delete]'
 		($a, e) ->
 			bootbox.confirm $a.data('message'), (ok) ->
@@ -597,7 +598,7 @@ $.each [
 			cancel e
 	]
 	[
-		'tap'
+		'touchtap click'
 		'[data-click-alert]'
 		($a, e) ->
 			bootbox.alert $a.data 'click-alert'
