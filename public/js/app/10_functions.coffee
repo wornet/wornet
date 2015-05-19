@@ -321,11 +321,13 @@ getAlbumsFromServer = (done) ->
 			return
 	return
 
+cacheAlbums = false
+
 # Get albums from local storage or server
 getAlbums = (done) ->
 	done ||= ->
 	albums = null
-	if exists '.myMedias'
+	if cacheAlbums and exists '.myMedias'
 		at = getData 'at'
 		if at
 			try
