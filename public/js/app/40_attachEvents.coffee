@@ -232,7 +232,7 @@ do ->
 							$('#uploadedPhotoId').val id
 						album = $newImg.data 'created-album'
 						if album
-							albums = objectResolve JSON.parse sessionStorage.albums
+							albums = (objectResolve JSON.parse sessionStorage[albumKey()]) || []
 							present = false
 							for a in albums
 								if a._id is album._id
@@ -241,7 +241,7 @@ do ->
 							unless present
 								albums.push album
 								statusScope.albums = albums
-								sessionStorage.albums = JSON.stringify albums
+								sessionStorage[albumKey()] = JSON.stringify albums
 								refreshScope statusScope
 							getAlbumsFromServer ->
 								refreshScope statusScope
@@ -396,7 +396,7 @@ do ->
 				return
 		]
 		[
-			'tap'
+			click
 			'[data-ajax], [ng-attr-data-ajax]'
 			($btn) ->
 				params = ($btn.attr 'data-ajax') || []
@@ -409,7 +409,7 @@ do ->
 				return
 		]
 		[
-			'tap'
+			click
 			'[data-click], [ng-attr-data-click]'
 			($btn) ->
 				i = 0
@@ -420,7 +420,7 @@ do ->
 				return
 		]
 		[
-			'tap'
+			click
 			'[data-ask-for-friend], [ng-attr-data-ask-for-friend]'
 			($btn, e) ->
 				s = textReplacements
@@ -462,7 +462,7 @@ do ->
 							$a = $message.find 'a'
 							if exists $a
 								$a.clone(true).appendTo($li).fadeOut(0).fadeIn()
-							else if exists $img
+							else if exists($img) and $img.width() is 50
 								$a = $ '<a>'
 								$a.attr 'href', userUrl
 								$img.clone(true).appendTo $a
@@ -698,5 +698,6 @@ do ->
 				params[2].apply @, args
 			return
 
+		return
 
 	return
