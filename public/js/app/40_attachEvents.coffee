@@ -1,9 +1,67 @@
-# All global events
-# [ [ "events to catch", "selector to target", callbackFunction ], ... ]
+# Handle touch events
 
-$document.on 'click touchstart', '*', trackEvent
+do ->
+	touch = false
+	x = 0
+	y = 0
+	_x = 0
+	_y = 0
+
+	pointer = (e) ->
+		if e.originalEvent.targetTouches
+			e.originalEvent.targetTouches[0]
+		else
+			e
+
+	$document
+
+	.on 'touchstart mousedown', (e) ->
+		p = pointer e
+		_x = x = p.pageX
+		_y = y = p.pageY
+		touch = true
+		delay 200, ->
+			if ! touch and x is _x and y is _y
+				$(e.target)
+					.trigger 'tap'
+					.trigger if e.type is 'touchstart'
+						'touchtap'
+					else
+						'mousetap'
+
+	.on 'touchend mouseup touchcancel', (e) ->
+		touch = false
+		dx = x - _x
+		dy = y - _y
+		ax = Math.abs dx
+		ay = Math.abs dy
+		if ax > 50 or ay > 50
+			$(e.target).trigger 'swipe', [dx, dy]
+			if ax > ay
+				if dx > 0
+					$(e.target).trigger 'swiperight'
+				else
+					$(e.target).trigger 'swipeleft'
+			else
+				if dy > 0
+					$(e.target).trigger 'swipedown'
+				else
+					$(e.target).trigger 'swipeup'
+
+	.on 'touchmove mousemove', (e) ->
+		p = pointer e
+		x = p.pageX
+		y = p.pageY
+		if touch
+			$(e.target).trigger 'swipemouve', [x - _x, y - _y]
+
+# Track on tap
+$document.on 'tap', '*', trackEvent
 
 loadIFrameEvents = []
+
+# All global events
+# [ [ "events to catch", "selector to target", callbackFunction ], ... ]
 
 $.each [
 	[
@@ -21,7 +79,7 @@ $.each [
 			return
 	]
 	[
-		'keyup focus change click touchstart'
+		'keyup focus change tap'
 		'.check-pass'
 		($field) ->
 			$password = $field.find 'input[type="password"]'
@@ -86,7 +144,7 @@ $.each [
 			return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-view-src]'
 		($img) ->
 			loadMedia 'image',
@@ -95,7 +153,7 @@ $.each [
 			return
 	]
 	[
-		'touchstart'
+		'touchtap'
 		'.photos-thumbs a[href][data-toggle="tooltip"]'
 		($a, e) ->
 			location.href = $a.attr 'href'
@@ -267,14 +325,14 @@ $.each [
 				return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-toggle="lightbox"]'
 		($btn, e) ->
 			$btn.ekkoLightbox()
 			prevent e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'a.dropdown-toggle'
 		($a, e) ->
 			$dropdown = $a.next('ul.dropdown-menu')
@@ -283,7 +341,7 @@ $.each [
 			return
 	]
 	[
-		'touchstart',
+		'touchtap',
 		'[ng-click]'
 		($a, e) ->
 			$a.click()
@@ -291,7 +349,7 @@ $.each [
 			return
 	]
 	[
-		'touchstart',
+		'touchtap',
 		'img'
 		($img, e) ->
 			unless exists $img.parents 'a, button'
@@ -299,7 +357,7 @@ $.each [
 			return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-ajax], [ng-attr-data-ajax]'
 		($btn) ->
 			params = ($btn.attr 'data-ajax') || []
@@ -312,7 +370,7 @@ $.each [
 			return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-click], [ng-attr-data-click]'
 		($btn) ->
 			i = 0
@@ -323,7 +381,7 @@ $.each [
 			return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-ask-for-friend], [ng-attr-data-ask-for-friend]'
 		($btn, e) ->
 			s = textReplacements
@@ -346,7 +404,7 @@ $.each [
 			prevent e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'.accept-friend, .ignore-friend'
 		($btn, e) ->
 			$message = $btn.parents '.friend-ask'
@@ -392,7 +450,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'.notifications ul a'
 		($a, e) ->
 			href = $a.find('[data-href]').data 'href'
@@ -416,7 +474,7 @@ $.each [
 				cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'a[href][target!="_blank"]'
 		($a, e) ->
 			if $a.is '.ajax'
@@ -436,7 +494,7 @@ $.each [
 			###
 	]
 	[
-		'click touchstart'
+		'tap'
 		'.profile-edit-btn'
 		($a, e) ->
 			$('.profile-display').toggle()
@@ -444,7 +502,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[give-focus]'
 		($a) ->
 			sel = $a.attr 'give-focus'
@@ -461,14 +519,14 @@ $.each [
 			return
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-load-media]'
 		($btn) ->
 			params = $btn.data 'load-media'
 			loadMedia.apply @, params
 	]
 	[
-		'click touchstart'
+		'tap'
 		'li.open-shutter a'
 		($a, e) ->
 			$('#navbar, #wrap, #shutter').toggleClass 'opened-shutter'
@@ -480,14 +538,14 @@ $.each [
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'.footer a'
 		($a, e) ->
 			window.open $a.attr 'href'
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'#delete-account'
 		($a, e) ->
 			bootbox.dialog
@@ -509,7 +567,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-delete]'
 		($a, e) ->
 			bootbox.confirm $a.data('message'), (ok) ->
@@ -539,7 +597,7 @@ $.each [
 			cancel e
 	]
 	[
-		'click touchstart'
+		'tap'
 		'[data-click-alert]'
 		($a, e) ->
 			bootbox.alert $a.data 'click-alert'
@@ -575,6 +633,18 @@ $.each [
 				delete window.$lastForm
 				return
 			return
+	]
+	[
+		'swipeleft'
+		'[ng-controller="MediaViewerCtrl"]'
+		->
+			$(@).find('.next:visible:last').not('.disabled').click()
+	]
+	[
+		'swiperight'
+		'[ng-controller="MediaViewerCtrl"]'
+		->
+			$(@).find('.prev:visible:last').not('.disabled').click()
 	]
 
 ], ->
