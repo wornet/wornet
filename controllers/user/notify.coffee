@@ -49,9 +49,12 @@ module.exports = (router) ->
 			if err
 				res.serverError err
 			else if notice
-				req.session.notifications = req.session.notifications.map (notification) ->
-					if notification[0] is id
-						notification.read = true
+				req.session.notifications = req.session.notifications
+					.filter (notification) ->
+						notification and notification.length
+					.map (notification) ->
+						if notification[0] is id
+							notification.read = true
 				res.json()
 			else
 				res.notFound()
