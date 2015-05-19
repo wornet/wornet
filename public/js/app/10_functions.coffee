@@ -26,7 +26,10 @@ objectResolve = (value) ->
 	else
 
 		if typeof value isnt 'object'
-			value = JSON.parse value
+			try
+				value = JSON.parse value
+			catch e
+				value = null
 
 		key = 'resolvedCTBSWSydrqSuW2QyzUGMBTshU9SCJn5p'
 
@@ -71,6 +74,14 @@ getData = (name) ->
 		console.trace()
 	objectResolve $data.data 'value'
 
+# Store the getData as a chached value
+getCachedData = do ->
+	data = {}
+	(name) ->
+		if data.hasOwnProperty name
+			data[name]
+		else
+			data[name] = getData name
 
 # Shorthand to exec a callback (second parameter) after a delay
 # (fisrt parameter) specified in milliseconds
@@ -274,7 +285,7 @@ getChats = ->
 	keepScroll '.chat .messages'
 	chats = {}
 	try
-		chats = objectResolve JSON.parse sessionStorage.chats
+		chats = (objectResolve JSON.parse sessionStorage.chats) || {}
 		for k, chat of chats
 			users = {}
 			for user in chat.users
@@ -297,14 +308,18 @@ refreshScope = ($scope) ->
 	checkDates()
 	return
 
+albumKey = ->
+	at = (getCachedData 'at') || ''
+	'albums-' + at
+
 # Get albums from server
 getAlbumsFromServer = (done) ->
 	if window.getAlbumsFromServer.waitingCallbacks
 		window.getAlbumsFromServer.waitingCallbacks.push done
 	else
 		window.getAlbumsFromServer.waitingCallbacks = [done]
-		at = (getData 'at') || ''
-		key = 'albums-' + at
+		at = (getCachedData 'at') || ''
+		key = albumKey()
 		if at
 			at = '/with/' + at
 		Ajax.get '/user/albums' + at, (data) ->
@@ -326,10 +341,9 @@ getAlbums = (done) ->
 	done ||= ->
 	albums = null
 	if exists '.myMedias'
-		at = getData 'at'
-		if at
+		if getCachedData 'at'
 			try
-				albums = objectResolve JSON.parse sessionStorage['albums-' + at]
+				albums = objectResolve JSON.parse sessionStorage[albumKey()]
 			catch e
 				albums = null
 		if typeof(albums) isnt 'object'
