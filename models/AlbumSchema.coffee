@@ -13,9 +13,8 @@ albumSchema = OwnedSchema.extend
 
 albumSchema.methods.refreshPreview = (save = true, done) ->
 	if 'function' is typeof save
-		_save = done
 		done = save
-		save = !! _save
+		save = true
 	album = @
 	done ||= (err) ->
 		if err
