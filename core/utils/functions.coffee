@@ -271,29 +271,29 @@ module.exports =
 
 	@return ordered notifications list
 	###
-	getNotifications: (notifications, coreNotifications, friendAsks = {}, friends = []) ->
+	getNotifications: (sessionNotifications, coreNotifications, friendAsks = {}, friends = []) ->
 		try
-			notifications = notifications
-				.filter (n) ->
-					n and n.length and n[1]
-				.map (n) ->
-					# if typeof(n[0]) is 'string'
-					# 	n[0] = new Date n[0]
-					# if n[0] instanceof Date
-					# 	warn n
-					n[0] = strval n[0]
+			notifications = []
+			ids = []
+			push = (notification) ->
+				unless notification[0] and ids.contains notification[0]
+					notifications.push notification
+			notifications.each ->
+				if @ and @length and @[1]
+					@[0] = strval @[0]
+					push @
 			friendAskIds = []
 			for id, friend of friendAsks
 				if friend.askedTo and ! friendAskIds.contains(id) and ! friends.has(hashedId: friend.hashedId)
 					friendAskIds.push id
-					notifications.push [id, friend, id]
+					push [id, friend, id]
 			if coreNotifications.length
 				sameNotice = (notice) ->
 					hasNoId = ! notice[0]
 					hasNoId and notice[1] is @content
 				for notice in coreNotifications
 					if notice.id or notifications.has sameNotice.bind notice
-						notifications.push extend [notice.id, notice.content], read: notice.isRead
+						push extend [notice.id, notice.content], read: notice.isRead
 			if notifications.length
 				getDate = (notice) ->
 					date = new Date

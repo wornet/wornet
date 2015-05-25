@@ -307,7 +307,7 @@ extend userSchema.methods,
 				warn err
 			done count
 
-	aksForFriend: (askedTo, done) ->
+	askForFriend: (askedTo, done) ->
 		askedFrom = @id
 		if askedFrom is askedTo
 			done
@@ -326,17 +326,24 @@ extend userSchema.methods,
 				.exec (err, friend) ->
 					if err
 						warn err
+					next = ->
+						if typeof done is 'function'
+							done
+								err: err
+								friend: friend
+								exists: equals askedTo, friend.askedFrom
 					if friend
-						friend.status = 'waiting'
-						friend.save()
+						if config.wornet.lockFriendAsk.contains friend.status
+							err = new PublicError s("Une demande est déjà en attente.")
+							next()
+						else
+							friend.status = 'waiting'
+							friend.save next
 					else unless err
 						friend = new Friend data
-						friend.save()
-					if typeof done is 'function'
-						done
-							err: err
-							friend: friend
-							exists: equals askedTo, friend.askedFrom
+						friend.save next
+					else
+						next()
 
 	getFriends: (done, forceReload = false) ->
 		if ! forceReload and @friends? and @friendAsks?

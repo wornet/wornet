@@ -128,7 +128,7 @@ UserPackage =
 					done err: err
 				else
 					id = cesarRight id
-					req.user.aksForFriend id, (data) ->
+					req.user.askForFriend id, (data) ->
 						next = ->
 							done data
 							dataWithUser = username: jd 'span.username ' + req.user.fullName
