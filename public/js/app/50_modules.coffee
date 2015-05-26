@@ -1,8 +1,8 @@
-# No click delay with phone touch
-if window.FastClick
-	FastClick.attach document.body
+do (window, s = textReplacements) ->
+	# No click delay with phone touch
+	if window.FastClick
+		FastClick.attach document.body
 
-do (s = textReplacements) ->
 	# Default errors
 	window.SERVER_ERROR_DEFAULT_MESSAGE = s("Perte de la connexion internet. La dernière action n'a pas pu être effectuée.")
 

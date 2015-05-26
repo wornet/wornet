@@ -208,7 +208,8 @@ userSchema.virtual('photo').get ->
 userSchema.virtual('thumb').get ->
 	photoSrc.call @, '90x'
 
-for size in config.wornet.thumbSizes
+config.wornet.thumbSizes.each ->
+	size = @
 	userSchema.virtual('thumb' + size).get ->
 		photoSrc.call @, size + 'x'
 
@@ -326,19 +327,24 @@ extend userSchema.methods,
 				.exec (err, friend) ->
 					if err
 						warn err
+					exists = false
 					next = ->
 						if typeof done is 'function'
 							done
 								err: err
 								friend: friend
-								exists: equals askedTo, friend.askedFrom
+								exists: exists
 					if friend
-						if config.wornet.lockFriendAsk.contains friend.status
+						exists = equals askedTo, friend.askedFrom
+						unless exists
 							err = new PublicError s("Une demande est déjà en attente.")
-							next()
-						else
-							friend.status = 'waiting'
-							friend.save next
+						next()
+						# if config.wornet.lockFriendAsk.contains friend.status
+						# 	err = new PublicError s("Une demande est déjà en attente.")
+						# 	next()
+						# else
+						# 	friend.status = 'waiting'
+						# 	friend.save next
 					else unless err
 						friend = new Friend data
 						friend.save next

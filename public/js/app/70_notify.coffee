@@ -45,9 +45,9 @@ waitForNotify = ->
 										'&nbsp; &nbsp;' +
 										'<span class="btn ignore-friend">' + s("Ignorer") + '</span>' +
 									'</div>' +
-									'<div class="shift if-accepted">' +
-										s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
-									'</div>' +
+									# '<div class="shift if-accepted">' +
+									# 	s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
+									# '</div>' +
 									'<div class="cb"></div>' +
 								'</div>')
 							notificationsService.receiveNotification [id, notification.user, notification.id, 'askForFriend']
@@ -56,12 +56,19 @@ waitForNotify = ->
 							id = notification.id
 							name = friend.name.full
 							href = '/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name)
-							$friends = $('#friends').append('<li>' +
-								'<a href="' + href + '">' +
-									'<img src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" data-id="' + friend.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + safeHtml(name) + '">' +
-								'</a>' +
-							'</li>')
+							$friends = $ '#friends'
 							if exists $friends
+								idAttr = 'data-id="' + friend.hashedId + '"'
+								idSelector = '[' + idAttr + ']'
+								unless exists $friends.find(idSelector)
+									$friends.append('<li>' +
+										'<a href="' + href + '" class="thumb">' +
+											'<img src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" ' + idAttr + ' data-toggle="tooltip" data-placement="top" title="' + safeHtml(name) + '">' +
+										'</a>' +
+									'</li>')
+								$(idSelector).each ->
+									$(@).parents('.alert:first').slideUp ->
+										$(@).remove()
 								numberOfFriends = $friends.find('li').length
 								s = textReplacements
 								text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)

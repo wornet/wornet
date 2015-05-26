@@ -131,12 +131,13 @@ UserPackage =
 					req.user.askForFriend id, (data) ->
 						next = ->
 							done data
-							dataWithUser = username: jd 'span.username ' + req.user.fullName
-							NoticePackage.notify [data.friend.askedTo], null,
-								action: 'askForFriend'
-								askForFriend: req.user
-								user: req.user.publicInformations()
-								id: data.friend.id
+							unless data.err or equals req.user.id, data.friend.askedTo
+								dataWithUser = username: jd 'span.username ' + req.user.fullName
+								NoticePackage.notify [data.friend.askedTo], null,
+									action: 'askForFriend'
+									askForFriend: req.user
+									user: req.user.publicInformations()
+									id: data.friend.id
 						if empty data.err
 							User.findById id, (err, user) ->
 								if err
@@ -202,23 +203,23 @@ UserPackage =
 							self.cacheFriends me, friend.askedFrom, true
 							User.findById friend.askedFrom, (err, user) ->
 								if user and !err
-									sendNotice = (userId, notice) ->
+									sendNotice = (user, userId, notice) ->
 										NoticePackage.notify [userId], null,
 											action: 'friendAccepted'
 											deleteFriendAsk: id
-											addFriend: me
-											user: me.publicInformations()
+											addFriend: user
+											user: user.publicInformations()
 											notification: notice
 											notice: [notice]
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
-									sendNotice friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+									sendNotice me, friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
 										img + " " + s("{username} a accepté votre demande !", dataWithUser) +
 										'</span>'
 									dataWithUser = username: jd 'span.username ' + user.fullName
 									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
-									sendNotice friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+									sendNotice user, friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
 										img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
 										'</span>'
 									end()
