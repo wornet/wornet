@@ -431,12 +431,9 @@ do ->
 					success: (data) ->
 						if data.exists
 							bootbox.confirm s("{name} vous a déjà demandé en ami, voulez-vous accepter sa demande maintenant ?", name: name), (ok) ->
-								if ok
-									$accept = $ '.friend-ask[data-id="' + id + '"] .accept-friend'
-									if exists $accept
-										$accept.click()
-									else
-										Ajax.post '/user/friend/accept', data: id: id
+								if ok and ! $('[data-id="' + id + '"]').parents('.friend-ask').find('.accept-friend').eq(0).click().length
+									# To fix: id is a user hashed id and not the friend id as expected from the friend controller
+									Ajax.post '/user/friend/accept', data: id: id
 				if $btn.is '.destroyable'
 					$btn.fadeOut ->
 						$btn.remove()
@@ -457,7 +454,7 @@ do ->
 						location.href = '/user/friend/accept/' + id + '?goingTo=' + encodeURIComponent userUrl
 					else
 						$friends = $ '#friends'
-						if exists $friends
+						if exists($friends) and ! exists($friends.find('[data-id="' + userId + '"]'))
 							$li = $('<li>').appendTo $friends
 							$a = $message.find 'a'
 							if exists $a
@@ -471,20 +468,19 @@ do ->
 							s = textReplacements
 							text = s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 							$('.numberOfFriends').text text
-						$message.find('.shift').slideUp()
-						$message.find('.if-accepted').slideDown()
-						delay 3000, ->
-							$message.slideUp ->
-								$(@).remove()
-								return
-							return
+						# $message.find('.if-accepted').slideDown()
+						# delay 3000, ->
+						# 	$message.slideUp ->
+						# 		$(@).remove()
+						# 		return
+						# 	return
 						Ajax.post '/user/friend/accept', data: id: id
 				else
 					Ajax.post '/user/friend/ignore', data: id: id
-					$message.slideUp ->
-						$(@).remove()
-						return
-				deleteFriendAsk id
+				$message.slideUp ->
+					$(@).remove()
+					deleteFriendAsk id
+					return
 				refreshPill()
 				cancel e
 		]
@@ -652,7 +648,7 @@ do ->
 				if val and max
 					s = textReplacements
 					$field.before('<div class="static-tooltip"><div class="tooltip top"><div class="tooltip-arrow"></div><div class="tooltip-inner">' +
-					s("Caractères restants : {remains}", { remains: max - val.length }) +
+					s("Caractères restants : {remains}", remains: max - val.length) +
 					'</div></div></div>')
 				return
 		]

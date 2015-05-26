@@ -43,7 +43,6 @@ $document = $(document)
 							serverError()
 						else
 							if data.err
-								console['log'] data.err
 								if typeof data.err is 'object' and data.err.name
 									switch data.err.name
 										when "ValidationError"
@@ -57,8 +56,10 @@ $document = $(document)
 										else
 											err = data.err.message || (data.err + '')
 								else
-									err = data.err + ''
+									err = (data.err.msg || data.err) + ''
 								console['error'] err
+								if data.err.stack
+									console['log'] data.err.stack
 								if isPost
 									$('.errors').errors err
 							if data.stack
