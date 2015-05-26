@@ -733,8 +733,12 @@ module.exports =
 			if object instanceof User
 				u = object
 			else
+				if object.thumb50
+					id = PhotoPackage.urlToId object.thumb50
 				u = new User
 				extend u, object
+				if id
+					u.photoId = id
 		u
 
 	###

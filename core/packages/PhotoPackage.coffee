@@ -22,7 +22,7 @@ deleteCookie = (req, photoId) ->
 PhotoPackage =
 
 	urlToId: (url) ->
-		regExp = /\/img\/photo\/([0-9]+x)?([a-f0-9]{5,})\.jpg$/ig
+		regExp = /\/img\/photo\/([0-9]+x)?([a-f0-9]{5,})(\/[^\/]+)?\.jpg(\?[A-Za-z0-9]*)?$/ig
 		match = url.match regExp
 		photoId = null
 		if match
