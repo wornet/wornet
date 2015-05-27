@@ -317,7 +317,18 @@ module.exports =
 						1
 					else
 						0
-			notifications
+			notifications.map (notification) ->
+				if 'string' is typeof notification[1]
+					notification[1] = notification[1].replace /<img([^>]+)>/mg, (all, attrs) ->
+						id = attrs.replace /^.*data-id\s*=\s*['"]([^"']+)["'].*$/mg, '$1'
+						if id isnt attrs
+							friend = friends.findOne hashedId: id
+							if friend
+								console.log [friend.thumb50]
+								all = all.replace /([^A-Za-z0-9]src\s*=\s*)['"]([^"']+)["']/g, '$1' + JSON.stringify(friend.thumb50) + ' data-user-thumb=' + JSON.stringify(id)
+						all
+				notification
+
 		catch e
 			warn e
 			[]

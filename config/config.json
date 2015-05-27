@@ -184,6 +184,7 @@
             "friendsOnProfile": 50,
             "theyUseWornet": 50,
             "maxTabs": 5,
+            "notifications": 10,
             "userMaxAge": 150,
             "userMinAge": 13,
             "albumNameLength": 100,
