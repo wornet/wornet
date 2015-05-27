@@ -815,12 +815,14 @@ Controllers =
 
 			return
 
+		at = getCachedData 'at'
+
 		$scope.$on 'receiveStatus', (e, status) ->
 			$scope.recentStatus.unshift status
 			refreshScope $scope
+			if status.images and status.author and status.images.length and status.author.hashedId is at
+				refreshMediaAlbums()
 			return
-
-		at = getData 'at'
 
 		window.statusScope = $scope
 
