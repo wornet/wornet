@@ -333,7 +333,7 @@ module.exports = (app, port) ->
 					userId = @user._id
 					Notice.find user: userId
 						.sort _id: 'desc'
-						.limit 10
+						.limit config.wornet.limits.notifications
 						.exec (err, coreNotifications) ->
 							if err
 								warn err
