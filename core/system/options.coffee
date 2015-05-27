@@ -328,16 +328,16 @@ module.exports = (app, port) ->
 						done null, usersMap[id]
 			# get fresh notifications
 			refreshNotifications: (next) ->
-				if @user
+				if user = @user
 					sessionInfos = @session.columns ['notifications', 'friendAsks', 'friends']
-					userId = @user._id
+					userId = user._id
 					Notice.find user: userId
 						.sort _id: 'desc'
 						.limit config.wornet.limits.notifications
 						.exec (err, coreNotifications) ->
 							if err
 								warn err
-							next getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends
+							next getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends, user
 				else
 					next []
 			# test credentials with anti-brute-force protection
