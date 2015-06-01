@@ -5,7 +5,7 @@ $.fn.extend
 		messages ||= "Info"
 		if typeof(messages) isnt 'object'
 			messages = [messages]
-		@html('') # Get and empty the #loginErrors block
+		@html '' # Get and empty the #loginErrors block
 		# Append each error
 		for message in messages
 			@append('<div class="alert alert-' + type + '">' + message + '</div>')
@@ -36,11 +36,11 @@ $.fn.extend
 	# Circular progress load animation
 	circularProgress: (ratio, color) ->
 		color ||= ($('<div class="ref-color"></div>').css('color') || '#ff8800')
-		bgCol = @css('background-color')
+		bgCol = @css 'background-color'
 		if ratio < 0.5
-			@css('background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')')
+			@css 'background-image', 'linear-gradient(90deg, ' + bgCol + ' 50%, transparent 50%, transparent), linear-gradient(' + Math.round(360 * ratio + 90) + 'deg, ' + color + ' 50%, ' + bgCol + ' 50%, ' + bgCol + ')'
 		else
-			@css('background-image', 'linear-gradient(' + Math.round(90 + 360 * ratio) + 'deg, ' + color + ' 50%, transparent 50%, transparent), linear-gradient(270deg, ' + color + ' 50%, transparent 50%, transparent)')
+			@css 'background-image', 'linear-gradient(' + Math.round(90 + 360 * ratio) + 'deg, ' + color + ' 50%, transparent 50%, transparent), linear-gradient(270deg, ' + color + ' 50%, transparent 50%, transparent)'
 	# Get date id if the element contains [data-date] within it or its children
 	dateId: (defaultValue = null) ->
 		$date = $ @
