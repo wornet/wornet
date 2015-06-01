@@ -13,16 +13,17 @@ textReplacements = (text, replacements, count = null) ->
 	text
 
 do (d = Date) ->
+	prototype = d.prototype
 	s = textReplacements
-	toString = d.prototype.toString
-	d.prototype.isValid = ->
+	toString = prototype.toString
+	prototype.isValid = ->
 		@toString() isnt 'Invalid Date'
-	d.prototype.midnight = ->
+	prototype.midnight = ->
 		@setHours 0
 		@setMinutes 0
 		@setSeconds 0
 		@
-	d.prototype.toString = (str) ->
+	prototype.toString = (str) ->
 		if str
 			str = str.replace(/YYYY/g, @getFullYear())
 			month = @getMonth() + 1
@@ -48,63 +49,63 @@ do (d = Date) ->
 			str
 		else
 			toString.call @
-	d.prototype.addSeconds = (i) ->
+	prototype.addSeconds = (i) ->
 		@setSeconds @getSeconds() + i
 		@
-	d.prototype.subSeconds = (i) ->
+	prototype.subSeconds = (i) ->
 		@setSeconds @getSeconds() - i
 		@
-	d.prototype.addMinutes = (i) ->
+	prototype.addMinutes = (i) ->
 		@setMinutes @getMinutes() + i
 		@
-	d.prototype.subMinutes = (i) ->
+	prototype.subMinutes = (i) ->
 		@setMinutes @getMinutes() - i
 		@
-	d.prototype.addHours = (i) ->
+	prototype.addHours = (i) ->
 		@setHours @getHours() + i
 		@
-	d.prototype.subHours = (i) ->
+	prototype.subHours = (i) ->
 		@setHours @getHours() - i
 		@
-	d.prototype.addDays = (i) ->
+	prototype.addDays = (i) ->
 		@setDate @getDate() + i
 		@
-	d.prototype.subDays = (i) ->
+	prototype.subDays = (i) ->
 		@setDate @getDate() - i
 		@
-	d.prototype.yesterday = ->
+	prototype.yesterday = ->
 		@subDays 1
 		@
-	d.prototype.tomorrow = ->
+	prototype.tomorrow = ->
 		@addDays 1
 		@
-	d.prototype.addMonths = (i) ->
+	prototype.addMonths = (i) ->
 		@setMonth @getMonth() + i
 		@
-	d.prototype.subMonths = (i) ->
+	prototype.subMonths = (i) ->
 		@setMonth @getMonth() - i
 		@
-	d.prototype.addYears = (i) ->
+	prototype.addYears = (i) ->
 		@setFullYear @getFullYear() + i
 		@
-	d.prototype.subYears = (i) ->
+	prototype.subYears = (i) ->
 		@setFullYear @getFullYear() - i
 		@
-	d.prototype.humanDate = (plain) ->
+	prototype.humanDate = (plain) ->
 		if plain or @ < (new d).yesterday().midnight()
 			@toString s("DD/MM/YYYY")
 		else if @ < (new d).midnight()
 			s("Hier")
 		else
 			s("Ajourd'hui")
-	d.prototype.humanTime = (plain) ->
+	prototype.humanTime = (plain) ->
 		if plain or @ < (new d).subMinutes 50
 			@toString s("HH:ii")
 		else if @ < (new d).subSeconds 40
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
 		else
 			"Maintenant"
-	d.prototype.humanDateTime = (plain) ->
+	prototype.humanDateTime = (plain) ->
 		if plain or @ < (new d).yesterday().midnight()
 			@toString s("DD/MM/YYYY à HH:ii")
 		else if @ < (new d).midnight()
@@ -115,7 +116,7 @@ do (d = Date) ->
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
 			"Maintenant"
-	d.prototype.age = (now) ->
+	prototype.age = (now) ->
 		unless now instanceof Date and now.isValid()
 			now = new d
 		date = new d(@)
