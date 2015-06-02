@@ -33,8 +33,10 @@ birthDaysTask =
 				user = objectToUser @
 				user.getFriends birthDaysTask.notifyAllFriends.bind(user), true
 
-	waitToMidnight: ->
-		nextMidnight = Date.tomorrow().midnight()
+	waitForMidnight: ->
+		nextMidnight = (new Date).tomorrow().midnight()
 		delay nextMidnight - time(), birthDaysTask.wishBirthDays
+
+birthDaysTask.waitForMidnight()
 
 module.exports = birthDaysTask
