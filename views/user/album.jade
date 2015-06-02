@@ -10,8 +10,33 @@ block body
 					- message += s("Êtes-vous sûr de vouloir le supprimer ainsi que toutes les photos qu'il contient ?")
 				else
 					- message = s("Êtes-vous sûr de vouloir supprimer toutes les photos de cet album ?")
-				a(href="#" data-delete data-clear-storage="albums" data-message=message)
+				//-a(href="#" data-delete data-clear-storage="albums" data-message=message)
 					=s("Supprimer cet album")
+				.large-dropdown
+					a.dropdown-toggle(href="#" data-toggle="dropdown")
+						+glyph('cog')
+					ul.dropdown-menu(role="menu")
+						li
+							a.ajax(href="#" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
+								+glyph('pencil')
+								| &nbsp; 
+								=s("Modifier le titre de l'album")
+						li
+							if album.description
+								a.ajax(href="" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
+									+glyph('pencil')
+									| &nbsp; 
+									=s("Modifier la description")
+							else
+								a.ajax(href="" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
+									+glyph('plus')
+									| &nbsp; 
+									=s("Ajouter une description")
+						li
+							a(href="#" data-delete data-clear-storage="albums" data-message=message data-toggle="tooltip" data-placement="top" title=s("Supprimer cet album"))
+								+glyph('trash')
+								| &nbsp; 
+								=s("Supprimer cet album")
 		h3=album.name
 		p=album.description
 		.medias
