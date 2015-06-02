@@ -362,31 +362,32 @@ extend userSchema.methods,
 			friendAskDates = []
 			pending = 2
 			next = ->
-				User.find
-					_id: $in: ids
-				, (err, users) ->
-					if err
-						done err, {}, {}
-					else
-						friendIds = []
-						friends = []
-						friendAsks = {}
-						users.forEach (user) ->
-							id = strval user.id
-							if friendAskIds.contains id
-								askedFrom = friendAskFromIds.contains id
-								user = user.publicInformations()
-								user.askedFrom = askedFrom
-								user.askedTo = !askedFrom
-								friendAsks[friendAskDates[id]] = user
-							else
-								friends.push user
-								friendIds.push id
-						user.numberOfFriends = friends.length
-						user.friendIds = friendIds
-						user.friends = friends
-						user.friendAsks = friendAsks
-						done null, friends, friendAsks
+				unless --pending
+					User.find
+						_id: $in: ids
+					, (err, users) ->
+						if err
+							done err, {}, {}
+						else
+							friendIds = []
+							friends = []
+							friendAsks = {}
+							users.forEach (user) ->
+								id = strval user.id
+								if friendAskIds.contains id
+									askedFrom = friendAskFromIds.contains id
+									user = user.publicInformations()
+									user.askedFrom = askedFrom
+									user.askedTo = !askedFrom
+									friendAsks[friendAskDates[id]] = user
+								else
+									friends.push user
+									friendIds.push id
+							user.numberOfFriends = friends.length
+							user.friendIds = friendIds
+							user.friends = friends
+							user.friendAsks = friendAsks
+							done null, friends, friendAsks
 			Friend.find
 					askedFrom: @_id
 					status: $in: ['waiting', 'accepted']
@@ -399,8 +400,7 @@ extend userSchema.methods,
 								friendAskIds.push askedTo
 								friendAskFromIds.push askedTo
 								friendAskDates[askedTo] = friend.id
-					unless --pending
-						next()
+					next()
 			Friend.find
 					askedTo: @_id
 					status: $in: ['waiting', 'accepted']
@@ -413,8 +413,7 @@ extend userSchema.methods,
 								friendAskDates[friend.askedFrom] = friend.id
 						user.friendAskIds = friendAskIds
 						user.friendAskDates = friendAskDates
-					unless --pending
-						next()
+					next()
 
 userSchema.pre 'save', (next) ->
 	if @isModified 'password'

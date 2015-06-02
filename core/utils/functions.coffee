@@ -591,11 +591,12 @@ module.exports =
 	@return Date output same date
 	###
 	inputDate: (str) ->
-		str = strval(str)
+		date = strval(str)
 			.replace /^([0-9])-([0-9]+)-([0-9]{3,})$/g, '$3-$2-$1'
 			.replace /^([0-9]{3,})\/([0-9]+)\/([0-9]+)$/g, '$1-$2-$3'
 			.replace /^([0-9]+)\/([0-9]+)\/([0-9]+)$/g, '$3-$2-$1'
-		new Date str
+			.split '-'
+		new Date Date.UTC date[0], date[1] - 1, date[2], 0, 0, 0
 
 	###
 	Iterate a value with a callback if value has an `each` method
