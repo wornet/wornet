@@ -69,7 +69,7 @@
 				| &nbsp;
 				+glyph('minus')
 	.profile-edit(class=(edit ? "hidden" : null))
-		h3
+		h3.important
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend
 				if isAFriend
@@ -102,7 +102,7 @@
 					=s("Je me suis pré-inscrit")
 			if ! profile.birthDate
 				if profile.birthCity
-					p
+					h5
 						- var infos = { date: profile.birthDate.humanDate() }
 						if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
 							- infos.city = profile.birthCity.substr(3)
@@ -111,7 +111,7 @@
 							- infos.city = profile.birthCity
 							=s("Né à {city}", infos)
 			else
-				p
+				h5
 					- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
 					if profile.birthCity
 						if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
@@ -122,33 +122,45 @@
 							=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
 					else
 						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
-			if profile.city
-				p
-					if profile.city.toLowerCase().substr(0, 3) === 'le '
-						=s("Habite au {city}", { city: profile.city.substr(3) })
-					else
-						=s("Habite à {city}", { city: profile.city })
-			if profile.job
-				p
-					if profile.jobPlace
-						=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
-					else
-						=s("{job}", { job: profile.job })
-			else if profile.jobPlace
-				p
-					=s("Travail à {place}", { place: profile.jobPlace })
-			if profile.maritalStatus
-				p
-					=colon(userTexts.maritalStatus)
-					=userTexts[profile.maritalStatus]
-			if profile.loveInterest
-				p
-					=userTexts.loveInterest
-					| 
-					=userTexts[profile.loveInterest]
+			.about-user
+				if profile.city
+					.col-xs-12.col-sm-6
+						p
+							+glyph('home')
+							if profile.city.toLowerCase().substr(0, 3) === 'le '
+								=s("Habite au {city}", { city: profile.city.substr(3) })
+							else
+								=s("Habite à {city}", { city: profile.city })
+				if profile.maritalStatus
+					.col-xs-12.col-sm-6
+						p
+							+glyph('user')
+							=colon(userTexts.maritalStatus)
+							=userTexts[profile.maritalStatus]
+				if profile.job
+					.col-xs-12.col-sm-6
+						p
+							+glyph('briefcase')
+							if profile.jobPlace
+								=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
+							else
+								=s("{job}", { job: profile.job })
+				else if profile.jobPlace
+					.col-xs-12.col-sm-6
+						p
+							+glyph('briefcase')
+							=s("Travail à {place}", { place: profile.jobPlace })
+				
+				if profile.loveInterest
+					.col-xs-12.col-sm-6
+						p
+							+glyph('heart')
+							=userTexts.loveInterest
+							| 
+							=userTexts[profile.loveInterest]
 			if profile.biography
-				p
+				h5
 					=userTexts.biography
-					br
+				p
 					=profile.biography
 	.cb

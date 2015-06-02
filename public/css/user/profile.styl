@@ -38,6 +38,16 @@ $progressRadialWidth = 4px
 	.alert-info
 		margin-left $photoWidth + 2 * $progressRadialWidth + $mainPadding
 
+.about-user
+	margin $smallPadding 0 $smallPadding $photoWidth + $mainPadding
+	> div
+		padding 0
+	i.glyphicon
+		color $lightOrange
+		margin-right $mainPadding
+		float left
+		font-size 18px
+
 .status-author
 	a
 		font-size 18px
@@ -66,14 +76,14 @@ $progressRadialWidth = 4px
 		width 100%
 
 #profile-photo
-	size($photoWidth + 2 * $progressRadialWidth, $photoHeight + 2 * $progressRadialWidth)
+	size($photoWidth, $photoHeight)
 	position relative
 
 	.btn
 		position absolute
 		bottom 0
 		margin $progressRadialWidth
-		width $photoWidth - 2 * $progressRadialWidth
+		width $photoWidth - 4 * $progressRadialWidth
 
 	.progress-radial
 	.progress-radial .overlay
@@ -102,12 +112,15 @@ $progressRadialWidth = 4px
 			position relative
 			background-color white
 
+
 @media (max-width: 767px)
+	.about-user
+		margin-left $photoWidth / 2 + $mainPadding
 	#profile-photo
-		size($photoWidth / 2 + 2 * $progressRadialWidth, $photoHeight / 2 + 2 * $progressRadialWidth)
+		size($photoWidth / 2, $photoHeight / 2)
 	.profile-edit
 		label
-			margin-left $photoWidth / 2 + 2 * $progressRadialWidth + $mainPadding
+			margin-left $photoWidth / 2 + $mainPadding
 			span
 				float none
 			span

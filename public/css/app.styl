@@ -60,13 +60,24 @@ body
 
 .well
 	padding $mainPadding
-	background $ultraLight
+	background white
+
+	&.macro
+		background $ultraLight
 
 h3
 	margin 0 0 $mainPadding
-	color $orange
+	color $darkGray
 	text-shadow 0 1px 1px white
 	font-size 18px
+	font-weight normal
+
+	&.important
+		font-weight bold
+
+h5
+	color $mediumGray
+	text-transform uppercase
 
 .alert-warning
 	background $warningColor
