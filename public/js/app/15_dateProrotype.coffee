@@ -6,6 +6,7 @@ textReplacements = (text, replacements, count = null) ->
 		if texts.length > 1
 			if texts.length is 2
 				texts.unshift texts[0]
+			count = Math.abs Math.floor count
 			count = Math.min count, texts.length - 1
 			text = texts[count]
 	for key, value of replacements
@@ -104,7 +105,7 @@ do (d = Date) ->
 		else if @ < (new d).subSeconds 40
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
 		else
-			"Maintenant"
+			s("Maintenant")
 	prototype.humanDateTime = (plain) ->
 		if plain or @ < (new d).yesterday().midnight()
 			@toString s("DD/MM/YYYY à HH:ii")
@@ -115,7 +116,7 @@ do (d = Date) ->
 		else if @ < (new d).subSeconds 40
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
-			"Maintenant"
+			s("Maintenant")
 	prototype.age = (now) ->
 		unless now instanceof Date and now.isValid()
 			now = new d
