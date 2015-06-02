@@ -23,6 +23,7 @@ do (d = Date) ->
 		@setHours 0
 		@setMinutes 0
 		@setSeconds 0
+		@setMilliseconds 0
 		@
 	prototype.toString = (str) ->
 		if str
