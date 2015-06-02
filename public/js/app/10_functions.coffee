@@ -414,6 +414,7 @@ hideLoader = ->
 
 # Send form if FormData is not suported
 withFormData = ($form, done) ->
+	s = textReplacements
 	if 'function' is typeof $form
 		done = $form
 		$form = null
@@ -432,9 +433,9 @@ withFormData = ($form, done) ->
 				else
 					1
 			$form.find('.upload-label').text if sum > 1
-				'Envoi des images en cours...'
+				s("Envoi des images en cours...")
 			else
-				'Envoi de l\'image en cours...'
+				s("Envoi de l\'image en cours...")
 			$form[0].submit()
 		true
 

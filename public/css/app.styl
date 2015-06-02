@@ -214,6 +214,10 @@ a
 		rel(1px, 0)
 		background none
 
+	#underbar
+		margin-bottom 0
+		border-top 0
+
 .navbar a
 	font-weight bold
 	color inherit
@@ -253,6 +257,17 @@ a
 			background lighten($hoverGray, 10%)
 	.date
 		color $lightGray
+
+.flattenable
+	overflow hidden
+	transition(all .2s)
+	transition-property(height, min-height, margin-top, margin-bottom)
+
+	&.flattened
+		height 0
+		min-height 0
+		margin-top 0
+		margin-bottom 0
 
 .pill
 	display inline-block

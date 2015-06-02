@@ -23,6 +23,10 @@ do ->
 		else
 			e
 
+	scrollTop = $document.scrollTop()
+
+	$underbar = $('#underbar')
+
 	$document
 
 	.on 'touchstart mousedown', (e) ->
@@ -39,17 +43,18 @@ do ->
 		ax = Math.abs dx
 		ay = Math.abs dy
 		if ax > 50 or ay > 50
-			$(e.target).trigger 'swipe', [dx, dy]
-			if ax > ay
-				if dx > 0
-					$(e.target).trigger 'swiperight'
+			$(e.target)
+				.trigger 'swipe', [dx, dy]
+				.trigger if ax > ay
+					if dx > 0
+						'swiperight'
+					else
+						'swipeleft'
 				else
-					$(e.target).trigger 'swipeleft'
-			else
-				if dy > 0
-					$(e.target).trigger 'swipedown'
-				else
-					$(e.target).trigger 'swipeup'
+					if dy > 0
+						'swipedown'
+					else
+						'swipeup'
 		else if ax < 4 and ay < 4 and $.now() - touch <= 200
 			$(touchTarget)
 				.trigger 'tap'
@@ -82,6 +87,25 @@ do ->
 			$img.removeAttr delayedSrcAttr
 			return
 		return
+
+	.scroll (e) ->
+		$document.trigger if scrollTop < $document.scrollTop()
+			'scrolldown'
+		else
+			'scrollup'
+		scrollTop = $document.scrollTop()
+
+	.on 'scrolldown', ->
+		$underbar.addClass('flattened')
+
+	.on 'scrollup', ->
+		$underbar.removeClass('flattened')
+
+	.one 'scrollup', ->
+		$underbar
+			.addClass('flattenable')
+			.detach()
+			.appendTo($('#navbar'))
 
 	.keydown (e) ->
 		switch e.which
@@ -672,14 +696,14 @@ do ->
 		[
 			'swipeleft'
 			'[ng-controller="MediaViewerCtrl"]'
-			->
-				$(@).find('.next:visible:last').not('.disabled').click()
+			($ctrl) ->
+				$ctrl.find('.next:visible:last').not('.disabled').click()
 		]
 		[
 			'swiperight'
 			'[ng-controller="MediaViewerCtrl"]'
-			->
-				$(@).find('.prev:visible:last').not('.disabled').click()
+			($ctrl) ->
+				$ctrl.find('.prev:visible:last').not('.disabled').click()
 		]
 
 	], ->
