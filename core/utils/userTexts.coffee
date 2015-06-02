@@ -21,7 +21,7 @@ module.exports = ->
 	jobPlace: s("Lieu de travail")
 	maritalStatus: s("Situation relationnelle")
 	loveInterest: s("Intéressé par les")
-	biography: s("Bio")
+	biography: s("Biographie")
 
 	noDisplay: s("Ne rien afficher")
 
