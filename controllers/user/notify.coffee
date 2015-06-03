@@ -24,7 +24,7 @@ module.exports = (router) ->
 								author: req.user._id
 							, (err, message) ->
 								if err
-									warn err
+									warn err, req
 								if message
 									for id in userIds
 										MessageRecipient.create

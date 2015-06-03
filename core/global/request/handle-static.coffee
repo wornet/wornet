@@ -54,7 +54,7 @@ module.exports = (app) ->
 				]
 					key[0][key[1]] = key[0][key[1]].replace /^\/stat/, '/piwik.php'
 				proxy.web req, res, target: piwik.target, (err) ->
-					warn err
+					warn err, req
 			else
 				res.notFound()
 		else if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
