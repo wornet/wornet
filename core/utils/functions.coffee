@@ -373,7 +373,12 @@ module.exports =
 
 	@return void
 	###
-	warn: (message, gitlab = true) ->
+	warn: (message, gitlab = true, req = false) ->
+		if 'object' is typeof gitlab
+			req = gitlab
+			gitlab = true
+		if req
+			message += '\n\n' + req.method + ': ' + req.url + '\n\n' + JSON.stringify req.data, null, 4
 		if gitlab
 			GitlabPackage.error message
 		log message, 'warn'

@@ -145,7 +145,7 @@ module.exports = (router) ->
 			if ! err and user
 				ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
 					if err
-						warn err
+						warn err, req
 					ResetPassword.find user: user.id, (err, tokens) ->
 						if err or tokens.length > 1
 							fail()
@@ -170,7 +170,7 @@ module.exports = (router) ->
 		userId = cesarRight req.params.user
 		ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
 			if err
-				warn err
+				warn err, req
 			ResetPassword.findOne
 				user: userId
 				token: req.params.token
@@ -192,7 +192,7 @@ module.exports = (router) ->
 			userId = cesarRight req.params.user
 			ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
 				if err
-					warn err
+					warn err, req
 				ResetPassword.findOne
 					user: userId
 					token: req.params.token
@@ -307,12 +307,12 @@ module.exports = (router) ->
 			if model.album and model.album.isMine and req.user.photoId
 				Photo.findById req.user.photoId, (err, photo) ->
 					if err
-						warn err
+						warn err, req
 					else if photo
 						if equals photo.album, model.album.id
 							model.album.currentPhoto = req.user.photoId
 					else
-						warn new Error req.user.fullName + " a un photoId, mais la photo est introuvable."
+						warn (new Error req.user.fullName + " a un photoId, mais la photo est introuvable."), req
 					end model
 			else
 				end model
@@ -384,7 +384,7 @@ module.exports = (router) ->
 					req.flash 'profileSuccess', s("Album supprimé")
 					res.json goingTo: '/'
 		Photo.findById req.user.photoId, (err, photo) ->
-			warn err if err
+			warn err, req if err
 			if photo and ! err and equals photo.album, id
 				updateUser req, photoId: null, end
 			else
@@ -457,11 +457,11 @@ module.exports = (router) ->
 				data = name: @name
 				if image.size > config.wornet.upload.maxsize
 					data.error = "size-exceeded"
-					warn data.error
+					warn data.error, req
 					done data
 				else unless (['image/png', 'image/jpeg']).contains image.type
 					data.error = "wrong-format"
-					warn data.error
+					warn data.error, req
 					done data
 				else
 					album =  req.body.album || 0
@@ -470,7 +470,7 @@ module.exports = (router) ->
 							data.createdAlbum = createdAlbum
 							if err
 								data.error = err
-								warn err
+								warn err, req
 							else
 								data.src = photo.thumb200
 							done data
@@ -484,7 +484,7 @@ module.exports = (router) ->
 							.exec (err, foundAlbum) ->
 								if err
 									data.error = err
-									warn err
+									warn err, req
 									done data
 								else
 									album = foundAlbum._id
@@ -513,7 +513,7 @@ module.exports = (router) ->
 		count = 1
 		next = (err) ->
 			if err
-				warn err
+				warn err, req
 			unless --count
 				res.json()
 		if media.statusId and media.mediaId
@@ -550,7 +550,7 @@ module.exports = (router) ->
 	router.get '/chat', (req, res) ->
 		ChatPackage.all req, (err, chat) ->
 			if err
-				warn err
+				warn err, req
 				res.json()
 			else
 				res.json chat: chat
@@ -601,7 +601,7 @@ module.exports = (router) ->
 		User.findOneAndUpdate { _id: id, token: req.params.token }, { role: 'confirmed' }, {}, (err, user) ->
 			if err or ! user
 				req.flash 'loginErrors', s("Votre adresse n'a pas pu être confirmée")
-				warn [user, err]
+				warn [user, err], req
 			else if user
 				auth.auth req, res, user
 				req.flash 'profileSuccess', s("Votre adresse a bien été confirmée")

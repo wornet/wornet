@@ -20,8 +20,8 @@ GitlabPackage =
 	issue: (error) ->
 		if GitlabPackage.enabled()
 			logging.handle GitlabPackage.format error
-			console['log'] "Error issued:"
-			console['warn'] error
+			#console['log'] "Error issued:"
+			#console['warn'] error
 	error: (error) ->
 		if GitlabPackage.enabled()
 			error = GitlabPackage.format error
@@ -33,9 +33,9 @@ GitlabPackage =
 			else
 				errors[code] = {}
 			errors[code][time()] = error
-			if errors[code].getLength() is config.wornet.errorsToIssue
-				GitlabPackage.issue error
-			console['log'] "Error recorded:"
-			console['warn'] error
+			# if errors[code].getLength() is config.wornet.errorsToIssue
+			GitlabPackage.issue error
+			#console['log'] "Error recorded:"
+			#console['warn'] error
 
 module.exports = GitlabPackage

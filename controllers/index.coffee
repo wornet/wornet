@@ -81,7 +81,7 @@ module.exports = (router) ->
 							sended: sended
 						, (err) ->
 							if err
-								warn err
+								warn err, req
 
 
 	# Report a non-appropriated content

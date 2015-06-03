@@ -17,9 +17,9 @@ module.exports = (app, port) ->
 		cookieParser.apply app, config.middleware.cookieParser.module.arguments
 
 	# Trace the error in log when user(s) are not found
-	someUsersNotFound = ->
+	someUsersNotFound = (req) ->
 		err = new PublicError s("Impossible de trouver tous les utilisateurs")
-		warn err
+		warn err, req
 		err
 
 	app.on 'middleware:after:session', (eventargs) ->
@@ -310,20 +310,21 @@ module.exports = (app, port) ->
 										err = (if otherUsers.length is idsToFind.length
 											null
 										else
-											someUsersNotFound()
+											someUsersNotFound req
 										)
 										otherUsers.each ->
 											usersMap[@id] = @
 										done err, usersMap, true
 							else
-								done someUsersNotFound(), null, false
+								done someUsersNotFound(req), null, false
 						else
 							done null, usersMap, false
 			# get user from friends, me, or from database
 			getUserById: (id, done, searchInDataBase = true) ->
+				req = @
 				@getUsersByIds [id], (err, usersMap) ->
 					if err or ! usersMap or ! usersMap[id]
-						done someUsersNotFound()
+						done someUsersNotFound req
 					else
 						done null, usersMap[id]
 			# get fresh notifications
@@ -334,9 +335,9 @@ module.exports = (app, port) ->
 					Notice.find user: userId
 						.sort _id: 'desc'
 						.limit config.wornet.limits.notifications
-						.exec (err, coreNotifications) ->
+						.exec (err, coreNotifications) =>
 							if err
-								warn err
+								warn err, @
 							next getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends, user
 				else
 					next []
@@ -378,7 +379,7 @@ module.exports = (app, port) ->
 					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
-					warn err, false
+					warn err, false, @req
 					unless noReport
 						GitlabPackage.error 'Error ' + val + '\n' + @req.url + '\n' + @req.getHeader('referrer') + '\n' + err
 						noReport = true
@@ -418,13 +419,13 @@ module.exports = (app, port) ->
 					if equals e, "Error: Can't set headers after they are sent."
 						if config.env.development
 							if @endAt
-								warn @endAt
+								warn @endAt, @req
 							else if @setHeaderAt
-								warn @setHeaderAt
+								warn @setHeaderAt, @req
 							throw e
 					else
 						if config.env.development
-							warn e
+							warn e, @req
 							@serverError e
 			setHeader: ->
 				@setHeaderAt = new Error "End here:"
@@ -477,7 +478,13 @@ module.exports = (app, port) ->
 				if data.err and ! noReport
 					GitlabPackage.error data.err
 				data._csrf = data._csrf || @locals._csrf
-				json.call @, data
+				try
+					json.call @, data
+				catch e
+					if equals e, "Caught exception: write after end"
+						warn e.stack, req
+					else
+						throw e
 			setTimeLimit: (time = 0) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'
 					clearTimeout @excedeedTimeout
