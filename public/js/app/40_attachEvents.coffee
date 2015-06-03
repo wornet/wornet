@@ -88,24 +88,25 @@ do ->
 			return
 		return
 
-	.scroll (e) ->
-		$document.trigger if scrollTop < $document.scrollTop()
-			'scrolldown'
-		else
-			'scrollup'
-		scrollTop = $document.scrollTop()
-
-	.on 'scrolldown', ->
-		$underbar.addClass('flattened')
-
-	.on 'scrollup', ->
-		$underbar.removeClass('flattened')
-
-	.one 'scrollup', ->
-		$underbar
-			.addClass('flattenable')
-			.detach()
-			.appendTo($('#navbar'))
+	# Start of issue #232
+	# .scroll (e) ->
+	# 	$document.trigger if scrollTop < $document.scrollTop()
+	# 		'scrolldown'
+	# 	else
+	# 		'scrollup'
+	# 	scrollTop = $document.scrollTop()
+	#
+	# .on 'scrolldown', ->
+	# 	$underbar.addClass('flattened')
+	#
+	# .on 'scrollup', ->
+	# 	$underbar.removeClass('flattened')
+	#
+	# .one 'scrollup', ->
+	# 	$underbar
+	# 		.addClass('flattenable')
+	# 		.detach()
+	# 		.appendTo($('#navbar'))
 
 	.keydown (e) ->
 		switch e.which
