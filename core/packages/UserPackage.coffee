@@ -247,11 +247,14 @@ UserPackage =
 
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
-		isMe = (req.user?) and (id is req.user.id)
+		me = req.user || req.session.user
+		unless me
+			warn "me is not defined"
+		isMe = me and equals id, me.id
 		self = @
 		@randomUsers (users) ->
 			users = users.filter (user) ->
-				user._id isnt req.user._id
+				! equals user._id, me._id
 			done = (profile) ->
 				profile = objectToUser profile
 				profile.getFriends (err, friends, friendAsks) ->
@@ -264,7 +267,7 @@ UserPackage =
 								isMe: isMe
 								askedForFriend: askedForFriend
 								isAFriend: isAFriend
-								isABestFriend: req.user.isABestFriend profile.hashedId
+								isABestFriend: me.isABestFriend profile.hashedId
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length
@@ -273,21 +276,21 @@ UserPackage =
 								userTexts: userTexts()
 								users: users
 						try
-							askedForFriend = if isMe or !req.user? or empty req.user.friendAsks
+							askedForFriend = if isMe or (! me) or empty me.friendAsks
 								false
 							else
-								req.user.friendAsks.has hashedId: cesarLeft profile.id
-							if isMe or !req.user? or empty friends
+								me.friendAsks.has hashedId: cesarLeft profile.id
+							if isMe or (! me) or empty friends
 								end false
 							else
-								self.areFriends req.user, profile, (done) ->
-									done friends.has id: req.user.id
+								self.areFriends me, profile, (done) ->
+									done friends.has id: me.id
 								, end
 						catch err
 							warn err
 							end false
 			if isMe
-				done req.user
+				done me
 			else
 				User.findById id, (err, user) ->
 					if err
