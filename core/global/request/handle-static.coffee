@@ -132,6 +132,7 @@ module.exports = (app) ->
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
 			res.isJSON = req.isJSON
+			StatisticsPackage.track req.method, req.url, res.isXHR
 			# Load all scripts in core/global/request directory
 			# Not yet needed
 			# glob __dirname + "/core/global/request/**/*.coffee", (er, files) ->
