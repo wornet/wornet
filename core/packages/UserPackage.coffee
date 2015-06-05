@@ -21,6 +21,10 @@ UserPackage =
 
 	cacheFriends: (a, b, areFriends = true) ->
 		key = @getIDCouple a, b
+		areFriends = if areFriends
+			1
+		else
+			0
 		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
 	getAlbums: (userIds, done) ->
@@ -255,7 +259,7 @@ UserPackage =
 		@randomUsers (users) ->
 			users = users.filter (user) ->
 				! equals user._id, me._id
-			done = (profile) ->
+			done = (profile, isAFriend) ->
 				profile = objectToUser profile
 				profile.getFriends (err, friends, friendAsks) ->
 					if err
@@ -266,7 +270,7 @@ UserPackage =
 							res.render template,
 								isMe: isMe
 								askedForFriend: askedForFriend
-								isAFriend: isAFriend
+								isAFriend: !! isAFriend
 								isABestFriend: me.isABestFriend profile.hashedId
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
@@ -275,28 +279,36 @@ UserPackage =
 								friendAsks: if isMe then friendAsks else {}
 								userTexts: userTexts()
 								users: users
-						try
-							askedForFriend = if isMe or (! me) or empty me.friendAsks
-								false
-							else
-								me.friendAsks.has hashedId: cesarLeft profile.id
-							if isMe or (! me) or empty friends
+						if isAFriend is null
+							try
+								askedForFriend = if isMe or (! me) or empty me.friendAsks
+									false
+								else
+									me.friendAsks.has hashedId: cesarLeft profile.id
+								if isMe or (! me) or empty friends
+									end false
+								else
+									self.areFriends me, profile, (done) ->
+										done friends.has id: me.id
+									, end
+							catch err
+								warn err
 								end false
-							else
-								self.areFriends me, profile, (done) ->
-									done friends.has id: me.id
-								, end
-						catch err
-							warn err
-							end false
+						else
+							end isAFriend
 			if isMe
-				done me
+				done me, false
 			else
-				User.findById id, (err, user) ->
-					if err
-						res.notFound()
+				req.getFriends (err, friends, friendAsks) ->
+					isAFriend = if friend and friends.getLength() > 0
+						friends.has id: id
 					else
-						done user
+						null
+					User.findById id, (err, user) ->
+						if err
+							res.notFound()
+						else
+							done user, isAFriend
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
