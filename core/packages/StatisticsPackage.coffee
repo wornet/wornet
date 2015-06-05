@@ -11,8 +11,8 @@ StatisticsPackage =
 	track: (method, url, isXHR) ->
 		page = method + ':' + url
 		views.sum++
-		views.method[method] ||= 0
-		views.method[method]++
+		views.methods[method] ||= 0
+		views.methods[method]++
 		views.pages[page] ||= 0
 		views.pages[page]++
 
