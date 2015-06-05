@@ -300,7 +300,7 @@ UserPackage =
 				done me, false
 			else
 				req.getFriends (err, friends, friendAsks) ->
-					isAFriend = if friend and friends.getLength() > 0
+					isAFriend = if friends and friends.getLength() > 0
 						friends.has id: id
 					else
 						null
