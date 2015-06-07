@@ -1,5 +1,21 @@
 Controllers =
 
+	Album: ($scope) ->
+		$scope.update = (album) ->
+
+			Ajax.post 'user/album/'+album.id,
+				data: album
+				success: (data) ->
+					return
+
+			if album.name
+				album.name.edit = false
+			if album.description
+				album.description.edit = false
+			refreshScope $scope
+
+		return
+
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
 		agenda = new Crud '/agenda'

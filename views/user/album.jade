@@ -1,7 +1,7 @@
 extends ../layouts/user
 
 block body
-	.col-xs-12: .well
+	.col-xs-12: .well(ng-controller="AlbumCtrl")
 		if album.isMine
 			.aside
 				- var message
@@ -17,18 +17,18 @@ block body
 						+glyph('cog')
 					ul.dropdown-menu(role="menu")
 						li
-							a.ajax(href="#" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
+							a.ajax(href="#" ng-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
 								+glyph('pencil')
 								| &nbsp; 
 								=s("Modifier le titre de l'album")
 						li
 							if album.description
-								a.ajax(href="" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
+								a.ajax(href="" ng-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
 									+glyph('pencil')
 									| &nbsp; 
 									=s("Modifier la description")
 							else
-								a.ajax(href="" ng-click="" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
+								a.ajax(href="" ng-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
 									+glyph('plus')
 									| &nbsp; 
 									=s("Ajouter une description")
@@ -37,8 +37,17 @@ block body
 								+glyph('trash')
 								| &nbsp; 
 								=s("Supprimer cet album")
-		h3=album.name
-		p=album.description
+		+form()(ng-submit="update(album)" ng-init="album.id="+JSON.stringify(album.id)+"; album.name.content = "+JSON.stringify(album.name)+"; album.description.content = "+JSON.stringify(album.description))
+			h3(ng-if="!album.name.edit")
+				{{album.name.content}}
+			.edit-album-name(ng-if="album.name.edit")
+				+formControl().do-not-loose.counter(required tabindex="101" ng-model="album.name.content" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
+			p(ng-if="!album.description.edit")
+				{{album.description.content}}
+			.edit-album-description(ng-if="album.description.edit")
+				textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
+			.edit-album-actions.btn-group
+				input.btn(type="submit" ng-if="album.name.edit || album.description.edit" title=s("Enregistrer") value=s("Enregistrer") )
 		.medias
 			each image in photos
 				a(data-current=equals(album.currentPhoto, image.id) data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
