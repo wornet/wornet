@@ -291,6 +291,9 @@
                     "target": "http://piwik.selfbuild.fr",
                     "id": 8
                 }
+            },
+            "server": {
+                "enabled": false
             }
         },
 
