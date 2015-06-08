@@ -390,6 +390,40 @@ module.exports = (router) ->
 			else
 				end()
 
+	# Update Album Name and description
+	router.post '/album/:id', (req, res) ->
+		id = req.params.id
+
+		if req.data.name
+			name = req.data.name.content
+			Album.update
+				_id: id
+				user: req.user.id
+			,
+				name: name
+			, (err, album) ->
+				if err
+					res.serverError err
+				else if album
+					res.json()
+				else
+					res.notFound()
+		if req.data.description
+			description = req.data.description.content
+			Album.update
+				_id: id
+				user: req.user.id
+			,
+				description: description
+			, (err, album) ->
+				if err
+					res.serverError err
+				else if album
+					res.json()
+				else
+					res.notFound()
+
+
 	router.put '/video/add', (req, res) ->
 		# Create a new video
 		video = extend user: req.user._id, req.body.video

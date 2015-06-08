@@ -74,10 +74,10 @@ module.exports = (router) ->
 						friendsList[k] = true
 						if f.status is 'accepted'
 							friendsCount++
-				if friendsErrorsCount
-					friendsErrorsCount = '\np(style="color: red;"): b\n\t| Doublons dans les demandes d\'amis : ' + friendsErrorsCount
+				friendsErrorsCount = if friendsErrorsCount
+					'\np(style="color: red;"): b\n\t| Doublons dans les demandes d\'amis : ' + friendsErrorsCount
 				else
-					friendsErrorsCount = ''
+					''
 				counter = (name) ->
 					results.counters.findOne name: name
 				exactAge = $divide: [$subtract: [new Date, "$birthDate"], 31558464000]

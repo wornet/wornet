@@ -21,6 +21,10 @@ UserPackage =
 
 	cacheFriends: (a, b, areFriends = true) ->
 		key = @getIDCouple a, b
+		areFriends = if areFriends
+			1
+		else
+			0
 		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
 	getAlbums: (userIds, done) ->
@@ -247,12 +251,15 @@ UserPackage =
 
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
-		isMe = (req.user?) and (id is req.user.id)
+		me = req.user || req.session.user
+		unless me
+			warn "me is not defined"
+		isMe = me and equals id, me.id
 		self = @
 		@randomUsers (users) ->
 			users = users.filter (user) ->
-				user._id isnt req.user._id
-			done = (profile) ->
+				! equals user._id, me._id
+			done = (profile, isAFriend) ->
 				profile = objectToUser profile
 				profile.getFriends (err, friends, friendAsks) ->
 					if err
@@ -263,8 +270,8 @@ UserPackage =
 							res.render template,
 								isMe: isMe
 								askedForFriend: askedForFriend
-								isAFriend: isAFriend
-								isABestFriend: req.user.isABestFriend profile.hashedId
+								isAFriend: !! isAFriend
+								isABestFriend: me.isABestFriend profile.hashedId
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length
@@ -272,28 +279,36 @@ UserPackage =
 								friendAsks: if isMe then friendAsks else {}
 								userTexts: userTexts()
 								users: users
-						try
-							askedForFriend = if isMe or !req.user? or empty req.user.friendAsks
-								false
-							else
-								req.user.friendAsks.has hashedId: cesarLeft profile.id
-							if isMe or !req.user? or empty friends
+						if isAFriend is null
+							try
+								askedForFriend = if isMe or (! me) or empty me.friendAsks
+									false
+								else
+									me.friendAsks.has hashedId: cesarLeft profile.id
+								if isMe or (! me) or empty friends
+									end false
+								else
+									self.areFriends me, profile, (done) ->
+										done friends.has id: me.id
+									, end
+							catch err
+								warn err
 								end false
-							else
-								self.areFriends req.user, profile, (done) ->
-									done friends.has id: req.user.id
-								, end
-						catch err
-							warn err
-							end false
+						else
+							end isAFriend
 			if isMe
-				done req.user
+				done me, false
 			else
-				User.findById id, (err, user) ->
-					if err
-						res.notFound()
+				req.getFriends (err, friends, friendAsks) ->
+					isAFriend = if friends and friends.getLength() > 0
+						friends.has id: id
 					else
-						done user
+						null
+					User.findById id, (err, user) ->
+						if err
+							res.notFound()
+						else
+							done user, isAFriend
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
