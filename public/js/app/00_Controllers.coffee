@@ -662,7 +662,7 @@ Controllers =
 				else
 					'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
 
-		scannAllLinks = (text, transformToLinks = false) ->
+		scanAllLinks = (text, transformToLinks = false) ->
 			((' ' + text)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
@@ -674,7 +674,7 @@ Controllers =
 			).substr 1
 
 		richText = (text) ->
-			scannAllLinks safeHtml(text), true
+			scanAllLinks safeHtml(text), true
 
 		setRecentStatus = (data) ->
 			has = (key) ->
@@ -706,12 +706,31 @@ Controllers =
 					status.content = richText status.content
 					status
 				refreshScope $scope
+				if getCachedData 'commentsEnabled'
+					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
+
+					if statusIds.length
+						delay 1, ->
+							Ajax.bigGet 'user/comment',
+								data:
+									statusIds: statusIds
+								success: (data) ->
+									if data.commentList
+										$scope.recentStatus.map (status) ->
+											if data.commentList[status._id]
+												status.comments = data.commentList[status._id]
+											status
+										refreshScope $scope
+									return
+							return
+
 				if location.hash
 					delay 25, ->
 						id = location.hash.substr 1
 						cursor = $('<div class="scroll-cursor"></div>').prependTo '[data-id="' + id + '"]'
 						cursor[0].scrollIntoView()
 						cursor.remove()
+						return
 			return
 
 		videoHosts =
@@ -796,7 +815,7 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			scannAllLinks status.content || ''
+			scanAllLinks status.content || ''
 			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
 				data:
 					status: status
@@ -808,6 +827,23 @@ Controllers =
 			status.content = ""
 			initMedias()
 
+			return
+
+		$scope.sendComment = (status) ->
+			comment = status.newComment
+			statusMedias = $.extend {}, $scope.medias
+			scanAllLinks comment.content || ''
+			commentMedias = $.extend {}, $scope.medias
+			$scope.medias = $.extend {}, statusMedias
+			Ajax.put '/user/comment/add',
+				data:
+					status: status
+					comment: comment
+					at: at
+					medias: commentMedias || null
+				success: (data) ->
+					#TODO return comment to user and notify friends
+			comment.content = ""
 			return
 
 		$scope.loadMedia = (type, media) ->

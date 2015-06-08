@@ -169,6 +169,10 @@
             "multiline": true
         },
 
+        "comments": {
+            "enabled" : false
+        },
+
         "db": {
             "host": "127.0.0.1",
             "basename": "wornet"
@@ -216,6 +220,10 @@
         },
 
         "parseProxyUrl": false,
+
+        "plusW": {
+            "enabled": false
+        },
 
         "protocole": "http",
 
