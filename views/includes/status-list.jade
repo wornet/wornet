@@ -52,3 +52,27 @@
 			h3=s("Liens")
 			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
 	.cb
+	if config.wornet.comments.enabled || config.wornet.plusW.enabled
+		.status-actions
+			if config.wornet.plusW.enabled
+				span.status-button-plus-w.btn.btn-action-plus-w
+					+glyph("plus")
+			if config.wornet.comments.enabled
+				span.status-button-comment.btn.btn-action-comment(ng-click="status.commentForm = true")
+					+glyph("comment")
+					span
+						=s("Commenter")
+	if config.wornet.comments.enabled
+		+data('commentsEnabled', true)
+		.comment-block.cb(ng-repeat="comment in status.comments")
+			.comment-author
+				img(ng-src="{{ comment.author.thumb50 }}" data-user-thumb="{{ comment.author.hashedId }}" data-thumb-size="50")
+				+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
+			.date(data-date="{{ comment.date }}")
+				|&nbsp;
+			.comment-content.word-wrap.cb(ng-if="comment.content && comment.content.length && comment.status !== 'blocked'" ng-bind-html="comment.content")
+					
+		.comment-form(ng-if="status.commentForm")
+			+form()(ng-submit="sendComment(status)").cb
+				textarea.form-control(ng-model='status.newComment.content' placeholder=s("Commentaire..."))
+				input.btn.btn-primary(type="submit" value=s("Envoyer"))

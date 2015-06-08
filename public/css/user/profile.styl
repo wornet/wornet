@@ -57,7 +57,7 @@ $progressRadialWidth = 4px
 		size($thumbWidth, $thumbHeight)
 
 .status-block
-	padding $mainPadding
+	padding $mainPadding $mainPadding 30px
 	margin $mainPadding 0
 	background white
 	border 1px solid #ddd
@@ -66,6 +66,39 @@ $progressRadialWidth = 4px
 	.status-content
 		padding $smallPadding
 		clear left
+
+.status-actions
+	float right
+	margin -8px (- $mainPadding) 0 0
+
+	.btn-action-plus-w
+		background-color $orange
+
+	.btn-action-comment
+		background-color $lightOrange
+
+	.btn
+		@media (max-width: 767px)
+			height 28px
+			line-height 18px
+
+.comment-form
+	padding-bottom $bigPadding
+	.btn-primary
+		float right
+
+.comment-author
+	img
+		float left
+		margin $smallPadding
+		size(30px, 30px)
+
+.comment-block .date
+.comment-content
+	font-size 14px
+
+.comment-block
+	background $ultraLight
 
 .photo-options
 	float left

@@ -104,6 +104,41 @@ StatusPackage =
 				warn [connectedPeopleAndMe, 'does not contains', id]
 				res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
 
+	put: (req, res, done) ->
+		@add req, (err, status, originalStatus) ->
+			if err
+				res.serverError err
+			else
+				albums = []
+				count = status.images.length
+				if count
+					status.images.each ->
+						photoId = PhotoPackage.urlToId @src
+						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
+							if photo and ! albums.contains photo.album, equals
+								albums.push photo.album
+							unless --count
+								if albums.length
+									Album.find _id: $in: albums, (err, albums) ->
+										if albums and albums.length
+											if originalStatus
+												originalStatus.album = albums[0]._id
+												originalStatus.albumName = albums[0].name
+												originalStatus.save()
+											count = albums.length
+											albums.each ->
+												@refreshPreview (err) ->
+													if err
+														warn err
+													unless --count
+														done status
+										else
+											done status
+								else
+									done status
+				else
+					done status
+
 	add: (req, done) ->
 		if req.data.status
 			try
@@ -157,40 +192,5 @@ StatusPackage =
 				done err
 		else
 			done new PublicError s("Ce statut est vide")
-
-	put: (req, res, done) ->
-		@add req, (err, status, originalStatus) ->
-			if err
-				res.serverError err
-			else
-				albums = []
-				count = status.images.length
-				if count
-					status.images.each ->
-						photoId = PhotoPackage.urlToId @src
-						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
-							if photo and ! albums.contains photo.album, equals
-								albums.push photo.album
-							unless --count
-								if albums.length
-									Album.find _id: $in: albums, (err, albums) ->
-										if albums and albums.length
-											if originalStatus
-												originalStatus.album = albums[0]._id
-												originalStatus.albumName = albums[0].name
-												originalStatus.save()
-											count = albums.length
-											albums.each ->
-												@refreshPreview (err) ->
-													if err
-														warn err
-													unless --count
-														done status
-										else
-											done status
-								else
-									done status
-				else
-					done status
 
 module.exports = StatusPackage

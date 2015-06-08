@@ -10,7 +10,7 @@ Ajax =
 
 	@return XHR object (+ jQuery extra stuff)
 	###
-	get: (url, settings = {}, _method, defaultType = "GET") ->
+	get: (url, settings = {}, _method, defaultType = "GET", isBig = false) ->
 		# If the second parameter is a function, we use it as success callback
 		if typeof(settings) is 'function'
 			settings =
@@ -26,6 +26,8 @@ Ajax =
 		if _method?
 			# Set method in data POST parameters
 			settings.data._method = _method
+		if isBig and settings.type is "GET"
+			settings.type = "POST"
 		$.ajax url, settings
 
 	###
@@ -39,6 +41,18 @@ Ajax =
 	###
 	post: (url, settings, _method) ->
 		@get url, settings, _method, "POST"
+
+	###
+	Send a fake GET request as a POST AJAX request to handle big params length
+
+	@param string request URL
+	@param object|function jQuery AJAX settings object or success callback function
+	@param string HTTP method to emulate (DELETE, PUT, HEAD)
+
+	@return XHR object (+ jQuery extra stuff)
+	###
+	bigGet: (url, settings) ->
+		@get url, settings, "GET", "GET", true
 
 	###
 	Send a PUT AJAX request
