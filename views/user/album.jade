@@ -48,6 +48,7 @@ block body
 				textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
 			.edit-album-actions.btn-group
 				input.btn(type="submit" ng-if="album.name.edit || album.description.edit" title=s("Enregistrer") value=s("Enregistrer") )
+		.cb
 		.medias
 			each image in photos
 				a(data-current=equals(album.currentPhoto, image.id) data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
