@@ -6,7 +6,7 @@ Controllers =
 			Ajax.post 'user/album/'+album.id,
 				data: album
 				success: (data) ->
-					return
+					return data
 
 			if album.name
 				album.name.edit = false
