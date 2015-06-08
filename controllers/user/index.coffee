@@ -408,6 +408,16 @@ module.exports = (router) ->
 					res.json()
 				else
 					res.notFound()
+
+			Status.update
+				album: req.params.id
+			,
+				albumName: name
+			, (err, status) ->
+				if err
+					res.serverError err
+				else
+					res.json()
 		if req.data.description
 			description = req.data.description.content
 			Album.update
