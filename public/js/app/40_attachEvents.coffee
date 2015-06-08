@@ -336,6 +336,7 @@ do ->
 							$('.errors').errors $tag.html()
 						else
 							$scope.medias.images.push
+								id: idFromUrl $tag.prop 'src'
 								src: $tag.prop 'src'
 								name: $tag.prop 'alt'
 						return

@@ -581,6 +581,32 @@ module.exports = (router) ->
 					next e || err
 		next()
 
+	router.delete '/mediaPreview', (req, res) ->
+		media = req.data.columns ['id', 'src']
+		media.type ||= 'image'
+		me = req.user.id
+		count = 1
+		next = (err, media) ->
+			if err
+				warn err, req
+			unless --count
+				res.json(media)
+
+		if media.id and media.type is 'image'
+			count++
+			where =
+				_id: media.id
+				user: me
+				status: 'uploaded'
+			Photo.find where, (e) ->
+				parallelRemove [
+					Photo
+					where
+				], (err) ->
+					PhotoPackage.forget req, media.id
+					next (e || err), media
+		next()
+
 	router.get '/chat', (req, res) ->
 		ChatPackage.all req, (err, chat) ->
 			if err
