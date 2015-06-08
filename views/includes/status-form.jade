@@ -85,10 +85,10 @@ fieldset.tab(ng-show="status.containsMedias")
 				+statusForm(114)(ng-disabled="medias.length == 0")
 					input(type="hidden" ng-model="medias" name="medias")
 		div(ng-switch-default)
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.fit
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121" give-focus="#album-name")
 					=s("Créer un album")
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.xs-margin-up.fit
 				a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")
 					=s("Utiliser un album existant")
 	.cb

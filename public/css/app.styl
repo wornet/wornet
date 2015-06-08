@@ -667,8 +667,10 @@ span.image-box i.glyphicon
 		box-shadow(inset 0 2px -2px $gray)
 		box-shadow(0 0 4px $darkGray)
 		width 100%
-		min-width 360px
 		z-index 3
+		min-width 360px
+		@media (max-width: 360px)
+			min-width 0
 
 		li
 			display block
@@ -796,8 +798,14 @@ span.image-box i.glyphicon
 @import "user/chat"
 @import "agenda"
 
+@media (max-width: 360px)
+	.nav-tabs.nav>li>a
+		font-size 13px
+
 // Media Queries.
 @media (max-width: 767px)
+	.xs-margin-up
+		margin-top $mainPadding
 	body.openingTemplate
 
 		&.bg1
