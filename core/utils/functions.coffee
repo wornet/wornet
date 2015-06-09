@@ -814,7 +814,7 @@ module.exports =
 	@return bool
 	###
 	isPhotoDefaultName: (name) ->
-		name is photoDefaultName
+		name is photoDefaultName()
 
 	###
 	Add an uploaded photo to user album
