@@ -25,7 +25,7 @@ emptyAlbumsTask =
 		], (err) ->
 			return
 
-#setInterval emptyAlbumsTask.checkForEmptyAlbums, 86400000
-setInterval emptyAlbumsTask.checkForEmptyAlbums, 10000
+setInterval emptyAlbumsTask.checkForEmptyAlbums, 86400000
+#setInterval emptyAlbumsTask.checkForEmptyAlbums, 10000
 
 module.exports = emptyAlbumsTask
