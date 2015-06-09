@@ -355,6 +355,7 @@ module.exports = (router) ->
 	router.put '/album/add', (req, res) ->
 		# Create a new album
 		album = extend user: req.user._id, req.body.album
+		album.lastEmpty = new Date
 		Album.create album, (err, album) ->
 			album.user = cesarLeft album.user
 			res.json
@@ -570,7 +571,23 @@ module.exports = (router) ->
 				_id: media.id
 				user: me
 				status: 'published'
-			Photo.find where, (e) ->
+			Photo.find where, (e, photos) ->
+				photo = photos[0]
+				whereAlbum =
+					album: photo.album
+					user: me
+					status: 'published'
+				Photo.find whereAlbum, (e, photosAlbum) ->
+					# if there is only one photo in the album and it's the one we will delete
+					if photosAlbum and photosAlbum.length is 1 and equals photosAlbum[0]._id, photo._id
+						count++
+						Album.update
+						    _id: photo.album
+						    user: me
+						,
+							lastEmpty: new Date
+						, (err) ->
+							next err
 				parallelRemove [
 					Photo
 					where

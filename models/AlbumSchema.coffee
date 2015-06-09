@@ -10,6 +10,8 @@ albumSchema = OwnedSchema.extend
 		trim: true
 	preview:
 		type: Array
+	lastEmpty:
+		type: Date
 
 albumSchema.methods.refreshPreview = (save = true, done) ->
 	if 'function' is typeof save
