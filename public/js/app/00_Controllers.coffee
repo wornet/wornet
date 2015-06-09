@@ -648,7 +648,7 @@ Controllers =
 			return
 
 		$scope.removeMedia = (media) ->
-			Ajax.delete '/user/mediaPreview',
+			Ajax.delete '/user/media/preview',
 				data: media
 				success: (data)->
 					if data.id

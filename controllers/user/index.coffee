@@ -579,7 +579,7 @@ module.exports = (router) ->
 					next e || err
 		next()
 
-	router.delete '/mediaPreview', (req, res) ->
+	router.delete '/media/preview', (req, res) ->
 		media = req.data.columns ['id', 'src']
 		media.type ||= 'image'
 		me = req.user.id
