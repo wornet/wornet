@@ -394,44 +394,32 @@ module.exports = (router) ->
 	router.post '/album/:id', (req, res) ->
 		id = req.params.id
 
-		if req.data.name
-			name = req.data.name.content
-			Album.update
-				_id: id
-				user: req.user.id
-			,
-				name: name
-			, (err, album) ->
-				if err
-					res.serverError err
-				else if album
-					res.json()
-				else
-					res.notFound()
+		set = {}
 
-			Status.update
-				album: req.params.id
-			,
-				albumName: name
-			, (err, status) ->
-				if err
-					res.serverError err
-				else
-					res.json()
+		if req.data.name
+			set.name = req.data.name.content
 		if req.data.description
-			description = req.data.description.content
-			Album.update
-				_id: id
-				user: req.user.id
+			set.description = req.data.description.content
+
+		parallel [(done) ->
+			Status.update
+				album: id
 			,
-				description: description
-			, (err, album) ->
-				if err
-					res.serverError err
-				else if album
-					res.json()
-				else
-					res.notFound()
+				albumName: set.name
+			,
+				multi: true
+			, done
+		, (done) ->
+			Album.update
+			    _id: id
+			    user: req.user.id
+			,
+				set
+			, done
+		], ->
+			res.json()
+		, ->
+			res.notFound()
 
 
 	router.put '/video/add', (req, res) ->
