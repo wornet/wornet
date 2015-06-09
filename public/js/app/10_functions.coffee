@@ -309,7 +309,7 @@ refreshScope = ($scope) ->
 	return
 
 albumKey = ->
-	at = (getCachedData 'at') || ''
+	at = (getCachedData 'at') || (getCachedData 'me')
 	'albums-' + at
 
 # Get albums from server
