@@ -16,16 +16,17 @@ emptyAlbumsTask =
 
 	removeAlbum: (album) ->
 		id= album._id
-		parallelRemove [
-			Album
+		Album.remove
 			_id: id
-		], [
-			Status
-			album: id
-		], (err) ->
-			return
+		, (e) ->
+			Status.update
+				album: id
+			,
+				album: null
+			, (e) ->
 
-setInterval emptyAlbumsTask.checkForEmptyAlbums, 86400000
+
+setInterval emptyAlbumsTask.checkForEmptyAlbums, 1.day
 #setInterval emptyAlbumsTask.checkForEmptyAlbums, 10000
 
 module.exports = emptyAlbumsTask

@@ -325,7 +325,7 @@ getAlbumsFromServer = (done) ->
 		Ajax.get '/user/albums' + at, (data) ->
 			err = data.err || null
 			if data.albums
-				albums = data.withAlbums || data.albums
+				albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 				sessionStorage[key] = JSON.stringify albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
 				done err, albums
@@ -351,8 +351,18 @@ getAlbums = (done) ->
 	if albums is null
 		getAlbumsFromServer done
 	else
-		done null, albums
+		done null, removeDeprecatedAlbums albums
 	return
+
+removeDeprecatedAlbums = (albums) ->
+	today = new Date
+	sixDaysEarlier = today.subDays 6
+	results = []
+	if albums
+		for album in albums
+			if !album.lastEmpty or (album.lastEmpty and (new Date(album.lastEmpty) > sixDaysEarlier or album.preview.length isnt 0))
+				results.push album
+	results
 
 refreshMediaAlbums = getAlbumsFromServer
 
