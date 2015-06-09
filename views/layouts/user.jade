@@ -44,6 +44,7 @@ block nav
 			a.navbar-brand(href='#')
 				!=upperTitle
 		if user
+			+data("me", user.hashedId)
 			#mainLinks.collapse.navbar-collapse
 				ul.nav.navbar-nav.navbar-left.col-sm-6
 					li: a(href="/")
