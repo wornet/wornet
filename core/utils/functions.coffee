@@ -626,7 +626,10 @@ module.exports =
 	###
 	parallel: (treatments, fulfill, reject, rejectAll = false) ->
 		ended = false
-		results = {}
+		results = if treatments instanceof Array
+			[]
+		else
+			{}
 		next = ->
 			if ! ended and Object.keys(treatments).length is Object.keys(results).length
 				fulfill results
