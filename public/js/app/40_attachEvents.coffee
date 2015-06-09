@@ -641,6 +641,8 @@ do ->
 								else
 									delete sessionStorage[clearStorage]
 						Ajax.delete ($a.data('delete') || location.href), (data) ->
+							getAlbumsFromServer (err, albums) ->
+								return
 							if data.goingTo
 								location.href = data.goingTo
 							target = $a.data 'slide-up'
