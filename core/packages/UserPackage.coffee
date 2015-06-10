@@ -265,7 +265,7 @@ UserPackage =
 					if err
 						res.serverError err
 					else
-						friendsThumb = friends.pickUnique config.wornet.limits.friendsOnProfile
+						friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
 						end = (isAFriend) ->
 							res.render template,
 								isMe: isMe
