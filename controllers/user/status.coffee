@@ -17,6 +17,13 @@ module.exports = (router) ->
 	router.delete '/:id', (req, res) ->
 		# We cannot use findOneAndRemove because it does not execute pre-remove hook
 		me = req.user._id
+		next = (status) ->
+			unless equals status.author, me
+				NoticePackage.notify [status.author], null,
+					action: 'notice'
+					notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
+			res.json deletedStatus: status
+
 		Status.findOne
 			_id: req.params.id
 			$or: [
@@ -34,11 +41,8 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
-						unless equals status.author, me
-							NoticePackage.notify [status.author], null,
-								action: 'notice'
-								notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
-						res.json deletedStatus: status
+						StatusPackage.updatePoints req, status, status.author, false, next, status
+
 
 	router.put '/add/:id', (req, res) ->
 		StatusPackage.put req, res, (status) ->

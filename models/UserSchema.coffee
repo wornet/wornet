@@ -125,6 +125,8 @@ userSchema = BaseSchema.extend
 	noticeMessage:
 		type: Boolean
 		default: false
+	points:
+		type: Number
 ,
 	toObject:
 		virtuals: false
