@@ -29,7 +29,7 @@ GitlabPackage =
 			.replace(/```/g, '')
 			.replace(/\n  /g, '\n- ')
 			.replace(
-				/(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):[0-9]+):/g,
+				/(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):([0-9]+)):/g,
 				(all, path, _, env, file, line) ->
 					'[' + path + '](' + host + '/kylek/wornet/blob/' + path + '/' + file + '#L' + line + '):'
 			)
