@@ -25,10 +25,13 @@ errors = {}
 GitlabPackage =
 	format: (error) ->
 		strval config.wornet.version + ': ' + error + '\n```\n' +
-			(error.stack || (new Error).stack).replace(
-				/\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):[0-9]+:/g,
-				(all, _, env, file, line) ->
-					'[' + all + '](' + host + '/kylek/wornet/blob/' + path + '/' + file + '#L' + line + '):'
+			(error.stack || (new Error).stack)
+			.replace(/```/g, '')
+			.replace(/\n  /g, '\n- ')
+			.replace(
+				/(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):[0-9]+):/g,
+				(all, path, _, env, file, line) ->
+					'[' + path + '](' + host + '/kylek/wornet/blob/' + path + '/' + file + '#L' + line + '):'
 			)
 	enabled: ->
 		config.env.production
