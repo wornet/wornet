@@ -24,8 +24,8 @@ errors = {}
 
 GitlabPackage =
 	format: (error) ->
-		strval config.wornet.version + ': ' + error + '\n```\n' +
-			(error.stack || (new Error).stack)
+		config.wornet.version + ': ' + error + '\n```\n' +
+		strval (error.stack || (new Error).stack)
 			.replace(/```/g, '')
 			.replace(/\n  /g, '\n- ')
 			.replace(
