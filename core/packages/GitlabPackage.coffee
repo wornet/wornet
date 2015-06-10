@@ -4,13 +4,13 @@ logging = require 'gitlab-logging'
 
 host = 'http://gitlab.selfbuild.fr'
 
-path = 'master'
+head = 'master'
 
 fs.readFile __dirname + '/../../.git/HEAD', (err, contents) ->
 	if contents
 		contents = '' + contents
 		unless contents.contains 'refs/heads/master'
-			path = contents
+			head = contents
 
 logging.configure
 	host: host
@@ -31,7 +31,7 @@ GitlabPackage =
 			.replace(
 				/(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):([0-9]+)):/g,
 				(all, path, _, env, file, line) ->
-					'[' + path + '](' + host + '/kylek/wornet/blob/' + path + '/' + file + '#L' + line + '):'
+					'[' + path + '](' + host + '/kylek/wornet/blob/' + head + '/' + file + '#L' + line + '):'
 			)
 	enabled: ->
 		config.env.production
