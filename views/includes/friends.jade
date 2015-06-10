@@ -3,6 +3,7 @@
 		=strtoupper(s("Mes amis")) + " "
 		span.numberOfFriends
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
+		+data('numberOfFriends', numberOfFriends)
 	ul#friends.photos-thumbs
 		each friend in friends
 			if friend

@@ -122,6 +122,11 @@
 							=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
 					else
 						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
+			.user-points
+				h5
+					span.points
+						=profile.points + " "
+					=s("point|points", profile, profile.points)
 			.about-user
 				if profile.city
 					.col-xs-12.col-sm-6

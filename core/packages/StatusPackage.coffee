@@ -146,6 +146,7 @@ StatusPackage =
 				at = req.data.at || null
 				unless at is null
 					at = cesarRight at
+
 				Status.create
 					author: req.user._id
 					at: at
@@ -153,12 +154,14 @@ StatusPackage =
 					images: medias.images || []
 					videos: medias.videos || []
 					links: medias.links || []
-				, (err, originalStatus) ->
+				, (err, originalStatus) =>
 					unless err
+
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
+
 						next = (usersToNotify) ->
-							place = status.at || status.author
+							place = status.author
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: place
 							NoticePackage.notify usersToNotify, null,
 								action: 'status'
@@ -178,19 +181,99 @@ StatusPackage =
 								]
 						at = status.at || null
 						if at is null
-							req.getFriends (err, friends, friendAsks) ->
-								next friends.column '_id'
+							req.getFriends (err, friends, friendAsks) =>
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, friends.column '_id'
+								#next friends.column '_id'
 						else
-							req.getUserById at, (err, user) ->
+							req.getUserById at, (err, user) =>
 								status.at = if user
 									user.publicInformations()
 								else
 									null
-								next [at]
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, [at]
+								#next [at]
 					done err, status, originalStatus
 			catch err
 				done err
 		else
 			done new PublicError s("Ce statut est vide")
+
+	updatePoints: (req, status, authorId, adding, done, param) ->
+		id = authorId
+
+		if !status
+			new Error "status must not be undefined"
+
+		points = 1 #simple status
+		if status.images and status.images.length > 0
+			points = 2 #status with photo
+		if status.videos and status.videos.length > 0
+			points = 3 if points = 1 #status with video but without photo
+			points = 4 if points = 2 #status with video and photo
+
+		nbFriends = req.user.numberOfFriends
+		pointsToAdd = points * nbFriends
+
+		User.findOne
+			_id: id
+		, (err, user) =>
+			if err
+				done err
+			else if user
+
+				if user.points or user.points is 0
+					if adding
+						newPoints = user.points + pointsToAdd
+					else
+						newPoints = user.points - pointsToAdd
+
+					if newPoints < 0
+						newPoints = 0
+
+					req.user.points= newPoints
+					req.session.user.points= newPoints
+					User.update
+						_id: id
+					,
+						points: newPoints
+					, (err, user) ->
+						if err
+							done err
+						else
+							done param
+				else
+					@initPoints user, done, param
+
+	initPoints: (user, done, param) ->
+		points = 0
+		id = user.id
+		Status.find
+			author: id
+		, (err, statusList) ->
+			if err
+				done err
+			else
+				for status in statusList
+					statusPoints = 1 #simple status
+					if status.images and status.images.length > 0
+						statusPoints = 2 #status with photo
+					if status.videos and status.videos.length > 0
+						statusPoints = 3 if statusPoints = 1 #status with video but without photo
+						statusPoints = 4 if statusPoints = 2 #status with video and photo
+					points += statusPoints
+
+				req.user.points= newPoints
+				req.session.user.points= newPoints
+				User.update
+					_id: id
+				,
+					points: points
+				, (err) ->
+					if err
+						done err
+					else
+						done param
+
+
 
 module.exports = StatusPackage
