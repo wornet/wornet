@@ -1,7 +1,7 @@
 extends ../layouts/user
 
 block body
-	.col-xs-12: .well(ng-controller="AlbumCtrl")
+	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
 		+data('at', cesarLeft(strval(album.user)))
 		if album.isMine
 			.aside
