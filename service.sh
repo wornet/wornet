@@ -5,7 +5,8 @@ DAEMON="/usr/bin/nodemon -x ./node_modules/.bin/coffee ./index.coffee"
 PORT=8002
 NODE_ENV=production
 #NODE_ENV=development
-DAEMONOPTS="sudo -u gitlab-runner -H PORT=$PORT NODE_ENV=$NODE_ENV"
+DEAMONUSER=gitlab-runner
+DAEMONOPTS="sudo -u $DEAMONUSER -H PORT=$PORT NODE_ENV=$NODE_ENV"
 APPNAME=wornet
 APPSUFFIX=int
 NAME=$APPNAME$APPSUFFIX
@@ -37,19 +38,15 @@ start)
     echo "$DAEMONOPTS $DAEMON"
     export PORT
     export NODE_ENV
-    `sudo -u wornet -H rm .build/css/*`
-    `sudo -u wornet -H rm .build/js/*`
-    #STYLUS=`sudo -u wornet -H ./node_modules/.bin/stylus public/css --compress --out .build/css/ >> $LOGSTYLUS`
-    COF=`sudo -u wornet -H ./node_modules/.bin/coffee -bc -o .build/js/ --join app public/js/app/ >> $LOGCOFFEE 2>&1 & echo $!`
-    #`sudo -u wornet -H ./node_modules/.bin/coffee -bc -o .build/js/ --join test public/js/test/ >> $LOGCOFFEE 2>&1 & echo $!`
+    `sudo -u $DEAMONUSER -H rm .build/css/*`
+    `sudo -u $DEAMONUSER -H rm .build/js/*`
+    COF=`sudo -u $DEAMONUSER -H ./node_modules/.bin/coffee -bc -o .build/js/ --join app public/js/app/ >> $LOGCOFFEE 2>&1 & echo $!`
     PID=`$DAEMONOPTS $DAEMON >> $LOGFILE 2>&1 & echo $!`
     echo "Saving PID" $PID " to " $PIDFILE
     if [ -z $PID ]; then
         printf "%s\n" "Fail"
     else
         echo $PID > $PIDFILE
-        #echo $COF > $PIDCOFFEE
-        #echo $STYLUS > $PIDSTYLUS
         printf "%s\n" "Ok"
     fi ;;
 
@@ -68,18 +65,12 @@ status)
 stop)
     printf "%-50s" "Stopping $NAME"
         PID=`cat $PIDFILE`
-        #COF=`cat $PIDCOFFEE`
-        #STYLUS=`cat $PIDSTYLUS`
         cd $DAEMON_PATH
     if [ -f $PIDFILE ]; then
         kill -15 $PID
-        #kill -15 $COF
-        #kill -15 $STYLUS
         while ps -p $PID; do sleep 0.5; done;
         printf "%s\n" "Ok"
         rm -f $PIDFILE
-        #rm -f $PIDCOFFEE
-        #rm -f $PIDSTYLUS
     else
         printf "%s\n" "pidfile not found"
     fi ;;
