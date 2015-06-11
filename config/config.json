@@ -270,6 +270,9 @@
                 "dev": {
                     "id": "UA-54493690-3"
                 },
+                "integration": {
+                    "id": "UA-54493690-4"
+                },
                 "preprod": {
                     "id": "UA-54493690-2"
                 },
@@ -282,6 +285,10 @@
                 "dev": {
                     "target": "http://piwik.selfbuild.fr",
                     "id": 12
+                },
+                "integration": {
+                    "target": "http://piwik.selfbuild.fr",
+                    "id": 13
                 },
                 "preprod": {
                     "target": "http://piwik.selfbuild.fr",
