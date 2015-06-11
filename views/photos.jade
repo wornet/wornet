@@ -11,5 +11,5 @@ block body
 		.alert.alert-danger
 			=err
 	each photo in photos
-		a(href=photo.photo data-toggle="lightbox" data-gallery="photos" + photo.album data-title=photo.name)
+		a(href=photo.photo data-toggle="lightbox" data-gallery="photos" + photo.album data-title=photo.name onclick="return false;")
 			img(src=photo.thumb alt=photo.name)

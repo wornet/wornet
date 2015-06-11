@@ -46,6 +46,11 @@ module.exports = (router) ->
 			delay time.seconds, ->
 				res.json {}
 
+	else
+		router.get '/photos', (req, res) ->
+			res.notFound()
+
+
 	# When login/signin/profile page displays
 	router.get '/', (req, res) ->
 		if req.user

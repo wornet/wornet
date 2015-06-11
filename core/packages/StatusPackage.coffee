@@ -9,6 +9,33 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
 		next = _next = ->
 			if data.recentStatus and data.chat
+				if data.recentStatus.length < 3
+					data.recentStatus.push
+						_id: "5579d2f6aeb72cf06bd3fc27"
+						at: null
+						author:
+							hashedId: null
+							thumb50: '/img/wornet-thumb50.png'
+							thumb90: '/img/wornet-thumb90.png'
+							thumb200: '/img/wornet-thumb200.png'
+							name:
+								first: 'Vos premiers pas'
+								last: ''
+								full: 'Vos premiers pas'
+							fullName: 'Vos premiers pas'
+							present: false
+							points: 0
+						concernMe: false
+						content: s("Les premiers statuts sont important... Qu'allez-vous poster ?  Un texte bien sympa du type \"Bonjour Wornet !\" ? Vos photos de vacances pour faire rêver vos premiers amis worners ? L'une des vidéos YouTube de la sitcom Warren Flamel inspiré de l'univers d'Harry Potter ?")
+						date: new Date()
+						status: 'active'
+						images: []
+						videos: [
+							href: '//www.youtube.com/embed/5PC7v6jLQ_s'
+							_id: "5579d2f6aeb72cf06bd3fc26"
+						]
+						links: []
+						pointsValue: 0
 				res.json data
 		nextWithSession = ->
 			req.session.save (err) ->
