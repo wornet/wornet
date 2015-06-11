@@ -24,8 +24,7 @@ cleanlog)
     ;;
 update)
     cd $DAEMON_PATH
-    sudo -u wornet -H git pull
-    #sudo -u wornet -H git checkout 1.0.1.x
+    sudo -u $DEAMONUSER -H git pull
     npm i
     chmod -R 0777 public/img/photo
     NEW=`date +"%Y-%m-%d-%H-%M-%S"`
@@ -38,8 +37,8 @@ start)
     echo "$DAEMONOPTS $DAEMON"
     export PORT
     export NODE_ENV
-    `sudo -u $DEAMONUSER -H rm .build/css/*`
-    `sudo -u $DEAMONUSER -H rm .build/js/*`
+    sudo -u $DEAMONUSER -H rm .build/css/*
+    sudo -u $DEAMONUSER -H rm .build/js/*
     COF=`sudo -u $DEAMONUSER -H ./node_modules/.bin/coffee -bc -o .build/js/ --join app public/js/app/ >> $LOGCOFFEE 2>&1 & echo $!`
     PID=`$DAEMONOPTS $DAEMON >> $LOGFILE 2>&1 & echo $!`
     echo "Saving PID" $PID " to " $PIDFILE
