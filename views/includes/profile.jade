@@ -125,6 +125,8 @@
 			.user-points
 				h5
 					span.points
+						if !profile.points
+							- profile.points=0
 						=profile.points + " "
 					=s("point|points", profile, profile.points)
 			.about-user
