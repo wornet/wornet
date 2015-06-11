@@ -725,6 +725,8 @@ do ->
 						newPoints = parseInt($('.points').html()) + (points * parseInt(getData 'numberOfFriends'))
 					else
 						newPoints = parseInt($('.points').html()) - (status.pointsValue || 0)
+					if newPoints < 0
+						newPoints = 0
 					$('.points').html(newPoints+" ")
 		]
 
