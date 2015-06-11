@@ -9,6 +9,8 @@ statusSchema = PostSchema.extend
 		ref: 'AlbumSchema'
 	albumName:
 		type: String
+	pointsValue:
+		type: Number
 
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength

@@ -397,8 +397,10 @@ module.exports = (router) ->
 
 		set = {}
 
-		if req.data.name
+		if req.data.name and req.data.name.content
 			set.name = req.data.name.content
+		else
+			res.serverError new PublicError s("Le titre de l'album est obligatoire.")
 		if req.data.description
 			set.description = req.data.description.content
 
