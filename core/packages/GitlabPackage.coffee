@@ -2,8 +2,18 @@
 
 logging = require 'gitlab-logging'
 
+host = 'http://gitlab.selfbuild.fr'
+
+head = 'master'
+
+fs.readFile __dirname + '/../../.git/HEAD', (err, contents) ->
+	if contents
+		contents = '' + contents
+		unless contents.contains 'refs/heads/master'
+			head = contents
+
 logging.configure
-	host: 'http://gitlab.selfbuild.fr'
+	host: host
 	user: 'autoreporter'
 	token: 'H9bUs-NLqer7s9pHWETR'
 	project_id: 3
@@ -14,7 +24,15 @@ errors = {}
 
 GitlabPackage =
 	format: (error) ->
-		strval config.wornet.version + ': ' + error + '\n' + (error.stack || (new Error).stack)
+		config.wornet.version + ': ' + error + '\n```\n' +
+		strval (error.stack || (new Error).stack)
+			.replace(/```/g, '')
+			.replace(/\n  /g, '\n- ')
+			.replace(
+				/(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):([0-9]+)):/g,
+				(all, path, _, env, file, line) ->
+					'[' + path + '](' + host + '/kylek/wornet/blob/' + head + '/' + file + '#L' + line + '):'
+			)
 	enabled: ->
 		config.env.production
 	issue: (error) ->
