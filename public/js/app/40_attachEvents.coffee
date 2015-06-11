@@ -709,6 +709,26 @@ do ->
 			($ctrl) ->
 				$ctrl.find('.prev:visible:last').not('.disabled').click()
 		]
+		[
+			'updatePoints'
+			'.points'
+			($span, e, status, medias, adding) ->
+				if getData('at') is getData('me')
+					points = 1 #simple status
+					if medias.images and medias.images.length > 0
+						points = 2 #status with photo
+					if medias.videos and medias.videos.length > 0
+						points = 3 if points = 1 #status with video but without photo
+						points = 4 if points = 2 #status with video and photo
+
+					if adding
+						newPoints = parseInt($('.points').html()) + (points * parseInt(getData 'numberOfFriends'))
+					else
+						newPoints = parseInt($('.points').html()) - (status.pointsValue || 0)
+					if newPoints < 0
+						newPoints = 0
+					$('.points').html(newPoints+" ")
+		]
 
 	], ->
 		params = @

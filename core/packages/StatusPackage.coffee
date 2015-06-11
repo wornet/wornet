@@ -55,7 +55,7 @@ StatusPackage =
 					.skip 0
 					.limit 100
 					.sort date: 'desc'
-					.select '_id date author at content status images videos links album albumName'
+					.select '_id date author at content status images videos links album albumName pointsValue'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
@@ -146,6 +146,9 @@ StatusPackage =
 				at = req.data.at || null
 				unless at is null
 					at = cesarRight at
+
+				pointsValue = @calculatePoints medias, req.user.numberOfFriends
+
 				Status.create
 					author: req.user._id
 					at: at
@@ -153,12 +156,15 @@ StatusPackage =
 					images: medias.images || []
 					videos: medias.videos || []
 					links: medias.links || []
-				, (err, originalStatus) ->
+					pointsValue: pointsValue
+				, (err, originalStatus) =>
 					unless err
+
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
+
 						next = (usersToNotify) ->
-							place = status.at || status.author
+							place = status.author
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: place
 							NoticePackage.notify usersToNotify, null,
 								action: 'status'
@@ -178,19 +184,102 @@ StatusPackage =
 								]
 						at = status.at || null
 						if at is null
-							req.getFriends (err, friends, friendAsks) ->
-								next friends.column '_id'
+							req.getFriends (err, friends, friendAsks) =>
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, friends.column '_id'
+								#next friends.column '_id'
 						else
-							req.getUserById at, (err, user) ->
+							req.getUserById at, (err, user) =>
 								status.at = if user
 									user.publicInformations()
 								else
 									null
-								next [at]
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, [at]
+								#next [at]
 					done err, status, originalStatus
 			catch err
 				done err
 		else
 			done new PublicError s("Ce statut est vide")
+
+	calculatePoints: (medias, nbOfFriends) ->
+		points = 1 #simple status
+		if medias.images and medias.images.length > 0
+			points = 2 #status with photo
+		if medias.videos and medias.videos.length > 0
+			points = 3 if points = 1 #status with video but without photo
+			points = 4 if points = 2 #status with video and photo
+
+		pointsToAdd = points * nbOfFriends
+
+	updatePoints: (req, status, authorId, adding, done, param) ->
+		id = authorId
+
+		if !status
+			new Error "status must not be undefined"
+
+		pointsValue = status.pointsValue || 0
+
+		User.findOne
+			_id: id
+		, (err, user) =>
+			if err
+				done err
+			else if user
+				if user.points or user.points is 0
+					if adding
+						newPoints = user.points + pointsValue
+					else
+						newPoints = user.points - pointsValue
+
+					if newPoints < 0
+						newPoints = 0
+
+					req.user.points= newPoints
+					req.session.user.points= newPoints
+					User.update
+						_id: id
+					,
+						points: newPoints
+					, (err, user) ->
+						if err
+							done err
+						else
+							done param
+				else
+					@initPoints req, user, done, param
+
+	initPoints: (req, user, done, param) ->
+		newPoints = 0
+		id = user.id
+		Status.find
+			author: id
+		, (err, statusList) ->
+			if err
+				done err
+			else
+				for status in statusList
+					medias = {images:status.images, videos:status.videos, links:status.links}
+
+					if statusList.length is 1
+						#The status just sent is the first one for that user
+						#So there no need de init the points
+						newPoints += StatusPackage.calculatePoints medias, req.user.numberOfFriends
+					else
+						#We calculate with 1 friend
+						newPoints += StatusPackage.calculatePoints medias, 1
+
+				req.user.points= newPoints
+				req.session.user.points= newPoints
+				User.update
+					_id: id
+				,
+					points: newPoints
+				, (err) ->
+					if err
+						done err
+					else
+						done param
+
+
 
 module.exports = StatusPackage

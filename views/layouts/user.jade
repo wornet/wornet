@@ -95,7 +95,11 @@ block nav
 					ul: li(ng-repeat="user in query.users")
 						a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
-							| {{ user.name.full }}
+							.user-name
+								| {{ user.name.full }}
+							.user-points
+								| {{ user.points }}
+								=' '+s("points")
 						a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
 							+glyph('comment')
 						a.col-xs-3.chat-with(
