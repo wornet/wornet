@@ -369,7 +369,7 @@ extend userSchema.methods,
 						_id: $in: ids
 					, (err, users) ->
 						if err
-							done err, {}, {}
+							done err, [], {}
 						else
 							friendIds = []
 							friends = []

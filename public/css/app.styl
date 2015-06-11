@@ -560,12 +560,21 @@ h2
 .description
 	font-size 11px
 
-.edit-album-name input
-	margin $smallPadding 0
-	width auto
+.edit-album-name
+.edit-album-description
+.edit-album-actions
+	margin 0 0 $mainPadding
+	input
+	textarea
+		margin 0
 
-.edit-album-actions.btn-group
-	float right
+.edit-album-actions .cancel
+	background $mediumGray
+	@media (max-width: 767px)
+		margin-bottom $smallPadding
+@media (max-width: 767px)
+	.edit-album-actions .btn+.btn
+		margin-left 0
 
 #createAccountTitle
 	padding-top $mainPadding
