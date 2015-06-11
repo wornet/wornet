@@ -414,8 +414,8 @@ module.exports = (router) ->
 			, done
 		, (done) ->
 			Album.update
-			    _id: id
-			    user: req.user.id
+				_id: id
+				user: req.user.id
 			,
 				set
 			, done
