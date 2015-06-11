@@ -36,7 +36,7 @@ describe "syntax", ->
 		glob __dirname + "/../**/*.coffee", (err, inputFiles) ->
 			files = inputFiles
 				.filter (file) ->
-					! /^[\/\\]?node_modules[\/\\]/.test file.replace(/^.+\.\./, '')
+					! /[\/\\]?node_modules[\/\\]/.test file.replace(/^.+\.\./, '')
 			done()
 
 	describe "coffee files", ->
