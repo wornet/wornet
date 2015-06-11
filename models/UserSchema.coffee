@@ -238,6 +238,7 @@ extend userSchema.methods,
 		informations = @columns values
 		informations.name = @name.toObject()
 		informations.name.full = @name.full
+		informations.points = @points || 0
 		informations
 
 	sha1Fallback: (plainText) ->

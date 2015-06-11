@@ -55,7 +55,7 @@ StatusPackage =
 					.skip 0
 					.limit 100
 					.sort date: 'desc'
-					.select '_id date author at content status images videos links album albumName'
+					.select '_id date author at content status images videos links album albumName pointsValue'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
@@ -147,6 +147,8 @@ StatusPackage =
 				unless at is null
 					at = cesarRight at
 
+				pointsValue = @calculatePoints medias, req.user.numberOfFriends
+
 				Status.create
 					author: req.user._id
 					at: at
@@ -154,6 +156,7 @@ StatusPackage =
 					images: medias.images || []
 					videos: medias.videos || []
 					links: medias.links || []
+					pointsValue: pointsValue
 				, (err, originalStatus) =>
 					unless err
 
@@ -198,21 +201,23 @@ StatusPackage =
 		else
 			done new PublicError s("Ce statut est vide")
 
+	calculatePoints: (medias, nbOfFriends) ->
+		points = 1 #simple status
+		if medias.images and medias.images.length > 0
+			points = 2 #status with photo
+		if medias.videos and medias.videos.length > 0
+			points = 3 if points = 1 #status with video but without photo
+			points = 4 if points = 2 #status with video and photo
+
+		pointsToAdd = points * nbOfFriends
+
 	updatePoints: (req, status, authorId, adding, done, param) ->
 		id = authorId
 
 		if !status
 			new Error "status must not be undefined"
 
-		points = 1 #simple status
-		if status.images and status.images.length > 0
-			points = 2 #status with photo
-		if status.videos and status.videos.length > 0
-			points = 3 if points = 1 #status with video but without photo
-			points = 4 if points = 2 #status with video and photo
-
-		nbFriends = req.user.numberOfFriends
-		pointsToAdd = points * nbFriends
+		pointsValue = status.pointsValue || 0
 
 		User.findOne
 			_id: id
@@ -220,12 +225,11 @@ StatusPackage =
 			if err
 				done err
 			else if user
-
 				if user.points or user.points is 0
 					if adding
-						newPoints = user.points + pointsToAdd
+						newPoints = user.points + pointsValue
 					else
-						newPoints = user.points - pointsToAdd
+						newPoints = user.points - pointsValue
 
 					if newPoints < 0
 						newPoints = 0
@@ -242,10 +246,10 @@ StatusPackage =
 						else
 							done param
 				else
-					@initPoints user, done, param
+					@initPoints req, user, done, param
 
-	initPoints: (user, done, param) ->
-		points = 0
+	initPoints: (req, user, done, param) ->
+		newPoints = 0
 		id = user.id
 		Status.find
 			author: id
@@ -254,20 +258,17 @@ StatusPackage =
 				done err
 			else
 				for status in statusList
-					statusPoints = 1 #simple status
-					if status.images and status.images.length > 0
-						statusPoints = 2 #status with photo
-					if status.videos and status.videos.length > 0
-						statusPoints = 3 if statusPoints = 1 #status with video but without photo
-						statusPoints = 4 if statusPoints = 2 #status with video and photo
-					points += statusPoints
+					medias = {images:status.images, videos:status.videos, links:status.links}
+
+					#We calculate with 1 friend
+					newPoints += StatusPackage.calculatePoints medias, 1
 
 				req.user.points= newPoints
 				req.session.user.points= newPoints
 				User.update
 					_id: id
 				,
-					points: points
+					points: newPoints
 				, (err) ->
 					if err
 						done err
