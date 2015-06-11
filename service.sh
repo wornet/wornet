@@ -18,19 +18,22 @@ PIDCOFFEE=/var/run/$NAME-coffee.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 case "$1" in
+
 cleanlog)
     echo "" > $LOGFILE
     echo "" > $LOGCOFFEE
     ;;
+
 update)
     cd $DAEMON_PATH
     sudo -u $DEAMONUSER -H git pull
-    npm i
-    chmod -R 0777 public/img/photo
+    sudo -u $DEAMONUSER -H npm i
+    sudo -u $DEAMONUSER -H chmod -R 0777 public/img/photo
     NEW=`date +"%Y-%m-%d-%H-%M-%S"`
-    sed "s/{VERSION}/$NEW/g" /home/config/custom.json > ./config/custom.json
+    sudo -u $DEAMONUSER -H sed "s/{VERSION}/$NEW/g" /home/config/custom.json > ./config/custom.json
     $0 restart
     ;;
+
 start)
     printf "%-50s" "Starting $NAME..."
     cd $DAEMON_PATH
@@ -47,7 +50,8 @@ start)
     else
         echo $PID > $PIDFILE
         printf "%s\n" "Ok"
-    fi ;;
+    fi
+    ;;
 
 status)
     printf "%-50s" "Checking $NAME..."
@@ -60,23 +64,34 @@ status)
         fi
     else
         printf "%s\n" "Service not running"
-    fi ;;
+    fi
+    ;;
+
 stop)
     printf "%-50s" "Stopping $NAME"
         PID=`cat $PIDFILE`
         cd $DAEMON_PATH
     if [ -f $PIDFILE ]; then
-        kill -15 $PID
-        while ps -p $PID; do sleep 0.5; done;
-        printf "%s\n" "Ok"
+        {
+            kill -15 $PID
+            while ps -p $PID; do sleep 0.5; done;
+            printf "%s\n" "Ok"
+        } || {
+            printf "%s\n" "Nothing to kill"
+        }
         rm -f $PIDFILE
     else
-        printf "%s\n" "pidfile not found"
-    fi ;;
+        printf "%s\n" "Pidfile not found"
+    fi
+    ;;
+
 restart)
     $0 stop
-    $0 start ;;
+    $0 start
+    ;;
+
 *)
     echo "Usage: $0 {status|start|stop|restart}"
     exit 1
+
 esac
