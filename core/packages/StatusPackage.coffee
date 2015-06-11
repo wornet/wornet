@@ -260,8 +260,13 @@ StatusPackage =
 				for status in statusList
 					medias = {images:status.images, videos:status.videos, links:status.links}
 
-					#We calculate with 1 friend
-					newPoints += StatusPackage.calculatePoints medias, 1
+					if statusList.length is 1
+						#The status just sent is the first one for that user
+						#So there no need de init the points
+						newPoints += StatusPackage.calculatePoints medias, req.user.numberOfFriends
+					else
+						#We calculate with 1 friend
+						newPoints += StatusPackage.calculatePoints medias, 1
 
 				req.user.points= newPoints
 				req.session.user.points= newPoints
