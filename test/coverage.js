@@ -24,7 +24,7 @@ function next(data) {
 			output.replace(/\s([0-9]+)\s+failing/g, function (all, failing) {
 				fail = failing | 0;
 			});
-			console.log(Math.floor(100 * success / Math.max(1, fail + success)) + '%');
+			console.log(success + ' passing, ' + fail + ' failing (' + Math.floor(100 * success / Math.max(1, fail + success)) + '%) covered');
 			process.exit();
 		}, 500);
 	}
