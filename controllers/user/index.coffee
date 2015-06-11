@@ -404,25 +404,26 @@ module.exports = (router) ->
 		if req.data.description
 			set.description = req.data.description.content
 
-		parallel [(done) ->
-			Status.update
-				album: id
-			,
-				albumName: set.name
-			,
-				multi: true
-			, done
-		, (done) ->
-			Album.update
-				_id: id
-				user: req.user.id
-			,
-				set
-			, done
-		], ->
-			res.json()
-		, ->
-			res.notFound()
+		if set.getLength() isnt 0
+			parallel [(done) ->
+				Status.update
+					album: id
+				,
+					albumName: set.name
+				,
+					multi: true
+				, done
+			, (done) ->
+				Album.update
+					_id: id
+					user: req.user.id
+				,
+					set
+				, done
+			], ->
+				res.json()
+			, ->
+				res.notFound()
 
 
 	router.put '/video/add', (req, res) ->
