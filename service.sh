@@ -72,12 +72,16 @@ stop)
         PID=`cat $PIDFILE`
         cd $DAEMON_PATH
     if [ -f $PIDFILE ]; then
-        kill -15 $PID
-        while ps -p $PID; do sleep 0.5; done;
-        printf "%s\n" "Ok"
+        {
+            kill -15 $PID
+            while ps -p $PID; do sleep 0.5; done;
+            printf "%s\n" "Ok"
+        } || {
+            printf "%s\n" "Nothing to kill"
+        }
         rm -f $PIDFILE
     else
-        printf "%s\n" "pidfile not found"
+        printf "%s\n" "Pidfile not found"
     fi
     ;;
 
