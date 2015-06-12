@@ -31,7 +31,7 @@
 					label
 						span
 							=userTexts[name]
-						+formControl(name=name value=profile[name])
+						+formControl(name=name value=profile[name])&attributes(attributes)
 				mixin profileEnum(name)
 					label
 						span
@@ -46,7 +46,7 @@
 				+profileText("city")
 				+profileText("birthCity")
 				+profileText("job")
-				+profileText("jobPlace")
+				+profileText("jobPlace")(placeholder=s("Ou travaillez-vous ?"))
 				+profileEnum("maritalStatus")
 				+profileEnum("loveInterest")
 				label
@@ -124,11 +124,10 @@
 						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
 			.user-points
 				h5
+					if !profile.points
+						- profile.points=0
 					span.points
-						if !profile.points
-							- profile.points=0
-						=profile.points + " "
-					=s("point|points", profile, profile.points)
+						!=s("{points} point|{points} points", { points: jd('b ' + profile.points) }, profile.points)
 			.about-user
 				if profile.city
 					.col-xs-12.col-sm-6
