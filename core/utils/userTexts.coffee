@@ -18,7 +18,7 @@ module.exports = ->
 	city: s("Ville actuelle")
 	birthCity: s("Ville de naissance")
 	job: s("Métier")
-	jobPlace: s("Lieu de travail")
+	jobPlace: s("Organisation")
 	maritalStatus: s("Situation relationnelle")
 	loveInterest: s("Intéressé par les")
 	biography: s("Biographie")
