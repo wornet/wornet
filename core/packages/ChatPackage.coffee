@@ -62,4 +62,36 @@ ChatPackage =
 						else
 							next null, []
 
+	list: (req, res) ->
+		@all req, req.user.id, (err, chats) ->
+			chatList=[]
+			idList=[]
+			for message in chats
+				if message.from
+					hashedIdOtherUser = message.from.hashedId
+					otherUser = message.from
+				else if message.to
+					hashedIdOtherUser = message.to.hashedId
+					otherUser = message.to
+
+				message.date = extractDateFromId message.id
+				if !idList.contains hashedIdOtherUser
+					idList.push hashedIdOtherUser
+					chatList.push {otherUser:otherUser, lastMessage:message}
+				else
+					for chat in chatList
+						if chat.otherUser.hashedId is hashedIdOtherUser
+							if message.date > chat.lastMessage.date
+								chat.lastMessage = message
+
+			chatList.sort (a,b) ->
+				if a.lastMessage.date < b.lastMessage.date
+					1
+				else if a.lastMessage.date > b.lastMessage.date
+					-1
+				else
+					0
+			res.json {chatList:chatList}
+
+
 module.exports = ChatPackage
