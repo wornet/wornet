@@ -1257,3 +1257,16 @@ module.exports =
 	###
 	quoteString: (str) ->
 		'"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+
+	###
+	Extract the date from the id of a MongoDB object
+	@param string id or ObjectId
+
+	@return Date
+	###
+	extractDateFromId: (id) ->
+		switch typeof id
+			when 'string'
+				new Date(parseInt(id.substring(0,8), 16)*1000)
+			when 'object'
+				new Date(parseInt(id.getTimestamp(), 16)*1000)
