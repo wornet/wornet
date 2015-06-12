@@ -714,6 +714,7 @@ do ->
 			'.points'
 			($span, e, status, medias, adding) ->
 				if getData('at') is getData('me')
+					s = textReplacements
 					points = 1 #simple status
 					if medias.images and medias.images.length > 0
 						points = 2 #status with photo
@@ -721,13 +722,13 @@ do ->
 						points = 3 if points = 1 #status with video but without photo
 						points = 4 if points = 2 #status with video and photo
 
-					if adding
-						newPoints = parseInt($('.points').html()) + (points * parseInt(getData 'numberOfFriends'))
+					newPoints = parseInt($('.points b').html()) + if adding
+						(points * parseInt(getData 'numberOfFriends'))
 					else
-						newPoints = parseInt($('.points').html()) - (status.pointsValue || 0)
+						- (status.pointsValue || 0)
 					if newPoints < 0
 						newPoints = 0
-					$('.points').html(newPoints+" ")
+					$('.points').html s("{points} point|{points} points", { points: '<b>' + newPoints + '</b>' }, newPoints)
 		]
 
 	], ->
