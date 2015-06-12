@@ -9,9 +9,9 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
 		next = _next = ->
 			if data.recentStatus and data.chat
-				if data.recentStatus.length < 3
+				if ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push
-						_id: "5579d2f6aeb72cf06bd3fc27"
+						_id: "100000000000000000000001"
 						at: null
 						author:
 							hashedId: null
@@ -32,7 +32,7 @@ StatusPackage =
 						images: []
 						videos: [
 							href: '//www.youtube.com/embed/5PC7v6jLQ_s'
-							_id: "5579d2f6aeb72cf06bd3fc26"
+							_id: "100000000000000000000002"
 						]
 						links: []
 						pointsValue: 0

@@ -113,6 +113,9 @@ userSchema = BaseSchema.extend
 	openedShutter:
 		type: Boolean
 		default: false
+	firstStepsDisabled:
+		type: Boolean
+		default: false
 	newsletter:
 		type: Boolean
 		default: false
