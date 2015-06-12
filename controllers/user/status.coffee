@@ -24,24 +24,33 @@ module.exports = (router) ->
 					notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
 			res.json deletedStatus: status
 
-		Status.findOne
-			_id: req.params.id
-			$or: [
-				at: me
-			,
-				author: me
-			]
-		, (err, status) ->
-			if err
-				res.serverError err
-			else unless status
-				res.serverError standartError()
+		switch req.params.id
+
+			when "100000000000000000000001"
+				req.user.firstStepsDisabled = true
+				req.session.user.firstStepsDisabled = true
+				updateUser req.user, firstStepsDisabled: true, ->
+				res.json()
+
 			else
-				status.remove (err) ->
+				Status.findOne
+					_id: req.params.id
+					$or: [
+						at: me
+					,
+						author: me
+					]
+				, (err, status) ->
 					if err
 						res.serverError err
+					else unless status
+						res.serverError standartError()
 					else
-						StatusPackage.updatePoints req, status, status.author, false, next, status
+						status.remove (err) ->
+							if err
+								res.serverError err
+							else
+								StatusPackage.updatePoints req, status, status.author, false, next, status
 
 
 	router.put '/add/:id', (req, res) ->
