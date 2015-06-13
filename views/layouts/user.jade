@@ -25,6 +25,8 @@ mixin friends(classes)
 						| &nbsp; 
 						+glyph('comment')
 
+block append link
+	link(ng-if="smilies" rel="stylesheet" ng-href=style("smilies"))
 
 block params
 	- var bodyClasses = null

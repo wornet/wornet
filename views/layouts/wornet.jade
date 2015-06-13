@@ -9,9 +9,9 @@ if isXHR
 	include ../includes/body
 else
 	doctype html
-	html.no-js(lang=lang() xmlns:ng="http://angularjs.org")
-		head
+	html.no-js(ng-app="Wornet" lang=lang() xmlns:ng="http://angularjs.org")
+		head(ng-controller="HeadCtrl")
 			include ../includes/head
 
-		body(ng-app="Wornet" class=bodyClasses)
+		body(class=bodyClasses)
 			include ../includes/body
