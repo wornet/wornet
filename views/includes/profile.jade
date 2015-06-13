@@ -167,6 +167,6 @@
 			if profile.biography
 				h5
 					=userTexts.biography
-				p
+				p(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
 					=profile.biography
 	.cb
