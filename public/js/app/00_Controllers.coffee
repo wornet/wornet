@@ -575,6 +575,22 @@ Controllers =
 
 		return
 
+	Navbar: ($scope) ->
+
+		$scope.openChatList = ->
+			Ajax.get '/user/chat/list', (chat) ->
+				$scope.chatList = chat.chatList
+				refreshScope $scope
+
+				$('.selector-chat-list').show()
+				bootbox.dialog(
+					message: $('.selector-chat-list').html()
+					title: "Messagerie"
+				)
+				$('.selector-chat-list:first').hide()
+
+		return
+
 	Profile: ($scope, chatService) ->
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
