@@ -1,0 +1,15 @@
+.selector-chat-list
+	.chat-list
+		.user-chat(ng-repeat='userchat in chatList')
+			a.col-xs-9(ng-click="chatWith(userchat.otherUser)")
+				img(ng-src="{{ userchat.otherUser.thumb50 }}" alt="{{ userchat.otherUser.name.full }}" data-id="{{ userchat.otherUser.hashedId }}" title="{{ user.name.full }}").thumb
+				.user-name
+					| {{ userchat.otherUser.name.full }}
+				.last-message
+					.content
+						| {{ userchat.lastMessage.content }}
+					.date(data-date="{{ userchat.lastMessage.date }}")
+						|&nbsp;
+			a.col-xs-3.chat-with
+				+glyph('trash')
+			.cb
