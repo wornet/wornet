@@ -298,28 +298,6 @@ Controllers =
 			saveChats chats
 			return
 
-		$scope.smilies = false
-		smilies =
-			happy: [":)", ":-)"]
-			sad: [":(", ":-("]
-			lol: [":D", ":-D"]
-			blink: [";)", ";-)"]
-			joke: [":P", ":-P", ":p", ":-p"]
-			surprise: [":O", ":-O", ":o", ":-o", "o_O", "O_O", "O_o"]
-			blush: [":$", ":-$"]
-			love: ["*_*"]
-			cry: [":'("]
-			heart: ["<3", "&lt;3"]
-		$scope.filterSmilies = (text) ->
-			text = safeHtml text
-			for className, codes of smilies
-				pattern = codes.map(regExpEscape).join '|'
-				regExp = new RegExp pattern, 'g'
-				text = text.replace regExp, (code) ->
-					$scope.smilies = true
-					'<i class="' + className + '">' + code + '</i>'
-			$sce.trustAsHtml text
-
 		if ! exists('[ng-controller="StatusCtrl"]') and exists('[ng-controller="Chat"]')
 			Ajax.get '/user/chat', (data) ->
 				chatService.all data.chat
@@ -676,9 +654,9 @@ Controllers =
 
 		return
 
-	Smilies: ($scope) ->
-		$scope.$on 'enableSmilies', ->
-			$scope.smilies = true
+	Head: ($scope) ->
+		$scope.$on 'enableSmilies', (e, enabled) ->
+			$scope.smilies = enabled
 
 	Status: ($scope) ->
 

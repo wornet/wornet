@@ -75,11 +75,37 @@ Wornet = angular.module 'Wornet', [
 .filter 'lastest', ->
 	lastest
 
+.filter 'smilies', ['$rootScope', '$sce', ($rootScope, $sce) ->
+	enableSmilies = false
+	smilies =
+		happy: [":)", ":-)"]
+		sad: [":(", ":-("]
+		lol: [":D", ":-D"]
+		blink: [";)", ";-)"]
+		joke: [":P", ":-P", ":p", ":-p"]
+		surprise: [":O", ":-O", ":o", ":-o", "o_O", "O_O", "O_o"]
+		blush: [":$", ":-$"]
+		love: ["*_*"]
+		cry: [":'("]
+		heart: ["<3", "&lt;3"]
+	(text) ->
+		text = safeHtml text
+		for className, codes of smilies
+			pattern = codes.map(regExpEscape).join '|'
+			regExp = new RegExp pattern, 'g'
+			text = text.replace regExp, (code) ->
+				unless enableSmilies
+					enableSmilies = true
+					$rootScope.$broadcast 'enableSmilies', true
+				'<i class="' + className + '">' + code + '</i>'
+		$sce.trustAsHtml text
+]
+
 ControllersByService =
 	notificationsService: 'Notifications'
 	chatService: 'Profile'
 	statusService: 'Status'
-	$sce: 'Notifications Chat'
+	$sce: 'Notifications'
 
 # Load controllers
 for controller, method of Controllers
