@@ -309,7 +309,7 @@ Controllers =
 			blush: [":$", ":-$"]
 			love: ["*_*"]
 			cry: [":'("]
-			heart: ["<3"]
+			heart: ["<3", "&lt;3"]
 		$scope.filterSmilies = (text) ->
 			text = safeHtml text
 			for className, codes of smilies
