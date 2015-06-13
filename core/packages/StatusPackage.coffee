@@ -229,12 +229,12 @@ StatusPackage =
 			done new PublicError s("Ce statut est vide")
 
 	calculatePoints: (medias, nbOfFriends) ->
-		points = 1 #simple status
+		points = 1 # simple status
 		if medias.images and medias.images.length > 0
-			points = 2 #status with photo
+			points = 2 # status with photo
 		if medias.videos and medias.videos.length > 0
-			points = 3 if points = 1 #status with video but without photo
-			points = 4 if points = 2 #status with video and photo
+			points = 3 if points = 1 # status with video but without photo
+			points = 4 if points = 2 # status with video and photo
 
 		pointsToAdd = points * nbOfFriends
 
@@ -285,21 +285,19 @@ StatusPackage =
 				done err
 			else
 				for status in statusList
-					medias = {images:status.images, videos:status.videos, links:status.links}
+					medias = status.columns ['images', 'videos', 'links']
 
-					if statusList.length is 1
-						#The status just sent is the first one for that user
-						#So there no need de init the points
-						newPoints += StatusPackage.calculatePoints medias, req.user.numberOfFriends
+					newPoints += StatusPackage.calculatePoints medias, if statusList.length is 1
+						# The status just sent is the first one for that user
+						# So there no need to init the points
+						req.user.numberOfFriends
 					else
-						#We calculate with 1 friend
-						newPoints += StatusPackage.calculatePoints medias, 1
+						# We calculate with 1 friend
+						1
 
-				req.user.points= newPoints
-				req.session.user.points= newPoints
-				User.update
-					_id: id
-				,
+				req.user.points = newPoints
+				req.session.user.points = newPoints
+				User.updateById id,
 					points: newPoints
 				, (err) ->
 					if err
