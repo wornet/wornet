@@ -74,7 +74,7 @@ ChatPackage =
 					hashedIdOtherUser = message.to.hashedId
 					otherUser = message.to
 
-				message.date = extractDateFromId message.id
+				message.date = Date.fromId message.id
 				if !idList.contains hashedIdOtherUser
 					idList.push hashedIdOtherUser
 					chatList.push {otherUser:otherUser, lastMessage:message}
