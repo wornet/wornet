@@ -17,7 +17,7 @@ module.exports = ->
 	password: s("Mot de passe")
 	city: s("Ville actuelle")
 	birthCity: s("Ville de naissance")
-	job: s("Métier")
+	job: s("Poste occupé")
 	jobPlace: s("Organisation")
 	maritalStatus: s("Situation relationnelle")
 	loveInterest: s("Intéressé par les")
