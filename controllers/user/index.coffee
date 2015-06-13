@@ -532,9 +532,9 @@ module.exports = (router) ->
 			res.render templateFolder + '/upload-photo', model
 
 	router.delete '/photo', (req, res) ->
-		userModifications = {}
-		userModifications.photoId = null
-		userModifications.thumb = null
+		userModifications =
+			photoId: null
+			thumb: null
 		for size in config.wornet.thumbSizes
 			userModifications['thumb' + size] = null
 		extend req.session.user, userModifications
@@ -570,6 +570,11 @@ module.exports = (router) ->
 				next err
 		if media.id and media.type is 'image'
 			count++
+			if equals req.user.photoId, media.id
+				count++
+				req.user.photoId = null
+				req.session.user.photoId = null
+				updateUser req, photoId: null, next
 			where =
 				_id: media.id
 				user: me
