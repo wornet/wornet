@@ -313,7 +313,8 @@ Controllers =
 		$scope.filterSmilies = (text) ->
 			text = safeHtml text
 			for className, codes of smilies
-				regExp = new RegExp codes.map(regExpEscape).join '|', 'g'
+				pattern = codes.map(regExpEscape).join '|'
+				regExp = new RegExp pattern, 'g'
 				text = text.replace regExp, (code) ->
 					$scope.smilies = true
 					'<i class="' + className + '">' + code + '</i>'
