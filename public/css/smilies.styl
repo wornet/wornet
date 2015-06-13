@@ -1,0 +1,48 @@
+// Fonctions stylus
+@import "includes/mixins"
+
+.smiley
+	display inline-block
+	size(16px, 16px)
+	rel(0, 1px)
+	color transparent
+
+i.happy
+	@extend .smiley
+	background url(png('emoticone/happy'))
+
+i.sad
+	@extend .smiley
+	background url(png('emoticone/sad'))
+
+i.lol
+	@extend .smiley
+	background url(png('emoticone/lol'))
+
+i.blink
+	@extend .smiley
+	background url(png('emoticone/blink'))
+
+i.joke
+	@extend .smiley
+	background url(png('emoticone/joke'))
+
+i.surprise
+	@extend .smiley
+	background url(png('emoticone/surprise'))
+
+i.blush
+	@extend .smiley
+	background url(png('emoticone/blush'))
+
+i.love
+	@extend .smiley
+	background url(png('emoticone/love'))
+
+i.cry
+	@extend .smiley
+	background url(png('emoticone/cry'))
+
+i.heart
+	@extend .smiley
+	background url(png('emoticone/heart'))
