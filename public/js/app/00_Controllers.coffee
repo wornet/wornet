@@ -658,7 +658,7 @@ Controllers =
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
 
-	Status: ($scope) ->
+	Status: ($scope, smiliesService) ->
 
 		initMedias = ->
 			$scope.medias =
@@ -739,7 +739,7 @@ Controllers =
 			).substr 1
 
 		richText = (text) ->
-			scanAllLinks safeHtml(text), true
+			scanAllLinks smiliesService.filter(text), true
 
 		setRecentStatus = (data) ->
 			has = (key) ->
