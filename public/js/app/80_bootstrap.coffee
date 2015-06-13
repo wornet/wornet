@@ -48,6 +48,33 @@ Wornet = angular.module 'Wornet', [
 	notificationsService
 ]
 
+.factory 'smiliesService', ['$rootScope', ($rootScope) ->
+	enableSmilies = false
+	smilies =
+		happy: [":)", ":-)"]
+		sad: [":(", ":-("]
+		lol: [":D", ":-D"]
+		blink: [";)", ";-)"]
+		joke: [":P", ":-P", ":p", ":-p"]
+		surprise: [":O", ":-O", ":o", ":-o", "o_O", "O_O", "O_o"]
+		blush: [":$", ":-$"]
+		love: ["*_*"]
+		cry: [":'("]
+		heart: ["<3", "&lt;3"]
+	filter: (text, safe = false) ->
+		unless safe
+			text = safeHtml text
+		for className, codes of smilies
+			pattern = codes.map(regExpEscape).join '|'
+			regExp = new RegExp pattern, 'g'
+			text = text.replace regExp, (code) ->
+				unless enableSmilies
+					enableSmilies = true
+					$rootScope.$broadcast 'enableSmilies', true
+				'<i class="' + className + '">' + code + '</i>'
+		text
+]
+
 #Angular Wornet directives
 .directive 'focus', ->
 	['$timeout', ($timeout) ->
@@ -75,36 +102,16 @@ Wornet = angular.module 'Wornet', [
 .filter 'lastest', ->
 	lastest
 
-.filter 'smilies', ['$rootScope', '$sce', ($rootScope, $sce) ->
-	enableSmilies = false
-	smilies =
-		happy: [":)", ":-)"]
-		sad: [":(", ":-("]
-		lol: [":D", ":-D"]
-		blink: [";)", ";-)"]
-		joke: [":P", ":-P", ":p", ":-p"]
-		surprise: [":O", ":-O", ":o", ":-o", "o_O", "O_O", "O_o"]
-		blush: [":$", ":-$"]
-		love: ["*_*"]
-		cry: [":'("]
-		heart: ["<3", "&lt;3"]
+.filter 'smilies', ['smiliesService', '$sce', (smiliesService, $sce) ->
 	(text) ->
-		text = safeHtml text
-		for className, codes of smilies
-			pattern = codes.map(regExpEscape).join '|'
-			regExp = new RegExp pattern, 'g'
-			text = text.replace regExp, (code) ->
-				unless enableSmilies
-					enableSmilies = true
-					$rootScope.$broadcast 'enableSmilies', true
-				'<i class="' + className + '">' + code + '</i>'
-		$sce.trustAsHtml text
+		$sce.trustAsHtml smiliesService.filter text
 ]
 
 ControllersByService =
 	notificationsService: 'Notifications'
 	chatService: 'Profile'
-	statusService: 'Status'
+	#statusService: 'Status'
+	smiliesService: 'Status'
 	$sce: 'Notifications'
 
 # Load controllers
