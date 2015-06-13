@@ -14,8 +14,7 @@
 				span.ok(ng-show="message.ok")
 					+glyph('ok')
 				img(ng-src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
-				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}")
-					| {{ message.content }}
+				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="$parent.filterSmilies(message.content)")
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
 			if config.wornet.chat.multiline
 				textarea.form-control.do-not-loose(ng-model="message.content" ng-keypress="press($event, message, chatId)" placeholder=s("Entrez votre message ici") focus="true")
@@ -24,3 +23,5 @@
 			else
 				+formControl().do-not-loose(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
 				button(type="submit")
+
+	link(ng-if="smilies" rel="stylesheet" ng-href=style("smilies"))

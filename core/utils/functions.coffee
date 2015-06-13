@@ -1147,6 +1147,8 @@ module.exports =
 		# we can do it here because assetUrl is only in use in development
 		# but always prefer async functions to accelerate page load
 		# and defer treatments
+		if file.string
+			file = file.string
 		file = ('' + file).replace /^\/img\//g, '/'
 		version = config.wornet.version
 		if /https?:\/\//g.test file

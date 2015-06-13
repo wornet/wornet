@@ -414,6 +414,10 @@ loadNewIFrames = ->
 		return
 	return
 
+# Escape RegExp symbols
+regExpEscape = (text) ->
+	text.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
+
 # Make loading animations visible
 showLoader = ->
 	$('.loader:last').css('z-index', 99999).removeClass 'preload'
