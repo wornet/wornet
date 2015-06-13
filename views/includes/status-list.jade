@@ -76,7 +76,7 @@
 				+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
 			.date(data-date="{{ comment.date }}")
 				|&nbsp;
-			.comment-content.word-wrap.cb(ng-if="comment.content && comment.content.length && comment.status !== 'blocked'" ng-bind-html="comment.content")
+			.comment-content.word-wrap.cb(ng-if="comment.content && comment.content.length && comment.status !== 'blocked'" ng-bind-html="comment.content | smilies")
 
 		.comment-form(ng-if="status.commentForm")
 			+form()(ng-submit="sendComment(status)").cb

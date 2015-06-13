@@ -55,8 +55,7 @@ block body
 					maxlength=config.wornet.limits.albumNameLength
 					placeholder=s("Nom de l'album")
 				)
-			p(ng-if="! album.description.edit")
-				{{ album.description.content }}
+			p(ng-if="! album.description.edit" ng-bind-html="album.description.content | smilies")
 			.edit-album-description.form-group(ng-if="album.description.edit")
 				textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
 			.edit-album-actions.btn-group.col-xs-12.fit(ng-if="album.name.edit || album.description.edit")
