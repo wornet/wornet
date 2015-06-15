@@ -26,7 +26,7 @@ ChatPackage =
 						next err
 					else
 						if messages
-							messageIds = (m.id for m in messages when equals m.author, me)
+							messageIds = (m.id for m in messages when equals(m.author, me) and !m.maskedFor.contains me)
 							MessageRecipient.find message: $in: messageIds, (err, recipients) ->
 								if err
 									next err
@@ -93,5 +93,55 @@ ChatPackage =
 					0
 			res.json {chatList:chatList}
 
+	mask: (req, res, otherUserHashedId) ->
+		messagesToMask=[]
+		otherUserId= cesarRight otherUserHashedId
+		me= req.user.id
+		MessageRecipient.find
+			$or: [
+				recipient: me
+			,
+				recipient: otherUserId
+			], (err, messageRecipients) ->
+				if err
+					res.serverError err
+				else
+					idsMessagesRecipe = messageRecipients.column 'message'
+				Message.find
+					$or: [
+						author: otherUserId
+					,
+						author: me
+					]
+					_id: $in: idsMessagesRecipe
+				, (err, messages) ->
+					if err
+						res.serverError err
+					if messages
+						for message in messages
+							if message.maskedFor and message.maskedFor.contains otherUserId
+								parallelRemove [
+									Message
+									_id: message.id
+								], [
+									MessageRecipient
+									message: message.id
+								], (err) ->
+									if err
+										res.serverError err
+							else
+								maskedFor= []
+								if !message.maskedFor.contains me
+									maskedFor.push me
+									Message.update
+										_id:message.id
+									,
+										$set:
+											maskedFor:maskedFor
+									, (err, result) ->
+										if err
+											res.serverError err
+
+		res.json()
 
 module.exports = ChatPackage

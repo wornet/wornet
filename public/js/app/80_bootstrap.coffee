@@ -27,6 +27,9 @@ Wornet = angular.module 'Wornet', [
 		all: (messages) ->
 			$rootScope.$broadcast 'all', messages
 			return
+		clear: (users) ->
+			$rootScope.$broadcast 'clear', users
+			return
 	chatService
 ]
 
