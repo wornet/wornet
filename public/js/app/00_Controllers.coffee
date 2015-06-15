@@ -263,6 +263,19 @@ Controllers =
 			refreshScope $scope
 			return
 
+		$scope.$on 'clear', (e, users) ->
+			chats = getChats()
+			for id, chat of chats
+				chatUserIds=[]
+				for userChat in chat.users
+					chatUserIds.push userChat.hashedId
+				if JSON.stringify chatUserIds is JSON.stringify users
+					chat.messages=[]
+			$scope.chats = saveChats chats
+			refreshScope $scope
+			return
+
+
 		$scope.close = (chat) ->
 			chat.open = false
 			saveChatState chat
@@ -526,6 +539,31 @@ Controllers =
 
 		return
 
+	Navbar: ($scope) ->
+
+		$scope.chatWith = (user) ->
+			chatService.chatWith [objectResolve user]
+			return
+
+		$scope.mask = (user) ->
+			Ajax.delete '/user/chat/',
+				data:
+					otherUser: user.hashedId
+				success: (data) ->
+					chatService.clear([user.hashedId])
+					newChatList= []
+					for chat in $scope.chatList
+						if chat.otherUser.hashedId isnt user.hashedId
+							newChatList.push chat
+					$scope.chatList= newChatList
+					refreshScope $scope
+					$('.user-chat[data-id="'+user.hashedId+'"]').slideUp ->
+						$(@).remove()
+						return
+
+		window.navBarScope = $scope
+		return
+
 	Notifications: ($scope, notificationsService, $sce) ->
 		$scope.notifications = {}
 
@@ -551,22 +589,6 @@ Controllers =
 			refreshScope $scope
 			delay 1, refreshPill
 			return
-
-		return
-
-	Navbar: ($scope) ->
-
-		$scope.openChatList = ->
-			Ajax.get '/user/chat/list', (chat) ->
-				$scope.chatList = chat.chatList
-				refreshScope $scope
-
-				$('.selector-chat-list').show()
-				bootbox.dialog(
-					message: $('.selector-chat-list').html()
-					title: "Messagerie"
-				)
-				$('.selector-chat-list:first').hide()
 
 		return
 

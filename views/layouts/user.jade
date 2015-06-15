@@ -33,8 +33,7 @@ block params
 
 block nav
 	include ../includes/shutter
-	nav#navbar.navbar-fixed-top.nav.navbar.loading(role='navigation' ng-controller="NavbarCtrl" class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
-		include ../includes/chatList.jade
+	nav#navbar.navbar-fixed-top.nav.navbar.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		h1.col-xs-12
 			!=upperTitle
 		.navbar-header
@@ -55,7 +54,7 @@ block nav
 						| &nbsp; 
 						=s("Accueil")
 					//- li: a(href="/" data-click-alert!=s("Le regroupement des fils de conversation arrivera dans les prochains mois. Vous pouvez néanmoins d'ores et déjà échanger avec vos amis en ouvrant un chat privé directement depuis la barre de recherche, la fonction &quot;amis connectés&quot; ou le profil de votre ami."))
-					li: a(ng-click="openChatList()")
+					li: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
 						+glyph("envelope")
 						| &nbsp; 
 						=s("Messagerie")
@@ -123,5 +122,6 @@ block nav
 block footer
 	include ../includes/chat
 	include ../includes/media-viewer
+	include ../includes/chat-list.jade
 
 block cookie-banner-under

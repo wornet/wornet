@@ -730,7 +730,14 @@ do ->
 						newPoints = 0
 					$('.points').html s("{points} point|{points} points", { points: '<b>' + newPoints + '</b>' }, newPoints)
 		]
-
+		[
+			'tap'
+			'.open-chat-list'
+			($span, e) ->
+				Ajax.get '/user/chat/list', (chat) ->
+					navBarScope.chatList = chat.chatList
+					refreshScope navBarScope
+		]
 	], ->
 		params = @
 		if @[0] is 'load'

@@ -8,5 +8,7 @@ messageSchema = BaseSchema.extend
 		type: String
 		trim: true
 		required: true
+	maskedFor:
+		type: Array
 
 module.exports = messageSchema
