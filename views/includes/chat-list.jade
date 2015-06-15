@@ -16,7 +16,8 @@
 						a.col-xs-11.chat-with(ng-click="chatWith(userchat.otherUser)")
 							img(ng-src="{{ userchat.otherUser.thumb50 }}" alt="{{ userchat.otherUser.name.full }}" data-id="{{ userchat.otherUser.hashedId }}" title="{{ user.name.full }}").thumb
 							.user-name
-								| {{ userchat.otherUser.name.full }}
+								b
+									| {{ userchat.otherUser.name.full }}
 							.last-message
 								.content
 									| {{ userchat.lastMessage.content }}
@@ -25,3 +26,4 @@
 						a.col-xs-1.delete-chat(ng-click="mask(userchat.otherUser)")
 							+glyph('trash')
 						.cb
+						hr

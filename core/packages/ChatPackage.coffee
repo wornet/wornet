@@ -75,6 +75,8 @@ ChatPackage =
 					otherUser = message.to
 
 				message.date = Date.fromId message.id
+				if message.content.length > 140
+					message.content = message.content.substr(0, 140)+'...'
 				if !idList.contains hashedIdOtherUser
 					idList.push hashedIdOtherUser
 					chatList.push {otherUser:otherUser, lastMessage:message}
