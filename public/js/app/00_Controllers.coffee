@@ -326,7 +326,9 @@ Controllers =
 		$scope.submit = (user) ->
 			# Save remember preference of the user
 			if localStorage
-				localStorage['user.remember'] = user.remember
+				try
+					localStorage.setItem 'user.remember', user.remember
+				catch e
 			# send a POST request to /user/login with user.email and user.password
 			Ajax.post '/user/login',
 				data: user
@@ -660,9 +662,7 @@ Controllers =
 		return
 
 	SigninSecondStep: ($scope) ->
-		try
-			user = $.parseJSON sessionStorage['user']
-		catch e
+		user = getSessionValue 'user'
 		if user
 			if user.birthDate
 				user.birthDate = new Date user.birthDate
@@ -882,7 +882,7 @@ Controllers =
 			return
 
 		$scope.createAlbum = (album) ->
-			delete sessionStorage['albums']
+			removeSessionItem albumKey()
 			Ajax.put '/user/album/add',
 				data:
 					album: album
@@ -955,7 +955,7 @@ Controllers =
 		$scope.status = containsMedias: false
 		$scope.media = step: null
 
-		select = if window.sessionStorage and sessionStorage.chats
+		select = if getSessionItem 'chats'
 			'recent'
 		else
 			'and/chat'
@@ -973,7 +973,7 @@ Controllers =
 		return
 
 	Welcome: ($scope) ->
-		delete sessionStorage['user']
+		removeSessionItem 'user'
 		$('iframe.player').removeClass('hidden')
 		$(window).trigger('resize')
 

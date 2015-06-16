@@ -1,8 +1,39 @@
+# Local and session storages
+errorsMuter = (ctx, callback) ->
+	->
+		try
+			if callback
+				callback = ctx[callback]
+			else
+				ctx = @
+			callback.apply ctx, arguments
+		catch error
+			console.warn error
+
+storageEngines =
+	session: 'Session'
+	local: 'Local'
+
+for key, name of storageEngines
+	engine = @[key + 'Storage'] || {}
+	@['get' + name + 'Item'] = errorsMuter engine, 'getItem'
+	@['set' + name + 'Item'] = errorsMuter engine, 'setItem'
+	@['get' + name + 'Value'] = errorsMuter do (engine) ->
+		(key) ->
+			engine.getItem $.parseJSON key
+	@['set' + name + 'Value'] = errorsMuter do (engine) ->
+		(key, value) ->
+			engine.setItem key, JSON.stringify value
+	@['has' + name + 'Item'] = errorsMuter engine, 'hasOwnProperty'
+	@['remove' + name + 'Items'] = errorsMuter engine, 'clear'
+	@['remove' + name + 'Item'] = errorsMuter engine, 'removeItem'
+
 # Save user data on submit
 saveUser = ($scope) ->
 	$scope.submit = (user) ->
+		alert "start"
 		user.remember = $('[ng-model="user.remember"]').prop 'checked'
-		sessionStorage['user'] = JSON.stringify user
+		setSessionValue 'user', user
 		return
 	return
 
@@ -249,7 +280,7 @@ saveChats = (chats) ->
 					message.from = message.from.hashedId
 				if typeof(message.to) is 'object' and message.to.hashedId
 					message.to = message.to.hashedId
-		sessionStorage.chats = JSON.stringify chatsCopy
+		setSessionValue 'chats', chatsCopy
 	$('.chat').show()
 	keepScroll '.chat .messages'
 	chats
@@ -285,7 +316,7 @@ getChats = ->
 	keepScroll '.chat .messages'
 	chats = {}
 	try
-		chats = (objectResolve JSON.parse sessionStorage.chats) || {}
+		chats = (objectResolve getSessionValue 'chats') || {}
 		for k, chat of chats
 			users = {}
 			for user in chat.users
@@ -326,7 +357,7 @@ getAlbumsFromServer = (done) ->
 			err = data.err || null
 			if data.albums
 				albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
-				sessionStorage[key] = JSON.stringify albums
+				setSessionValue key, albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
 				done err, albums
 			window.getAlbumsFromServer.waitingCallbacks = false
@@ -343,7 +374,7 @@ getAlbums = (done) ->
 	if exists '.myMedias'
 		if getCachedData 'at'
 			try
-				albums = objectResolve JSON.parse sessionStorage[albumKey()]
+				albums = objectResolve getSessionValue albumKey()
 			catch e
 				albums = null
 		if typeof(albums) isnt 'object'
