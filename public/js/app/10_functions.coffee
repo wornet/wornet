@@ -299,16 +299,14 @@ do (w = window) ->
 		k
 
 	w.saveChatState = (chat) ->
-		if window.localStorage
-			localStorage[key(chat)] =
-				if chat.minimized then minimized else 0 |
-				if chat.open then 0 else close
+		setLocalItem key(chat),
+			if chat.minimized then minimized else 0 |
+			if chat.open then 0 else close
 
 	w.loadChatState = (chat) ->
-		if window.localStorage
-			opts = localStorage[key(chat.users)] || 0
-			chat.minimized = !! (opts & minimized)
-			chat.open = ! (opts & close)
+		opts = getLocalItem(key chat.users) || 0
+		chat.minimized = !! (opts & minimized)
+		chat.open = ! (opts & close)
 
 # Get chat messages and states from local session
 getChats = ->
