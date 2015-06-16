@@ -321,14 +321,11 @@ Controllers =
 	Login: ($scope) ->
 		keepTipedModel $scope, '#login', 'user'
 		# Get remember preference of the user if previously saved (default: true)
-		$scope.user.remember = (if localStorage and typeof(localStorage['user.remember']) isnt 'undefined' then !!localStorage['user.remember'] else true)
+		$scope.user.remember = (if hasLocalItem('user.remember') then !! getLocalValue('user.remember') else true)
 		# When the form is submitted
 		$scope.submit = (user) ->
 			# Save remember preference of the user
-			if localStorage
-				try
-					localStorage.setItem 'user.remember', user.remember
-				catch e
+			setLocalValue 'user.remember', user.remember
 			# send a POST request to /user/login with user.email and user.password
 			Ajax.post '/user/login',
 				data: user
