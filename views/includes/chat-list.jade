@@ -1,14 +1,12 @@
 #selector-chat-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="NavbarCtrl" tabindex="-1")
-	.modal-dialog.modal-lg
-		.modal-content
+	.modal-dialog.modal-lg: .modal-content
 			.modal-header
 				button.close(type="button" data-dismiss="modal" aria-label="Close")
 					span(aria-hidden="true")
 						&times;
 				h4.modal-title
 					=s("Messagerie")
-			.modal-body
-				.chat-list
+			.modal-body.chat-list
 					.empty-chat-list(ng-if='!chatList || chatList.length==0' ng-init="emptyChatListMessage="+JSON.stringify(s("Vous n’avez pas encore échangé avec l’un de vos amis :( Pour échanger avec vos amis il vous suffit d’ouvrir un chat privé depuis la barre de recherche, la fonction \"amis connectés\" ou le profil de votre ami. Tentez l’expérience dès à présent :D")))
 						span(ng-bind-html="emptyChatListMessage | smilies")
 					.user-chat(ng-repeat='userchat in chatList' data-id='{{ userchat.otherUser.hashedId }}')
