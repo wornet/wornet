@@ -12,25 +12,25 @@ css3-prefix(prop, value)
 		{"-o-" + prop} value
 	{prop} value
 
-pos(top, left)
+pos(top = false, left = false)
 	if left
 		left left
 	if top
 		top top
 
-fix(top, left)
+fix(top = false, left = false)
 	position fixed
 	pos(top, left)
 
-rel(top, left)
+rel(top = false, left = false)
 	position relative
 	pos(top, left)
 
-abs(top, left)
+abs(top = false, left = false)
 	position absolute
 	pos(top, left)
 
-size(width, height)
+size(width = false, height = width)
 	width width
 	height height
 
