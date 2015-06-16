@@ -269,7 +269,7 @@ Controllers =
 				chatUserIds=[]
 				for userChat in chat.users
 					chatUserIds.push userChat.hashedId
-				if JSON.stringify chatUserIds is JSON.stringify users
+				if JSON.stringify(chatUserIds) is JSON.stringify(users)
 					chat.messages=[]
 			$scope.chats = saveChats chats
 			refreshScope $scope
