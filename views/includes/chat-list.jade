@@ -9,9 +9,8 @@
 					=s("Messagerie")
 			.modal-body
 				.chat-list
-					.empty-chat-list(ng-if='!chatList || chatList.length==0')
-						span
-							=s("Vous n’avez pas encore échangé avec l’un de vos amis :( Pour échanger avec vos amis il vous suffit d’ouvrir un chat privé depuis la barre de recherche, la fonction \"amis connectés\" ou le profil de votre ami. Tentez l’expérience dès à présent :D")
+					.empty-chat-list(ng-if='!chatList || chatList.length==0' ng-init="emptyChatListMessage="+JSON.stringify(s("Vous n’avez pas encore échangé avec l’un de vos amis :( Pour échanger avec vos amis il vous suffit d’ouvrir un chat privé depuis la barre de recherche, la fonction \"amis connectés\" ou le profil de votre ami. Tentez l’expérience dès à présent :D")))
+						span(ng-bind-html="emptyChatListMessage | smilies")
 					.user-chat(ng-repeat='userchat in chatList' data-id='{{ userchat.otherUser.hashedId }}')
 						a.col-xs-11.chat-with(ng-click="chatWith(userchat.otherUser)")
 							img(ng-src="{{ userchat.otherUser.thumb50 }}" alt="{{ userchat.otherUser.name.full }}" data-id="{{ userchat.otherUser.hashedId }}" title="{{ user.name.full }}").thumb
@@ -19,8 +18,7 @@
 								b
 									| {{ userchat.otherUser.name.full }}
 							.last-message
-								.content
-									| {{ userchat.lastMessage.content }}
+								.content(ng-bind-html="userchat.lastMessage.content | smilies")
 								.date(data-date="{{ userchat.lastMessage.date }}")
 									|&nbsp;
 						a.col-xs-1.delete-chat(ng-click="mask(userchat.otherUser)")
