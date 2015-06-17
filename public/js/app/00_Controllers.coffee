@@ -369,7 +369,7 @@ Controllers =
 
 	Medias: ($scope) ->
 		$scope.selectAlbum = (album) ->
-			location.href = '/user/album/' + album._id
+			locationHref '/user/album/' + album._id
 			return
 
 		window.setMediaAlbums = (albums) ->
@@ -685,6 +685,13 @@ Controllers =
 				images: []
 				videos: []
 			return
+
+		$scope.displayPlayer = ! navigator.standalone
+
+		$scope.thumbnail = (url) ->
+			url
+				.replace /\/\/www\.youtube\.com\/embed\/([a-z0-9_-]+)/ig, '//img.youtube.com/vi/$1/0.jpg'
+				.replace /\/\/www\.dailymotion\.com\/embed\/video\/([a-z0-9_-]+)/ig, 'www.dailymotion.com/thumbnail/video/$1'
 
 		$scope.removeMedia = (media) ->
 			Ajax.delete '/user/media/preview',

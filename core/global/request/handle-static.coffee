@@ -3,7 +3,7 @@
 methodOverride = do require 'method-override'
 bodyParser = do require 'body-parser'
 proxy = require('http-proxy').createProxyServer {}
-
+zlib = require 'zlib'
 
 proxy.on 'proxyReq', (proxyReq, req, res, options) ->
 	proxyReq.setHeader 'x-forwarded-proto', 'https'
@@ -83,6 +83,14 @@ module.exports = (app) ->
 				if req.urlWithoutParams is '/' + lang + '/all.' + lang
 					res.setTimeLimit 200
 					file = __dirname + '/../../../.build/' + lang + '/all-ie-' + req.ie + '.' + lang
+					acceptEncoding = (req.getHeader 'accept-encoding') || ''
+					gzip = /\bgzip\b/.test acceptEncoding
+					if gzip
+						file += '.gz'
+						compressMethod = zlib.gzip.bind zlib
+					else
+						compressMethod = (content, done) ->
+							done null, content
 					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
 					list = options['main' + ucfirst(lang)]()
 					fs.readFile file, do (method, list) ->
@@ -90,11 +98,17 @@ module.exports = (app) ->
 							if err
 								concatCallback '', list, method, (content) ->
 									# content = uglifyJs content
-									res.end content
-									fs.writeFile file, content
+									compressMethod content, (err, compressedContent) ->
+										if compressedContent and ! err
+											if gzip
+												res.setHeader 'content-encoding', 'gzip'
+											res.end compressedContent
+											fs.writeFile file, compressedContent
 								,
 									ie: req.ie
 							else
+								if gzip
+									res.setHeader 'content-encoding', 'gzip'
 								res.end content
 					return
 			req.url = req.urlWithoutParams
@@ -126,11 +140,12 @@ module.exports = (app) ->
 								delete req.user
 						next()
 				return
-			unless req.xhr or req.connection.remoteAddress is '127.0.0.1'
-				secure = req.secure or 'https' is req.getHeader 'x-forwarded-proto'
-				if config.wornet.protocole is 'https' isnt secure or config.wornet.redirectToDefaultHost is req.getHeader 'host'
-					res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
-					return
+			unless req.xhr
+				unless req.connection.remoteAddress is '127.0.0.1'
+					secure = req.secure or 'https' is req.getHeader 'x-forwarded-proto'
+					if config.wornet.protocole is 'https' isnt secure or config.wornet.redirectToDefaultHost is req.getHeader 'host'
+						res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
+						return
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
 			res.locals.isXHR = !!req.xhr
