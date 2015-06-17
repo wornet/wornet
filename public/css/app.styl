@@ -25,7 +25,7 @@ input
 html
 body
 	// Tailles, marges interne et externe.
-	size(100%, 100%)
+	size(100%)
 	margin 0
 	padding 0
 
@@ -113,7 +113,7 @@ iframe
 
 .loader
 	fix(0px, 0px)
-	size(100%, 100%)
+	size(100%)
 	opacity(1)
 	overflow hidden
 	background-color rgba(0, 0, 0, .2)
@@ -546,7 +546,7 @@ h2
 	.upload
 		opacity(0)
 		position absolute
-		size(100%, 100%)
+		size(100%)
 
 .upload-label
 	color $darkGray
@@ -643,7 +643,7 @@ fieldset.tab .btn
 
 	iframe
 	img
-		size(90px, 90px)
+		size(90px)
 		float left
 		margin 0 $smallPadding $smallPadding 0
 
@@ -721,6 +721,12 @@ span.image-box i.glyphicon
 			border-bottom none
 
 .chat-list
+
+	.user-chat
+		rel()
+		.thumb
+			margin $smallPadding $mainPadding $smallPadding (- $smallPadding)
+
 	a
 		text-decoration none
 		color $nearlyBlack
@@ -730,8 +736,14 @@ span.image-box i.glyphicon
 
 	a.delete-chat
 		text-align center
-		background-color $orange
-		height $thumbHeight + 10
+		background $orange
+		min-height $thumbHeight + 10
+		height calc(100% - 21px)
+		abs(0, false)
+		right 0
+
+		&:hover
+			background lighten($orange, 20%)
 
 		.glyphicon
 			margin-top 23px
@@ -802,7 +814,7 @@ span.image-box i.glyphicon
 			clear left
 			cursor pointer
 		img.thumb
-			size(20px, 20px)
+			size(20px)
 			margin 0
 	img.big
 		max-width 100%
@@ -980,7 +992,7 @@ span.image-box i.glyphicon
 			font-size 13px
 
 		.preview
-			size(2 * (30 + $smallPadding), 2 * (30 + $smallPadding))
+			size(2 * (30 + $smallPadding))
 
 			img
-				size(30px, 30px)
+				size(30px)

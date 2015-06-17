@@ -26,6 +26,10 @@ block css
 			+style(style)
 block link
 	link(rel="shortcut icon" href="/favicon.ico")
+	link(rel="apple-touch-icon" href=png("apple/touch-icon-iphone"))
+	link(rel="apple-touch-icon" sizes="76x76" href=png("apple/touch-icon-ipad"))
+	link(rel="apple-touch-icon" sizes="120x120" href=png("apple/touch-icon-iphone-retina"))
+	link(rel="apple-touch-icon" sizes="152x152" href=png("apple/touch-icon-ipad-retina"))
 block id
 	+ie('if lte IE 8')
 		script
