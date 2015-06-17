@@ -5,10 +5,6 @@ bodyParser = do require 'body-parser'
 proxy = require('http-proxy').createProxyServer {}
 zlib = require 'zlib'
 
-proxy.on 'proxyReq', (proxyReq, req, res, options) ->
-	proxyReq.setHeader 'x-forwarded-proto', 'https'
-	proxyReq.setHeader 'x-forwarded-for', req.getHeader 'x-forwarded-for'
-
 module.exports = (app) ->
 
 	# Before each request
