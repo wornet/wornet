@@ -788,10 +788,10 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText status.content
+
 					if !status.nbLike
 						status.nbLike = 0
 					s= textReplacements
-					jd=
 					status.nbLike = s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
 					status
 				refreshScope $scope
@@ -943,13 +943,21 @@ Controllers =
 
 			return
 
-		$scope.addLike = (statusId, nbLikePrec) ->
-			Ajax.put '/user/status/like',
+		$scope.addLike = (statusId) ->
+			Ajax.put '/user/plusw',
 				data:
 					status: statusId
-			, (newNbLike) ->
+			, (result) ->
 				s= textReplacements
-				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: newNbLike }, newNbLike))
+				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+
+		$scope.removeLike = (statusId) ->
+			Ajax.delete '/user/plusw',
+				data:
+					status: statusId
+			, (result) ->
+				s= textReplacements
+				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
 
 
 		at = getCachedData 'at'

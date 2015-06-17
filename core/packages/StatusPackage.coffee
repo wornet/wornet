@@ -36,6 +36,7 @@ StatusPackage =
 						]
 						links: []
 						pointsValue: 0
+						nbLike: 0
 				res.json data
 		nextWithSession = ->
 			req.session.save (err) ->
@@ -82,7 +83,7 @@ StatusPackage =
 					.skip 0
 					.limit 100
 					.sort date: 'desc'
-					.select '_id date author at content status images videos links album albumName pointsValue'
+					.select '_id date author at content status images videos links album albumName pointsValue nbLike'
 					.exec (err, recentStatus) ->
 						if err
 							res.serverError err
