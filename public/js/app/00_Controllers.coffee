@@ -791,6 +791,11 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText status.content
+					if !status.nbLike
+						status.nbLike = 0
+					s= textReplacements
+					jd=
+					status.nbLike = s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
 					status
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
@@ -940,6 +945,15 @@ Controllers =
 			loadMedia type, media
 
 			return
+
+		$scope.addLike = (statusId, nbLikePrec) ->
+			Ajax.put '/user/status/like',
+				data:
+					status: statusId
+			, (newNbLike) ->
+				s= textReplacements
+				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: newNbLike }, newNbLike))
+
 
 		at = getCachedData 'at'
 

@@ -11,6 +11,23 @@ statusSchema = PostSchema.extend
 		type: String
 	pointsValue:
 		type: Number
+	nbLike:
+		type: Number
+		default: 0
+
+
+
+extend statusSchema.methods,
+
+	likedBy: (userHashedId) ->
+		PlusW.findOne
+			status:@_id
+			user: cesarLeft userHashedId
+		, (err, result) ->
+			if err or !result
+				false
+			else
+				true
 
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength
