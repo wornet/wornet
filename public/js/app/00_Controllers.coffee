@@ -947,17 +947,21 @@ Controllers =
 			Ajax.put '/user/plusw',
 				data:
 					status: statusId
-			, (result) ->
-				s= textReplacements
-				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+				success: (result) ->
+					status.likedByMe = true
+					refreshScope $scope
+					s= textReplacements
+					$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
 
 		$scope.removeLike = (statusId) ->
 			Ajax.delete '/user/plusw',
 				data:
 					status: statusId
-			, (result) ->
-				s= textReplacements
-				$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+				success: (result) ->
+					status.likedByMe = false
+					refreshScope $scope
+					s= textReplacements
+					$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
 
 
 		at = getCachedData 'at'

@@ -16,7 +16,6 @@ statusSchema = PostSchema.extend
 		default: 0
 
 extend statusSchema.methods,
-
 	likedBy: (userHashedId) ->
 		PlusW.findOne
 			status:@_id
