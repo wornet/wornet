@@ -5,3 +5,4 @@
 nodemon.json
 tags
 node_modules/*
+views/testfb.jade
