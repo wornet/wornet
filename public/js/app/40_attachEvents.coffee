@@ -732,8 +732,8 @@ do ->
 			'.open-chat-list'
 			($span, e) ->
 				Ajax.get '/user/chat/list', (chat) ->
-					navBarScope.chatList = chat.chatList
-					refreshScope navBarScope
+					chatListScope.chatList = chat.chatList
+					refreshScope chatListScope
 		]
 	], ->
 		params = @

@@ -318,6 +318,31 @@ Controllers =
 
 		return
 
+	ChatList: ($scope) ->
+
+		$scope.chatWith = (user) ->
+			chatService.chatWith [objectResolve user]
+			return
+
+		$scope.mask = (user) ->
+			Ajax.delete '/user/chat/',
+				data:
+					otherUser: user.hashedId
+				success: (data) ->
+					chatService.clear([user.hashedId])
+					newChatList= []
+					for chat in $scope.chatList
+						if chat.otherUser.hashedId isnt user.hashedId
+							newChatList.push chat
+					$scope.chatList= newChatList
+					refreshScope $scope
+					$('.user-chat[data-id="'+user.hashedId+'"]').slideUp ->
+						$(@).remove()
+						return
+
+		window.chatListScope = $scope
+		return
+
 	Login: ($scope) ->
 		keepTipedModel $scope, '#login', 'user'
 		# Get remember preference of the user if previously saved (default: true)
@@ -536,31 +561,6 @@ Controllers =
 				return
 			return
 
-		return
-
-	Navbar: ($scope) ->
-
-		$scope.chatWith = (user) ->
-			chatService.chatWith [objectResolve user]
-			return
-
-		$scope.mask = (user) ->
-			Ajax.delete '/user/chat/',
-				data:
-					otherUser: user.hashedId
-				success: (data) ->
-					chatService.clear([user.hashedId])
-					newChatList= []
-					for chat in $scope.chatList
-						if chat.otherUser.hashedId isnt user.hashedId
-							newChatList.push chat
-					$scope.chatList= newChatList
-					refreshScope $scope
-					$('.user-chat[data-id="'+user.hashedId+'"]').slideUp ->
-						$(@).remove()
-						return
-
-		window.navBarScope = $scope
 		return
 
 	Notifications: ($scope, notificationsService, $sce) ->
