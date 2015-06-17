@@ -61,9 +61,9 @@
 	if config.wornet.comments.enabled || config.wornet.plusW.enabled
 		.status-actions
 			if config.wornet.plusW.enabled
-				span.btn.btn-action-plus-w(ng-if ='status.likedBy(getData("me"))' ng-click="removeLike(status._id)")
+				span.btn.btn-action-plus-w(ng-if ='status.likedByMe' ng-click="removeLike(status._id)")
 					+glyph("minus")
-				span.btn.btn-action-plus-w(ng-if ='!status.likedBy(getData("me"))' ng-click="addLike(status._id)")
+				span.btn.btn-action-plus-w(ng-if ='!status.likedByMe' ng-click="addLike(status._id)")
 					+glyph("plus")
 				span.like-zone(ng-bind-html='status.nbLike')
 			if config.wornet.comments.enabled
