@@ -140,11 +140,12 @@ module.exports = (app) ->
 								delete req.user
 						next()
 				return
-			unless req.xhr or req.connection.remoteAddress is '127.0.0.1'
-				secure = req.secure or 'https' is req.getHeader 'x-forwarded-proto'
-				if config.wornet.protocole is 'https' isnt secure or config.wornet.redirectToDefaultHost is req.getHeader 'host'
-					res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
-					return
+			unless req.xhr
+				unless req.connection.remoteAddress is '127.0.0.1'
+					secure = req.secure or 'https' is req.getHeader 'x-forwarded-proto'
+					if config.wornet.protocole is 'https' isnt secure or config.wornet.redirectToDefaultHost is req.getHeader 'host'
+						res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
+						return
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
 			res.locals.isXHR = !!req.xhr
