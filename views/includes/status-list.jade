@@ -41,7 +41,7 @@
 	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
 		div(ng-if="status.images.length > 0")
 			h3(ng-if="status.album")
-				a(href="/user/album/{{ status.album }}")
+				a.album-name(href="/user/album/{{ status.album }}")
 					+glyph('folder-open')
 					|&nbsp; {{ status.albumName }}
 			h3(ng-if="! status.album")
@@ -61,10 +61,13 @@
 	if config.wornet.comments.enabled || config.wornet.plusW.enabled
 		.status-actions
 			if config.wornet.plusW.enabled
-				span.status-button-plus-w.btn.btn-action-plus-w
+				span.btn.btn-action-plus-w(ng-if ='status.likedBy(getData("me"))' ng-click="removeLike(status._id)")
+					+glyph("minus")
+				span.btn.btn-action-plus-w(ng-if ='!status.likedBy(getData("me"))' ng-click="addLike(status._id)")
 					+glyph("plus")
+				span.like-zone(ng-bind-html='status.nbLike')
 			if config.wornet.comments.enabled
-				span.status-button-comment.btn.btn-action-comment(ng-click="status.commentForm = true")
+				span.btn.btn-action-comment(ng-click="status.commentForm = true")
 					+glyph("comment")
 					span
 						=s("Commenter")
