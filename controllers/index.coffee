@@ -46,6 +46,9 @@ module.exports = (router) ->
 			delay time.seconds, ->
 				res.json {}
 
+		pm.page '/testfb', (req, res, done) ->
+			res.render 'testfb',
+
 	else
 		router.get '/photos', (req, res) ->
 			res.notFound()
