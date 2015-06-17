@@ -629,14 +629,23 @@ Controllers =
 
 		ajaxRequest = null
 
+		search = null
+
 		$scope.change = (query) ->
 			if ajaxRequest
 				ajaxRequest.abort()
-			if query.content.length > 0
-				query.action = '/user/first/' + query.content
-				ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent query.content
+			if search
+				clearTimeout search
+			keyWords = query.content
+			if keyWords.length > 0
+				search = delay 2000, ->
+					trackEvent 'Search', 'Fail', keyWords
+				query.action = '/user/first/' + keyWords
+				ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent keyWords
 				.done (data) ->
 					if data.users
+						clearTimeout search
+						trackEvent 'Search', (if data.users.length then 'Results' else 'No results'), keyWords
 						$scope.query.users = data.users
 						refreshScope $scope
 			else
