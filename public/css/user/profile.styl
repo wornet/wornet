@@ -94,7 +94,7 @@ $progressRadialWidth = 4px
 	img
 		float left
 		margin $smallPadding
-		size(30px, 30px)
+		size(30px)
 
 .comment-block .date
 .comment-content
@@ -113,10 +113,10 @@ $progressRadialWidth = 4px
 
 #profile-photo
 	size($photoWidth, $photoHeight)
-	position relative
+	rel()
 
 	.btn
-		position absolute
+		abs()
 		bottom 0
 		margin $progressRadialWidth
 		width $photoWidth - 4 * $progressRadialWidth
@@ -126,8 +126,8 @@ $progressRadialWidth = 4px
 	img.upload-thumb
 	input.upload
 	.loader
-		position absolute
-		size(100%, 100%)
+		abs()
+		size(100%)
 
 	input.upload
 		cursor pointer
@@ -145,7 +145,7 @@ $progressRadialWidth = 4px
 		padding $progressRadialWidth
 		background-color $darkOrange
 		.overlay
-			position relative
+			rel()
 			background-color white
 
 

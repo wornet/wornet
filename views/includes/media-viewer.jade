@@ -1,9 +1,6 @@
 #media-viewer.modal.fade: .modal-dialog: .modal-content(ng-controller="MediaViewerCtrl")
 	.modal-header
-		button.close(type='button', data-dismiss='modal')
-			span(aria-hidden='true') ×
-			span.sr-only
-				=s("Fermer")
+		button.close(type='button', data-dismiss='modal' aria-label=s("Fermer")): span(aria-hidden='true') ×
 		h4.modal-title
 			span(ng-if="loadedMedia.album")
 				a(href="/user/album/{{ loadedMedia.album.id }}")

@@ -74,9 +74,9 @@ do ->
 		return
 
 	.on 'end-of-load', ->
-		if id = sessionStorage.readNotification
+		if id = getSessionItem 'readNotification'
 			readNotification id
-			delete sessionStorage.readNotification
+			removeSessionItem 'readNotification'
 		$('img[data-' + delayedSrcAttr + ']').each ->
 			$img = $ @
 			$img.attr 'src', $img.data delayedSrcAttr
@@ -257,7 +257,7 @@ do ->
 							$('#uploadedPhotoId').val id
 						album = $newImg.data 'created-album'
 						if album
-							albums = (objectResolve JSON.parse sessionStorage[albumKey()]) || []
+							albums = (objectResolve getSessionValue albumKey()) || []
 							present = false
 							for a in albums
 								if a._id is album._id
@@ -266,7 +266,7 @@ do ->
 							unless present
 								albums.push album
 								statusScope.albums = albums
-								sessionStorage[albumKey()] = JSON.stringify albums
+								setSessionValue albumKey(), albums
 								refreshScope statusScope
 							getAlbumsFromServer ->
 								refreshScope statusScope
@@ -518,7 +518,7 @@ do ->
 				id = $a.parents('li:first').attr 'data-id'
 				if href
 					if id
-						sessionStorage.readNotification = id
+						setSessionItem 'readNotification', id
 					delay 1, ->
 						location.href = href
 						hash = href.replace /^[^#]+#/g, ''
@@ -544,8 +544,8 @@ do ->
 					href = $a.prop('href')
 						.replace /#.*$/g, ''
 						.replace /^https?:\/\/[^\/]+/g, ''
-					if href is '/user/logout' and window.sessionStorage
-						sessionStorage.clear()
+					if href is '/user/logout'
+						removeSessionItems()
 					true
 				###
 				if href.length and href.charAt(0) isnt '#' and Ajax.page href, true
@@ -617,8 +617,7 @@ do ->
 							data: password: $('#delete-account-password').val()
 							success: (data) ->
 								if data.goingTo
-									if window.sessionStorage
-										sessionStorage.clear()
+									removeSessionItems()
 									location.href = data.goingTo
 								return
 						return
@@ -633,13 +632,11 @@ do ->
 			($a, e) ->
 				bootbox.confirm $a.data('message'), (ok) ->
 					if ok
-						if window.sessionStorage
-							clearStorage = $a.data 'clear-storage'
-							if clearStorage
-								if clearStorage is '*'
-									sessionStorage.clear()
-								else
-									delete sessionStorage[clearStorage]
+						if clearStorage = $a.data 'clear-storage'
+							if clearStorage is '*'
+								removeSessionItems()
+							else
+								removeSessionItem clearStorage
 						Ajax.delete ($a.data('delete') || location.href), (data) ->
 							getAlbumsFromServer (err, albums) ->
 								return
