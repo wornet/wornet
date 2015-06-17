@@ -92,7 +92,7 @@ Ajax =
 		path = url.replace(/([^\?]*)\?.*$/g, '$1').replace(/^\//g, '').replace(/\/$/g, '')
 		for match in blacklist
 			if match.test path
-				location.href = url
+				locationHref url
 				return false
 		Ajax.get url,
 			dataType: 'html'

@@ -28,6 +28,11 @@ for key, name of storageEngines
 	@['remove' + name + 'Items'] = errorsMuter engine, 'clear'
 	@['remove' + name + 'Item'] = errorsMuter engine, 'removeItem'
 
+# Compatible location.href set
+locationHref = (url) ->
+	location.href = url
+	return
+
 # Save user data on submit
 saveUser = ($scope) ->
 	$scope.submit = (user) ->

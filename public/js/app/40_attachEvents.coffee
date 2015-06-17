@@ -220,7 +220,7 @@ do ->
 			'touchtap'
 			'.photos-thumbs a[href][data-toggle="tooltip"]'
 			($a, e) ->
-				location.href = $a.attr 'href'
+				locationHref $a.attr 'href'
 				cancel e
 		]
 		[
@@ -477,7 +477,7 @@ do ->
 					userUrl = '/user/profile/' + userId+ '/' + encodeURIComponent $img.prop 'alt'
 				if $btn.is '.accept-friend'
 					if userId and userId is getData 'at'
-						location.href = '/user/friend/accept/' + id + '?goingTo=' + encodeURIComponent userUrl
+						locationHref '/user/friend/accept/' + id + '?goingTo=' + encodeURIComponent userUrl
 					else
 						$friends = $ '#friends'
 						if exists($friends) and ! exists($friends.find('[data-id="' + userId + '"]'))
@@ -520,7 +520,7 @@ do ->
 					if id
 						setSessionItem 'readNotification', id
 					delay 1, ->
-						location.href = href
+						locationHref href
 						hash = href.replace /^[^#]+#/g, ''
 						if hash and hash isnt href
 							$block = $ '#' + hash + ', [data-id=' + hash + ']'
@@ -546,7 +546,11 @@ do ->
 						.replace /^https?:\/\/[^\/]+/g, ''
 					if href is '/user/logout'
 						removeSessionItems()
-					true
+					if navigator.standalone
+						window.location = href
+						cancel e
+					else
+						true
 				###
 				if href.length and href.charAt(0) isnt '#' and Ajax.page href, true
 					cancel e
@@ -618,7 +622,7 @@ do ->
 							success: (data) ->
 								if data.goingTo
 									removeSessionItems()
-									location.href = data.goingTo
+									locationHref data.goingTo
 								return
 						return
 				delay 600, ->
@@ -641,7 +645,7 @@ do ->
 							getAlbumsFromServer (err, albums) ->
 								return
 							if data.goingTo
-								location.href = data.goingTo
+								locationHref data.goingTo
 							target = $a.data 'slide-up'
 							if target
 								$(target).slideUp ->
