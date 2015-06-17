@@ -304,7 +304,7 @@ do (w = window) ->
 			if chat.open then 0 else close
 
 	w.loadChatState = (chat) ->
-		opts = getLocalItem(key chat.users) || 0
+		opts = getLocalItem(key chat.users) | 0
 		chat.minimized = !! (opts & minimized)
 		chat.open = ! (opts & close)
 
