@@ -51,9 +51,11 @@
 		div(ng-if="status.videos.length > 0")
 			h3=s("Vidéos")
 			div(ng-repeat="video in status.videos")
-				iframe.preview(ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
-				a(data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
+				iframe.preview(ng-if="displayPlayer" ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
+				a(ng-if="displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
 					=s("Plus")
+				a(ng-if="! displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
+					img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
 		div(ng-if="status.links.length > 0")
 			h3=s("Liens")
 			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
