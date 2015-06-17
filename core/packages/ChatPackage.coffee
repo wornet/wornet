@@ -64,8 +64,8 @@ ChatPackage =
 
 	list: (req, res) ->
 		@all req, req.user.id, (err, chats) ->
-			chatList=[]
-			idList=[]
+			chatList = []
+			idList = []
 			for message in chats
 				if message.from
 					hashedIdOtherUser = message.from.hashedId
@@ -79,7 +79,7 @@ ChatPackage =
 					message.content = message.content.substr(0, 140)+'...'
 				if !idList.contains hashedIdOtherUser
 					idList.push hashedIdOtherUser
-					chatList.push {otherUser:otherUser, lastMessage:message}
+					chatList.push {otherUser: otherUser, lastMessage: message}
 				else
 					for chat in chatList
 						if chat.otherUser.hashedId is hashedIdOtherUser
@@ -93,12 +93,12 @@ ChatPackage =
 					-1
 				else
 					0
-			res.json {chatList:chatList}
+			res.json {chatList: chatList}
 
 	mask: (req, res, otherUserHashedId) ->
-		messagesToMask=[]
-		otherUserId= cesarRight otherUserHashedId
-		me= req.user.id
+		messagesToMask = []
+		otherUserId = cesarRight otherUserHashedId
+		me = req.user.id
 		MessageRecipient.find
 			$or: [
 				recipient: me
@@ -132,14 +132,14 @@ ChatPackage =
 									if err
 										res.serverError err
 							else
-								maskedFor= []
+								maskedFor = []
 								if !message.maskedFor.contains me
 									maskedFor.push me
 									Message.update
-										_id:message.id
+										_id: message.id
 									,
 										$set:
-											maskedFor:maskedFor
+											maskedFor: maskedFor
 									, (err, result) ->
 										if err
 											res.serverError err
