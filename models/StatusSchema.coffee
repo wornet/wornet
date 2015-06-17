@@ -15,8 +15,6 @@ statusSchema = PostSchema.extend
 		type: Number
 		default: 0
 
-
-
 extend statusSchema.methods,
 
 	likedBy: (userHashedId) ->
