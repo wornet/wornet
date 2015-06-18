@@ -44,6 +44,9 @@ NoticePackage =
 			Notice.create
 				user: userId
 				content: data.notice[0]
+				type: data.notice[1]
+				launcher: data.notice[2]
+				attachedStatus: data.notice[3]
 			, (err, notice) ->
 				if err
 					warn err
@@ -99,6 +102,20 @@ NoticePackage =
 						else
 							done()
 		true
+
+	unnotify: (groupData) ->
+		if groupData.action is 'notice' and groupData.notice
+			notice = groupData.notice
+			Notice.find
+				type: notice.type
+				launcher: notice.launcher
+				attachedStatus: notice.status
+			, (err, notices) ->
+				if err or !notices
+					true
+				else
+					for notice in notices
+						notice.remove()
 
 	# Delete a notification if id is specified or all the notifications to a user if not
 	remove: (userId, id = null) ->

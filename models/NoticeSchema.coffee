@@ -6,6 +6,14 @@ noticeSchema = OwnedSchema.extend
 		required: true
 		trim: true
 	status: readOrUnread.type
+	type:
+		type: String
+	launcher:
+		type: ObjectId
+		ref: 'UserSchema'
+	attachedStatus:
+		type: ObjectId
+		ref: 'StatusSchema'
 
 noticeSchema.virtual('isUnread').get ->
 	@status is readOrUnread.unread

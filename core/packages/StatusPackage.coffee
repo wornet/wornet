@@ -106,24 +106,37 @@ StatusPackage =
 									if err
 										res.serverError err
 									else
-										recentStatus.each ->
-											status = @toObject()
-											if @at is @author
-												@at = null
-											status.author = usersMap[strval @author].publicInformations()
-											if @at
-												status.at = usersMap[strval @at].publicInformations()
-											status.concernMe = [@at, @author].contains req.user.id, equals
-											if status.concernMe and status.images.length and ! equals req.user.id, @author
-												ids = status.images.column('src').map PhotoPackage.urlToId
-												(req.session.photosAtMe ||= []).merge ids, 'add'
-												next = nextWithSession
-											status.status = @status
-											if @status is 'blocked'
-												status.content = ''
-											recentStatusPublicData.push status
-										data.recentStatus = recentStatusPublicData
-										next()
+										idsStatus = recentStatus.column '_id'
+										likedStatus = []
+										PlusW.find
+											status: $in: idsStatus
+											user: req.user.id
+										, (err, result) ->
+											statusResult = result.column('status')
+											for id in idsStatus
+												if statusResult.contains id, equals
+													likedStatus[id] = true
+												else
+													likedStatus[id] = false
+											recentStatus.each ->
+												status = @toObject()
+												if @at is @author
+													@at = null
+												status.author = usersMap[strval @author].publicInformations()
+												if @at
+													status.at = usersMap[strval @at].publicInformations()
+												status.concernMe = [@at, @author].contains req.user.id, equals
+												if status.concernMe and status.images.length and ! equals req.user.id, @author
+													ids = status.images.column('src').map PhotoPackage.urlToId
+													(req.session.photosAtMe ||= []).merge ids, 'add'
+													next = nextWithSession
+												status.status = @status
+												if @status is 'blocked'
+													status.content = ''
+												status.likedByLoggedUser = likedStatus[status._id]
+												recentStatusPublicData.push status
+											data.recentStatus = recentStatusPublicData
+											next()
 								req.getUsersByIds missingIds, done #, searchInDataBase
 							else
 								data.recentStatus = recentStatusPublicData
