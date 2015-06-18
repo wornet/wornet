@@ -7,7 +7,10 @@ PlusWPackage =
 		statusReq = req.data.status
 		idStatus = req.data.status._id
 		idUser = req.user._id
-		at = cesarRight req.data.at || null
+		if req.data.at
+			at = cesarRight req.data.at
+		else
+			at = null
 		parallel [(done) ->
 			PlusW.create
 				user: idUser
