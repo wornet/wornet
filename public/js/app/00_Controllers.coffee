@@ -266,11 +266,11 @@ Controllers =
 		$scope.$on 'clear', (e, users) ->
 			chats = getChats()
 			for id, chat of chats
-				chatUserIds=[]
+				chatUserIds = []
 				for userChat in chat.users
 					chatUserIds.push userChat.hashedId
 				if JSON.stringify(chatUserIds) is JSON.stringify(users)
-					chat.messages=[]
+					chat.messages = []
 			$scope.chats = saveChats chats
 			refreshScope $scope
 			return
@@ -329,14 +329,14 @@ Controllers =
 				data:
 					otherUser: user.hashedId
 				success: (data) ->
-					chatService.clear([user.hashedId])
-					newChatList= []
+					chatService.clear [user.hashedId]
+					newChatList = []
 					for chat in $scope.chatList
 						if chat.otherUser.hashedId isnt user.hashedId
 							newChatList.push chat
-					$scope.chatList= newChatList
+					$scope.chatList = newChatList
 					refreshScope $scope
-					$('.user-chat[data-id="'+user.hashedId+'"]').slideUp ->
+					$('.user-chat[data-id="' + user.hashedId + '"]').slideUp ->
 						$(@).remove()
 						return
 
@@ -719,7 +719,7 @@ Controllers =
 							for link, index in $scope.medias.links
 								if link and link.id is data.id
 									$scope.medias.links.splice index, 1
-						$('.tab .medias img[src="'+data.src+'"]').parent().remove()
+						$('.tab .medias img[src="' + data.src + '"]').parent().remove()
 					else
 						location.reload()
 					hideLoader()
@@ -969,8 +969,8 @@ Controllers =
 						if recStatus._id is status._id
 							recStatus.likedByLoggedUser = true
 					refreshScope $scope
-					s= textReplacements
-					$('[data-id="'+status._id+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+					s = textReplacements
+					$('[data-id="' + status._id + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike)
 
 		$scope.removeLike = (status) ->
 			Ajax.delete '/user/plusw',
@@ -982,8 +982,8 @@ Controllers =
 						if recStatus._id is status._id
 							recStatus.likedByLoggedUser = false
 					refreshScope $scope
-					s= textReplacements
-					$('[data-id="'+status._id+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+					s = textReplacements
+					$('[data-id="' + status._id + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike)
 
 
 		at = getCachedData 'at'
