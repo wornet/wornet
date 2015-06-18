@@ -959,25 +959,31 @@ Controllers =
 
 			return
 
-		$scope.addLike = (statusId) ->
+		$scope.addLike = (status) ->
 			Ajax.put '/user/plusw',
 				data:
-					status: statusId
+					status: status
+					at: at
 				success: (result) ->
-					status.likedByMe = true
+					for recStatus in $scope.recentStatus
+						if recStatus._id is status._id
+							recStatus.likedByLoggedUser = true
 					refreshScope $scope
 					s= textReplacements
-					$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+					$('[data-id="'+status._id+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
 
-		$scope.removeLike = (statusId) ->
+		$scope.removeLike = (status) ->
 			Ajax.delete '/user/plusw',
 				data:
-					status: statusId
+					status: status
+					at: at
 				success: (result) ->
-					status.likedByMe = false
+					for recStatus in $scope.recentStatus
+						if recStatus._id is status._id
+							recStatus.likedByLoggedUser = false
 					refreshScope $scope
 					s= textReplacements
-					$('[data-id="'+statusId+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
+					$('[data-id="'+status._id+'"] .like-zone').html(s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike))
 
 
 		at = getCachedData 'at'
