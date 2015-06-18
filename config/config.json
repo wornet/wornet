@@ -160,6 +160,10 @@
 
         "bigImagesServer": "",
 
+        "bestFriends": {
+            "enabled": false
+        },
+
         "cache": {
             "enabled": true,
             "defaultLifetime": 600

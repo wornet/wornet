@@ -73,18 +73,19 @@
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend
 				if isAFriend
-					- var isNormal = JSON.stringify(s("Vous serez uniquement notifié si {username} publie sur votre mur.", { username: profile.fullName }))
-					- var isBest = JSON.stringify(s("Vous serez notifié de toutes les publications de {username}.", { username: profile.fullName }))
-					a.inline-button(
-						ng-init="isABestFriend = " + isABestFriend
-						ng-click="isABestFriend = ! isABestFriend; $event.preventDefault()"
-						href="/user/friend/{{ isABestFriend ? 'best' : 'normal' }}/" + profile.hashedId
-						data-ajax
-						data-target=".profileError"
-						data-click="success"
-						data-param0='{{ isABestFriend ? ' + isBest + ' : ' + isNormal + ' }}'
-					)
-						+glyph("star{{ isABestFriend ? '' : '-empty' }}")
+					if config.wornet.bestFriends.enabled
+						- var isNormal = JSON.stringify(s("Vous serez uniquement notifié si {username} publie sur votre mur.", { username: profile.fullName }))
+						- var isBest = JSON.stringify(s("Vous serez notifié de toutes les publications de {username}.", { username: profile.fullName }))
+						a.inline-button(
+							ng-init="isABestFriend = " + isABestFriend
+							ng-click="isABestFriend = ! isABestFriend; $event.preventDefault()"
+							href="/user/friend/{{ isABestFriend ? 'best' : 'normal' }}/" + profile.hashedId
+							data-ajax
+							data-target=".profileError"
+							data-click="success"
+							data-param0='{{ isABestFriend ? ' + isBest + ' : ' + isNormal + ' }}'
+						)
+							+glyph("star{{ isABestFriend ? '' : '-empty' }}")
 				else
 					a.destroyable.inline-button(
 						href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)

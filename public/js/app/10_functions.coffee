@@ -1,32 +1,36 @@
 # Local and session storages
 errorsMuter = (ctx, callback) ->
+	if callback
+		callback = ctx[callback]
+	else
+		callback = ctx
+		ctx = null
 	->
 		try
-			if callback
-				callback = ctx[callback]
-			else
-				ctx = @
-			callback.apply ctx, arguments
+			callback.apply (ctx || @), arguments
 		catch error
 			console.warn error
+			return
 
-storageEngines =
-	session: 'Session'
-	local: 'Local'
+do =>
 
-for key, name of storageEngines
-	engine = @[key + 'Storage'] || {}
-	@['get' + name + 'Item'] = errorsMuter engine, 'getItem'
-	@['set' + name + 'Item'] = errorsMuter engine, 'setItem'
-	@['get' + name + 'Value'] = errorsMuter do (engine) ->
-		(key) ->
-			engine.getItem $.parseJSON key
-	@['set' + name + 'Value'] = errorsMuter do (engine) ->
-		(key, value) ->
-			engine.setItem key, JSON.stringify value
-	@['has' + name + 'Item'] = errorsMuter engine, 'hasOwnProperty'
-	@['remove' + name + 'Items'] = errorsMuter engine, 'clear'
-	@['remove' + name + 'Item'] = errorsMuter engine, 'removeItem'
+	storageEngines =
+		session: 'Session'
+		local: 'Local'
+
+	for key, name of storageEngines
+		engine = @[key + 'Storage'] || {}
+		@['get' + name + 'Item'] = errorsMuter engine, 'getItem'
+		@['set' + name + 'Item'] = errorsMuter engine, 'setItem'
+		@['get' + name + 'Value'] = errorsMuter do (engine) ->
+			(key) ->
+				$.parseJSON engine.getItem key
+		@['set' + name + 'Value'] = errorsMuter do (engine) ->
+			(key, value) ->
+				engine.setItem key, JSON.stringify value
+		@['has' + name + 'Item'] = errorsMuter engine, 'hasOwnProperty'
+		@['remove' + name + 'Items'] = errorsMuter engine, 'clear'
+		@['remove' + name + 'Item'] = errorsMuter engine, 'removeItem'
 
 # Compatible location.href set
 locationHref = (url) ->
@@ -290,7 +294,7 @@ saveChats = (chats) ->
 	keepScroll '.chat .messages'
 	chats
 
-do (w = window) ->
+do =>
 
 	minimized = 1
 	close = 2
@@ -303,12 +307,12 @@ do (w = window) ->
 					k += c
 		k
 
-	w.saveChatState = (chat) ->
+	@saveChatState = (chat) ->
 		setLocalItem key(chat),
 			if chat.minimized then minimized else 0 |
 			if chat.open then 0 else close
 
-	w.loadChatState = (chat) ->
+	@loadChatState = (chat) ->
 		opts = getLocalItem(key chat) | 0
 		chat.minimized = !! (opts & minimized)
 		chat.open = ! (opts & close)
