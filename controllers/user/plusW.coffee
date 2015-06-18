@@ -1,18 +1,16 @@
 'use strict'
 
+nbLikeChangeResponse = (err, newNbLike) ->
+	if err
+		@serverError err
+	else
+		@json newNbLike: newNbLike
+
 module.exports = (router) ->
 
 	router.put '', (req, res) ->
-		PlusWPackage.put req, res, (err, newNbLike) ->
-			if err
-				res.serverError err
-			else
-				res.json newNbLike
+		PlusWPackage.put req, res, nbLikeChangeResponse.bind res
 
 
 	router.delete '', (req, res) ->
-		PlusWPackage.delete req, res, (err, newNbLike) ->
-			if err
-				res.serverError err
-			else
-				res.json newNbLike
+		PlusWPackage.delete req, res, nbLikeChangeResponse.bind res

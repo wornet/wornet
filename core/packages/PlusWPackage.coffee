@@ -7,31 +7,22 @@ PlusWPackage =
 		statusReq = req.data.status
 		idStatus = req.data.status._id
 		idUser = req.user._id
-		if req.data.at
-			at = cesarRight req.data.at
+		at = if req.data.at
+			cesarRight req.data.at
 		else
-			at = null
-		parallel [(done) ->
-			PlusW.create
-				user: idUser
-				status: idStatus
-			, done
-		, (done) =>
-			Status.findOne
-				_id: idStatus
-			, (err, status) =>
-				if err
-					done err
-				if !status.nbLike
-					newNbLike = 1
-				else
-					newNbLike = status.nbLike + 1
-
-				Status.update
+			null
+		parallel
+			plusW: (done) ->
+				PlusW.create
+					user: idUser
+					status: idStatus
+				, done
+			newNbLike: (done) =>
+				Status.findOneAndUpdate
 					_id: idStatus
 				,
-					nbLike: newNbLike
-				, (err) =>
+					$inc: nbLike: 1
+				, (err, status) =>
 					if err
 						done err
 					else
@@ -43,38 +34,29 @@ PlusWPackage =
 							usersToNotify.push at
 
 						unless empty usersToNotify
-								@notify usersToNotify, statusReq, req.user
-						end null, {'newNbLike': newNbLike}
-		], ->
-			res.json()
-		, ->
-			res.serverError err
+							@notify usersToNotify, statusReq, req.user
+						done null, status.nbLike
+		, (result) ->
+			end null, result.newNbLike
+		, end
 
-	delete: (req, res, done) ->
+	delete: (req, res, end) ->
 		idStatus = req.data.status._id
 		idUser = req.user._id
-		parallel [(done) ->
-			PlusW.remove
-				user: idUser
-				status: idStatus
-			, (err) ->
-		, (done) ->
-			Status.findOne
-				_id: idStatus
-			, (err, status) ->
-				if err
-					res.serverError err
-				if !status.nbLike
-					newNbLike = 0
-				else
-					newNbLike = status.nbLike - 1
-				Status.update
+		parallel
+			plusW: (done) ->
+				PlusW.remove
+					user: idUser
+					status: idStatus
+				, done
+			newNbLike: (done) ->
+				Status.findOneAndUpdate
 					_id: idStatus
 				,
-					nbLike: newNbLike
+					$inc: nbLike: -1
 				, (err, status) ->
 					if err
-						res.serverError err
+						done err
 					else
 						NoticePackage.unnotify
 							action: 'notice'
@@ -82,11 +64,10 @@ PlusWPackage =
 								type: 'like'
 								launcher: idUser
 								status: idStatus
-						res.json {'newNbLike': newNbLike}
-		], ->
-			res.json()
-		, ->
-			res.serverError err
+						done null, status.nbLike
+		, (result) ->
+			end null, result.newNbLike
+		, end
 
 	notify: (usersToNotify, status, liker) ->
 
