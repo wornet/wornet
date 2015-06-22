@@ -8,9 +8,10 @@ PlusWPackage =
 		idStatus = req.data.status._id
 		idUser = req.user._id
 		at = if req.data.at
-			cesarRight req.data.at
-		else
-			cesarRight req.data.status.at.hashedId
+			req.data.at
+		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
+			req.data.status.at.hashedId
+		else null
 		parallel
 			plusW: (done) ->
 				PlusW.create
@@ -27,7 +28,7 @@ PlusWPackage =
 						done err
 					else
 						usersToNotify = []
-						idAuthor = cesarRight statusReq.author.hashedId
+						idAuthor = statusReq.author.hashedId
 						unless equals idUser, idAuthor
 							usersToNotify.push idAuthor
 						unless [null, idAuthor, idUser].contains at, equals
@@ -74,35 +75,34 @@ PlusWPackage =
 		statusPlace = status.at || status.author
 		likersFriends = liker.friends.column 'hashedId'
 		for userToNotify in usersToNotify
-			hashedIdToNotify = cesarLeft(userToNotify)
-			if hashedIdToNotify is statusPlace.hashedId
-				notice = [
+			notice = if userToNotify is statusPlace.hashedId
+				[
 					img +
 					jd 'span(data-href="/user/profile/' +
 					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
 						s("{username} a aimé une publication de votre profil.", username: liker.name.full)
 				]
-			else if hashedIdToNotify is status.author.hashedId
-				if likersFriends.contains cesarLeft(userToNotify)
-					notice = [
+			else if userToNotify is status.author.hashedId and userToNotify isnt liker.hashedId
+				if likersFriends.contains userToNotify
+					[
 						img +
 						jd 'span(data-href="/user/profile/' +
 						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
 							s("{username} a aimé votre publication.", username: liker.name.full)
 					]
 				else
-					notice = [
+					[
 						img +
 						jd 'span(data-href="/user/profile/' +
 						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
 							s("{username}, ami de {placename}, a aimé votre publication.", {username: liker.name.full, placename:statusPlace.name.full })
 					]
 			else
-				notice = null
+				null
 
 			if notice
 				notice.push 'like', liker._id, status._id
-				NoticePackage.notify [userToNotify], null,
+				NoticePackage.notify [cesarRight userToNotify], null,
 					action: 'notice'
 					author: liker
 					notice: notice
