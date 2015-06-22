@@ -325,21 +325,24 @@ Controllers =
 			return
 
 		$scope.mask = (user) ->
-			Ajax.delete '/user/chat/',
-				data:
-					otherUser: user.hashedId
-				success: (data) ->
-					chatService.clear [user.hashedId]
-					newChatList = []
-					for chat in $scope.chatList
-						if chat.otherUser.hashedId isnt user.hashedId
-							newChatList.push chat
-					$scope.chatList = newChatList
-					refreshScope $scope
-					$('.user-chat[data-id="' + user.hashedId + '"]').slideUp ->
-						$(@).remove()
-						return
-
+			s = textReplacements
+			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer l'intégralité de cette conversation ?"), (ok) ->
+				if ok
+					Ajax.delete '/user/chat/',
+						data:
+							otherUser: user.hashedId
+						success: (data) ->
+							chatService.clear [user.hashedId]
+							newChatList = []
+							for chat in $scope.chatList
+								if chat.otherUser.hashedId isnt user.hashedId
+									newChatList.push chat
+							$scope.chatList = newChatList
+							refreshScope $scope
+							$('.user-chat[data-id="' + user.hashedId + '"]').slideUp ->
+								$(@).remove()
+								return
+			return
 		window.chatListScope = $scope
 		return
 
