@@ -3,10 +3,9 @@
 PlusWPackage =
 
 	put: (req, res, end) ->
-
 		statusReq = req.data.status
 		idStatus = req.data.status._id
-		idUser = req.user._id
+		hashedIdUser = req.user.hashedId
 		at = if req.data.at
 			req.data.at
 		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
@@ -15,7 +14,7 @@ PlusWPackage =
 		parallel
 			plusW: (done) ->
 				PlusW.create
-					user: idUser
+					user: req.user._id
 					status: idStatus
 				, done
 			newNbLike: (done) =>
@@ -28,10 +27,10 @@ PlusWPackage =
 						done err
 					else
 						usersToNotify = []
-						idAuthor = statusReq.author.hashedId
-						unless equals idUser, idAuthor
-							usersToNotify.push idAuthor
-						unless [null, idAuthor, idUser].contains at, equals
+						hashedIdAuthor = statusReq.author.hashedId
+						unless equals hashedIdUser, hashedIdAuthor
+							usersToNotify.push hashedIdAuthor
+						unless [null, hashedIdAuthor, hashedIdUser].contains at, equals
 							usersToNotify.push at
 						unless empty usersToNotify
 							@notify usersToNotify, statusReq, req.user
