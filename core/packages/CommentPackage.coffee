@@ -22,13 +22,13 @@ CommentPackage =
 
 						usersToNotify = []
 						if comment.author.hashedId isnt status.author.hashedId
-							usersToNotify.push cesarRight status.author.hashedId
+							usersToNotify.push status.author.hashedId
 						unless [null, status.author.hashedId, comment.author.hashedId].contains at
-							usersToNotify.push cesarRight at
+							usersToNotify.push at
 
 						unless empty usersToNotify
 							req.getFriends (err, friends, friendAsks) =>
-								@notify usersToNotify, friends.column('_id'), comment, status, at
+								@notify usersToNotify.map(cesarRight), friends.column('_id'), comment, status, at
 					done err, comment, originalComment
 			catch err
 				done err
