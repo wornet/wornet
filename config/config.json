@@ -226,7 +226,7 @@
         "parseProxyUrl": false,
 
         "plusW": {
-            "enabled": false
+            "enabled": true
         },
 
         "protocole": "http",
