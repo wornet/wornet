@@ -30,10 +30,10 @@ PlusWPackage =
 						hashedIdAuthor = statusReq.author.hashedId
 						unless equals hashedIdUser, hashedIdAuthor
 							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at, equals
+						unless [null, hashedIdAuthor, hashedIdUser].contains at
 							usersToNotify.push at
 						unless empty usersToNotify
-							@notify usersToNotify, statusReq, req.user
+							@notify usersToNotify.map(cesarRight), statusReq, req.user
 						done null, status.nbLike
 		, (result) ->
 			end null, result.newNbLike
