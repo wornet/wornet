@@ -40,7 +40,6 @@ locationHref = (url) ->
 # Save user data on submit
 saveUser = ($scope) ->
 	$scope.submit = (user) ->
-		alert "start"
 		user.remember = $('[ng-model="user.remember"]').prop 'checked'
 		setSessionValue 'user', user
 		return

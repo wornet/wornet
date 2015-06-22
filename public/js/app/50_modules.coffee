@@ -50,6 +50,21 @@ do (window, s = textReplacements) ->
 		yes:
 			label: texts.en.OK
 			callback: callback
+
+	$ ->
+		# Fix iOS missing placeholder on date inputs
+		$('input[type="date"]').each ->
+			$date = $ @
+			width = $date.width()
+			if width > 0 and width < 130
+				$date.attr 'type', 'text'
+					.on 'focus touchstart', ->
+						if 'text' is $date.attr 'type'
+							$date.blur()
+							delay 1, ->
+								$date.attr 'type', 'date'
+									.focus()
+
 	return
 
 # Convert titles attributes to tooltips when elements have a data-toggle="tooltip" atribute
