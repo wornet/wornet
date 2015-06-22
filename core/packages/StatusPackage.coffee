@@ -107,17 +107,14 @@ StatusPackage =
 										res.serverError err
 									else
 										idsStatus = recentStatus.column '_id'
-										likedStatus = []
+										likedStatus = {}
 										PlusW.find
 											status: $in: idsStatus
 											user: req.user.id
 										, (err, result) ->
-											statusResult = result.column('status')
+											statusResult = result.column 'status'
 											for id in idsStatus
-												if statusResult.contains id, equals
-													likedStatus[id] = true
-												else
-													likedStatus[id] = false
+												likedStatus[id] = statusResult.contains id, equals
 											recentStatus.each ->
 												status = @toObject()
 												if @at is @author
@@ -133,7 +130,7 @@ StatusPackage =
 												status.status = @status
 												if @status is 'blocked'
 													status.content = ''
-												status.likedByLoggedUser = likedStatus[status._id]
+												status.likedByMe = likedStatus[status._id]
 												recentStatusPublicData.push status
 											data.recentStatus = recentStatusPublicData
 											next()
