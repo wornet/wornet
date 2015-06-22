@@ -10,7 +10,7 @@ PlusWPackage =
 		at = if req.data.at
 			cesarRight req.data.at
 		else
-			null
+			cesarRight req.data.status.at.hashedId
 		parallel
 			plusW: (done) ->
 				PlusW.create
@@ -28,11 +28,10 @@ PlusWPackage =
 					else
 						usersToNotify = []
 						idAuthor = cesarRight statusReq.author.hashedId
-						if strval(idUser) isnt strval(idAuthor)
+						unless equals idUser, idAuthor
 							usersToNotify.push idAuthor
 						unless [null, idAuthor, idUser].contains at, equals
 							usersToNotify.push at
-
 						unless empty usersToNotify
 							@notify usersToNotify, statusReq, req.user
 						done null, status.nbLike
@@ -72,40 +71,40 @@ PlusWPackage =
 	notify: (usersToNotify, status, liker) ->
 
 		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: liker
-
 		statusPlace = status.at || status.author
 		likersFriends = liker.friends.column 'hashedId'
 		for userToNotify in usersToNotify
-
-			if cesarLeft(userToNotify) is statusPlace.hashedId
+			hashedIdToNotify = cesarLeft(userToNotify)
+			if hashedIdToNotify is statusPlace.hashedId
 				notice = [
 					img +
 					jd 'span(data-href="/user/profile/' +
 					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
 						s("{username} a aimé une publication de votre profil.", username: liker.name.full)
 				]
-			else if cesarLeft(userToNotify) is status.author.hashedId and likersFriends.contains cesarLeft(userToNotify)
-				notice = [
-					img +
-					jd 'span(data-href="/user/profile/' +
-					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-						s("{username} a aimé votre publication.", username: liker.name.full)
-				]
-			else if cesarLeft(userToNotify) is status.author.hashedId and !likersFriends.contains cesarLeft(userToNotify)
-				notice = [
-					img +
-					jd 'span(data-href="/user/profile/' +
-					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-						s("{username}, ami de {placename}, a aimé votre publication.", {username: liker.name.full, placename:statusPlace.name.full })
-				]
+			else if hashedIdToNotify is status.author.hashedId
+				if likersFriends.contains cesarLeft(userToNotify)
+					notice = [
+						img +
+						jd 'span(data-href="/user/profile/' +
+						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+							s("{username} a aimé votre publication.", username: liker.name.full)
+					]
+				else
+					notice = [
+						img +
+						jd 'span(data-href="/user/profile/' +
+						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+							s("{username}, ami de {placename}, a aimé votre publication.", {username: liker.name.full, placename:statusPlace.name.full })
+					]
+			else
+				notice = null
 
-			notice.push 'like'
-			notice.push liker._id
-			notice.push status._id
-
-			NoticePackage.notify [userToNotify], null,
-				action: 'notice'
-				author: liker
-				notice: notice
+			if notice
+				notice.push 'like', liker._id, status._id
+				NoticePackage.notify [userToNotify], null,
+					action: 'notice'
+					author: liker
+					notice: notice
 
 module.exports = PlusWPackage
