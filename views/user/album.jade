@@ -41,8 +41,10 @@ block body
 								=s("Supprimer cet album")
 		- var init = "album.id=" + JSON.stringify(album.id) + "; "
 		- init += "album.name.content = " + JSON.stringify(album.name) + "; "
-		- init += "album.description.content = " + JSON.stringify(album.description)
-		+form().col-xs-12.col-sm-6.fit(ng-submit="update(album)" ng-init=init)
+		- init += "album.name.originalContent = album.name.content; "
+		- init += "album.description.content = " + JSON.stringify(album.description) + "; "
+		- init += "album.description.originalContent = album.description.content; "
+		+form().col-xs-12.col-sm-6.fit(ng-submit="update(album); album.description.originalContent = album.description.content; album.name.originalContent = album.name.content;" ng-init=init)
 			h3(ng-if="! album.name.edit")
 				{{ album.name.content }}
 			.edit-album-name.form-group(ng-if="album.name.edit")
@@ -59,7 +61,11 @@ block body
 			.edit-album-description.form-group(ng-if="album.description.edit")
 				textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
 			.edit-album-actions.btn-group.col-xs-12.fit(ng-if="album.name.edit || album.description.edit")
-				input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="album.name.edit = false; album.description.edit = false;" value=s("Annuler"))
+				- click = "album.description.content = album.description.originalContent;"
+				- click += "album.name.content = album.name.originalContent;"
+				- click += "album.name.edit = false;"
+				- click += "album.description.edit = false;"
+				input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click=click value=s("Annuler"))
 				input.btn.col-xs-12.col-sm-6.fit(type="submit" value=s("Enregistrer"))
 		.cb
 		.medias
