@@ -77,7 +77,7 @@
 		+data('commentsEnabled', true)
 		.comment-block.cb(ng-repeat="comment in status.comments" data-data="{{ comment._id }}")
 			- var init = "comment.edit = false;"
-			- init += "comment.initialCommentContent = comment.content;"
+			- init += "comment.originalContent = comment.content;"
 			.aside.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
 				a.dropdown-toggle(href="#" data-toggle="dropdown")
 					+glyph('cog')
@@ -99,9 +99,9 @@
 				|&nbsp;
 			.comment-content.word-wrap.cb(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content | smilies")
 			.comment-edit(ng-if="comment.edit")
-				+form()(ng-submit="comment.edit = false; updateComment(comment)").cb
+				+form()(ng-submit="comment.edit = false; updateComment(comment); comment.originalContent = comment.content;").cb
 					textarea.form-control(ng-model='comment.content' placeholder=s("Commentaire..."))
-					input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.initialCommentContent; comment.edit = false" value=s("Annuler"))
+					input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; comment.edit = false" value=s("Annuler"))
 					input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
 		.comment-form(ng-if="status.commentForm")
 			+form()(ng-submit="sendComment(status)").cb
