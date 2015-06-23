@@ -38,6 +38,9 @@ Wornet = angular.module 'Wornet', [
 		receiveStatus: (status) ->
 			$rootScope.$broadcast 'receiveStatus', status
 			return
+		receiveComment: (comment) ->
+			$rootScope.$broadcast 'receiveComment', comment
+			return
 	statusService
 ]
 
