@@ -28,12 +28,14 @@ PlusWPackage =
 					else
 						usersToNotify = []
 						hashedIdAuthor = statusReq.author.hashedId
+						#usersToNotify contains hashedIds tests in notify.
+						#It will be transformed just before NoticePackage calling
 						unless equals hashedIdUser, hashedIdAuthor
 							usersToNotify.push hashedIdAuthor
 						unless [null, hashedIdAuthor, hashedIdUser].contains at
 							usersToNotify.push at
 						unless empty usersToNotify
-							@notify usersToNotify.map(cesarRight), statusReq, req.user
+							@notify usersToNotify, statusReq, req.user
 						done null, status.nbLike
 		, (result) ->
 			end null, result.newNbLike

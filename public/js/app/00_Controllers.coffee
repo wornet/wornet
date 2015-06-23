@@ -963,16 +963,16 @@ Controllers =
 			return
 
 		$scope.doLike = (status, adding) ->
+			for recStatus in $scope.recentStatus
+				if recStatus._id is status._id
+					recStatus.likedByMe = adding
+					break
+			refreshScope $scope
 			Ajax[if adding then 'put' else 'delete'] '/user/plusw',
 				data:
 					status: status
 					at: at
 				success: (result) ->
-					for recStatus in $scope.recentStatus
-						if recStatus._id is status._id
-							recStatus.likedByMe = adding
-							break
-					refreshScope $scope
 					s = textReplacements
 					$('[data-id="' + status._id + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike)
 
