@@ -28,8 +28,26 @@ CommentPackage =
 
 						unless empty usersToNotify
 							req.getFriends (err, friends, friendAsks) =>
-								@notify usersToNotify.map(cesarRight), friends.column('_id'), comment, status, at
-					done err, comment, originalComment
+								@notify usersToNotify, friends.column('_id'), comment, status, at
+
+
+						@getRecentCommentForRequest req, res, [status._id], (err, commentList) ->
+
+						# commentsPublicData = []
+						# Comment.find
+						# 	attachedStatus: status._id
+						# , (err, commentList) ->
+						# 	authors = commentList.column 'author'
+						# 	next = (err, usersMap) ->
+						# 		if err
+						# 			res.serverError err
+						# 		else
+						# 			commentList.each ->
+						# 				comment = @toObject()
+						# 				comment.author = usersMap[strval @author].publicInformations()
+						# 				commentsPublicData.push comment
+									done err, commentList
+							# req.getUsersByIds authors, next
 			catch err
 				done err
 		else
@@ -88,5 +106,40 @@ CommentPackage =
 								encodeURIComponent(status._id) + '") ' +
 									s("{username} a publié un commentaire.", username: comment.author.name.full)
 							]
+
+	getRecentCommentForRequest: (req, res, statusIds, done) ->
+		if statusIds
+			Comment.find
+				attachedStatus: $in: statusIds
+			.sort date: 'asc'
+			.exec (err, comments) ->
+				if err
+					res.serverError err
+				else if comments
+					authorIds = comments.column('author').unique()
+					Status.find
+						_id: $in: statusIds
+					, (err, statusList) ->
+						req.getUsersByIds authorIds, (err, usersMap) ->
+							if err
+								res.serverError err
+							else
+								result = {}
+								comments.each ->
+									comment = @toObject()
+									comment.isMine = equals @author, req.user._id
+									for status in statusList
+										if equals status._id, @attachedStatus
+											comment.attachedStatus = status
+											comment.onMyWall = equals status.at, req.user._id
+											break
+									comment.author = usersMap[comment.author].publicInformations()
+									result[comment.attachedStatus._id] ||= []
+									result[comment.attachedStatus._id].push comment
+								done null, commentList: result
+				else
+					done null, commentList: {}
+		else
+			res.notFound()
 
 module.exports = CommentPackage

@@ -941,20 +941,51 @@ Controllers =
 			return
 
 		$scope.sendComment = (status) ->
-			comment = status.newComment
-			statusMedias = $.extend {}, $scope.medias
-			scanAllLinks comment.content || ''
-			commentMedias = $.extend {}, $scope.medias
-			$scope.medias = $.extend {}, statusMedias
-			Ajax.put '/user/comment/add',
+			if status.newComment
+				comment = status.newComment
+				statusMedias = $.extend {}, $scope.medias
+				scanAllLinks comment.content || ''
+				commentMedias = $.extend {}, $scope.medias
+				$scope.medias = $.extend {}, statusMedias
+				Ajax.put '/user/comment/add',
+					data:
+						status: status
+						comment: comment
+						at: at
+						medias: commentMedias || null
+					success: (data) ->
+						if data.commentList
+							for status in $scope.recentStatus
+								if data.commentList[status._id]
+									status.comments = data.commentList[status._id]
+									refreshScope $scope
+									break
+				comment.content = ""
+				return
+			else
+				return
+
+		$scope.deleteComment = (comment) ->
+			Ajax.delete '/user/comment',
 				data:
-					status: status
 					comment: comment
-					at: at
-					medias: commentMedias || null
-				success: (data) ->
-					#TODO return comment to user and notify friends
-			comment.content = ""
+
+			$('.comment-block[data-data="'+comment._id+'"]').slideUp ->
+				$(@).remove()
+				return
+			return
+
+		$scope.updateComment = (comment) ->
+			Ajax.post '/user/comment',
+				data:
+					comment: comment
+				sucess: (data) ->
+					if data.commentList
+						for status in $scope.recentStatus
+							if data.commentList[status._id]
+								status.comments = data.commentList[status._id]
+								refreshScope $scope
+								break
 			return
 
 		$scope.loadMedia = (type, media) ->
