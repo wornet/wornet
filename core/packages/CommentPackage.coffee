@@ -6,7 +6,12 @@ CommentPackage =
 		if req.data.status
 			try
 				medias = req.data.medias || {}
-				at = req.data.at || null
+				hashedIdUser = req.user.hashedId
+				at = if req.data.at
+					req.data.at
+				else if req.data.status and req.data.status.at and req.data.status.at.hashedId
+					req.data.status.at.hashedId
+				else null
 				status = req.data.status
 				Comment.create
 					author: req.user._id
@@ -19,93 +24,89 @@ CommentPackage =
 					unless err
 						comment = originalComment.toObject()
 						comment.author = req.user.publicInformations()
-
+						hashedIdAuthor = status.author.hashedId
 						usersToNotify = []
-						if comment.author.hashedId isnt status.author.hashedId
-							usersToNotify.push status.author.hashedId
-						unless [null, status.author.hashedId, comment.author.hashedId].contains at
+						unless equals hashedIdUser, hashedIdAuthor
+							usersToNotify.push hashedIdAuthor
+						unless [null, hashedIdAuthor, hashedIdUser].contains at
 							usersToNotify.push at
-
 						unless empty usersToNotify
-							req.getFriends (err, friends, friendAsks) =>
-								@notify usersToNotify, friends.column('_id'), comment, status, at
-
+							@notify usersToNotify, status, req.user, comment
 
 						@getRecentCommentForRequest req, res, [status._id], (err, commentList) ->
-
-						# commentsPublicData = []
-						# Comment.find
-						# 	attachedStatus: status._id
-						# , (err, commentList) ->
-						# 	authors = commentList.column 'author'
-						# 	next = (err, usersMap) ->
-						# 		if err
-						# 			res.serverError err
-						# 		else
-						# 			commentList.each ->
-						# 				comment = @toObject()
-						# 				comment.author = usersMap[strval @author].publicInformations()
-						# 				commentsPublicData.push comment
-									done err, commentList
-							# req.getUsersByIds authors, next
+							done err, commentList
 			catch err
 				done err
 		else
 			done new PublicError s("Ce commentaire ne concerne aucun statut")
 
-	notify: (usersToNotify, friendIds, comment, status, at) ->
-		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: comment.author
-
+	notify: (usersToNotify, status, commentator, comment) ->
+		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: commentator
 		statusPlace = status.at || status.author
-		NoticePackage.notify usersToNotify, null,
+		commentatorsFriends = commentator.friends.column 'hashedId'
+		for userToNotify in usersToNotify
+			notice = if userToNotify is statusPlace.hashedId
+				[
+					img +
+					jd 'span(data-href="/user/profile/' +
+					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+						s("{username} a commenté une publication de votre profil.", username: commentator.name.full)
+				]
+			else if userToNotify is status.author.hashedId and userToNotify isnt commentator.hashedId
+				if commentatorsFriends.contains userToNotify
+					[
+						img +
+						jd 'span(data-href="/user/profile/' +
+						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+							s("{username} a commenté votre publication.", username: commentator.name.full)
+					]
+				else
+					[
+						img +
+						jd 'span(data-href="/user/profile/' +
+						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+							s("{username}, ami de {placename}, a commenté votre publication.", {username: commentator.name.full, placename:statusPlace.name.full })
+					]
+			else
+				null
+
+			if notice
+				notice.push 'comment', commentator._id, status._id
+				NoticePackage.notify [cesarRight userToNotify], null,
+					action: 'notice'
+					author: commentator
+					notice: notice
+
+		otherCommentators = []
+		if status.comments
+			for comment in status.comments
+				if ![status.author.hashedId, status.at.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
+					otherCommentators.push comment.author.hashedId
+
+			notice = [
+					img +
+					jd 'span(data-href="/user/profile/' +
+					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+						s("{username} a également commenté une publication.", username: commentator.name.full)
+				]
+
+			unless otherCommentators.length > 0
+				otherCommentatorsIds = otherCommentators.map (value) ->
+					cesarRight value
+				NoticePackage.notify otherCommentatorsIds, null,
+					action: 'notice'
+					author: commentator
+					notice: notice
+
+		userstoPushComment = otherCommentators
+				.concat usersToNotify
+        		.unique()
+        		.map (value) ->
+            		cesarRight value
+
+		NoticePackage.notify userstoPushComment, null,
 			action: 'comment'
 			comment: comment
-		NoticePackage.notify usersToNotify, null,
-			action: 'notice'
-			author: comment.author
-			notice: [
-				img +
-				jd 'span(data-href="/user/profile/' +
-				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-					s("{username} a publié un commentaire.", username: comment.author.name.full)
-			]
-
-		friendIds = friendIds.filter (friendId) ->
-			friendId and /^[0-9a-f]+$/ig.test(friendId) and ! [at, status.author.id].contains friendId, equals
-		.map strval
-
-		statusPlaceId = cesarRight statusPlace.hashedId
-		if /^[0-9a-f]+$/ig.test statusPlaceId
-			Friend.find
-				status: 'accepted'
-				$or: [
-					askedFrom: $in: friendIds
-					askedTo: statusPlaceId
-				,
-					askedTo: $in: friendIds
-					askedFrom: statusPlaceId
-				], (err, friends) ->
-					if err
-						warn err
-					if friends
-						usersToNotify = friends.map (friend) ->
-							if equals friend.askedTo, statusPlace
-								friend.askedFrom
-							else
-								friend.askedTo
-
-						NoticePackage.notify usersToNotify, null,
-							action: 'notice'
-							author: comment.author
-							forBestFriends: true
-							notice: [
-								img +
-								jd 'span(data-href="/user/profile/' +
-								encodeURIComponent(statusPlace.hashedId) +
-								'/' + encodeURIComponent(statusPlace.name.full) + '#' +
-								encodeURIComponent(status._id) + '") ' +
-									s("{username} a publié un commentaire.", username: comment.author.name.full)
-							]
 
 	getRecentCommentForRequest: (req, res, statusIds, done) ->
 		if statusIds

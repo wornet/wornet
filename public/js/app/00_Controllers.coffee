@@ -1015,6 +1015,14 @@ Controllers =
 			if status.images and status.author and status.images.length and status.author.hashedId is at
 				refreshMediaAlbums()
 			return
+			
+		$scope.$on 'receiveComment', (e, comment) ->
+			for status in $scope.recentStatus
+				if equals status._id, comment.attachedStatus
+					status.comments.push comment
+					break
+			refreshScope $scope
+			return
 
 		window.statusScope = $scope
 
