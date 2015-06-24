@@ -70,7 +70,7 @@ UserPackage =
 			remind = limit - users.length
 			if err or remind <= 0
 				done err, users
-			else
+			else if users
 				each users, (user) ->
 					exclude.push user.id
 				User.find
