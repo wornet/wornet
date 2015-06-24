@@ -1029,10 +1029,8 @@ Controllers =
 				if comment.attachedStatus and status._id is comment.attachedStatus
 					comment.isMine = comment.author.hashedId is getData 'me'
 					comment.onMyWall = status.at is getData 'at'
-					if status.comments
-						status.comments.push comment
-					else
-						status.comments = [comment]
+					(status.comments ||= []).push comment
+					break
 			refreshScope $scope
 			return
 

@@ -122,6 +122,8 @@ ArrayList =
 
 	merge: (values, push = 'push') ->
 		if @ instanceof Array
+			unless values instanceof Array
+				values = [values]
 			Array.prototype[push].apply @, values
 		else
 			extend @, values
