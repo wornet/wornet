@@ -116,6 +116,8 @@ for key, method of Ajax
 			if singleRequests[id]
 				singleRequests[id].abort()
 			singleRequests[id] = method.apply Ajax, args
+				.always ->
+					delete singleRequests[id]
 
 ###
 Crud can send request to its member URL
