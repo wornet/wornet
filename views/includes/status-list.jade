@@ -67,8 +67,8 @@
 					+glyph("minus")
 				span.btn.btn-action-plus-w(ng-if ='!status.likedByMe' ng-click="doLike(status, true)")
 					+glyph("plus")
-				span.like-zone(ng-init="nbLike=status.nbLike")
-					{{ nbLikeText(status._id, nbLike) }}
+				span.like-zone
+					{{ nbLikeText(status) }}
 			if config.wornet.comments.enabled
 				span.btn.btn-action-comment(ng-click="status.commentForm = true")
 					+glyph("comment")
