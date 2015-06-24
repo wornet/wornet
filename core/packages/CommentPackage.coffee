@@ -33,8 +33,7 @@ CommentPackage =
 						unless empty usersToNotify
 							@notify usersToNotify, status, req.user, comment
 
-						@getRecentCommentForRequest req, res, [status._id], (err, commentList) ->
-							done err, commentList
+						@getRecentCommentForRequest req, res, [status._id], done
 			catch err
 				done err
 		else
