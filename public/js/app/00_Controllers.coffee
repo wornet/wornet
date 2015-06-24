@@ -992,7 +992,7 @@ Controllers =
 					else
 						-1
 					break
-			Ajax[if adding then 'put' else 'delete'] '/user/plusw',
+			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
 					status: status
 					at: at
