@@ -107,6 +107,16 @@ Ajax =
 					serverError()
 		true
 
+singleRequests = {}
+SingleAjax = {}
+for key, method of Ajax
+	SingleAjax[key] = do (key, method) ->
+		(id) ->
+			args = Array.prototype.slice.call arguments, 1
+			if singleRequests[id]
+				singleRequests[id].abort()
+			singleRequests[id] = method.apply Ajax, args
+
 ###
 Crud can send request to its member URL
 ###
