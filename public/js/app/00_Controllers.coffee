@@ -983,15 +983,14 @@ Controllers =
 
 			return
 
-		$scope.doLike = (status, adding) ->
-			for recStatus in $scope.recentStatus
-				if recStatus._id is status._id
-					recStatus.likedByMe = adding
-					recStatus.nbLike += if adding
-						1
-					else
-						-1
-					break
+		$scope.toggleLike = (status, adding) ->
+			if arguments.length < 2
+				adding = ! status.likedByMe
+			status.likedByMe = adding
+			status.nbLike += if adding
+				1
+			else
+				-1
 			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
 					status: status
