@@ -116,8 +116,8 @@ Wornet = angular.module 'Wornet', [
 ControllersByService =
 	notificationsService: 'Notifications'
 	chatService: 'Profile'
-	#statusService: 'Status'
 	smiliesService: 'Status'
+	statusService: 'Status'
 	$sce: 'Notifications'
 
 # Load controllers

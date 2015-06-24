@@ -994,6 +994,10 @@ Controllers =
 			for recStatus in $scope.recentStatus
 				if recStatus._id is status._id
 					recStatus.likedByMe = adding
+					if adding
+						recStatus.nbLike++
+					else
+						recStatus.nbLike--
 					break
 			refreshScope $scope
 			Ajax[if adding then 'put' else 'delete'] '/user/plusw',
@@ -1001,12 +1005,13 @@ Controllers =
 					status: status
 					at: at
 				success: (result) ->
-					nbLikeText status._id, result.newNbLike
+					status.nbLike = result.newNbLike
+					refreshScope $scope
 
-		nbLikeText = (idStatus, nbLike) ->
+		nbLikeText = (status) ->
 			s = textReplacements
-			$('[data-id="' + idStatus + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: nbLike }, nbLike)
-			return
+			return s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
+
 
 		$scope.nbLikeText = nbLikeText
 
@@ -1021,8 +1026,11 @@ Controllers =
 
 		$scope.$on 'receiveComment', (e, comment) ->
 			for status in $scope.recentStatus
-				if equals status._id, comment.attachedStatus
-					status.comments.push comment
+				if comment.attachedStatus and status._id is comment.attachedStatus._id
+					if status.comments
+						status.comments.push comment
+					else
+						status.comments = [comment]
 					break
 			refreshScope $scope
 			return
