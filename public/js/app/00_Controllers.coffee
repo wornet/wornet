@@ -1026,12 +1026,13 @@ Controllers =
 
 		$scope.$on 'receiveComment', (e, comment) ->
 			for status in $scope.recentStatus
-				if comment.attachedStatus and status._id is comment.attachedStatus._id
+				if comment.attachedStatus and status._id is comment.attachedStatus
+					comment.isMine = comment.author.hashedId is getData 'me'
+					comment.onMyWall = status.at is getData 'at'
 					if status.comments
 						status.comments.push comment
 					else
 						status.comments = [comment]
-					break
 			refreshScope $scope
 			return
 
