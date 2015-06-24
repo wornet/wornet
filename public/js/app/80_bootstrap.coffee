@@ -82,19 +82,17 @@ Wornet = angular.module 'Wornet', [
 ]
 
 #Angular Wornet directives
-.directive 'focus', ->
-	['$timeout', ($timeout) ->
-		scope:
-			trigger: '@focus'
-		link: ($scope, $element) ->
-			$scope.$watch 'trigger', (value) ->
-				if value is "true"
-					$timeout ->
-						$element[0].focus()
-						return
+.directive 'focus', ['$timeout', ($timeout) ->
+	scope:
+		trigger: '@focus'
+	link: ($scope, $element) ->
+		$scope.$watch 'trigger', (value) ->
+			$timeout ->
+				$element[0].focus()
 				return
 			return
-	]
+		return
+]
 
 .directive 'pill', ->
 	scope: true
