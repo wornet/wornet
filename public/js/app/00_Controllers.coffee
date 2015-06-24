@@ -807,8 +807,7 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText status.content
-					if !status.nbLike
-						status.nbLike = 0
+					status.nbLike ||= 0
 					status
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
@@ -937,6 +936,14 @@ Controllers =
 
 			return
 
+		updateCommentList = (data) ->
+			if data.commentList
+				for status in $scope.recentStatus
+					if data.commentList[status._id]
+						status.comments = data.commentList[status._id]
+						refreshScope $scope
+						break
+
 		$scope.sendComment = (status) ->
 			if status.newComment
 				comment = status.newComment
@@ -950,24 +957,16 @@ Controllers =
 						comment: comment
 						at: at
 						medias: commentMedias || null
-					success: (data) ->
-						if data.commentList
-							for status in $scope.recentStatus
-								if data.commentList[status._id]
-									status.comments = data.commentList[status._id]
-									refreshScope $scope
-									break
+					success: updateCommentList
 				comment.content = ""
-				return
-			else
-				return
+			return
 
 		$scope.deleteComment = (comment) ->
 			Ajax.delete '/user/comment',
 				data:
 					comment: comment
 
-			$('.comment-block[data-data="'+comment._id+'"]').slideUp ->
+			$('.comment-block[data-data="' + comment._id + '"]').slideUp ->
 				$(@).remove()
 				return
 			return
@@ -976,13 +975,7 @@ Controllers =
 			Ajax.post '/user/comment',
 				data:
 					comment: comment
-				sucess: (data) ->
-					if data.commentList
-						for status in $scope.recentStatus
-							if data.commentList[status._id]
-								status.comments = data.commentList[status._id]
-								refreshScope $scope
-								break
+				sucess: updateCommentList
 			return
 
 		$scope.loadMedia = (type, media) ->
@@ -994,13 +987,12 @@ Controllers =
 			for recStatus in $scope.recentStatus
 				if recStatus._id is status._id
 					recStatus.likedByMe = adding
-					if adding
-						recStatus.nbLike++
+					recStatus.nbLike += if adding
+						1
 					else
-						recStatus.nbLike--
+						-1
 					break
-			refreshScope $scope
-			Ajax[if adding then 'put' else 'delete'] '/user/plusw',
+			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
 					status: status
 					at: at
@@ -1008,12 +1000,9 @@ Controllers =
 					status.nbLike = result.newNbLike
 					refreshScope $scope
 
-		nbLikeText = (status) ->
+		$scope.nbLikeText = (status) ->
 			s = textReplacements
-			return s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
-
-
-		$scope.nbLikeText = nbLikeText
+			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
 
 		at = getCachedData 'at'
 

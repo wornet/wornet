@@ -537,22 +537,22 @@ module.exports =
 		if isNaN(n) then 0 else n
 
 	###
+	Return true is the value is a string or a String instance
+	###
+	isstring: (v) ->
+		'string' is (typeof v) or v instanceof String
+
+	###
 	Return value if it's an array, else return an array containing the value
 	@param mixed value
 
 	@return Array list
 	###
 	arrayval: (val) ->
-		if val instanceof Array
+		if val and val.length and ! isstring val
 			val
 		else
 			[val]
-
-	###
-	@alias arrayval
-	###
-	list: (val) ->
-		arrayval val
 
 	###
 	Return a regex string from RegExpString object get with the specified method (trim if any)
