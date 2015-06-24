@@ -807,11 +807,8 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText status.content
-
 					if !status.nbLike
 						status.nbLike = 0
-					s= textReplacements
-					status.nbLike = s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
 					status
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
@@ -1004,8 +1001,14 @@ Controllers =
 					status: status
 					at: at
 				success: (result) ->
-					s = textReplacements
-					$('[data-id="' + status._id + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: result.newNbLike }, result.newNbLike)
+					nbLikeText status._id, result.newNbLike
+
+		nbLikeText = (idStatus, nbLike) ->
+			s = textReplacements
+			$('[data-id="' + idStatus + '"] .like-zone').html s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: nbLike }, nbLike)
+			return
+
+		$scope.nbLikeText = nbLikeText
 
 		at = getCachedData 'at'
 
@@ -1015,7 +1018,7 @@ Controllers =
 			if status.images and status.author and status.images.length and status.author.hashedId is at
 				refreshMediaAlbums()
 			return
-			
+
 		$scope.$on 'receiveComment', (e, comment) ->
 			for status in $scope.recentStatus
 				if equals status._id, comment.attachedStatus
