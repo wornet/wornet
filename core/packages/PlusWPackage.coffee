@@ -74,30 +74,22 @@ PlusWPackage =
 
 		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: liker
 		statusPlace = status.at || status.author
+		generateNotice = (text) ->
+			[
+				img +
+				jd 'span(data-href="/user/profile/' +
+				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+					text
+			]
 		likersFriends = liker.friends.column 'hashedId'
 		for userToNotify in usersToNotify
 			notice = if userToNotify is statusPlace.hashedId
-				[
-					img +
-					jd 'span(data-href="/user/profile/' +
-					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-						s("{username} a aimé une publication de votre profil.", username: liker.name.full)
-				]
+				generateNotice s("{username} a aimé une publication de votre profil.", username: liker.name.full)
 			else if userToNotify is status.author.hashedId and userToNotify isnt liker.hashedId
-				if likersFriends.contains userToNotify
-					[
-						img +
-						jd 'span(data-href="/user/profile/' +
-						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-							s("{username} a aimé votre publication.", username: liker.name.full)
-					]
+				generateNotice if likersFriends.contains userToNotify
+					s("{username} a aimé votre publication.", username: liker.name.full)
 				else
-					[
-						img +
-						jd 'span(data-href="/user/profile/' +
-						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-							s("{username}, ami de {placename}, a aimé votre publication.", {username: liker.name.full, placename:statusPlace.name.full })
-					]
+					s("{username}, ami de {placename}, a aimé votre publication.", {username: liker.name.full, placename:statusPlace.name.full })
 			else
 				null
 
