@@ -9,7 +9,10 @@
 				img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view-src=profile.photo alt=profile.fullName)
 			if isMe && profile.photoId
 				.btn(ng-click="deletePhoto($event)")
-					=s("Supprimer ma photo")
+					span.long
+						=s("Supprimer ma photo")
+					span.short
+						=s("Supprimer")
 	.profile-edit(class=(edit ? null : "hidden"))
 		iframe(name="upload")
 		.photo-options
@@ -18,8 +21,10 @@
 					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
 					.btn
 						+glyph('edit')
-						span
+						span.long
 							=s("Changer de photo")
+						span.short
+							=s("Changer")
 					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 	if isMe
 		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")

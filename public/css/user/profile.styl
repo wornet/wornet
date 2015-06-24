@@ -42,6 +42,8 @@ $progressRadialWidth = 4px
 			margin-top 0
 
 .profile-edit
+	.short
+		display none
 	label
 	.alert-info
 		margin-left $photoWidth + $mainPadding
@@ -158,15 +160,33 @@ $progressRadialWidth = 4px
 			rel()
 			background-color white
 
+@media (max-width: 927px)
+	.profile-edit label
+		span
+		textarea.form-control
+		select.form-control
+		input.form-control
+			width 100%
 
 @media (max-width: 767px)
 	.about-user
-		margin-left $photoWidth / 2 + $mainPadding
+	.profile-edit label
+	.profile-edit .alert-info
+		margin-left ($photoWidth / 2) + $mainPadding
 	#profile-photo
 		size($photoWidth / 2, $photoHeight / 2)
+		.btn
+			width calc(100% - 8px)
+			i
+				display none
+	.photo-options .btn
+		width ($photoWidth / 2)
 	.profile-edit
+		.long
+			display none
+		.short
+			display inline
 		label
-			margin-left $photoWidth / 2 + $mainPadding
 			span
 				float none
 			span
@@ -174,3 +194,14 @@ $progressRadialWidth = 4px
 			select.form-control
 			input.form-control
 				width 100%
+
+@media (max-width: 423px)
+	.about-user
+	.profile-edit label
+	.profile-edit .alert-info
+		margin-left 0
+
+	.photo-options
+		float none
+		width ($photoWidth / 2)
+		margin 0 auto 10px
