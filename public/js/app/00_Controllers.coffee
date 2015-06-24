@@ -1017,7 +1017,8 @@ Controllers =
 			for status in $scope.recentStatus
 				if comment.attachedStatus and status._id is comment.attachedStatus
 					comment.isMine = comment.author.hashedId is getData 'me'
-					comment.onMyWall = status.at is getData 'at'
+					statusAt = status.at || status.author
+					comment.onMyWall = statusAt.hashedId is getData 'me'
 					(status.comments ||= []).push comment
 					break
 			refreshScope $scope
