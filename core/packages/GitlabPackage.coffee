@@ -2,6 +2,8 @@
 
 logging = require 'gitlab-logging'
 
+pack = require __dirname + '/../../package.json'
+
 host = 'http://gitlab.selfbuild.fr'
 
 head = 'master'
@@ -24,7 +26,7 @@ errors = {}
 
 GitlabPackage =
 	format: (error) ->
-		config.wornet.version + ': ' + error + '\n```\n' +
+		(pack.version || config.wornet.version) + ': ' + error + '\n```\n' +
 		strval (error.stack || (new Error).stack)
 			.replace(/```/g, '')
 			.replace(/\n  /g, '\n- ')

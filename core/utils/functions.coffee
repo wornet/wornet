@@ -1150,7 +1150,7 @@ module.exports =
 		if file.string
 			file = file.string
 		file = ('' + file).replace /^\/img\//g, '/'
-		version = config.wornet.version
+		version = (config.wornet.assetVersion ||= generateSalt 6)
 		if /https?:\/\//g.test file
 			file + '.' + extension + '?' + version
 		else
