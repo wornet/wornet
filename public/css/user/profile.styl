@@ -17,6 +17,14 @@ $progressRadialWidth = 4px
 			top 2px
 	.btn-group
 		float right
+		.btn
+			margin-bottom 0
+			&[type=submit]
+				background-color $orange
+
+	.static-tooltip
+		margin-left 50%
+
 	label
 		display block
 		position relative
@@ -120,6 +128,8 @@ $progressRadialWidth = 4px
 		bottom 0
 		margin $progressRadialWidth
 		width $photoWidth - 4 * $progressRadialWidth
+		color $nearlyWhite
+		background-color rgba(115,100,95,.5)
 
 	.progress-radial
 	.progress-radial .overlay

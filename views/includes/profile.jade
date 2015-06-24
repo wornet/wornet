@@ -17,7 +17,9 @@
 				.progress-radial: .overlay
 					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
 					.btn
-						=s("Changer de photo")
+						+glyph('edit')
+						span
+							=s("Changer de photo")
 					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 	if isMe
 		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
