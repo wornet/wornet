@@ -28,7 +28,7 @@ fieldset.tab(ng-show="status.containsMedias")
 	div(ng-switch="media.step")
 		div(ng-switch-when="create-album")
 			+form()(ng-submit="createAlbum(album)")
-				+formControl().do-not-loose.counter(required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
+				+formControl().do-not-loose.counter(focus required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
 				textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12
@@ -38,7 +38,7 @@ fieldset.tab(ng-show="status.containsMedias")
 				.preview
 					img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
 			.cb.col-xs-12.col-sm-6.col-sm-offset-3
-				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104" give-focus="#album-name")
+				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
 					=s("Créer un album")
 		div(ng-switch-when="add")
 			.col-xs-6.fit
@@ -86,7 +86,7 @@ fieldset.tab(ng-show="status.containsMedias")
 					input(type="hidden" ng-model="medias" name="medias")
 		div(ng-switch-default)
 			.col-sm-6.col-xs-12.fit
-				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121" give-focus="#album-name")
+				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121")
 					=s("Créer un album")
 			.col-sm-6.col-xs-12.xs-margin-up.fit
 				a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")

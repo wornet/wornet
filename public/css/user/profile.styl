@@ -79,24 +79,26 @@ $progressRadialWidth = 4px
 
 .status-actions
 	float right
-	margin -8px (- $mainPadding) 0 0
+	margin -8px (- $smallPadding) (-3 * $mainPadding - $smallPadding) 0
 
 	.btn-action-plus-w
-		background-color white
-		color $darkGray
-		margin-right 5px
-
 	.btn-action-comment
-		background-color white
+		background transparent
 		color $darkGray
+
+	.btn-action-plus-w
+		margin-right 5px
 
 	.btn
 		@media (max-width: 767px)
 			height 28px
 			line-height 18px
 
+.comment-list
+	margin ($bigPadding + $smallPadding) 0 (- $bigPadding)
+
 .comment-form
-	padding-bottom $bigPadding
+	padding (3 * $mainPadding) 0 $bigPadding
 	.btn
 		float right
 
@@ -111,7 +113,12 @@ $progressRadialWidth = 4px
 	font-size 14px
 
 .comment-block
+	margin-top $smallPadding
 	background $ultraLight
+	.aside
+		padding-top $smallPadding
+		> a
+			padding $smallPadding
 
 .photo-options
 	float left

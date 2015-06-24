@@ -567,16 +567,6 @@ do ->
 				cancel e
 		]
 		[
-			'tap'
-			'[give-focus]'
-			($a) ->
-				sel = $a.attr 'give-focus'
-				delay 1, ->
-					$(sel).focus()
-					return
-				return
-		]
-		[
 			'load'
 			'iframe[data-ratio]'
 			($iframe) ->

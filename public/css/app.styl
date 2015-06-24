@@ -571,11 +571,11 @@ h2
 	textarea
 		margin 0
 
-.edit-album-actions .cancel
+.cancel
 	background $mediumGray
-	@media (max-width: 767px)
-		margin-bottom $smallPadding
 @media (max-width: 767px)
+	.edit-album-actions .cancel
+		margin-bottom $smallPadding
 	.edit-album-actions .btn+.btn
 		margin-left 0
 
@@ -860,6 +860,15 @@ span.image-box i.glyphicon
 @media (max-width: 360px)
 	.nav-tabs.nav>li>a
 		font-size 13px
+
+@media (max-width: 400px)
+	.status-actions
+		margin-left 0
+		.btn
+			font-size 13px
+			margin 0
+	.comment-form .btn
+		width 50%
 
 // Media Queries.
 @media (max-width: 767px)

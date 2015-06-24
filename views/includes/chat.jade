@@ -1,5 +1,5 @@
 #chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : null))
-	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{'minimized': chat.minimized}")
+	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{ minimized: chat.minimized }")
 		h4(ng-click="minimize(chat)")
 			a.close(ng-click="close(chat); $event.stopPropagation();")
 				+glyph('remove-sign')
@@ -17,9 +17,9 @@
 				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content | smilies")
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
 			if config.wornet.chat.multiline
-				textarea.form-control.do-not-loose(ng-model="message.content" ng-keypress="press($event, message, chatId)" placeholder=s("Entrez votre message ici") focus="true")
+				textarea.form-control.do-not-loose(ng-model="message.content" ng-keypress="press($event, message, chatId)" placeholder=s("Entrez votre message ici"))
 				button(type="submit")
 					+glyph('arrow-right')
 			else
-				+formControl().do-not-loose(ng-model="message.content" placeholder=s("Entrez votre message ici") focus="true")
+				+formControl().do-not-loose(ng-model="message.content" placeholder=s("Entrez votre message ici"))
 				button(type="submit")
