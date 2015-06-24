@@ -76,10 +76,12 @@ ChatPackage =
 
 				message.date = Date.fromId message.id
 				if message.content.length > 140
-					message.content = message.content.substr(0, 140)+'...'
+					message.content = message.content.substr(0, 140) + '...'
 				if !idList.contains hashedIdOtherUser
 					idList.push hashedIdOtherUser
-					chatList.push {otherUser: otherUser, lastMessage: message}
+					chatList.push
+						otherUser: otherUser
+						lastMessage: message
 				else
 					for chat in chatList
 						if chat.otherUser.hashedId is hashedIdOtherUser
@@ -99,50 +101,46 @@ ChatPackage =
 		messagesToMask = []
 		otherUserId = cesarRight otherUserHashedId
 		me = req.user.id
+		_warn = (err) ->
+			if err
+				warn err
 		MessageRecipient.find
 			$or: [
 				recipient: me
 			,
 				recipient: otherUserId
 			], (err, messageRecipients) ->
-				if err
-					res.serverError err
-				else
+				_warn err
+				if messageRecipients
 					idsMessagesRecipe = messageRecipients.column 'message'
-				Message.find
-					$or: [
-						author: otherUserId
-					,
-						author: me
-					]
-					_id: $in: idsMessagesRecipe
-				, (err, messages) ->
-					if err
-						res.serverError err
-					if messages
-						for message in messages
-							if message.maskedFor and message.maskedFor.contains otherUserId
-								parallelRemove [
-									Message
-									_id: message.id
-								], [
-									MessageRecipient
-									message: message.id
-								], (err) ->
-									if err
-										res.serverError err
-							else
-								maskedFor = []
-								if !message.maskedFor.contains me
-									maskedFor.push me
+					Message.find
+						$or: [
+							author: otherUserId
+						,
+							author: me
+						]
+						_id: $in: idsMessagesRecipe
+					, (err, messages) ->
+						_warn err
+						if messages
+							for message in messages
+								message.maskedFor ||= []
+								if message.maskedFor.contains otherUserId
+									parallelRemove [
+										Message
+										_id: message.id
+									], [
+										MessageRecipient
+										message: message.id
+									], _warn
+								else unless message.maskedFor.contains me
+									message.maskedFor.push me
 									Message.update
 										_id: message.id
 									,
 										$set:
-											maskedFor: maskedFor
-									, (err, result) ->
-										if err
-											res.serverError err
+											maskedFor: message.maskedFor
+									, _warn
 
 		res.json()
 
