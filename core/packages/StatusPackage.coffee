@@ -54,8 +54,7 @@ StatusPackage =
 		req.getFriends (err, friends, friendAsks) ->
 			id = req.getRequestedUserId id
 			connectedPeople = friends.column 'id'
-			connectedPeopleAndMe = connectedPeople.copy()
-			connectedPeopleAndMe.push req.user.id
+			connectedPeopleAndMe = connectedPeople.with req.user.id
 			where = (if onProfile
 				if config.wornet.onlyAuthoredByAFriend
 					$or: [

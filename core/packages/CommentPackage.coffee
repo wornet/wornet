@@ -134,8 +134,7 @@ CommentPackage =
 											comment.onMyWall = equals status.at, req.user._id
 											break
 									comment.author = usersMap[comment.author].publicInformations()
-									result[comment.attachedStatus._id] ||= []
-									result[comment.attachedStatus._id].push comment
+									(result[comment.attachedStatus._id] ||= []).push comment
 								done null, commentList: result
 				else
 					done null, commentList: {}

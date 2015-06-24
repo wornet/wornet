@@ -1027,10 +1027,7 @@ Controllers =
 		$scope.$on 'receiveComment', (e, comment) ->
 			for status in $scope.recentStatus
 				if comment.attachedStatus and status._id is comment.attachedStatus._id
-					if status.comments
-						status.comments.push comment
-					else
-						status.comments = [comment]
+					(status.comments ||= []).push comment
 					break
 			refreshScope $scope
 			return
