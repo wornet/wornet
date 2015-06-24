@@ -39,7 +39,7 @@ CommentPackage =
 		else
 			done new PublicError s("Ce commentaire ne concerne aucun statut")
 
-	notify: (usersToNotify, status, commentator, comment) ->
+	notify: (usersToNotify, status, commentator, originalComment) ->
 		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: commentator
 		statusPlace = status.at || status.author
 		commentatorsFriends = commentator.friends.column 'hashedId'
@@ -105,7 +105,7 @@ CommentPackage =
 
 		NoticePackage.notify userstoPushComment, null,
 			action: 'comment'
-			comment: comment
+			comment: originalComment
 
 	getRecentCommentForRequest: (req, res, statusIds, done) ->
 		if statusIds
@@ -131,7 +131,8 @@ CommentPackage =
 									for status in statusList
 										if equals status._id, @attachedStatus
 											comment.attachedStatus = status
-											comment.onMyWall = equals status.at, req.user._id
+											statusAt = status.at || status.author
+											comment.onMyWall = equals statusAt, req.user._id
 											break
 									comment.author = usersMap[comment.author].publicInformations()
 									(result[comment.attachedStatus._id] ||= []).push comment
