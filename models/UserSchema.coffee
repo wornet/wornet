@@ -257,8 +257,7 @@ extend userSchema.methods,
 			user = @
 			done = (err, friends) ->
 				if ! err and friends.has(hashedId: hashedId)
-					user.bestFriends ||= []
-					user.bestFriends.push hashedId
+					(user.bestFriends ||= []).push hashedId
 					updateUser user, bestFriends: user.bestFriends, next
 				else
 					next err || new PublicError s("{username} n'est pas dans votre liste d'amis actuellement.", user)

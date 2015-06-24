@@ -63,3 +63,19 @@ describe "functions", ->
 			objectModel.has((v) -> v.indexOf('z') isnt -1).should.be.false "z"
 			[{}, objectModel, {}].has(a: 'a').should.be.true "a:a"
 			[{}, objectModel, {}].has(b: 'c').should.be.false "b:c"
+
+	describe "with", ->
+
+		_object = JSON.stringify objectModel
+
+		it "return new object/array", ->
+			model.with([42]).join(',').should.equal "1,5,1,4,5,3,1,3,4,6,3,42"
+			model.join(',').should.equal "1,5,1,4,5,3,1,3,4,6,3"
+			nObject = objectModel.with
+				foo: 42
+				bar: "lala"
+			nObject.foo.should.equal 42
+			nObject.bar.should.equal "lala"
+			nObject.da.should.equal "da"
+			nObject.b.should.equal "b"
+			_object.should.equal JSON.stringify objectModel
