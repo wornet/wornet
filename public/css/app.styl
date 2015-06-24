@@ -648,8 +648,10 @@ fieldset.tab .btn
 		margin 0 $smallPadding $smallPadding 0
 
 	iframe.preview
-		size(480px, 270px)
 		float none
+		size(480px, 270px)
+		@media (max-width: 564px)
+			size(240px, 135px)
 
 	img.video-preview
 		size(240px, 180px)
