@@ -11,64 +11,105 @@ PlusWPackage =
 		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
 			req.data.status.at.hashedId
 		else null
-		parallel
-			plusW: (done) ->
-				PlusW.create
-					user: req.user._id
-					status: idStatus
-				, done
-			newNbLike: (done) =>
-				Status.findOneAndUpdate
-					_id: idStatus
-				,
-					$inc: nbLike: 1
-				, (err, status) =>
-					if err
-						done err
-					else
-						usersToNotify = []
-						hashedIdAuthor = statusReq.author.hashedId
-						#usersToNotify contains hashedIds tests in notify.
-						#It will be transformed just before NoticePackage calling
-						unless equals hashedIdUser, hashedIdAuthor
-							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at
-							usersToNotify.push at
-						unless empty usersToNotify
-							@notify usersToNotify, statusReq, req.user
-						done null, status.nbLike
-		, (result) ->
-			end null, result.newNbLike
-		, end
+
+		@checkRights req, res, req.data.status, true, (err, ok) =>
+			if ok
+				parallel
+					plusW: (done) ->
+						PlusW.create
+							user: req.user._id
+							status: idStatus
+						, done
+					newNbLike: (done) =>
+						Status.findOneAndUpdate
+							_id: idStatus
+						,
+							$inc: nbLike: 1
+						, (err, status) =>
+							if err
+								done err
+							else
+								usersToNotify = []
+								hashedIdAuthor = statusReq.author.hashedId
+								#usersToNotify contains hashedIds tests in notify.
+								#It will be transformed just before NoticePackage calling
+								unless equals hashedIdUser, hashedIdAuthor
+									usersToNotify.push hashedIdAuthor
+								unless [null, hashedIdAuthor, hashedIdUser].contains at
+									usersToNotify.push at
+								unless empty usersToNotify
+									@notify usersToNotify, statusReq, req.user
+								done null, status.nbLike
+				, (result) ->
+					end null, result.newNbLike
+				, end
+			else
+				end err, 0
 
 	delete: (req, res, end) ->
 		idStatus = req.data.status._id
 		idUser = req.user._id
-		parallel
-			plusW: (done) ->
-				PlusW.remove
-					user: idUser
-					status: idStatus
-				, done
-			newNbLike: (done) ->
-				Status.findOneAndUpdate
-					_id: idStatus
+		@checkRights req, res, req.data.status, false, (err, ok) =>
+			if ok
+				parallel
+					plusW: (done) ->
+						PlusW.remove
+							user: idUser
+							status: idStatus
+						, done
+					newNbLike: (done) ->
+						Status.findOneAndUpdate
+							_id: idStatus
+						,
+							$inc: nbLike: -1
+						, (err, status) ->
+							if err
+								done err
+							else
+								NoticePackage.unnotify
+									action: 'notice'
+									notice:
+										type: 'like'
+										launcher: idUser
+										status: idStatus
+								done null, status.nbLike
+				, (result) ->
+					end null, result.newNbLike
+				, end
+			else
+				end err, 0
+
+	checkRights: (req, res, status, liking, done) ->
+		req.getFriends (err, friends, friendAsks) ->
+			friendsList = friends.column('_id')
+			friendsList.push req.user._id
+			idStatus = status._id
+			#The status is owned by one of my friends or on his wall
+			whereStatus =
+				_id: idStatus
+				$or: [
+					author: $in: friendsList
 				,
-					$inc: nbLike: -1
-				, (err, status) ->
-					if err
-						done err
-					else
-						NoticePackage.unnotify
-							action: 'notice'
-							notice:
-								type: 'like'
-								launcher: idUser
-								status: idStatus
-						done null, status.nbLike
-		, (result) ->
-			end null, result.newNbLike
-		, end
+					at: $in: friendsList
+				]
+			Status.findOne whereStatus
+			, (err, result) ->
+				if err
+					done err, false
+				else if !result
+					done new PublicError s("Vous n'avez accès à ce statut"), false
+				else
+					wherePlus =
+						user: req.user._id
+						status: idStatus
+					PlusW.findOne wherePlus
+					, (err, plusw) ->
+						if err
+							done err, false
+						if (liking and !plusw) or (!liking and plusw)
+							done null, true
+						else
+							done null, false
 
 	notify: (usersToNotify, status, liker) ->
 
