@@ -80,36 +80,38 @@ PlusWPackage =
 				end err, 0
 
 	checkRights: (req, res, status, liking, done) ->
-		req.getFriends (err, friends, friendAsks) ->
-			friendsList = friends.column('_id')
-			friendsList.push req.user._id
-			idStatus = status._id
-			#The status is owned by one of my friends or on his wall
-			whereStatus =
-				_id: idStatus
-				$or: [
-					author: $in: friendsList
-				,
-					at: $in: friendsList
-				]
-			Status.findOne whereStatus
-			, (err, result) ->
-				if err
-					done err, false
-				else if !result
-					done new PublicError s("Vous n'avez accès à ce statut"), false
-				else
-					wherePlus =
-						user: req.user._id
-						status: idStatus
-					PlusW.findOne wherePlus
-					, (err, plusw) ->
-						if err
-							done err, false
-						if (liking and !plusw) or (!liking and plusw)
-							done null, true
-						else
-							done null, false
+		idStatus = status._id
+		#already liked or disliked?
+		next = ->
+			wherePlus =
+				user: req.user._id
+				status: idStatus
+			PlusW.count wherePlus
+			, (err, count) ->
+				done null, !err and liking is !count
+
+		#if the status is mine or on my wall
+		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId))
+			next()
+		else
+			req.getFriends (err, friends, friendAsks) ->
+				friendsList = friends.column('_id')
+				#The status is owned by one of my friends or on his wall
+				whereStatus =
+					_id: idStatus
+					$or: [
+						author: $in: friendsList
+					,
+						at: $in: friendsList
+					]
+				Status.count whereStatus
+				, (err, countStatut) ->
+					if err
+						done err, false
+					else if !countStatut
+						done new PublicError s("Vous n'avez accès à ce statut"), false
+					else
+						next()
 
 	notify: (usersToNotify, status, liker) ->
 
