@@ -1,20 +1,18 @@
 'use strict'
 
+commentListResponse = (err, commentList) ->
+	if err
+		@serverError err
+	else
+		@json commentList
+
 module.exports = (router) ->
 
 	router.put '/add', (req, res) ->
-		CommentPackage.put req, res, (err, commentList) ->
-			if err
-				res.serverError err
-			else
-				res.json commentList
+		CommentPackage.put req, res, commentListResponse.bind res
 
 	router.get '', (req, res) ->
-		CommentPackage.getRecentCommentForRequest req, res, req.data.statusIds, (err, commentList) ->
-			if err
-				res.serverError err
-			else
-				res.json commentList
+		CommentPackage.getRecentCommentForRequest req, res, req.data.statusIds, commentListResponse.bind res
 
 	router.delete '', (req, res) ->
 		if req.data.comment and req.data.comment._id
@@ -38,10 +36,6 @@ module.exports = (router) ->
 				if err
 					res.serverError err
 				else
-					CommentPackage.getRecentCommentForRequest req, res, [req.data.comment.attachedStatus._id], (err, commentList) ->
-						if err
-							res.serverError err
-						else
-							res.json commentList
+					CommentPackage.getRecentCommentForRequest req, res, [req.data.comment.attachedStatus._id], commentListResponse.bind res
 		else
 			res.serverError 'No comment to Update'
