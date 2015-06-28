@@ -86,8 +86,7 @@ PlusWPackage =
 			wherePlus =
 				user: req.user._id
 				status: idStatus
-			PlusW.count wherePlus
-			, (err, count) ->
+			PlusW.count wherePlus, (err, count) ->
 				done null, !err and liking is !count
 
 		#if the status is mine or on my wall
@@ -104,8 +103,7 @@ PlusWPackage =
 					,
 						at: $in: friendsList
 					]
-				Status.count whereStatus
-				, (err, countStatut) ->
+				Status.count whereStatus, (err, countStatut) ->
 					if err
 						done err, false
 					else if !countStatut
