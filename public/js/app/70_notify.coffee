@@ -1,6 +1,7 @@
 
 waitForNotify = ->
-	Ajax.get '/user/notify',
+	at = getCachedData 'at'
+	Ajax.get '/user/notify' + (if at then '/' + at else ''),
 		success: (data) ->
 			if data.loggedFriends
 				loggedFriends data.loggedFriends

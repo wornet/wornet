@@ -420,15 +420,12 @@ module.exports = (app, port) ->
 						if config.env.development
 							if @endAt
 								warn @endAt, @req
-							else if @setHeaderAt
-								warn @setHeaderAt, @req
 							throw e
 					else
 						if config.env.development
 							warn e, @req
 							@serverError e
 			setHeader: ->
-				@setHeaderAt = new Error "End here:"
 				res = @
 				params = arguments
 				@safeHeader ->
@@ -459,11 +456,18 @@ module.exports = (app, port) ->
 				else
 					next()
 			end: ->
-				@endAt = new Error "End here:"
 				res = @
 				params = arguments
-				@safeHeader ->
-					end.apply res, params
+				@safeHeader =>
+					try
+						end.apply res, params
+					catch e
+						if equals e, "Caught exception: write after end"
+							warn e.stack, req
+						else
+							throw e
+					finally
+						@endAt = new Error "End here:"
 			json: (data = {}, noReport) ->
 				if typeof @ is 'undefined'
 					log "No context"
@@ -478,13 +482,7 @@ module.exports = (app, port) ->
 				if data.err and ! noReport
 					GitlabPackage.error data.err
 				data._csrf = data._csrf || @locals._csrf
-				try
-					json.call @, data
-				catch e
-					if equals e, "Caught exception: write after end"
-						warn e.stack, req
-					else
-						throw e
+				json.call @, data
 			setTimeLimit: (time = 0) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'
 					clearTimeout @excedeedTimeout

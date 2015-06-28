@@ -608,10 +608,10 @@ Controllers =
 
 		$scope.deletePhoto = ($event) ->
 			Ajax.delete '/user/photo'
-			$($event.target)
-				.parents('[ng-controller]:first')
-				.find('.upload-thumb')
-				.prop('src', '/img/default-photo.jpg')
+			$ $event.target
+				.parents '[ng-controller]:first'
+				.find '.upload-thumb'
+				.prop 'src', '/img/default-photo.jpg'
 
 		loadNewIFrames()
 

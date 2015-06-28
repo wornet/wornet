@@ -7,36 +7,10 @@ StatusPackage =
 		@getRecentStatus req, res, id, data, onProfile
 
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
-		next = _next = ->
+		next = _next = =>
 			if data.recentStatus and data.chat
 				if ! req.user.firstStepsDisabled and data.recentStatus.length < 3
-					data.recentStatus.push
-						_id: "100000000000000000000001"
-						at: null
-						author:
-							hashedId: null
-							thumb50: '/img/wornet-thumb50.png'
-							thumb90: '/img/wornet-thumb90.png'
-							thumb200: '/img/wornet-thumb200.png'
-							name:
-								first: 'Vos premiers pas'
-								last: ''
-								full: 'Vos premiers pas'
-							fullName: 'Vos premiers pas'
-							present: false
-							points: 0
-						concernMe: false
-						content: s("Les premiers statuts sont important... Qu'allez-vous poster ?  Un texte bien sympa du type \"Bonjour Wornet !\" ? Vos photos de vacances pour faire rêver vos premiers amis worners ? L'une des vidéos YouTube de la sitcom Warren Flamel inspiré de l'univers d'Harry Potter ?")
-						date: new Date()
-						status: 'active'
-						images: []
-						videos: [
-							href: '//www.youtube.com/embed/5PC7v6jLQ_s'
-							_id: "100000000000000000000002"
-						]
-						links: []
-						pointsValue: 0
-						nbLike: 0
+					data.recentStatus.push @defaultStatus()
 				res.json data
 		nextWithSession = ->
 			req.session.save (err) ->
@@ -51,32 +25,11 @@ StatusPackage =
 				else
 					data.chat = chat
 					next()
-		req.getFriends (err, friends, friendAsks) ->
+		req.getFriends (err, friends, friendAsks) =>
 			id = req.getRequestedUserId id
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.with req.user.id
-			where = (if onProfile
-				if config.wornet.onlyAuthoredByAFriend
-					$or: [
-						author:
-							$in: connectedPeopleAndMe
-							$ne: id
-						at: id
-					,
-						author: id
-						at: null
-					]
-				else
-					$or: [
-						at: id
-					,
-						author: id
-						at: null
-					]
-			else
-				author: $in: connectedPeopleAndMe
-				at: $in: connectedPeopleAndMe.with [null]
-			)
+			where = @where id, connectedPeopleAndMe, onProfile
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0
@@ -141,6 +94,22 @@ StatusPackage =
 				warn [connectedPeopleAndMe, 'does not contains', id]
 				res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
 
+	where: (id, connectedPeopleAndMe, onProfile) ->
+		if onProfile
+			$or: [
+				at: id
+				.with if config.wornet.onlyAuthoredByAFriend
+					author:
+						$in: connectedPeopleAndMe
+						$ne: id
+			,
+				author: id
+				at: null
+			]
+		else
+			author: $in: connectedPeopleAndMe
+			at: $in: connectedPeopleAndMe.with [null]
+
 	put: (req, res, done) ->
 		@add req, (err, status, originalStatus) ->
 			if err
@@ -200,12 +169,10 @@ StatusPackage =
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
 
-						next = (usersToNotify) ->
+						next = (usersToNotify) =>
 							place = status.author
+							@propagate status
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: place
-							NoticePackage.notify usersToNotify, null,
-								action: 'status'
-								status: status
 							NoticePackage.notify usersToNotify, null,
 								action: 'notice'
 								author: status.author
@@ -222,21 +189,35 @@ StatusPackage =
 						at = status.at || null
 						if at is null
 							req.getFriends (err, friends, friendAsks) =>
-								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, friends.column '_id'
-								#next friends.column '_id'
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, (err) ->
+									if err
+										done err
+									else
+										next friends.column '_id'
 						else
 							req.getUserById at, (err, user) =>
 								status.at = if user
 									user.publicInformations()
 								else
 									null
-								@updatePoints req, status, cesarRight(status.author.hashedId), true, next, [at]
-								#next [at]
+								@updatePoints req, status, cesarRight(status.author.hashedId), true, (err) ->
+									if err
+										done err
+									else
+										next [at]
 					done err, status, originalStatus
 			catch err
 				done err
 		else
 			done new PublicError s("Ce statut est vide")
+
+	propagate: (status) ->
+		place = status.at or status.author
+		place = place.hashedId or place
+		NoticePackage.notifyPlace place, null,
+			action: 'status'
+			status: status
+
 
 	calculatePoints: (medias, nbOfFriends) ->
 		points = 1 # simple status
@@ -248,7 +229,7 @@ StatusPackage =
 
 		pointsToAdd = points * nbOfFriends
 
-	updatePoints: (req, status, authorId, adding, done, param) ->
+	updatePoints: (req, status, authorId, adding, done) ->
 		id = authorId
 
 		if !status
@@ -256,36 +237,28 @@ StatusPackage =
 
 		pointsValue = status.pointsValue || 0
 
-		User.findOne
-			_id: id
-		, (err, user) =>
+		User.findById id, (err, user) =>
 			if err
 				done err
 			else if user
 				if user.points or user.points is 0
-					if adding
-						newPoints = user.points + pointsValue
+					newPoints = user.points + pointsValue * if adding
+						1
 					else
-						newPoints = user.points - pointsValue
+						-1
 
 					if newPoints < 0
 						newPoints = 0
 
 					req.user.points= newPoints
 					req.session.user.points= newPoints
-					User.update
-						_id: id
-					,
+					User.updateById id,
 						points: newPoints
-					, (err, user) ->
-						if err
-							done err
-						else
-							done param
+					, done
 				else
-					@initPoints req, user, done, param
+					@initPoints req, user, done
 
-	initPoints: (req, user, done, param) ->
+	initPoints: (req, user, done) ->
 		newPoints = 0
 		id = user.id
 		Status.find
@@ -309,12 +282,36 @@ StatusPackage =
 				req.session.user.points = newPoints
 				User.updateById id,
 					points: newPoints
-				, (err) ->
-					if err
-						done err
-					else
-						done param
+				, done
 
+	defaultStatus: ->
+		title = s("Vos premiers pas")
+		_id: "100000000000000000000001"
+		at: null
+		author:
+			hashedId: null
+			thumb50: '/img/wornet-thumb50.png'
+			thumb90: '/img/wornet-thumb90.png'
+			thumb200: '/img/wornet-thumb200.png'
+			name:
+				first: title
+				last: ''
+				full: title
+			fullName: title
+			present: false
+			points: 0
+		concernMe: false
+		content: s("Les premiers statuts sont important... Qu'allez-vous poster ?  Un texte bien sympa du type \"Bonjour Wornet !\" ? Vos photos de vacances pour faire rêver vos premiers amis worners ? L'une des vidéos YouTube de la sitcom Warren Flamel inspiré de l'univers d'Harry Potter ?")
+		date: new Date()
+		status: 'active'
+		images: []
+		videos: [
+			href: '//www.youtube.com/embed/5PC7v6jLQ_s'
+			_id: "100000000000000000000002"
+		]
+		links: []
+		pointsValue: 0
+		nbLike: 0
 
 
 module.exports = StatusPackage

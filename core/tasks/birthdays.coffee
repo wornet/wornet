@@ -29,7 +29,7 @@ birthDaysTask =
 				day: today.getDate()
 				month: today.getMonth() + 1
 		], (err, users) ->
-			users.each ->
+			each users, ->
 				user = objectToUser @
 				user.getFriends birthDaysTask.notifyAllFriends.bind(user), true
 

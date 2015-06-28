@@ -54,6 +54,20 @@ NoticePackage =
 		else
 			done()
 
+	notifyPlace: (place, err, data) ->
+		Waiter.respond place, err, data
+
+	clearTimeout: (key) ->
+		if @timeouts[key]
+			clearTimeout @timeouts[key]
+			delete @timeouts[key]
+
+	respond: (callback, err, data) ->
+		if callback instanceof Waiter
+			callback.respond err, data
+		else
+			callback err, data
+
 	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
@@ -73,16 +87,13 @@ NoticePackage =
 							if self.responsesToNotify[userId]? and self.responsesToNotify[userId].getLength() > 0
 								self.responsesToNotify[userId].each (id) ->
 									key = userId + '-' + id
-									if self.timeouts[key]
-										clearTimeout self.timeouts[key]
-										delete self.timeouts[key]
-									@ err, data
-									true
+									self.clearTimeout key
+									self.respond @, err, data
 								delete self.responsesToNotify[userId]
 							else
 								unless self.notificationsToSend[userId]
 									self.notificationsToSend[userId] = {}
-								id = strval new ObjectId
+								id = uniqueId()
 								self.notificationsToSend[userId][id] = [err, data]
 								delay 5.seconds, ->
 									if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
@@ -131,8 +142,7 @@ NoticePackage =
 	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
-			#callback null, @responsesToNotify[userId].values()
-			callback null, @notificationsToSend[userId].values()
+			@respond callback null, @notificationsToSend[userId].values()
 			delete @notificationsToSend[userId]
 			id = false
 		else
@@ -146,12 +156,12 @@ NoticePackage =
 				responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
 				delete responsesToNotify[userId][id]
 
-			id = strval new ObjectId
+			id = uniqueId()
 			responsesToNotify[userId][id] = callback
 		id
 
 	# Register a response to wich send JSON data when a user receive a notification
-	waitForJson: (userId, req, res) ->
+	waitForJson: (userId, req, res, watchPlace = null) ->
 		res.setTimeLimit 0
 		self = @
 		responsesToNotify = @responsesToNotify
@@ -159,55 +169,10 @@ NoticePackage =
 			if err
 				throw err
 
-			id = self.waitForNotification userId, (err, notifications = []) ->
-				req.session.reload (sessErr) ->
-					if sessErr
-						throw sessErr
-					unless notifications instanceof Array
-						notifications = [[err, notifications]]
-					mustRefreshFriends = false
-					for notification in notifications
-						if notification[1]
-							if notification[1].askForFriend?
-								test = hashedId: notification[1].askForFriend.hashedId
-								unless (req.session.friendAsks || {}).has(test) or (req.session.friends || []).has(test)
-									req.cacheFlush 'friends'
-									req.user.friendAsks[notification[1].id] = notification[1].askForFriend
-									req.session.user.friendAsks = req.user.friendAsks
-									req.session.friendAsks = req.user.friendAsks
-								delete notification[1].askForFriend
-							if notification[1].userId?
-								delete notification[1].userId
-							if notification[1].deleteFriendAsk?
-								delete req.user.friendAsks[notification[1].deleteFriendAsk]
-								req.session.user.friendAsks = req.user.friendAsks
-								req.session.friendAsks = req.user.friendAsks
-								req.session.notifications = (req.session.notifications || []).filter (data) ->
-									unless data[1]
-										warn JSON.stringify(data) + ' does not contains [1] entry.'
-										false
-									else if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
-										true
-									else
-										data[1].hashedId isnt cesarRight userId
-								delete notification[1].deleteFriendAsk
-							if notification[1].addFriend?
-								req.addFriend notification[1].addFriend
-								delete notification[1].addFriend
-					data =
-						notifications: notifications
-						loggedFriends: req.getLoggedFriends()
-					data.notifyStatus = if err then self.ERROR else self.OK
-					if err
-						data.err = err
-					req.refreshNotifications (notifications) ->
-						if notifications.length
-							req.session.notifications = notifications
-						req.session.save (err) ->
-							if err
-								throw err
-							res.json data
+			waiter = new Waiter userId, watchPlace, req, res
+			id = self.waitForNotification userId, waiter
 			if id
+				waiter.timeoutKey = userId + '-' + id
 				self.timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
 					req.session.reload (err) ->
 						res.json
