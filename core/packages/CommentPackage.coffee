@@ -30,6 +30,7 @@ CommentPackage =
 							usersToNotify.push hashedIdAuthor
 						unless [null, hashedIdAuthor, hashedIdUser].contains at
 							usersToNotify.push at
+						@propagate comment, at || hashedIdAuthor
 						unless empty usersToNotify
 							@notify usersToNotify, status, req.user, comment
 
@@ -42,30 +43,22 @@ CommentPackage =
 	notify: (usersToNotify, status, commentator, originalComment) ->
 		img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: commentator
 		statusPlace = status.at || status.author
+		generateNotice = (text) ->
+			[
+				img +
+				jd 'span(data-href="/user/profile/' +
+				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+					text
+			]
 		commentatorsFriends = commentator.friends.column 'hashedId'
 		for userToNotify in usersToNotify
 			notice = if userToNotify is statusPlace.hashedId
-				[
-					img +
-					jd 'span(data-href="/user/profile/' +
-					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-						s("{username} a commenté une publication de votre profil.", username: commentator.name.full)
-				]
+				generateNotice s("{username} a commenté une publication de votre profil.", username: commentator.name.full)
 			else if userToNotify is status.author.hashedId and userToNotify isnt commentator.hashedId
-				if commentatorsFriends.contains userToNotify
-					[
-						img +
-						jd 'span(data-href="/user/profile/' +
-						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-							s("{username} a commenté votre publication.", username: commentator.name.full)
-					]
+				generateNotice if commentatorsFriends.contains userToNotify
+					s("{username} a commenté votre publication.", username: commentator.name.full)
 				else
-					[
-						img +
-						jd 'span(data-href="/user/profile/' +
-						statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-							s("{username}, ami de {placename}, a commenté votre publication.", {username: commentator.name.full, placename:statusPlace.name.full })
-					]
+					s("{username}, ami de {placename}, a commenté votre publication.", {username: commentator.name.full, placename:statusPlace.name.full })
 			else
 				null
 
@@ -76,36 +69,25 @@ CommentPackage =
 					author: commentator
 					notice: notice
 
-		otherCommentators = []
 		if status.comments
+			otherCommentators = []
 			for comment in status.comments
 				if ![status.author.hashedId, status.at.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
 					otherCommentators.push comment.author.hashedId
 
-			notice = [
-					img +
-					jd 'span(data-href="/user/profile/' +
-					statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
-						s("{username} a également commenté une publication.", username: commentator.name.full)
-				]
+			notice = generateNotice s("{username} a également commenté une publication.", username: commentator.name.full)
 
 			unless otherCommentators.length > 0
-				otherCommentatorsIds = otherCommentators.map (value) ->
-					cesarRight value
+				otherCommentatorsIds = otherCommentators.map cesarRight
 				NoticePackage.notify otherCommentatorsIds, null,
 					action: 'notice'
 					author: commentator
 					notice: notice
 
-		userstoPushComment = otherCommentators
-				.concat usersToNotify
-        		.unique()
-        		.map (value) ->
-            		cesarRight value
-
-		NoticePackage.notify userstoPushComment, null,
+	propagate: (comment, place) ->
+		NoticePackage.notifyPlace place, null,
 			action: 'comment'
-			comment: originalComment
+			comment: comment
 
 	getRecentCommentForRequest: (req, res, statusIds, done) ->
 		if statusIds
