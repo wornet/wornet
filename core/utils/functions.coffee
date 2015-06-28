@@ -1,5 +1,7 @@
 'use strict'
 
+SALTCHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
 module.exports =
 	###
 	Instanciate a new standart error
@@ -437,10 +439,9 @@ module.exports =
 	@return string [A-Za-z0-9]{length} random alphanumeric string
 	###
 	generateSalt: (length) ->
-		SALTCHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 		r = ''
 		for i in [1..length]
-			r += SALTCHARS[Math.floor(Math.random() * SALTCHARS.length)]
+			r += SALTCHARS.charAt Math.floor Math.random() * SALTCHARS.length
 		r
 
 	###
@@ -449,7 +450,8 @@ module.exports =
 	@return string reversed input
 	###
 	strrev: (input) ->
-		output = ""
+		input += ''
+		output = ''
 		for i in [input.length - 1 .. 0]
 			output += input.charAt i
 		output
@@ -463,14 +465,18 @@ module.exports =
 	@return string crypted key
 	###
 	cesar: (input, factor = 1, key = null) ->
-		if key is null
+		unless isstring key
 			if config?
 				key = config.wornet.hexSecret
 			else
 				key = "d6f7b887265debac5120de672873"
 		output = ""
 		for i in [0 .. input.length - 1]
-			output += ((Math.abs(factor) * 16 + parseInt(input.charAt(i), 16) + factor * parseInt(key.charAt(i % key.length), 16)) % 16).toString(16)
+			output += (
+				(Math.abs(factor) * 16 + parseInt(input.charAt(i), 16) +
+					factor * parseInt(key.charAt(i % key.length), 16)) %
+				16
+			).toString(16)
 		output
 
 	###
@@ -491,7 +497,7 @@ module.exports =
 	@return string crypted key
 	###
 	cesarRight: (input, key = null) ->
-		strrev(cesar input, -1, key)
+		strrev(cesar '' + input, -1, key)
 
 	###
 	Return string value or "" if not able to convert
@@ -500,7 +506,32 @@ module.exports =
 	@return string value
 	###
 	strval: (str) ->
-		str + ''
+		str and str.str or str + ''
+
+	###
+	Return a unique string identifier
+	@return string value
+	###
+	uniqueId: ->
+		r = generateSalt 6
+		t = time()
+		while t
+			r += SALTCHARS.charAt t % SALTCHARS.length
+			t //= SALTCHARS.length
+		r
+
+	###
+	Return the time from a uniqueId result
+	@param string unique id
+
+	@return string value
+	###
+	uniqueIdToTime: (id) ->
+		t = 0
+		for i in [6..id.length]
+			t *= SALTCHARS.length
+			t += SALTCHARS.indexOf id.charAt i
+		t
 
 	###
 	Compare two values as strings
@@ -960,9 +991,7 @@ module.exports =
 						)
 					) || (
 						typeof(value.length) is 'undefined' &&
-						typeof(JSON) is 'object' &&
-						typeof(JSON.stringify) is 'function' &&
-						JSON.stringify(value) is '{}'
+						Object.keys(value).length is 0
 					)
 				)
 			)
