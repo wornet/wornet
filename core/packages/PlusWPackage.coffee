@@ -11,64 +11,107 @@ PlusWPackage =
 		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
 			req.data.status.at.hashedId
 		else null
-		parallel
-			plusW: (done) ->
-				PlusW.create
-					user: req.user._id
-					status: idStatus
-				, done
-			newNbLike: (done) =>
-				Status.findOneAndUpdate
-					_id: idStatus
-				,
-					$inc: nbLike: 1
-				, (err, status) =>
-					if err
-						done err
-					else
-						usersToNotify = []
-						hashedIdAuthor = statusReq.author.hashedId
-						#usersToNotify contains hashedIds tests in notify.
-						#It will be transformed just before NoticePackage calling
-						unless equals hashedIdUser, hashedIdAuthor
-							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at
-							usersToNotify.push at
-						unless empty usersToNotify
-							@notify usersToNotify, statusReq, req.user
-						done null, status.nbLike
-		, (result) ->
-			end null, result.newNbLike
-		, end
+
+		@checkRights req, res, req.data.status, true, (err, ok) =>
+			if ok
+				parallel
+					plusW: (done) ->
+						PlusW.create
+							user: req.user._id
+							status: idStatus
+						, done
+					newNbLike: (done) =>
+						Status.findOneAndUpdate
+							_id: idStatus
+						,
+							$inc: nbLike: 1
+						, (err, status) =>
+							if err
+								done err
+							else
+								usersToNotify = []
+								hashedIdAuthor = statusReq.author.hashedId
+								#usersToNotify contains hashedIds tests in notify.
+								#It will be transformed just before NoticePackage calling
+								unless equals hashedIdUser, hashedIdAuthor
+									usersToNotify.push hashedIdAuthor
+								unless [null, hashedIdAuthor, hashedIdUser].contains at
+									usersToNotify.push at
+								unless empty usersToNotify
+									@notify usersToNotify, statusReq, req.user
+								done null, status.nbLike
+				, (result) ->
+					end null, result.newNbLike
+				, end
+			else
+				end err, 0
 
 	delete: (req, res, end) ->
 		idStatus = req.data.status._id
 		idUser = req.user._id
-		parallel
-			plusW: (done) ->
-				PlusW.remove
-					user: idUser
-					status: idStatus
-				, done
-			newNbLike: (done) ->
-				Status.findOneAndUpdate
+		@checkRights req, res, req.data.status, false, (err, ok) =>
+			if ok
+				parallel
+					plusW: (done) ->
+						PlusW.remove
+							user: idUser
+							status: idStatus
+						, done
+					newNbLike: (done) ->
+						Status.findOneAndUpdate
+							_id: idStatus
+						,
+							$inc: nbLike: -1
+						, (err, status) ->
+							if err
+								done err
+							else
+								NoticePackage.unnotify
+									action: 'notice'
+									notice:
+										type: 'like'
+										launcher: idUser
+										status: idStatus
+								done null, status.nbLike
+				, (result) ->
+					end null, result.newNbLike
+				, end
+			else
+				end err, 0
+
+	checkRights: (req, res, status, liking, done) ->
+		idStatus = status._id
+		#already liked or disliked?
+		next = ->
+			wherePlus =
+				user: req.user._id
+				status: idStatus
+			PlusW.count wherePlus
+			, (err, count) ->
+				done null, !err and liking is !count
+
+		#if the status is mine or on my wall
+		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId))
+			next()
+		else
+			req.getFriends (err, friends, friendAsks) ->
+				friendsList = friends.column('_id')
+				#The status is owned by one of my friends or on his wall
+				whereStatus =
 					_id: idStatus
-				,
-					$inc: nbLike: -1
-				, (err, status) ->
+					$or: [
+						author: $in: friendsList
+					,
+						at: $in: friendsList
+					]
+				Status.count whereStatus
+				, (err, countStatut) ->
 					if err
-						done err
+						done err, false
+					else if !countStatut
+						done new PublicError s("Vous n'avez accès à ce statut"), false
 					else
-						NoticePackage.unnotify
-							action: 'notice'
-							notice:
-								type: 'like'
-								launcher: idUser
-								status: idStatus
-						done null, status.nbLike
-		, (result) ->
-			end null, result.newNbLike
-		, end
+						next()
 
 	notify: (usersToNotify, status, liker) ->
 
