@@ -9,7 +9,7 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
 		next = _next = =>
 			if data.recentStatus and data.chat
-				if ! req.user.firstStepsDisabled and data.recentStatus.length < 3
+				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
 				res.json data
 		nextWithSession = ->
@@ -284,9 +284,11 @@ StatusPackage =
 					points: newPoints
 				, done
 
+	DEFAULT_STATUS_ID: "100000000000000000000001"
+
 	defaultStatus: ->
 		title = s("Vos premiers pas")
-		_id: "100000000000000000000001"
+		_id: @DEFAULT_STATUS_ID
 		at: null
 		author:
 			hashedId: null

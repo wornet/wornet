@@ -26,7 +26,7 @@ module.exports = (router) ->
 
 		switch req.params.id
 
-			when "100000000000000000000001"
+			when StatusPackage.DEFAULT_STATUS_ID
 				req.user.firstStepsDisabled = true
 				req.session.user.firstStepsDisabled = true
 				updateUser req.user, firstStepsDisabled: true, ->
@@ -50,7 +50,8 @@ module.exports = (router) ->
 							if err
 								res.serverError err
 							else
-								StatusPackage.updatePoints req, status, status.author, false, next, status
+								StatusPackage.updatePoints req, status, status.author, false, ->
+									next status
 
 
 	router.put '/add/:id', (req, res) ->

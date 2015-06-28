@@ -580,7 +580,7 @@ module.exports =
 	@return Array list
 	###
 	arrayval: (val) ->
-		if val and val.length and ! isstring val
+		if val and 'number' is typeof(val.length) and ! isstring val
 			val
 		else
 			[val]
