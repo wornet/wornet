@@ -356,9 +356,18 @@ extend userSchema.methods,
 					else
 						next()
 
-	getFriends: (done, forceReload = false) ->
+	getFriendsIds: (done, forceReload = false, returnIds = true) ->
+		@getFriends done, forceReload, returnIds
+
+	getFriendsIdsFromDataBase: (done, forceReload = true, returnIds = true) ->
+		@getFriends done, forceReload, returnIds
+
+	getFriends: (done, forceReload = false, returnIds = false) ->
 		if ! forceReload and @friends? and @friendAsks?
-			done null, @friends, @friendAsks
+			if returnIds
+				done null, @friends.column('_id'), @friendAsks.column('_id')
+			else
+				done null, @friends, @friendAsks
 		else
 			user = @
 			ids = []
@@ -368,31 +377,36 @@ extend userSchema.methods,
 			pending = 2
 			next = ->
 				unless --pending
-					User.find
-						_id: $in: ids
-					, (err, users) ->
-						if err
-							done err, [], {}
-						else
-							friendIds = []
-							friends = []
-							friendAsks = {}
-							users.forEach (user) ->
-								id = strval user.id
-								if friendAskIds.contains id
-									askedFrom = friendAskFromIds.contains id
-									user = user.publicInformations()
-									user.askedFrom = askedFrom
-									user.askedTo = !askedFrom
-									friendAsks[friendAskDates[id]] = user
-								else
-									friends.push user
-									friendIds.push id
-							user.numberOfFriends = friends.length
-							user.friendIds = friendIds
-							user.friends = friends
-							user.friendAsks = friendAsks
-							done null, friends, friendAsks
+					if returnIds
+						friendsIds = ids.filter (id) ->
+							! friendAskIds.contains id
+						done null, friendsIds, friendAskIds
+					else
+						User.find
+							_id: $in: ids
+						, (err, users) ->
+							if err
+								done err, [], {}
+							else
+								friendIds = []
+								friends = []
+								friendAsks = {}
+								users.forEach (user) ->
+									id = strval user.id
+									if friendAskIds.contains id
+										askedFrom = friendAskFromIds.contains id
+										user = user.publicInformations()
+										user.askedFrom = askedFrom
+										user.askedTo = !askedFrom
+										friendAsks[friendAskDates[id]] = user
+									else
+										friends.push user
+										friendIds.push id
+								user.numberOfFriends = friends.length
+								user.friendIds = friendIds
+								user.friends = friends
+								user.friendAsks = friendAsks
+								done null, friends, friendAsks
 			Friend.find
 					askedFrom: @_id
 					status: $in: ['waiting', 'accepted']

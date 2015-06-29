@@ -223,6 +223,8 @@
             "displayPhotoTitle": false
         },
 
+        "onlyAuthoredByAFriend": false,
+
         "parseProxyUrl": false,
 
         "plusW": {
@@ -315,8 +317,6 @@
             "minifyOnRate": false,
             "minRate": 0.99
         },
-
-        "onlyAuthoredByAFriend": false,
 
         "upload": {
             "ttl": 172800,

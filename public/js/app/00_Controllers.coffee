@@ -608,10 +608,10 @@ Controllers =
 
 		$scope.deletePhoto = ($event) ->
 			Ajax.delete '/user/photo'
-			$($event.target)
-				.parents('[ng-controller]:first')
-				.find('.upload-thumb')
-				.prop('src', '/img/default-photo.jpg')
+			$ $event.target
+				.parents '[ng-controller]:first'
+				.find '.upload-thumb'
+				.prop 'src', '/img/default-photo.jpg'
 
 		loadNewIFrames()
 
@@ -870,7 +870,7 @@ Controllers =
 							$(@).remove()
 							return
 					medias = {images:status.images, videos:status.videos, links:status.links}
-					$('.points').trigger('updatePoints', [status, medias, false])
+					$('.points').trigger 'updatePoints', [status, medias, false]
 					Ajax.delete '/user/status/' + status._id, ->
 						if status.images and status.images.length
 							delay 600, refreshMediaAlbums
@@ -922,7 +922,7 @@ Controllers =
 
 		$scope.send = (status) ->
 			scanAllLinks status.content || ''
-			$('.points').trigger('updatePoints', [status, $scope.medias, true])
+			$('.points').trigger 'updatePoints', [status, $scope.medias, true]
 			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
 				data:
 					status: status
@@ -1006,7 +1006,7 @@ Controllers =
 		at = getCachedData 'at'
 
 		$scope.$on 'receiveStatus', (e, status) ->
-			$scope.recentStatus.unshift status
+			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
 				refreshMediaAlbums()
@@ -1018,7 +1018,7 @@ Controllers =
 					comment.isMine = comment.author.hashedId is getData 'me'
 					statusAt = status.at || status.author
 					comment.onMyWall = statusAt.hashedId is getData 'me'
-					(status.comments ||= []).push comment
+					(status.comments ||= []).uniquePush '_id', comment
 					break
 			refreshScope $scope
 			return

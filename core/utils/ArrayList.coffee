@@ -122,9 +122,10 @@ ArrayList =
 
 	merge: (values, push = 'push') ->
 		if @ instanceof Array
-			Array.prototype[push].apply @, arrayval values
-		else
+			@[push].apply @, arrayval values
+		else if values
 			extend @, values
+		@
 
 	with: (values) ->
 		result = @copy()

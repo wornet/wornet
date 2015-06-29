@@ -2,9 +2,14 @@
 
 module.exports = (router) ->
 
+	router.get '/:at', (req, res) ->
+		at = req.params.at
+		# Wait for new notifications
+		NoticePackage.waitForJson req.user.id, req, res, at
+
 	router.get '', (req, res) ->
 		# Wait for new notifications
-		NoticePackage.waitForJson req.user.id, req, res
+		NoticePackage.waitForJson req.user.id, req, res, req.user
 
 	router.post '', (req, res) ->
 		# Send a notification
@@ -12,7 +17,7 @@ module.exports = (router) ->
 			req.getFriends (err, friends, friendAsks) ->
 				friendIds = friends.column 'id'
 				data = req.body.data
-				userIds = (cesarRight id for id in req.body.userIds.split(',')).filter (val) ->
+				userIds = req.body.userIds.split(',').map(cesarRight).filter (val) ->
 					friendIds.contains val
 				if userIds.length > 0
 					switch data.action || ''

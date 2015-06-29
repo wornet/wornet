@@ -537,3 +537,19 @@ trackEvent = do ->
 				window['_' + 'paq'].push ['trackEvent', e, b, c]
 				lastTime = time
 				lastKey = key
+
+Array.uniqueMethod = (method) ->
+	(key) ->
+		args = Array.prototype.slice.call @, 1
+		for arg in args
+			present = do =>
+				for obj in @
+					if obj[key] is arg[key]
+						return true
+				false
+			unless present
+				@[method] arg
+
+Array::uniquePush = Array.uniqueMethod 'push'
+
+Array::uniqueUnshift = Array.uniqueMethod 'unshift'
