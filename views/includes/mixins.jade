@@ -84,7 +84,16 @@ mixin formControl(type)
 				p
 					!=attributes.tooltip[1]
 		- delete attributes.tooltip
-	input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+	if type !== "textarea"
+		input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+	else
+		textarea&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+
+mixin standardBlock(title)
+	.well.loading&attributes(attributes)
+		h3=strtoupper(title)
+		hr
+		block
 
 mixin simpleModal(title)
 	.modal.fade&attributes(attributes): .modal-dialog: .modal-content

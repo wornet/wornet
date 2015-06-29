@@ -28,6 +28,10 @@ StringUtils =
 	endWith: (needle) ->
 		@length > needle.length and @substr(-needle.length) is needle
 
+	ucFirst: () ->
+		if @length
+			@[0].toUpperCase() + @.substring 1
+
 safeExtend String.prototype, StringUtils
 
 module.exports = StringUtils
