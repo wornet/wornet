@@ -1,0 +1,69 @@
+.status-block .medias
+	padding $smallPadding
+
+.status-form .publish
+	input
+		float right
+		margin-left -65px
+
+.status-author
+	a
+		font-size 18px
+	img
+		float left
+		margin $smallPadding
+		size($thumbWidth, $thumbHeight)
+
+.status-block
+	padding $mainPadding $mainPadding 20px
+	margin $mainPadding 0
+	background white
+	border 1px solid #ddd
+	border-radius(4px)
+
+	.settings .glyphicon-cog
+		color $mediumGray
+
+		&:hover
+			color $orange
+
+	.status-content
+		padding $smallPadding
+		clear left
+
+	a
+		color $orange
+
+.status-actions
+	float right
+	margin -8px (- $smallPadding) (-3 * $mainPadding - $smallPadding) 0
+
+	.btn-action-plus-w
+	.btn-action-comment
+		background transparent
+		color $darkGray
+
+	.btn-action-plus-w
+		margin-right 5px
+
+	.like-zone
+		color $darkGray
+
+	.btn
+		box-shadow none
+		@media (max-width: 767px)
+			height 28px
+			line-height 18px
+
+@media (max-width: 400px)
+	.status-actions
+		margin-left 0
+		.btn
+			font-size 13px
+			margin 0
+	.comment-form .btn
+		width 50%
+
+@media (max-width: 767px)
+	.status-author
+		clear right

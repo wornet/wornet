@@ -6,6 +6,9 @@ $photoHeight = 200px
 $photoRadius = false
 $progressRadialWidth = 4px
 
+.profile a
+	color $orange
+
 .profile-edit-btn.aside
 	width 180px
 
@@ -58,68 +61,6 @@ $progressRadialWidth = 4px
 		float left
 		font-size 18px
 
-.status-author
-	a
-		font-size 18px
-	img
-		float left
-		margin $smallPadding
-		size($thumbWidth, $thumbHeight)
-
-.status-block
-	padding $mainPadding $mainPadding 30px
-	margin $mainPadding 0
-	background white
-	border 1px solid #ddd
-	border-radius(4px)
-
-	.status-content
-		padding $smallPadding
-		clear left
-
-.status-actions
-	float right
-	margin -8px (- $smallPadding) (-3 * $mainPadding - $smallPadding) 0
-
-	.btn-action-plus-w
-	.btn-action-comment
-		background transparent
-		color $darkGray
-
-	.btn-action-plus-w
-		margin-right 5px
-
-	.btn
-		@media (max-width: 767px)
-			height 28px
-			line-height 18px
-
-.comment-list
-	margin ($bigPadding + $smallPadding) 0 (- $bigPadding)
-
-.comment-form
-	padding (3 * $mainPadding) 0 $bigPadding
-	.btn
-		float right
-
-.comment-author
-	img
-		float left
-		margin $smallPadding
-		size(30px)
-
-.comment-block .date
-.comment-content
-	font-size 14px
-
-.comment-block
-	margin-top $smallPadding
-	background $ultraLight
-	.aside
-		padding-top $smallPadding
-		> a
-			padding $smallPadding
-
 .photo-options
 	float left
 	margin 0 $mainPadding 0 0
@@ -127,6 +68,9 @@ $progressRadialWidth = 4px
 	.btn
 		margin $smallPadding 0 0
 		width 100%
+
+.profile-edit .biography
+	margin-left $photoWidth + $mainPadding
 
 #profile-photo
 	size($photoWidth, $photoHeight)
@@ -201,6 +145,8 @@ $progressRadialWidth = 4px
 			select.form-control
 			input.form-control
 				width 100%
+		.biography
+			margin-left 0
 
 @media (max-width: 423px)
 	.about-user
