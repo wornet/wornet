@@ -665,6 +665,7 @@ module.exports = (router) ->
 		limit = UserPackage.DEFAULT_SEARCH_LIMIT
 		done = ->
 			res.json users: friends.unique('id').map (user) ->
+				user = objectToUser user
 				isAFriend = (req.session.friends || []).has id: user.id
 				extend user.publicInformations(),
 					isAFriend: isAFriend

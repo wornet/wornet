@@ -47,6 +47,9 @@ statusSchema.pre 'remove', (next) ->
 	PhotoPackage.deleteImages @images
 	parallelRemove [
 		Comment
+		attachedStatus: @id
+	,
+		PlusW
 		status: @id
 	], next
 

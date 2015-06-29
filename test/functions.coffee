@@ -61,6 +61,9 @@ describe "functions", ->
 			empty(0.2).should.be.false "0.2"
 			empty(" ").should.be.false '" "'
 			empty({ foo: "" }).should.be.false '{ foo: "" }'
+			recursive = {}
+			recursive.a = recursive
+			empty(recursive).should.be.false 'recursive object'
 			empty([""]).should.be.false '[""]'
 
 	describe "trim", ->
