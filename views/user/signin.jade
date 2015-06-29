@@ -17,7 +17,7 @@ block body
 			+form("/user/signin", "PUT")(ng-submit="submit(user)")
 				.col-sm-6.col-xs-12
 					label.cb
-						+formControl()(
+						+formControl("email")(
 							autofocus
 							required
 							pattern=pattern('email')
