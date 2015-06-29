@@ -64,7 +64,7 @@ exports.auth = (req, res, user, done) ->
 exports.login = (req, res, done) ->
 	# Retrieve the user from the database by login
 	User.findOne
-		email: req.body.email
+		email: strtolower req.body.email
 	, (err, user) ->
 
 		# If something weird happens, abort.
