@@ -3,7 +3,7 @@
 onready = require './test'
 fs = require 'fs'
 
-describe "current package version", ->
+xdescribe "current package version", ->
 
 	@timeout 10.seconds
 
