@@ -67,7 +67,7 @@ body
 
 h3
 	margin 0 0 $mainPadding
-	color $darkGray
+	color $orange
 	text-shadow 0 1px 1px white
 	font-size 18px
 	font-weight normal
@@ -81,6 +81,9 @@ h5
 
 i
 	font-style normal
+
+hr
+	margin 5px 0
 
 .alert-warning
 	background $warningColor
@@ -206,7 +209,6 @@ a
 	& li > a
 	.open > a
 		color white
-		font-weight bold
 		&:hover
 		&:focus
 		&:active
@@ -222,7 +224,6 @@ a
 		border-top 0
 
 .navbar a
-	font-weight bold
 	color inherit
 	text-decoration none
 	display inline
@@ -232,10 +233,10 @@ a
 
 #underbar
 	font-size 14px
-	font-weight bold
 	background $nearlyBlack
 	box-shadow(inset 0 1px 4px -2px $black)
 	color white
+	height $headerHeight
 	ul.navbar-right
 		margin-right 0
 	.navbar-form label
@@ -251,7 +252,6 @@ a
 	& li > a
 	.open > a
 		color white
-		font-weight bold
 	& li li > a
 		padding-right 2 * $bigPadding
 		&:hover
@@ -384,6 +384,9 @@ select.form-control
 
 	&.btn-plain
 		width 100%
+
+.btn-primary
+	background $orange
 
 // Image logo.
 img#logo
@@ -659,9 +662,6 @@ fieldset.tab .btn
 	a:not(.album-name)
 		display block
 
-.status-block .medias
-	padding $smallPadding
-
 span.image-box i.glyphicon
 	float left
 	margin 2px 2px 0 -26px
@@ -823,6 +823,8 @@ span.image-box i.glyphicon
 	.img-buttons
 		display block
 		margin auto
+	a
+		color $orange
 	a.prev
 	a.next
 		max-width 50%
@@ -854,21 +856,14 @@ span.image-box i.glyphicon
 @import "includes/tooltip"
 @import "user/login"
 @import "user/profile"
+@import "user/status"
+@import "user/comment"
 @import "user/chat"
 @import "agenda"
 
 @media (max-width: 360px)
 	.nav-tabs.nav>li>a
 		font-size 13px
-
-@media (max-width: 400px)
-	.status-actions
-		margin-left 0
-		.btn
-			font-size 13px
-			margin 0
-	.comment-form .btn
-		width 50%
 
 // Media Queries.
 @media (max-width: 767px)
@@ -943,9 +938,6 @@ span.image-box i.glyphicon
 			top -23px
 			float right
 
-	.status-author
-		clear right
-
 	footer
 		.row
 			margin 0
@@ -984,6 +976,7 @@ span.image-box i.glyphicon
 
 	#underbar .navbar-form
 		margin-bottom 0
+		margin-top 9px
 		width 33.33333333%
 
 		label

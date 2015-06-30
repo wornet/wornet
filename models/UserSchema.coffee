@@ -161,11 +161,11 @@ getFullName = ->
 		if f and l
 			anonymous
 		else if f
-			@name.last
+			@name.last.ucFirst()
 		else if l
-			@name.first
+			@name.first.ucFirst()
 		else
-			@name.first + ' ' + @name.last
+			@name.first.ucFirst() + ' ' + @name.last.ucFirst()
 
 
 for key in ['name.full', 'fullName']

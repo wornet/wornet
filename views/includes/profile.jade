@@ -1,4 +1,4 @@
-.well(ng-controller="ProfileCtrl")
+.well.profile(ng-controller="ProfileCtrl")
 	.profile-edit(class=(edit ? "hidden" : null))
 		.profileError
 			if ! empty(friendAsked)
@@ -59,11 +59,11 @@
 				label
 					span
 						=s("Biographie")
-					textarea.form-control.counter(name="biography" maxlength="250")=profile.biography
+					textarea.form-control.counter(name="biography" maxlength=config.wornet.limits.biographyLength)=profile.biography
 				.btn-group
 					input(type="submit" value=s("Enregistrer")).btn
 				.btn-group
-					input(type="button" value=s("Annuler")).btn.profile-edit-btn
+					input(type="button" value=s("Annuler")).btn.cancel.profile-edit-btn
 					| &nbsp;
 	else if isAFriend
 		.aside
@@ -77,6 +77,9 @@
 				+glyph('minus')
 	.profile-edit(class=(edit ? "hidden" : null))
 		h3.important
+			if (isAFriend || isMe) && profile.preRegistered()
+				+glyph('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
+				|&nbsp;
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend
 				if isAFriend
@@ -102,12 +105,7 @@
 						data-ask-for-friend=profile.hashedId
 					)
 						+glyph('plus')
-		if isAFriend || isMe
-			if profile.preRegistered()
-				.alert.alert-info(role="info")
-					+glyph('certificate')
-					|&nbsp;
-					=s("Je me suis pré-inscrit")
+		if isAFriend || isMe					
 			if ! profile.birthDate
 				if profile.birthCity
 					h5
@@ -175,6 +173,6 @@
 			if profile.biography
 				h5
 					=userTexts.biography
-				p(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
+				p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
 					=profile.biography
 	.cb
