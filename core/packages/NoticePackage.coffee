@@ -142,7 +142,7 @@ NoticePackage =
 	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
-			@respond callback null, @notificationsToSend[userId].values()
+			@respond callback, null, @notificationsToSend[userId].values()
 			delete @notificationsToSend[userId]
 			id = false
 		else
