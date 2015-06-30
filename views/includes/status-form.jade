@@ -3,15 +3,14 @@ mixin statusForm(tabindex)
 	- tabindex = tabindex || 90
 	+form()(ng-submit="send(status)")
 		block
-		.input-group
-			+formControl().do-not-loose.counter(
-				maxlength=config.wornet.limits.displayStatusLength
-				tabindex=strval(tabindex+1)
-				ng-model="status.content"
-				placeholder=s("Quoi de neuf ?")
-			)
-			span.input-group-btn
-				input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Publier")).btn
+		+formControl("textarea").do-not-loose.counter(
+			maxlength=config.wornet.limits.displayStatusLength
+			tabindex=strval(tabindex+1)
+			ng-model="status.content"
+			placeholder=s("Quoi de neuf ?")
+		)
+		.input-group-btn.publish
+			input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Publier")).btn.btn-primary
 
 ul.nav.nav-tabs(role="tablist")
 	li(ng-click="status.containsMedias = false" ng-class="{ active: ! status.containsMedias }")
@@ -20,8 +19,8 @@ ul.nav.nav-tabs(role="tablist")
 	li(ng-click="containsMedias(status)" ng-class="{ active: status.containsMedias }")
 		a
 			=s("Publier une image")
-fieldset.tab(ng-show="! status.containsMedias")
-	h3=strtoupper(s("Publier un statut"))
+fieldset.tab.status-form(ng-show="! status.containsMedias")
+	//- h3=strtoupper(s("Publier un statut"))
 	+statusForm()(autofocus)
 fieldset.tab(ng-show="status.containsMedias")
 	//- h3=strtoupper(s("Publier un média"))

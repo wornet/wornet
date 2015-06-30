@@ -1,6 +1,6 @@
 .status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}" ng-if="(status.images && status.images.length) || (status.links && status.links.length) || (status.videos && status.videos.length) || (status.content && status.content.length)")
 	//- .nostyle(data-starpush="{{ status._id }}")
-	.aside.continue(ng-if="status.author.hashedId")
+	.aside.settings.continue(ng-if="status.author.hashedId")
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			+glyph('cog')
 		ul.dropdown-menu(role="menu")
@@ -80,7 +80,7 @@
 				.comment-block(ng-repeat="comment in status.comments" data-data="{{ comment._id }}")
 					- var init = "comment.edit = false;"
 					- init += "comment.originalContent = comment.content;"
-					.aside.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
+					.aside.settings.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
 						a.dropdown-toggle(href="#" data-toggle="dropdown")
 							+glyph('cog')
 						ul.dropdown-menu(role="menu")
@@ -99,14 +99,15 @@
 						+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
 					.date(data-date="{{ comment.date }}")
 						|&nbsp;
-					.comment-content.word-wrap.cb(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content | smilies")
+					.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content | smilies")
 					.comment-edit(ng-if="comment.edit")
 						+form()(ng-submit="comment.edit = false; updateComment(comment); comment.originalContent = comment.content;").cb
 							textarea.form-control(focus ng-model='comment.content' placeholder=s("Commentaire..."))
 							input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; comment.edit = false" value=s("Annuler"))
 							input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
+					.cb
 			.comment-form(ng-if="status.commentForm")
 				+form()(ng-submit="sendComment(status)").cb
-					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Commentaire..."))
+					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
 					input.btn.btn-primary(type="submit" value=s("Envoyer"))
 					input.btn.cancel(type="button" ng-click="status.commentForm = false" value=s("Annuler"))

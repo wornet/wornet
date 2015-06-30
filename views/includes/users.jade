@@ -1,5 +1,4 @@
-#they-use-wornet.well
-	h3=strtoupper(s("Ils utilisent Wornet"))
++standardBlock(s("Ils utilisent Wornet"))#they-use-wornet
 	ul.photos-thumbs
 		each randomUser in users
 			li.fade-on-load.not-loaded: a(href="/user/profile/" + randomUser.hashedId + "/" + encodeURIComponent(randomUser.fullName) data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
