@@ -242,7 +242,7 @@ a
 	.navbar-form label
 		display block
 	.glyphicon
-		color $linkColor
+		color $lightOrange
 	.dropdown-menu
 	.open > a
 	a:hover
@@ -259,7 +259,9 @@ a
 		&:active
 			background lighten($hoverGray, 10%)
 	.date
-		color $lightGray
+		color white
+		.glyphicon
+			color white
 
 .flattenable
 	overflow hidden
@@ -386,7 +388,7 @@ select.form-control
 		width 100%
 
 .btn-primary
-	background $orange
+	background $primaryColor
 
 // Image logo.
 img#logo
@@ -532,36 +534,6 @@ h2
 			float left
 			margin $smallPadding 0 0 $smallPadding
 			size($thumbWidth, $thumbHeight)
-
-.upload-container
-	margin-top $mainPadding
-	position relative
-	// border-radius(4px)
-	border 2px solid $orange
-	box-sizing border-box
-	height 68px
-
-	.progress-bar
-		position absolute
-		height 64px
-		background lighten($lightOrange, 40%)
-
-	.upload
-		opacity(0)
-		position absolute
-		size(100%)
-
-.upload-label
-	color $darkGray
-	font-weight bold
-	font-size 17px
-	text-align center
-	position absolute
-	top 10px
-	width 100%
-
-	small
-		font-weight normal
 
 .description
 	font-size 11px

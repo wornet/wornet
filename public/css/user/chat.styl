@@ -23,6 +23,11 @@
 		&.minimized
 			margin-top $chatHeight - $chatTitleHeight
 
+		img
+			width $chatThumbWidth
+			height $chatThumbHeight
+			margin 0 $smallPadding
+			border-radius(2px)
 		h4
 			margin 0
 			padding 0 2px 0 4px
@@ -45,18 +50,24 @@
 				font-size 14px
 				border-radius(2px)
 				transition(background .2s)
+				opacity(0.6)
 				&:hover
-					background $lightOrange
+					opacity(0.8)
 
 		.messages
 			height $chatHeight - 24px - 38px
 			overflow auto
+			background $lightGray
 
 			.date
 				margin $smallPadding 0
-				text-align center
-				font-size 14px
-
+				font-size 10px
+			.date-right
+				text-align right
+				margin-right $mainPadding
+			.date-left
+				text-align left
+				margin-left 35px
 			.message
 				clear both
 
@@ -69,7 +80,7 @@
 
 					&.received
 						margin-left $chatThumbWidth + $smallPadding * 2
-						background $ultraLightOrange
+						background $nearlyWhite
 						&:before
 							content ''
 							position absolute
@@ -80,7 +91,7 @@
 							background url(png(orange-beak)) left top no-repeat
 
 					&.sent
-						background $nearlyWhite
+						background $ultraLightOrange
 						&:after
 							content ''
 							position absolute
@@ -97,11 +108,14 @@
 				font-size 12px
 
 			img
-				float left
 				width $chatThumbWidth
 				height $chatThumbHeight
 				margin 0 $smallPadding
 				border-radius(2px)
+				&.sent
+					float right
+				&.received
+					float left
 
 	form
 		position relative
