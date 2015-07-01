@@ -98,6 +98,9 @@ hr
 .main-padding
 	padding $mainPadding
 
+#logo-content
+	height 40px
+
 .block
 	display block
 	.glyphicon
@@ -153,9 +156,9 @@ footer
 	.copytag
 		// Marges interne et externe des liens du pied de page (footer)
 		display block
-		margin-top $bigPadding
+		//margin-top $bigPadding
 		padding $mainPadding
-		color $linkColor
+		color $nearlyBlack
 
 	a.link
 		// Marges interne et externe des liens du pied de page (footer)
@@ -392,7 +395,18 @@ select.form-control
 
 // Image logo.
 img#logo
-	width 350px
+	size(50px)
+	abs()
+	top -35px
+	margin 0 auto
+	position relative
+
+.sign-in-overlay
+	background-color rgba(0,0,0,0.6)
+	border-radius(10px)
+	margin-top 200px
+	@media (max-width: 768px)
+		margin-top 50px
 
 .std-line
 	display inline-block
@@ -478,17 +492,24 @@ label
 		margin $mainPadding
 
 // Formulaire de connexion.
-form#login
-	padding 30px 0
+form#login-signin
+	padding $mainPadding 0
 	.narrow
 		padding 0 $smallPadding
 
 // Lien d'oublie du mot de passe.
 a#forget-it
 	color $orange
+	margin-bottom $mainPadding
 	// Lien d'oublie du mot de passe au passage de la souris.
 	&:hover
 		text-decoration none
+
+.invite-message
+	color $nearlyWhite
+	text-align center
+	@media (max-width: 768px)
+		padding-top 40px
 
 h2
 	// Paramètres relatif au texte. (Hérite de body)
@@ -812,9 +833,10 @@ span.image-box i.glyphicon
 			cursor inherit
 			opacity(0)
 
-#signin label
+#login-signin label
 	font-size 12px
 	display block
+	color $nearlyWhite
 
 .scroll-cursor
 	rel(-100px, 0)
@@ -874,9 +896,6 @@ span.image-box i.glyphicon
 
 	#createAccountTitle
 		padding-bottom $bigPadding
-
-	img#logo
-		margin auto
 
 	#slogan
 		padding-top $bigPadding * 1.5
@@ -961,8 +980,6 @@ span.image-box i.glyphicon
 			top 5px
 
 @media (max-width: 991px)
-	img#logo
-		margin $bigPadding auto
 
 	.album
 		h4
