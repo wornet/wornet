@@ -6,8 +6,8 @@ $photoHeight = 200px
 $photoRadius = false
 $progressRadialWidth = 4px
 
-.profile a
-	color $orange
+.profile a:not(.add-friend)
+	color $linkColor
 
 .profile-edit-btn.aside
 	width 180px
@@ -22,8 +22,6 @@ $progressRadialWidth = 4px
 		float right
 		.btn
 			margin-bottom 0
-			&[type=submit]
-				background-color $orange
 
 	.static-tooltip
 		margin-left 50%

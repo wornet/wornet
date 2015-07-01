@@ -87,7 +87,7 @@ mixin formControl(type)
 	if type !== "textarea"
 		input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
 	else
-		textarea&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+		textarea&attributes(attributes).form-control(spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
 
 mixin standardBlock(title)
 	.well.loading&attributes(attributes)

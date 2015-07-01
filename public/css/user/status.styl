@@ -1,10 +1,13 @@
 .status-block .medias
 	padding $smallPadding
 
-.status-form .publish
-	input
-		float right
-		margin-left -65px
+
+.status-form
+.status-medias-form
+	.publish
+		input
+			float right
+			margin-left -65px
 
 .status-author
 	a
@@ -25,14 +28,14 @@
 		color $mediumGray
 
 		&:hover
-			color $orange
+			color $linkColor
 
 	.status-content
 		padding $smallPadding
 		clear left
 
 	a
-		color $orange
+		color $linkColor
 
 .status-actions
 	float right
@@ -55,6 +58,42 @@
 			height 28px
 			line-height 18px
 
+.add-media h4
+	a
+		color $linkColor
+	span
+		color $mediumGray
+
+.upload-container
+	margin $mainPadding
+	position relative
+	// border-radius(4px)
+	border 2px solid $orange
+	box-sizing border-box
+	height 88px
+
+	.progress-bar
+		position absolute
+		height 84px
+		background lighten($lightOrange, 40%)
+
+	.upload
+		opacity(0)
+		position absolute
+		size(100%)
+
+.upload-label
+	color $darkGray
+	font-weight bold
+	font-size 17px
+	text-align center
+	position absolute
+	top 10px
+	width 100%
+
+	small
+		font-weight normal
+
 @media (max-width: 400px)
 	.status-actions
 		margin-left 0
@@ -67,3 +106,5 @@
 @media (max-width: 767px)
 	.status-author
 		clear right
+	.like-zone
+		font-size 10px
