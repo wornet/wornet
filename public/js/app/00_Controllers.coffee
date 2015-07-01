@@ -346,8 +346,9 @@ Controllers =
 		window.chatListScope = $scope
 		return
 
-	Login: ($scope) ->
-		keepTipedModel $scope, '#login', 'user'
+	LoginAndSignin: ($scope) ->
+		keepTipedModel $scope, '#login-signin', 'user'
+		saveUser $scope
 		# Get remember preference of the user if previously saved (default: true)
 		$scope.user.remember = (if hasLocalItem('user.remember') then !! getLocalValue('user.remember') else true)
 		# When the form is submitted
@@ -366,7 +367,14 @@ Controllers =
 						$('#loginErrors').errors data.err
 					return
 			return
-		$('#login').on 'submit', prevent
+
+		$scope.submitTo = (formId, url, method) ->
+			$('#'+formId).attr 'action', url
+			$('#'+formId).attr 'method', method
+			$('#'+formId).submit()
+			return
+
+		$('#login-signin').on 'submit', prevent
 
 		return
 
@@ -661,12 +669,6 @@ Controllers =
 				$('#search').hide()
 				delay 1, ->
 					$('#search').show()
-
-		return
-
-	SigninFirstStep: ($scope) ->
-		keepTipedModel $scope, '#signin', 'user'
-		saveUser $scope
 
 		return
 
