@@ -22,7 +22,7 @@ ul.nav.nav-tabs(role="tablist")
 fieldset.tab.status-form(ng-show="! status.containsMedias")
 	//- h3=strtoupper(s("Publier un statut"))
 	+statusForm()(autofocus)
-fieldset.tab(ng-show="status.containsMedias")
+fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 	//- h3=strtoupper(s("Publier un média"))
 	div(ng-switch="media.step")
 		div(ng-switch-when="create-album")
@@ -30,7 +30,7 @@ fieldset.tab(ng-show="status.containsMedias")
 				+formControl().do-not-loose.counter(focus required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
 				textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
 				.col-xs-12.col-sm-6.col-sm-offset-3
-					input(type="submit" tabindex="103" value=s("Créer")).btn.col-xs-12
+					input(type="submit" tabindex="103" value=s("Créer")).btn.btn-primary.col-xs-12
 		div(ng-switch-when="select-album")
 			.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
 				h4 {{ album.name }}
@@ -39,7 +39,7 @@ fieldset.tab(ng-show="status.containsMedias")
 			.cb.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
 					=s("Créer un album")
-		div(ng-switch-when="add")
+		div.add-media(ng-switch-when="add")
 			.col-xs-6.fit
 				h4.glued.big-line
 					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
@@ -51,7 +51,7 @@ fieldset.tab(ng-show="status.containsMedias")
 			.col-xs-6.fit
 				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
 					=s("Sélectionner un autre album")
-			.col-xs-12.fit
+			.col-xs-6.fit
 				iframe(name="status-upload")
 				+form("/user/photo", "FILE").status-images(target="status-upload")
 					.upload-container
@@ -61,19 +61,21 @@ fieldset.tab(ng-show="status.containsMedias")
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
 						input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
 						input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
+					.medias
+						div(ng-if="medias.images.length > 0")
+							h3=s("Images")
+							//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
+							span.image-box(ng-repeat="image in medias.images")
+								img(ng-src="{{ image.src }}" alt="{{ image.name }}")
+								+glyph('remove-sign')(ng-click="removeMedia(image)")
+			.col-xs-6.fit
 				+form()(ng-submit="addMedia(link)")
 					.input-group
 						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))
 						.input-group-btn
-							button(type="submit" tabindex="114").btn
+							button(type="submit" tabindex="114").btn.btn-primary
 								+glyph('plus')
 				.medias
-					div(ng-if="medias.images.length > 0")
-						h3=s("Images")
-						//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
-						span.image-box(ng-repeat="image in medias.images")
-							img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-							+glyph('remove-sign')(ng-click="removeMedia(image)")
 					div(ng-if="medias.videos.length > 0")
 						h3=s("Vidéos")
 						iframe(ng-repeat="video in medias.videos" ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
@@ -81,8 +83,10 @@ fieldset.tab(ng-show="status.containsMedias")
 						h3=s("Liens")
 						a(ng-repeat="link in medias.links" tagret="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
 				.cb
+			.col-xs-12.fit
 				+statusForm(114)(ng-disabled="medias.length == 0")
 					input(type="hidden" ng-model="medias" name="medias")
+				
 		div(ng-switch-default)
 			.col-sm-6.col-xs-12.fit
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121")

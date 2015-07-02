@@ -98,6 +98,9 @@ hr
 .main-padding
 	padding $mainPadding
 
+#logo-content
+	height 40px
+
 .block
 	display block
 	.glyphicon
@@ -153,9 +156,9 @@ footer
 	.copytag
 		// Marges interne et externe des liens du pied de page (footer)
 		display block
-		margin-top $bigPadding
+		//margin-top $bigPadding
 		padding $mainPadding
-		color $linkColor
+		color $nearlyBlack
 
 	a.link
 		// Marges interne et externe des liens du pied de page (footer)
@@ -242,7 +245,7 @@ a
 	.navbar-form label
 		display block
 	.glyphicon
-		color $linkColor
+		color $lightOrange
 	.dropdown-menu
 	.open > a
 	a:hover
@@ -259,7 +262,9 @@ a
 		&:active
 			background lighten($hoverGray, 10%)
 	.date
-		color $lightGray
+		color white
+		.glyphicon
+			color white
 
 .flattenable
 	overflow hidden
@@ -386,11 +391,22 @@ select.form-control
 		width 100%
 
 .btn-primary
-	background $orange
+	background $primaryColor
 
 // Image logo.
 img#logo
-	width 350px
+	size(50px)
+	abs()
+	top -35px
+	margin 0 auto
+	position relative
+
+.sign-in-overlay
+	background-color rgba(0,0,0,0.6)
+	border-radius(10px)
+	margin-top 200px
+	@media (max-width: 768px)
+		margin-top 50px
 
 .std-line
 	display inline-block
@@ -476,17 +492,24 @@ label
 		margin $mainPadding
 
 // Formulaire de connexion.
-form#login
-	padding 30px 0
+form#login-signin
+	padding $mainPadding 0
 	.narrow
 		padding 0 $smallPadding
 
 // Lien d'oublie du mot de passe.
 a#forget-it
 	color $orange
+	margin-bottom $mainPadding
 	// Lien d'oublie du mot de passe au passage de la souris.
 	&:hover
 		text-decoration none
+
+.invite-message
+	color $nearlyWhite
+	text-align center
+	@media (max-width: 768px)
+		padding-top 40px
 
 h2
 	// Paramètres relatif au texte. (Hérite de body)
@@ -532,36 +555,6 @@ h2
 			float left
 			margin $smallPadding 0 0 $smallPadding
 			size($thumbWidth, $thumbHeight)
-
-.upload-container
-	margin-top $mainPadding
-	position relative
-	// border-radius(4px)
-	border 2px solid $orange
-	box-sizing border-box
-	height 68px
-
-	.progress-bar
-		position absolute
-		height 64px
-		background lighten($lightOrange, 40%)
-
-	.upload
-		opacity(0)
-		position absolute
-		size(100%)
-
-.upload-label
-	color $darkGray
-	font-weight bold
-	font-size 17px
-	text-align center
-	position absolute
-	top 10px
-	width 100%
-
-	small
-		font-weight normal
 
 .description
 	font-size 11px
@@ -840,9 +833,14 @@ span.image-box i.glyphicon
 			cursor inherit
 			opacity(0)
 
-#signin label
-	font-size 12px
-	display block
+#signin
+#login-signin
+	label
+		font-size 12px
+		display block
+
+#remember-me
+	color $nearlyWhite
 
 .scroll-cursor
 	rel(-100px, 0)
@@ -854,6 +852,7 @@ span.image-box i.glyphicon
 
 // Imports.
 @import "includes/tooltip"
+@import "includes/icons"
 @import "user/login"
 @import "user/profile"
 @import "user/status"
@@ -901,9 +900,6 @@ span.image-box i.glyphicon
 
 	#createAccountTitle
 		padding-bottom $bigPadding
-
-	img#logo
-		margin auto
 
 	#slogan
 		padding-top $bigPadding * 1.5
@@ -988,8 +984,6 @@ span.image-box i.glyphicon
 			top 5px
 
 @media (max-width: 991px)
-	img#logo
-		margin $bigPadding auto
 
 	.album
 		h4

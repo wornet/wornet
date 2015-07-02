@@ -4,6 +4,7 @@
 		span.numberOfFriends
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 		+data('numberOfFriends', numberOfFriends)
+	hr
 	ul#friends.photos-thumbs
 		each friend in friends
 			if friend
