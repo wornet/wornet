@@ -352,7 +352,8 @@ Controllers =
 		# Get remember preference of the user if previously saved (default: true)
 		$scope.user.remember = (if hasLocalItem('user.remember') then !! getLocalValue('user.remember') else true)
 		# When the form is submitted
-		$scope.submit = (user) ->
+		$scope.submitLogin = (user) ->
+			@submit user
 			# Save remember preference of the user
 			setLocalValue 'user.remember', user.remember
 			# send a POST request to /user/login with user.email and user.password
@@ -368,9 +369,18 @@ Controllers =
 					return
 			return
 
-		$scope.submitTo = (formId, url, method) ->
-			$('#'+formId).attr 'action', url
-			$('#'+formId).attr 'method', method
+		$scope.submitSignin = (formId, user) ->
+			@submit user
+			$('#'+formId).attr "action" , "/user/signin"
+			$('#'+formId).attr "method" , "POST"
+			if $('input[name="_method"]').length
+				$('input[name="_method"]').val "PUT"
+			else
+				$('#'+formId).append "<input type=hidden name='_method' value='PUT'>"
+			$('#'+formId).unbind 'submit'
+
+			keepTipedModel $scope, '#login-signin', 'user'
+			saveUser $scope
 			$('#'+formId).submit()
 			return
 
