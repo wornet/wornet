@@ -15,6 +15,8 @@ block body
 			+alert(signinAlerts)
 		#signin.well.loading(ng-controller="SigninSecondStepCtrl")
 			+form("/user/signin", "PUT")(ng-submit="submit(user)")
+				h3
+					=s('Inscription')
 				.col-sm-6.col-xs-12
 					label.cb
 						+formControl("email")(
@@ -101,7 +103,7 @@ block body
 							!=s("J'accepte {legals} et {privacyPolicy}", { legals: legals, privacyPolicy: privacyPolicy })
 						- var legals = jd('a(data-toggle="modal" data-target="#legals")\n\t="' + s("les conditions générales d'utilisation et la politique de confidentialité") + '"')
 						!=s("J'accepte {legals}", { legals: legals })
-					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
+					input.btn.btn-plain.btn-primary(type="submit" value=s("Je m'inscris"))
 					input(type="hidden" ng-model="user.step" name="step" value="2")
 				.cb
 

@@ -16,7 +16,7 @@
 					=s("Signaler")
 		.alert.alert-success(ng-if="status.reported")
 			=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
-	.aside.continue(ng-if="! status.author.hashedId")
+	.aside.continue.settings(ng-if="! status.author.hashedId")
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			+glyph('cog')
 		ul.dropdown-menu(role="menu")

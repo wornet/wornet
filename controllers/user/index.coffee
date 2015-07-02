@@ -54,7 +54,6 @@ module.exports = (router) ->
 
 	# When user submit his e-mail and password to sign in
 	router.put '/signin', (req, res) ->
-
 		email = req.body.email.toLowerCase()
 		model = {}
 		# A full name must contains a space but is not needed at the first step
@@ -65,7 +64,7 @@ module.exports = (router) ->
 		if config.wornet.mail.hostsBlackList.indexOf(email.replace(/^.*@([^@]*)$/g, '$1')) isnt -1
 			req.flash 'signinErrors', UserErrors.WRONG_EMAIL
 			res.redirect signinUrl
-		else if req.body.password isnt req.body.passwordCheck
+		else if req.body.password isnt req.body.passwordCheck and req.body.step is "2"
 			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
 			res.redirect signinUrl
 

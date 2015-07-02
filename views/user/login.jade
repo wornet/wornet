@@ -11,7 +11,7 @@ block body
 					=s("Ouvrez un compte, c'est gratuit.")
 				#signinErrors
 					+alert(signinAlerts)
-				+form("/user/login")(ng-submit="submit(user)" ng-controller="LoginAndSigninCtrl")#login-signin
+				+form("/user/login")(ng-submit="submitLogin(user)" ng-controller="LoginAndSigninCtrl")#login-signin
 					+formControl("email")(
 						title=s("Votre e-mail")
 						tabindex=10
@@ -40,13 +40,13 @@ block body
 									+ '\n\t\t.inner.veryhigh ' + s("Très fort")
 								)
 							]).flash
-					label.std-line
+					label#remember-me.std-line
 						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="30" checked)
 						=s("Se souvenir de moi")
 					.narrow.col-lg-6.col-sm-12
-						input.btn.btn-plain.login(type="submit" value=s("Se connecter") ng-click="submitTo('login-signin', '/user/login', 'POST')" tabindex="40")
+						input.btn.btn-plain.login(type="submit" value=s("Se connecter") tabindex="40")
 					.narrow.col-lg-6.col-sm-12
-						input.btn.btn-plain.btn-primary.sign-in(type="button" ng-click="submitTo('login-signin', '/user/signin', 'PUT')" value=s("Je m'inscris") tabindex="50")
+						input.btn.btn-plain.btn-primary.sign-in(type="button" ng-click="submitSignin('login-signin', user)" value=s("Je m'inscris") tabindex="50")
 					.narrow.col-sm-12
 						a#forget-it.std-line(href="/user/forgotten-password" tabindex="60")
 							=s("Mot de passe oublié ?")
