@@ -174,14 +174,17 @@ module.exports =
 		options ||= {}
 		i = options.i || 0
 		ie = options.ie || 0
+		iosApp = !! options.iosApp
 		if i >= lst.length
 			end content
 		else
 			file = lst[i]
 			# Internet Explorer condition
 			if typeof(file) is 'object'
+				if file[0] is 'ios-app'
+					file = (unless iosApp then file[1])
 				if file[0] is 'non-ie'
-					file = (if ie then false else file[1])
+					file = (if ie then file[1])
 				else
 					version = 1
 					symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
@@ -189,34 +192,35 @@ module.exports =
 						s
 					switch symbol
 						when 'gt'
-							file = (if ie > version then file[1] else false)
+							file = (if ie > version then file[1])
 						when 'gte'
-							file = (if ie >= version then file[1] else false)
+							file = (if ie >= version then file[1])
 						when 'lt'
-							file = (if ie < version then file[1] else false)
+							file = (if ie < version then file[1])
 						when 'lte'
-							file = (if ie <= version then file[1] else false)
+							file = (if ie <= version then file[1])
 						else
-							file = (if ie is version then file[1] else false)
+							file = (if ie is version then file[1])
 			done = ->
 				concatCallback content, lst, proceed, end,
 					i: i + 1
 					ie: ie
+					iosApp: iosApp
 			concat = (data) ->
-				content += proceed(strval(data))
-				if content.charAt(content.length - 1) isnt ';'
+				content += proceed strval data
+				if content.endWith ';'
 					content += ';'
 				content += '\n'
 			if file
 				pathWithoutParams = file
-				if file.indexOf('?') isnt -1
-					path = file.replace /^([^\?]+)\?.*$/g, (m, start) ->
+				path = if file.contains '?'
+					file.replace /^([^\?]+)\?.*$/g, (m, start) ->
 						pathWithoutParams = start
 						__dirname + '/../../.build' + start
 				else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
-					path = __dirname + '/../../public' + file
+					__dirname + '/../../public' + file
 				else
-					path = file
+					file
 				fs.readFile path, (err, data) ->
 					if err
 						if err.code is 'ENOENT'
@@ -225,7 +229,7 @@ module.exports =
 								port: config.port
 								path: pathWithoutParams
 							, (res) ->
-								if ([0, 200]).contains res.statusCode
+								if res.statusCode in [0, 200]
 									data = ''
 									res.on 'error', (err) ->
 										console.warn err
@@ -233,7 +237,7 @@ module.exports =
 									res.on 'data', (chunk) ->
 										data += chunk
 									res.on 'end', ->
-										if data.indexOf('<!DOCTYPE html>') is 0
+										if data.startWith '<!DOCTYPE html>'
 											warn path + ' return HTML'
 										else
 											concat data
