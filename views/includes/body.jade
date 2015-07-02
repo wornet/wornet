@@ -104,6 +104,9 @@ block js
 			if script[0] === 'non-ie'
 				+non-ie()
 					+script(script[1])
+			else if style[0] === 'ios-app'
+				if iosApp
+					+script(script[1])
 			else
 				+ie(script[0])
 					+script(script[1])

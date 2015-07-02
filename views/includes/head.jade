@@ -18,7 +18,10 @@ block css
 		if typeof(style) === 'object'
 			if style[0] === 'non-ie'
 				+non-ie()
-					+style(href=style[1])
+					+style(style[1])
+			else if style[0] === 'ios-app'
+				if iosApp
+					+style(style[1])
 			else
 				+ie(style[0])
 					+style(style[1])
