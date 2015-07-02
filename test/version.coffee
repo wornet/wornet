@@ -4,7 +4,7 @@ onready = require './test'
 fs = require 'fs'
 exec = require("child_process").exec
 
-xdescribe "current package version", ->
+describe "current package version", ->
 
 	@timeout 10.seconds
 

@@ -61,7 +61,7 @@
 						=s("Biographie")
 					textarea.form-control.counter(name="biography" maxlength=config.wornet.limits.biographyLength)=profile.biography
 				.btn-group
-					input(type="submit" value=s("Enregistrer")).btn
+					input(type="submit" value=s("Enregistrer")).btn.btn-primary
 				.btn-group
 					input(type="button" value=s("Annuler")).btn.cancel.profile-edit-btn
 					| &nbsp;
@@ -97,14 +97,15 @@
 						)
 							+glyph("star{{ isABestFriend ? '' : '-empty' }}")
 				else
-					a.destroyable.inline-button(
+					br
+					a.add-friend.destroyable.inline-button.btn.btn-primary(
 						href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 						data-target=".profileError"
 						data-click="success"
 						data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
 						data-ask-for-friend=profile.hashedId
 					)
-						+glyph('plus')
+						=strtoupper(s("Ajouter à la liste d'amis"))
 		if isAFriend || isMe					
 			if ! profile.birthDate
 				if profile.birthCity

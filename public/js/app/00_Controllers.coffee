@@ -346,12 +346,14 @@ Controllers =
 		window.chatListScope = $scope
 		return
 
-	Login: ($scope) ->
-		keepTipedModel $scope, '#login', 'user'
+	LoginAndSignin: ($scope) ->
+		keepTipedModel $scope, '#login-signin', 'user'
+		saveUser $scope
 		# Get remember preference of the user if previously saved (default: true)
 		$scope.user.remember = (if hasLocalItem('user.remember') then !! getLocalValue('user.remember') else true)
 		# When the form is submitted
-		$scope.submit = (user) ->
+		$scope.submitLogin = (user) ->
+			@submit user
 			# Save remember preference of the user
 			setLocalValue 'user.remember', user.remember
 			# send a POST request to /user/login with user.email and user.password
@@ -366,7 +368,23 @@ Controllers =
 						$('#loginErrors').errors data.err
 					return
 			return
-		$('#login').on 'submit', prevent
+
+		$scope.submitSignin = (formId, user) ->
+			@submit user
+			$('#'+formId).attr "action" , "/user/signin"
+			$('#'+formId).attr "method" , "POST"
+			if $('input[name="_method"]').length
+				$('input[name="_method"]').val "PUT"
+			else
+				$('#'+formId).append "<input type=hidden name='_method' value='PUT'>"
+			$('#'+formId).unbind 'submit'
+
+			keepTipedModel $scope, '#login-signin', 'user'
+			saveUser $scope
+			$('#'+formId).submit()
+			return
+
+		$('#login-signin').on 'submit', prevent
 
 		return
 
@@ -661,12 +679,6 @@ Controllers =
 				$('#search').hide()
 				delay 1, ->
 					$('#search').show()
-
-		return
-
-	SigninFirstStep: ($scope) ->
-		keepTipedModel $scope, '#signin', 'user'
-		saveUser $scope
 
 		return
 

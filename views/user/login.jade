@@ -1,36 +1,20 @@
 extends ../layouts/wornet
-
-block nav
-	header: nav: .container
-		#logo-content.col-md-5.col-sm-4.col-xs-12
-			img#logo.img-responsive(src=png(bigImg("wornet-gray")) alt=s("Wornet"))
-		.col-md-6.col-md-offset-1.col-sm-8.col-xs-12
-			#loginErrors
-				+alert(loginAlerts)
-			+form("/user/login")(ng-submit="submit(user)" ng-controller="LoginCtrl")#login
-				.narrow.col-sm-4.col-xs-12
-					+formControl("email")(required autofocus tabindex="1" pattern=pattern('email') ng-model="user.email" name="email" placeholder=s("Votre e-mail"))
-					label.mobile-field.std-line
-						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="3" checked)
-						=s("Se souvenir de moi")
-				.narrow.col-sm-4.col-xs-12
-					+formControl("password")(required tabindex="2" ng-model="user.password" name="password" placeholder=s("Mot de passe"))
-					a#forget-it.mobile-field.std-line(href="/user/forgotten-password" tabindex="4")
-						=s("Oublié ?")
-				.narrow.col-sm-4.col-xs-12
-					input.btn.btn-plain(type="submit" value=s("Se connecter") tabindex="5")
+		
 
 block body
 	.container: section
 		.col-sm-4.col-sm-offset-4.col-xs-12.fit
-			.col-md-8.col-md-offset-2.col-sm-12
-				h2#createAccountTitle
+			.col-md-10.col-md-offset-2.col-sm-12.sign-in-overlay
+				#logo-content.col-xs-12
+					img#logo.img-responsive(src=png("wornet-thumb50") alt=s("Wornet"))
+				h4.invite-message
 					=s("Ouvrez un compte, c'est gratuit.")
 				#signinErrors
 					+alert(signinAlerts)
-				+form("/user/signin", "PUT")(ng-submit="submit(user)" ng-controller="SigninFirstStepCtrl")#signin
+				+form("/user/login")(ng-submit="submitLogin(user)" ng-controller="LoginAndSigninCtrl")#login-signin
 					+formControl("email")(
 						title=s("Votre e-mail")
+						tabindex=10
 						ng-model="user.email"
 						name="email"
 						placeholder=s("Votre e-mail")
@@ -41,6 +25,7 @@ block body
 					.check-pass
 						+formControl("password")(
 							title=s("Votre mot de passe")
+							tabindex=20
 							ng-model="user.password"
 							name="password"
 							placeholder=s("Votre mot de passe")
@@ -55,20 +40,14 @@ block body
 									+ '\n\t\t.inner.veryhigh ' + s("Très fort")
 								)
 							]).flash
-					+formControl("password")(
-						title=s("Confirmez votre mot de passe")
-						ng-model="user.passwordCheck"
-						name="passwordCheck"
-						placeholder=s("Confirmez votre mot de passe")
-						tooltip!=[
-							s("Confirmer le mot de passe"),
-							s("La confirmation du mot de passe permet d’éviter tout erreur de frappe.")
-						]).flash
-					input.btn.btn-plain(type="submit" value=s("Je m'inscris"))
-		#quotes.col-sm-3.col-xs-12
-			blockquote
-				=s("\" Wornet est un réseau social français totalement pensé pour vous – et vos amis. \"")
-			blockquote
-				=s("\" Contrôlez la portée de vos informations. \"")
-			blockquote
-				=s("\"  Bénéficiez d'outils innovants et intuitifs. \"")
+					label#remember-me.std-line
+						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="30" checked)
+						=s("Se souvenir de moi")
+					.narrow.col-lg-6.col-sm-12
+						input.btn.btn-plain.login(type="submit" value=s("Se connecter") tabindex="40")
+					.narrow.col-lg-6.col-sm-12
+						input.btn.btn-plain.btn-primary.sign-in(type="button" ng-click="submitSignin('login-signin', user)" value=s("Je m'inscris") tabindex="50")
+					.narrow.col-sm-12
+						a#forget-it.std-line(href="/user/forgotten-password" tabindex="60")
+							=s("Mot de passe oublié ?")
+		
