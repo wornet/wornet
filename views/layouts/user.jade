@@ -14,7 +14,7 @@ mixin friends(classes)
 				| &nbsp; 
 				span.pill
 					=loggedFriends.length
-		ul.dropdown-menu(role='menu' ng-controller="ProfileCtrl")
+		ul.dropdown-menu.loggedFriends-list(role='menu' ng-controller="ProfileCtrl")
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
 					- friend = objectToUser(friend).publicInformations()
