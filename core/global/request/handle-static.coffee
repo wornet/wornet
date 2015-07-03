@@ -42,6 +42,8 @@ module.exports = (app) ->
 					# To simulate a slow bandwith add a delay like this :
 					# delay 3000, done
 
+		userAgent = (req.getHeader 'user-agent') || ''
+		iosApp = (/Mobile\//.test userAgent) and (! /Safari\//.test userAgent)
 		if req.urlWithoutParams is '/stat'
 			piwik = options.trackers().piwik
 			if piwik and piwik.target
@@ -61,12 +63,13 @@ module.exports = (app) ->
 		else if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
 			res.setHeader 'cache-control', 'max-age=' + 90.days + ', public'
 			req.isStatic = true
-			ie = req.getHeader('user-agent').match /MSIE[\/\s]([0-9\.]+)/g
-			if ie
-				ie = intval ie[0].substr 5
+			ie = userAgent.match /MSIE[\/\s]([0-9\.]+)/g
+			ie = if ie
+				intval ie[0].substr 5
 			else
-				ie = 0
+				0
 			req.ie = ie
+			req.iosApp = iosApp
 			methods =
 				js: uglifyJs
 				css: (str) ->
@@ -78,8 +81,15 @@ module.exports = (app) ->
 			for lang, method of methods
 				if req.urlWithoutParams is '/' + lang + '/all.' + lang
 					res.setTimeLimit 200
-					file = __dirname + '/../../../.build/' + lang + '/all-ie-' + req.ie + '.' + lang
 					acceptEncoding = (req.getHeader 'accept-encoding') || ''
+					file = __dirname + '/../../../.build/' + lang + '/all' + (
+						if iosApp
+							'-ios-app'
+						else if ie
+							'-ie-' + ie
+						else
+							''
+					) + '.' + lang
 					gzip = /\bgzip\b/.test acceptEncoding
 					if gzip
 						file += '.gz'
@@ -101,7 +111,8 @@ module.exports = (app) ->
 											res.end compressedContent
 											fs.writeFile file, compressedContent
 								,
-									ie: req.ie
+									ie: ie
+									iosApp: iosApp
 							else
 								if gzip
 									res.setHeader 'content-encoding', 'gzip'
@@ -145,6 +156,7 @@ module.exports = (app) ->
 				# Do not re-open connection for resources
 				res.setHeader 'keep-alive', 'timeout=15, max=100'
 			res.locals.isXHR = !!req.xhr
+			res.locals.iosApp = iosApp
 			res.isXHR = res.locals.isXHR
 			req.isJSON = req.getHeader('accept').match /(application\/json|text\/javascript)/g
 			res.isJSON = req.isJSON
