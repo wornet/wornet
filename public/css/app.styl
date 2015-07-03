@@ -499,6 +499,7 @@ form#login-signin
 
 // Lien d'oublie du mot de passe.
 a#forget-it
+	float right
 	color $orange
 	margin-bottom $mainPadding
 	// Lien d'oublie du mot de passe au passage de la souris.
@@ -566,6 +567,12 @@ h2
 	input
 	textarea
 		margin 0
+
+.settings .glyphicon-cog
+	color $mediumGray
+
+	&:hover
+		color $linkColor
 
 .cancel
 	background $mediumGray
@@ -850,9 +857,15 @@ span.image-box i.glyphicon
 	&.not-loaded
 		opacity(0)
 
+.fit-bar div
+	padding 0 $mainPadding
+	&:first-child
+		padding-left 0
+	&:last-child
+		padding-right 0
+
 // Imports.
 @import "includes/tooltip"
-@import "includes/icons"
 @import "user/login"
 @import "user/profile"
 @import "user/status"
@@ -860,9 +873,21 @@ span.image-box i.glyphicon
 @import "user/chat"
 @import "agenda"
 
-@media (max-width: 360px)
+@media (max-width: 414px)
 	.nav-tabs.nav>li>a
 		font-size 13px
+
+	.invite-block
+		display none
+
+	.medias-block
+		display none
+
+	.friends-block
+		display none
+
+	.date
+		font-size 10px
 
 // Media Queries.
 @media (max-width: 767px)
@@ -943,6 +968,12 @@ span.image-box i.glyphicon
 		.copytag
 			padding $smallPadding
 			margin $smallPadding 0 0
+
+	.fit-bar div
+		padding 0
+
+	.forget-it
+		margin-bottom $mainPadding
 
 
 @media (min-width: 768px)
