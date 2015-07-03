@@ -28,7 +28,7 @@ PlusWPackage =
 						, (err, status) =>
 							if err
 								done err
-							else
+							else if status
 								usersToNotify = []
 								hashedIdAuthor = statusReq.author.hashedId
 								#usersToNotify contains hashedIds tests in notify.
@@ -40,6 +40,8 @@ PlusWPackage =
 								unless empty usersToNotify
 									@notify usersToNotify, statusReq, req.user
 								done null, status.nbLike
+							else
+								warn (new Error "Le statut est introuvable."), req
 				, (result) ->
 					end null, result.newNbLike
 				, end
