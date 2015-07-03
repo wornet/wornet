@@ -40,7 +40,7 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
 					=s("Créer un album")
 		div.add-media(ng-switch-when="add")
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.fit
 				h4.glued.big-line
 					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
 						+glyph('folder-open')
@@ -48,10 +48,10 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 					span(ng-if="! currentAlbum._id")
 						+glyph('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.fit
 				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
 					=s("Sélectionner un autre album")
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.fit
 				iframe(name="status-upload")
 				+form("/user/photo", "FILE").status-images(target="status-upload")
 					.upload-container
@@ -68,7 +68,7 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 							span.image-box(ng-repeat="image in medias.images")
 								img(ng-src="{{ image.src }}" alt="{{ image.name }}")
 								+glyph('remove-sign')(ng-click="removeMedia(image)")
-			.col-xs-6.fit
+			.col-sm-6.col-xs-12.fit
 				+form()(ng-submit="addMedia(link)")
 					.input-group
 						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))

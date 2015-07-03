@@ -43,11 +43,12 @@ block body
 					label#remember-me.std-line
 						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="30" checked)
 						=s("Se souvenir de moi")
-					.narrow.col-lg-6.col-sm-12
-						input.btn.btn-plain.login(type="submit" value=s("Se connecter") tabindex="40")
-					.narrow.col-lg-6.col-sm-12
-						input.btn.btn-plain.btn-primary.sign-in(type="button" ng-click="submitSignin('login-signin', user)" value=s("Je m'inscris") tabindex="50")
-					.narrow.col-sm-12
+					.col-sm-12.fit.fit-bar
+						.col-lg-6.col-sm-12
+							input.btn.btn-plain.sign-in(type="button" ng-click="submitSignin('login-signin', user)" value=s("Je m'inscris") tabindex="50")
+						.col-lg-6.col-sm-12
+							input.btn.btn-plain.btn-primary.login(type="submit" value=s("Se connecter") tabindex="40")
+					.narrow.col-sm-12.forget-it
 						a#forget-it.std-line(href="/user/forgotten-password" tabindex="60")
 							=s("Mot de passe oublié ?")
 		

@@ -371,13 +371,14 @@ Controllers =
 
 		$scope.submitSignin = (formId, user) ->
 			@submit user
-			$('#'+formId).attr "action" , "/user/signin"
-			$('#'+formId).attr "method" , "POST"
+			$('#'+formId)
+				.attr "action" , "/user/signin"
+				.attr "method" , "POST"
+				.unbind 'submit'
 			if $('input[name="_method"]').length
 				$('input[name="_method"]').val "PUT"
 			else
 				$('#'+formId).append "<input type=hidden name='_method' value='PUT'>"
-			$('#'+formId).unbind 'submit'
 
 			keepTipedModel $scope, '#login-signin', 'user'
 			saveUser $scope
