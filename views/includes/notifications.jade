@@ -9,7 +9,7 @@ mixin notifications(classes)
 			| &nbsp; 
 			span.pill
 				=notificationsCount
-		ul.dropdown-menu(role='menu' ng-controller="NotificationsCtrl")
+		ul.dropdown-menu.notification-list(role='menu' ng-controller="NotificationsCtrl")
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					i.date(data-date="{{ notification[0] }}")

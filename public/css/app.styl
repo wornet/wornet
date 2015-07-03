@@ -401,12 +401,14 @@ img#logo
 	margin 0 auto
 	position relative
 
+.sign-in-overlay-container
+	abs(50%)
 .sign-in-overlay
 	background-color rgba(0,0,0,0.6)
 	border-radius(10px)
-	margin-top 200px
+	abs(calc(-310px/2))
 	@media (max-width: 768px)
-		margin-top 50px
+		abs(calc(-336px/2))
 
 .std-line
 	display inline-block
@@ -428,6 +430,10 @@ label
 		size($notificationThumbWidth, $notificationThumbHeight)
 	.glyphicon
 		color #35AC19
+
+.loggedFriends-list
+.notification-list
+	border-radius(0 0 2px 2px)
 
 #wrap
 #navbar
@@ -864,6 +870,11 @@ span.image-box i.glyphicon
 	&:last-child
 		padding-right 0
 
+.slogan-message
+	color $nearlyWhite
+	text-align center
+	text-transform initial
+
 // Imports.
 @import "includes/tooltip"
 @import "user/login"
@@ -892,6 +903,9 @@ span.image-box i.glyphicon
 	footer
 		// Tailles du pied de page.
 		size(100%, $mobileFooterHeight)
+
+	.slogan-message
+		display none
 
 // Media Queries.
 @media (max-width: 767px)
@@ -1017,6 +1031,10 @@ span.image-box i.glyphicon
 		.glyphicon
 			margin-left -28px
 			top 5px
+
+	.sign-in-overlay
+		padding 0 50px
+
 
 @media (max-width: 991px)
 

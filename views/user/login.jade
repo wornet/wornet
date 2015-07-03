@@ -2,13 +2,15 @@ extends ../layouts/wornet
 		
 
 block body
-	.container: section
-		.col-sm-4.col-sm-offset-4.col-xs-12.fit
-			.col-md-10.col-md-offset-2.col-sm-12.sign-in-overlay
+	section
+		.col-lg-4.col-lg-offset-4.col-sm-6.col-sm-offset-3.col-xs-10.col-xs-offset-1.fit.sign-in-overlay-container
+			.col-sm-12.sign-in-overlay
 				#logo-content.col-xs-12
 					img#logo.img-responsive(src=png("wornet-thumb50") alt=s("Wornet"))
-				h4.invite-message
+				h2.invite-message
 					=s("Ouvrez un compte, c'est gratuit.")
+				h5.slogan-message
+					=s("\"Avec le réseau social éthique Wornet, contrôlez facilement la portée de vos informations.\"")
 				#signinErrors
 					+alert(signinAlerts)
 				+form("/user/login")(ng-submit="submitLogin(user)" ng-controller="LoginAndSigninCtrl")#login-signin
@@ -44,9 +46,9 @@ block body
 						input(type="checkbox" ng-model="user.remember" name="remember" id="login-remember" tabindex="30" checked)
 						=s("Se souvenir de moi")
 					.col-sm-12.fit.fit-bar
-						.col-lg-6.col-sm-12
+						.col-sm-6.col-xs-12
 							input.btn.btn-plain.sign-in(type="button" ng-click="submitSignin('login-signin', user)" value=s("Je m'inscris") tabindex="50")
-						.col-lg-6.col-sm-12
+						.col-sm-6.col-xs-12
 							input.btn.btn-plain.btn-primary.login(type="submit" value=s("Se connecter") tabindex="40")
 					.narrow.col-sm-12.forget-it
 						a#forget-it.std-line(href="/user/forgotten-password" tabindex="60")
