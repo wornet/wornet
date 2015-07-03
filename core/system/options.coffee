@@ -63,6 +63,7 @@ module.exports = (app, port) ->
 				"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"
 				"//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.0.2/fullcalendar.css"
 				style("app")
+				['ios-app', style('ios-app')]
 			]
 		else
 			# locales resources
@@ -72,6 +73,7 @@ module.exports = (app, port) ->
 				"/components/jquery/css/jquery-ui.css"
 				"/components/jquery/css/fullcalendar.css"
 				style("app")
+				['ios-app', style('ios-app')]
 			]
 
 	css: ->
