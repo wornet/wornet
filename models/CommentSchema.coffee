@@ -13,7 +13,7 @@ commentSchema.pre 'save', (next) ->
 		Status.findById @attachedStatus, (err, status) =>
 			if err
 				next err
-			else
+			else if status
 				at = status.at || status.author
 				if equals at, @author
 					next()
@@ -33,6 +33,8 @@ commentSchema.pre 'save', (next) ->
 								next()
 							else
 								next new Error s("Vous ne pouvez poster que sur les profils de vos amis")
+			else
+				next new Error s("Le statut est introuvable")
 
 
 module.exports = commentSchema
