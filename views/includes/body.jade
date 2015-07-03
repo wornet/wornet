@@ -25,13 +25,13 @@
 block footer
 	footer
 		.row.col-sm-8
-			a.link.col-sm-3.col-xs-6(href="http://blog.wornet.fr/")
+			a.link.col-sm-3.col-xs-4(href="http://blog.wornet.fr/")
 				=s("Blog")
 			//- a.link.col-sm-3.col-xs-6(href="/jobs")
 				=s("Offres d'emplois")
-			a.link.col-sm-3.col-xs-6(href="/legals")
+			a.link.col-sm-3.col-xs-4(href="/legals")
 				=s("Mentions légales")
-			span.copytag.col-sm-3.col-xs-6(data="right")
+			span.copytag.col-sm-3.col-xs-4(data="right")
 				!=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
 				=mainTitle
 
