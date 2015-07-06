@@ -407,6 +407,7 @@ img#logo
 	background-color rgba(0,0,0,0.6)
 	border-radius(10px)
 	abs(-310px/2)
+	width 100%
 	@media (max-width: 768px)
 		abs(-336px/2)
 
@@ -891,17 +892,26 @@ span.image-box i.glyphicon
 	.invite-block
 	.medias-block
 	.friends-block
+	.slogan-message
+	.tooltip-arrow
+	.tooltip-inner
 		display none
 
 	.date
 		font-size 10px
-
-	footer
-		// Tailles du pied de page.
-		size(100%, $mobileFooterHeight)
-
+		
+// Iphone 6 Plus and smaller mobiles in landscape orientation
+@media (max-width: 736px) and (orientation: landscape)
+	.tooltip-arrow
+	.tooltip-inner
 	.slogan-message
 		display none
+
+	.sign-in-overlay
+		margin-top 35px
+
+	footer
+		margin-top 90px
 
 // Media Queries.
 @media (max-width: 767px)
@@ -1033,6 +1043,10 @@ span.image-box i.glyphicon
 
 
 @media (max-width: 991px)
+
+	footer
+		// Tailles du pied de page.
+		size(100%, $mobileFooterHeight)
 
 	.album
 		h4

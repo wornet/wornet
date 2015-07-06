@@ -105,7 +105,8 @@
 						data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
 						data-ask-for-friend=profile.hashedId
 					)
-						=strtoupper(s("Ajouter à la liste d'amis"))
+						+glyph('user')
+						=' '+strtoupper(s("Ajouter à la liste d'amis"))
 		if isAFriend || isMe					
 			if ! profile.birthDate
 				if profile.birthCity
