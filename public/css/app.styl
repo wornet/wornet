@@ -14,7 +14,7 @@ input
 .nav-tabs > li > a
 .well
 .alert
-.navbar
+.wornet-navbar
 .dropdown-menu
 	border-radius(0)
 
@@ -176,15 +176,6 @@ footer
 			text-decoration underline
 
 
-.notifications
-	.read
-		background $nearlyBlack
-	.thumb
-		size($notificationThumbWidth, $notificationThumbHeight)
-		margin 0 5px 0 -5px
-	.pill
-		visibility hidden
-
 a
 .btn
 	cursor pointer
@@ -192,79 +183,6 @@ a
 
 .dropdown-menu
 	border none
-
-.navbar
-	font-size 17px
-	color white
-	border-bottom 0
-
-#navbar
-	font-size 14px
-	background $orange
-	.dropdown-menu
-	.open > a
-		background $darkOrange
-	.dropdown-menu a
-		&:hover
-		&:focus
-		&:active
-			background lighten($darkOrange, 20%)
-	& li > a
-	.open > a
-		color white
-		&:hover
-		&:focus
-		&:active
-			background $darkOrange
-
-	.banner
-		z-index 1
-		rel(1px, 0)
-		background none
-
-	#underbar
-		margin-bottom 0
-		border-top 0
-
-.navbar a
-	color inherit
-	text-decoration none
-	display inline
-	transition(all .2s)
-	&:hover
-		background $darkOrange
-
-#underbar
-	font-size 14px
-	background $nearlyBlack
-	box-shadow(inset 0 1px 4px -2px $black)
-	color white
-	height $headerHeight
-	ul.navbar-right
-		margin-right 0
-	.navbar-form label
-		display block
-	.glyphicon
-		color $lightOrange
-	.dropdown-menu
-	.open > a
-	a:hover
-	a:focus
-	a:active
-		background $hoverGray
-	& li > a
-	.open > a
-		color white
-	& li li > a
-		padding-right 2 * $bigPadding
-		&:hover
-		&:focus
-		&:active
-			background lighten($hoverGray, 10%)
-	.date
-		color white
-		.glyphicon
-			color white
 
 .flattenable
 	overflow hidden
@@ -423,25 +341,6 @@ label
 		position relative
 		top 2px
 		margin-right $smallPadding
-
-.loggedFriends li
-	.thumb
-		float left
-		margin 0
-		size($notificationThumbWidth, $notificationThumbHeight)
-	.glyphicon
-		color #35AC19
-
-.loggedFriends-list
-.notification-list
-	border-radius(0 0 2px 2px)
-
-#wrap
-#navbar
-	transition margin-right .2s
-
-	&.opened-shutter
-		margin-right 300px
 
 #shutter
 	position fixed
@@ -679,55 +578,6 @@ span.image-box i.glyphicon
 	&:hover
 		color white
 
-.suggests
-#underbar .suggests
-	position relative
-	top -3px
-
-	ul
-		display block
-		position absolute
-		padding 0 $mainPadding
-		background $ultraLight
-		box-shadow(inset 0 2px -2px $gray)
-		box-shadow(0 0 4px $darkGray)
-		width 100%
-		z-index 3
-		min-width 360px
-		@media (max-width: 360px)
-			min-width 0
-
-		li
-			display block
-			clear both
-
-			a
-				height $thumbHeight + 2 * $smallPadding
-				display block
-				padding 0
-				//line-height 58px
-				border-bottom 1px solid $gray
-				margin 0 0 -1px -1px
-				color $nearlyBlack
-				&:hover
-					background $lightGray
-
-			a.chat-with
-				text-align center
-				padding-top 15px
-
-				.glyphicon
-					margin-left 0
-
-			.user-name
-				margin-top $mainPadding
-
-			.user-points
-				font-size 10px
-				color $darkGray
-
-		li:last-child a
-			border-bottom none
 
 .chat-list
 
@@ -878,6 +728,7 @@ span.image-box i.glyphicon
 
 // Imports.
 @import "includes/tooltip"
+@import "navbar"
 @import "user/login"
 @import "user/profile"
 @import "user/status"
@@ -899,7 +750,7 @@ span.image-box i.glyphicon
 
 	.date
 		font-size 10px
-		
+
 // Iphone 6 Plus and smaller mobiles in landscape orientation
 @media (max-width: 736px) and (orientation: landscape)
 	.tooltip-arrow
@@ -928,22 +779,12 @@ span.image-box i.glyphicon
 		&.bg3
 			cover('background-image/small/3')
 
-	.navbar h1
-	.desktop
 	#shutter
 	li.open-shutter
 	#they-use-wornet
 		display none
 
-	#navbar
-		.navbar-header
-			height $headerHeight
-
-		.navbar-brand img
-			margin-top -8px
-
 	#wrap
-	#navbar
 		&.opened-shutter
 			margin-right 0
 
@@ -974,15 +815,6 @@ span.image-box i.glyphicon
 	.icon-bar
 		background white
 
-	#underbar .navbar-form
-		margin 0
-		padding $smallPadding $mainPadding
-
-		.search .glyphicon
-			margin 0 6px -999px
-			top -23px
-			float right
-
 	footer
 		.row
 			margin 0
@@ -1001,42 +833,15 @@ span.image-box i.glyphicon
 
 
 @media (min-width: 768px)
-	#navbar
-		.container-fluid
-			padding-left 0
-		.navbar
-		.nav
-			& > li > a
-				height $headerHeight
-				line-height $headerHeight / 2
 	.pad-right
 		padding-right $mainPadding
 
 	.pad-left
 		padding-left $mainPadding
 
-	.navbar-header
 	.mobile
 	.nav>li.mobile
 		display none
-
-	.navbar h1
-		margin 4px 0 (- $headerHeight) 0
-		padding-left 30px
-		text-align center
-
-	#underbar .navbar-form
-		margin-bottom 0
-		margin-top 9px
-		width 33.33333333%
-
-		label
-		.form-control
-			width 100%
-
-		.glyphicon
-			margin-left -28px
-			top 5px
 
 	.sign-in-overlay
 		padding 0 50px
