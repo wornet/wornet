@@ -4,17 +4,14 @@ include ../includes/notifications
 
 mixin friends(classes)
 	- var loggedFriends = user.friends.find({ present: true })
-	ul.nav(class=classes): li.loggedFriends
+	ul.nav.loggedFriends.right(class=classes): li
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
-			span.mobile
-				+glyph('th-large')
-				| &nbsp; 
 			span
 				=s("Amis connectés")
 				| &nbsp; 
 				span.pill
 					=loggedFriends.length
-		ul.dropdown-menu.loggedFriends-list(role='menu' ng-controller="ProfileCtrl")
+		ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl")
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
 					- friend = objectToUser(friend).publicInformations()
@@ -33,43 +30,35 @@ block params
 
 block nav
 	include ../includes/shutter
-	nav#navbar.navbar-fixed-top.nav.navbar.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
-		h1.col-xs-12
-			!=upperTitle
-		.navbar-header
-			if user
-				button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
-					span.sr-only Toggle navigation
-					span.icon-bar
-					span.icon-bar
-					span.icon-bar
-			a.navbar-brand(href='#')
+	#wornet-navbar.wornet-navbar.wornet-navbar-fixed-top.standard-device.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+		.wornet-navbar-header
+			h1.col-xs-12
 				!=upperTitle
 		if user
 			+data("me", user.hashedId)
-			#mainLinks.collapse.navbar-collapse
-				ul.nav.navbar-nav.navbar-left.col-sm-6
-					li: a(href="/")
+			.mainLinks.col-sm-6
+				ul
+					li.left: a(href="/")
 						+glyph("home")
 						| &nbsp; 
 						=s("Accueil")
-					//- li: a(href="/" data-click-alert!=s("Le regroupement des fils de conversation arrivera dans les prochains mois. Vous pouvez néanmoins d'ores et déjà échanger avec vos amis en ouvrant un chat privé directement depuis la barre de recherche, la fonction &quot;amis connectés&quot; ou le profil de votre ami."))
-					li: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
+						
+					li.left: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
 						+glyph("envelope")
 						| &nbsp; 
 						=s("Messagerie")
-					li.mobile: +notifications()
-					li.mobile: +friends()
-				ul.nav.navbar-nav.navbar-right
-					li.btn-group
+			.mainLinks.col-sm-6
+				.col-sm-6
+					|&nbsp;
+				ul.col-sm-6
+					li.right.open-shutter: a(href="#")
+						+glyph("list")
+					li.right.btn-group
 						a.dropdown-toggle(href="#" data-toggle="dropdown")
-							span.mobile
-								+glyph('user')
-								| &nbsp; 
 							=user.fullName
 							|&nbsp;
 							span.caret
-						ul.dropdown-menu(role='menu')
+						ul.dropdown-menu.user.right(role='menu')
 							li: a(href="/user/profile")
 									=s("Mon profil")
 							if config.wornet.agenda && config.wornet.agenda.enabled
@@ -77,14 +66,22 @@ block nav
 										=s("Mon agenda")
 							li: a(href="/user/logout")
 									=s("Déconnexion")
-					li.open-shutter: a(href="#")
-						+glyph("list")
-						span.mobile
-							| &nbsp; 
-							=s("Options")
-
+	#wornet-navbar.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+		.nav-icons.col-xs-2.col-xs-offset-1
+			a(href="/")
+				+glyph("home")
+		.nav-icons.col-xs-2
+			a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
+				+glyph("envelope")
+		.nav-icons.col-xs-2
+			+glyph('globe')
+		.nav-icons.col-xs-2
+			+glyph('user')
+		.nav-icons.col-xs-2
+			if user
+				img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
 	if user
-		nav#underbar.nav.navbar.cb
+		nav#underbar.cb
 			+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
 			+form("{{ query.action }}")(ng-controller="SearchCtrl" role="search" ng-submit="search(query)").loading.navbar-form.navbar-left.col-sm-4.col-xs-12
 				label.search
@@ -118,6 +115,91 @@ block nav
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding
+	//- nav#navbar.navbar-fixed-top.nav.navbar.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+	//- 	h1.col-xs-12
+	//- 		!=upperTitle
+	//- 	.navbar-header
+	//- 		if user
+	//- 			button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#mainLinks')
+	//- 				span.sr-only Toggle navigation
+	//- 				span.icon-bar
+	//- 				span.icon-bar
+	//- 				span.icon-bar
+	//- 		a.navbar-brand(href='#')
+	//- 			!=upperTitle
+	//- 	if user
+	//- 		+data("me", user.hashedId)
+	//- 		#mainLinks.collapse.navbar-collapse
+	//- 			ul.nav.navbar-nav.navbar-left.col-sm-6
+	//- 				li: a(href="/")
+	//- 					+glyph("home")
+	//- 					| &nbsp; 
+	//- 					=s("Accueil")
+	//- 				//- li: a(href="/" data-click-alert!=s("Le regroupement des fils de conversation arrivera dans les prochains mois. Vous pouvez néanmoins d'ores et déjà échanger avec vos amis en ouvrant un chat privé directement depuis la barre de recherche, la fonction &quot;amis connectés&quot; ou le profil de votre ami."))
+	//- 				li: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
+	//- 					+glyph("envelope")
+	//- 					| &nbsp; 
+	//- 					=s("Messagerie")
+	//- 				li.mobile: +notifications()
+	//- 				li.mobile: +friends()
+	//- 			ul.nav.navbar-nav.navbar-right
+	//- 				li.btn-group
+	//- 					a.dropdown-toggle(href="#" data-toggle="dropdown")
+	//- 						span.mobile
+	//- 							+glyph('user')
+	//- 							| &nbsp; 
+	//- 						=user.fullName
+	//- 						|&nbsp;
+	//- 						span.caret
+	//- 					ul.dropdown-menu(role='menu')
+	//- 						li: a(href="/user/profile")
+	//- 								=s("Mon profil")
+	//- 						if config.wornet.agenda && config.wornet.agenda.enabled
+	//- 							li: a(href="/agenda")
+	//- 									=s("Mon agenda")
+	//- 						li: a(href="/user/logout")
+	//- 								=s("Déconnexion")
+	//- 				li.open-shutter: a(href="#")
+	//- 					+glyph("list")
+	//- 					span.mobile
+	//- 						| &nbsp; 
+	//- 						=s("Options")
+	//- 
+	//- if user
+	//- 	nav#underbar.nav.navbar.cb
+	//- 		+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
+	//- 		+form("{{ query.action }}")(ng-controller="SearchCtrl" role="search" ng-submit="search(query)").loading.navbar-form.navbar-left.col-sm-4.col-xs-12
+	//- 			label.search
+	//- 				+formControl()(
+	//- 					ng-model="query.content"
+	//- 					ng-change="change(query)"
+	//- 					placeholder=s("Recherchez vos amis")
+	//- 					)#search
+	//- 				+glyph('search')
+	//- 			.suggests
+	//- 				ul: li(ng-repeat="user in query.users")
+	//- 					a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+	//- 						img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
+	//- 						.user-name
+	//- 							| {{ user.name.full }}
+	//- 						.user-points
+	//- 							| {{ user.points }}
+	//- 							=' '+s("points")
+	//- 					a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
+	//- 						+glyph('comment')
+	//- 					a.col-xs-3.chat-with(
+	//- 						ng-if="! user.isAFriend && ! user.askedForFriend"
+	//- 						href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
+	//- 						data-target=".errors"
+	//- 						data-click="success"
+	//- 						data-param0=s("Demande envoyée à {{ user.name.full }}")
+	//- 						data-ask-for-friend="{{ user.hashedId }}"
+	//- 					)
+	//- 						+glyph('plus')
+	//- 					span.col-xs-3.chat-with(ng-if="user.isAFriend && ! user.askedForFriend")
+	//- 		+friends('desktop navbar-nav navbar-right')
+	//- else
+	//- 	.main-padding
 
 block footer
 	include ../includes/chat

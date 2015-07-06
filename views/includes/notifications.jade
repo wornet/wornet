@@ -2,14 +2,11 @@ mixin notifications(classes)
 	- var notificationsCount = count(notifications, true)
 	ul.notifications.nav(class=classes pill): li.btn-group
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
-			span.mobile
-				+glyph('globe')
-				| &nbsp; 
 			=s("Notifications")
 			| &nbsp; 
 			span.pill
 				=notificationsCount
-		ul.dropdown-menu.notification-list(role='menu' ng-controller="NotificationsCtrl")
+		ul.dropdown-menu.notification-list.left(role='menu' ng-controller="NotificationsCtrl")
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					i.date(data-date="{{ notification[0] }}")

@@ -1,0 +1,266 @@
+.wornet-navbar
+	font-size 17px
+	color white
+	border-bottom 0
+
+	a
+		color inherit
+		text-decoration none
+		display inline
+		transition(all .2s)
+		&:hover
+			background $darkOrange
+
+	h1
+		margin 4px 0 (- $headerHeight) 0
+		padding-left 30px
+		text-align center
+
+
+.wornet-navbar-fixed-top
+	fix()
+	top 0
+	right 0
+	left 0
+	z-index 1030
+
+#wrap
+#wornet-navbar
+	transition margin-right .2s
+
+	&.opened-shutter
+		margin-right 300px
+
+#wornet-navbar
+	font-size 14px
+	background $orange
+	height $headerHeight
+
+	.mainLinks
+		height $headerHeight
+		padding 0
+		ul
+			line-height $headerHeight
+			list-style none
+			padding 0
+
+			&.user
+				padding 5px 0
+				li
+					height auto
+				a
+					display block
+					height auto
+					padding: 3px 20px;
+
+
+			li
+				&.left
+					float left
+
+				&.right
+					float right
+
+				a
+					display block
+					height $headerHeight
+					line-height $headerHeight / 2
+					padding 0 15px
+
+	.container-fluid
+		padding 0
+
+	.open > a
+		background $darkOrange
+
+	.dropdown-menu
+		margin-top 0
+		background $darkOrange
+		&.right
+			right 0
+			left auto
+		&.left
+			left 0
+			right auto
+
+		a
+			&:hover
+			&:focus
+			&:active
+				background lighten($darkOrange, 20%)
+
+		li a
+			color white
+			padding 3px 20px
+			display block
+			clear both
+
+	.banner
+		z-index 1
+		rel(1px, 0)
+		background none
+
+#underbar
+	font-size 14px
+	background $nearlyBlack
+	box-shadow(inset 0 1px 4px -2px $black)
+	color white
+	height $headerHeight
+	margin-bottom $bigPadding
+	ul.navbar-right
+		margin-right 0
+	.navbar-form label
+		display block
+	.glyphicon
+		color $lightOrange
+	.dropdown-menu
+	.open > a
+	a:hover
+	a:focus
+	a:active
+		text-decoration none
+		background $hoverGray
+	& li > a
+	.open > a
+		color white
+	& li > a
+		&:hover
+		&:focus
+		&:active
+			background lighten($hoverGray, 10%)
+	.date
+		color white
+		.glyphicon
+			color white
+
+	.dropdown-menu a
+		&:hover
+		&:focus
+		&:active
+			background lighten($hoverGray, 20%)
+
+	.loggedFriends-list a
+		padding-right $bigPadding * 2
+
+	.notification-list a
+		padding-right $bigPadding * 2
+
+.suggests
+#underbar .suggests
+	position relative
+	top -3px
+
+	ul
+		display block
+		position absolute
+		padding 0 $mainPadding
+		background $ultraLight
+		box-shadow(inset 0 2px -2px $gray)
+		box-shadow(0 0 4px $darkGray)
+		width 100%
+		z-index 3
+		min-width 360px
+		@media (max-width: 360px)
+			min-width 0
+
+		li
+			display block
+			clear both
+
+			a
+				height $thumbHeight + 2 * $smallPadding
+				display block
+				padding 0
+				//line-height 58px
+				border-bottom 1px solid $gray
+				margin 0 0 -1px -1px
+				color $nearlyBlack
+				&:hover
+					background $lightGray
+
+			a.chat-with
+				text-align center
+				padding-top 15px
+
+				.glyphicon
+					margin-left 0
+
+			.user-name
+				margin-top $mainPadding
+
+			.user-points
+				font-size 10px
+				color $darkGray
+
+		li:last-child a
+			border-bottom none
+
+.notifications
+	.read
+		background $nearlyBlack
+	.thumb
+		size($notificationThumbWidth, $notificationThumbHeight)
+		margin 0 5px 0 -5px
+	.pill
+		visibility hidden
+
+.loggedFriends li
+	.thumb
+		float left
+		margin 0
+		size($notificationThumbWidth, $notificationThumbHeight)
+	.glyphicon
+		color #35AC19
+
+.loggedFriends-list
+.notification-list
+	border-radius(0 0 2px 2px)
+
+.loggedFriends-list
+	left 0
+
+@media (min-width: 768px)
+	.mobile-device
+		display none
+	.standard-device
+		display block
+
+	.navbar-form
+		margin-bottom 0
+		margin-top 9px
+		border-top 0
+		width 33.33333333%
+
+		label
+		.form-control
+			width 100%
+
+		.glyphicon
+			top 5px
+			margin-left -28px
+
+@media (max-width: 767px)
+	.mobile-device
+		display block
+	.standard-device
+	ul.loggedFriends
+	ul.notifications
+		display none
+
+	.navbar-form
+		margin 0
+
+		.glyphicon
+			margin 0 6px -999px
+			top -23px
+			float right
+
+	#wornet-navbar.mobile-device
+		text-align center
+
+	.nav-icons
+		line-height $headerHeight
+
+	.navthumb
+		overflow hidden
+		border-radius(30px)
