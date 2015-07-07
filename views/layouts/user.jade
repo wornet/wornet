@@ -2,25 +2,32 @@ extends ../layouts/wornet
 
 include ../includes/notifications
 
-mixin friends(classes)
+mixin friends(classes, mobile)
 	- var loggedFriends = user.friends.find({ present: true })
-	ul.nav.loggedFriends.right(class=classes): li
+	- classes += " " + (mobile?"loggedFriends-mobile":"loggedFriends nav right")
+	ul(class=classes): li
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			span
-				=s("Amis connectés")
-				| &nbsp; 
-				span.pill
-					=loggedFriends.length
+				if mobile
+					+glyph('user')
+					span.pill.mobile-pill
+						=loggedFriends.length
+				else
+					=s("Amis connectés")
+					| &nbsp; 
+					span.pill
+						=loggedFriends.length
 		ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl")
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
 					- friend = objectToUser(friend).publicInformations()
 					li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
-						img.thumb(src=friend.thumb50 alt=friend.name.full)
-						| &nbsp; 
-						=friend.name.full
-						| &nbsp; 
-						+glyph('comment')
+						.friend
+							img.thumb(src=friend.thumb50 alt=friend.name.full)
+							| &nbsp; 
+							=friend.name.full
+							| &nbsp; 
+							+glyph('comment')
 
 block append link
 	link(ng-if="smilies" rel="stylesheet" ng-href=style("smilies"))
@@ -74,12 +81,21 @@ block nav
 			a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
 				+glyph("envelope")
 		.nav-icons.col-xs-2
-			+glyph('globe')
+			+notifications('', true)
 		.nav-icons.col-xs-2
-			+glyph('user')
+			+friends('', true)
 		.nav-icons.col-xs-2
 			if user
-				img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
+				a.dropdown-toggle(href="#" data-toggle="dropdown")
+					img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
+				ul.dropdown-menu.user.right(role='menu')
+					li: a(href="/user/profile")
+							=s("Mon profil")
+					if config.wornet.agenda && config.wornet.agenda.enabled
+						li: a(href="/agenda")
+								=s("Mon agenda")
+					li: a(href="/user/logout")
+							=s("Déconnexion")
 	if user
 		nav#underbar.cb
 			+notifications('desktop navbar-nav navbar-left col-sm-4 col-xs-12')
