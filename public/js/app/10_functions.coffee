@@ -218,7 +218,7 @@ refreshPillOfList = (elt) ->
 
 # Refresh pill counter
 refreshPill = ->
-	$('.notifications').each ->
+	$('.notifications, .notifications-mobile').each ->
 		refreshPillOfList @
 		return
 	return
@@ -405,7 +405,7 @@ refreshMediaAlbums = getAlbumsFromServer
 
 # Refresh logged friends menu
 loggedFriends = (friends) ->
-	$('.loggedFriends').each ->
+	$('.loggedFriends, .loggedFriends-mobile').each ->
 		$ul = $ @
 		ul = ''
 		ids = []

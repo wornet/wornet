@@ -239,6 +239,10 @@
 			top 5px
 			margin-left -28px
 
+@media (min-width: 768px) and (orientation: portrait)
+	.wornet-navbar
+		li.open-shutter
+			display none
 @media (max-width: 767px)
 	.mobile-device
 		display block
@@ -250,17 +254,52 @@
 	.navbar-form
 		margin 0
 
-		.glyphicon
-			margin 0 6px -999px
-			top -23px
-			float right
+		.search
+			.glyphicon
+				margin 0 6px -999px
+				top -23px
+				float right
 
 	#wornet-navbar.mobile-device
 		text-align center
+		margin 0
 
 	.nav-icons
 		line-height $headerHeight
+		padding 0
+
+		a
+			display block
+			height $headerHeight
+
+		.user
+			a
+				height auto
 
 	.navthumb
 		overflow hidden
-		border-radius(30px)
+		border-radius(100%)
+		size(50px, 50px)
+
+	.mobile-device
+		.glyphicon
+			line-height $headerHeight
+			font-size 25px
+
+	.mobile-pill
+		abs()
+		top 30px
+		font-size 8px
+		line-height 16px
+
+	.notifications-mobile
+	.loggedFriends-mobile
+		padding 0
+		margin 0
+		list-style none
+		margin-right 15px
+
+	.notifications-list-mobile
+	.loggedFriends-mobile .loggedFriends-list
+		.glyphicon
+			font-size 14px
