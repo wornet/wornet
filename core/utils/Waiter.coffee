@@ -25,6 +25,7 @@ class Waiter
 			Waiter.unwatchPlace place, @
 		req = @req
 		res = @res
+		userId = @userId
 		req.session.reload (sessErr) ->
 			if sessErr
 				throw sessErr
