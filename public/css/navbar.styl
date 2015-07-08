@@ -240,9 +240,16 @@
 			margin-left -28px
 
 @media (min-width: 768px) and (orientation: portrait)
-	.wornet-navbar
+	#wornet-navbar.opened-shutter
+		margin 0
+	#wornet-navbar
 		li.open-shutter
 			display none
+	#wrap.opened-shutter
+		margin 0
+	#shutter.opened-shutter
+		width 0
+
 @media (max-width: 767px)
 	.mobile-device
 		display block
