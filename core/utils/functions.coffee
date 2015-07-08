@@ -180,27 +180,32 @@ module.exports =
 		else
 			file = lst[i]
 			# Internet Explorer condition
-			if typeof(file) is 'object'
-				if file[0] is 'ios-app'
-					file = (unless iosApp then file[1])
-				if file[0] is 'non-ie'
-					file = (if ie then file[1])
-				else
-					version = 1
-					symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
-						version = intval v
-						s
-					switch symbol
-						when 'gt'
-							file = (if ie > version then file[1])
-						when 'gte'
-							file = (if ie >= version then file[1])
-						when 'lt'
-							file = (if ie < version then file[1])
-						when 'lte'
-							file = (if ie <= version then file[1])
-						else
-							file = (if ie is version then file[1])
+			file = if typeof(file) is 'object'
+				switch file[0] or null
+					when 'ios-app'
+						unless iosApp
+							file[1]
+					when 'non-ie'
+						if ie
+							file[1]
+					else
+						version = 1
+						symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
+							version = intval v
+							s
+						versionMatch = switch symbol
+							when 'gt'
+								ie > version
+							when 'gte'
+								ie >= version
+							when 'lt'
+								ie < version
+							when 'lte'
+								ie <= version
+							else
+								ie is version
+						if versionMatch
+							file[1]
 			done = ->
 				concatCallback content, lst, proceed, end,
 					i: i + 1
