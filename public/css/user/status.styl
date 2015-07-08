@@ -39,18 +39,29 @@
 
 .status-actions
 	float right
-	margin -8px (- $smallPadding) (-3 * $mainPadding - $smallPadding) 0
+	margin -8px (- $smallPadding) (-2.5 * $mainPadding - $smallPadding) 0
 
 	.btn-action-plus-w
 	.btn-action-comment
 		background transparent
 		color $darkGray
+		font-weight bold
+		cursor pointer
+		.icon
+			background url(png("comment"))
+			margin 10px 5px 15px
+			background-size 18px
+			size(18px, 18px)
+			padding 0
+
 
 	.btn-action-plus-w
+		margin-bottom 15px
 		margin-right 5px
 		background url(png("empty-w"))
-		background-size 32px
-		size(32px, 32px)
+		background-size 18px
+		size(18px, 18px)
+		padding 0
 		&.full
 			background-image url(png("full-w"))
 
@@ -59,9 +70,6 @@
 
 	.btn
 		box-shadow none
-		@media (max-width: 767px)
-			height 28px
-			line-height 18px
 
 .add-media h4
 	a
@@ -102,9 +110,7 @@
 @media (max-width: 414px)
 	.status-actions
 		margin-left 0
-		.btn
-			font-size 13px
-			margin 0
+
 	.comment-form .btn
 		width 50%
 
