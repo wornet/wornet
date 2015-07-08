@@ -20,6 +20,13 @@ block body
 					span
 						=userTexts.birthDate
 					+formControl(type="date" name="birthDate" value=user.birthDate.toString('YYYY-MM-DD'))
+				label
+					span
+						=userTexts.confidentialityBirthDate
+					=s("Oui")
+					input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
+					=s("Non")
+					input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
 				hr.cb
 				label
 					span

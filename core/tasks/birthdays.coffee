@@ -22,12 +22,14 @@ birthDaysTask =
 				name: 1
 				photoId: 1
 				birthDate: 1
+				maskBirthDate: 1
 				day: $dayOfMonth: "$birthDate"
 				month: $month: "$birthDate"
 		,
 			$match:
 				day: today.getDate()
 				month: today.getMonth() + 1
+				maskBirthDate: $in: [false, null]
 		], (err, users) ->
 			each users, ->
 				user = objectToUser @

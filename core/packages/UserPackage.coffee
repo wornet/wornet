@@ -320,6 +320,8 @@ UserPackage =
 					birthDate = inputDate val
 					if birthDate.isValid()
 						userModifications.birthDate = birthDate
+				when 'confidentialityBirthDate'
+					userModifications.maskBirthDate = val is 'on'
 				when 'name.first'
 					unless userModifications.name
 						userModifications.name = req.user.name

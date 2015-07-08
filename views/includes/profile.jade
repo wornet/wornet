@@ -107,8 +107,8 @@
 					)
 						+glyph('user')
 						=' '+strtoupper(s("Ajouter à la liste d'amis"))
-		if isAFriend || isMe					
-			if ! profile.birthDate
+		if isAFriend || isMe
+			if ! profile.birthDate || profile.maskBirthDate
 				if profile.birthCity
 					h5
 						- var infos = { date: profile.birthDate.humanDate() }
