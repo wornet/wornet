@@ -170,9 +170,9 @@ StatusPackage =
 						status.author = req.user.publicInformations()
 
 						next = (usersToNotify) =>
-							place = status.author
+							place = status.at
 							@propagate status
-							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: place
+							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: status.author
 							NoticePackage.notify usersToNotify, null,
 								action: 'notice'
 								author: status.author
