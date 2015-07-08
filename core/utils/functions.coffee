@@ -180,8 +180,8 @@ module.exports =
 		else
 			file = lst[i]
 			# Internet Explorer condition
-			file = if typeof(file) is 'object'
-				switch file[0] or null
+			if typeof(file) is 'object' and file[0]
+				file = switch file[0]
 					when 'ios-app'
 						unless iosApp
 							file[1]
