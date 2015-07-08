@@ -55,6 +55,9 @@ userSchema = BaseSchema.extend
 			'invalid birth date'
 		]
 		required: true
+	maskBirthDate:
+		type: Boolean
+		default: false
 	phone:
 		type: String
 		validate: [
@@ -194,7 +197,7 @@ userSchema.virtual('photoUpdateAt').get ->
 		null
 
 userSchema.virtual('age').get ->
-	if @birthDate instanceof Date and @birthDate.isValid()
+	if @birthDate instanceof Date and @birthDate.isValid() and !@maskBirthDate
 		@birthDate.age()
 	else
 		null
