@@ -153,7 +153,7 @@ NoticePackage =
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs
 					break
-				responsesToNotify[userId][id].call @, @LIMIT_EXEEDED, {}
+				@respond responsesToNotify[userId][id], @LIMIT_EXEEDED, {}
 				delete responsesToNotify[userId][id]
 
 			id = uniqueId()
