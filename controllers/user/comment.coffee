@@ -17,36 +17,41 @@ module.exports = (router) ->
 	router.delete '', (req, res) ->
 		me = req.user.id
 		userComment = req.data.comment
+
+		next = ()->
+			Comment.remove
+				_id: userComment._id
+			, (err) ->
+				if err
+					res.serverError err
+				else
+					res.json()
+
 		if userComment and userComment._id
 			Comment.findOne
 				_id: userComment._id
 			, (err, comment) ->
 				if err
 					res.serverError err
-				else if !comment
-					res.serverError 'No comment to Remove'
-				else
-					if comment.attachedStatus
-						Status.findOne
-							_id: comment.attachedStatus
-						, (err, status) ->
-							if err
-								res.serverError err
-							else if !status
-								res.serverError 'No status on comment'
-							else
-								if [comment.author, status.at].contains me, equals
-									Comment.remove
-										_id: userComment._id
-									, (err) ->
-										if err
-											res.serverError err
-										else
-											res.json()
-								else
-									res.serverError "You don't have the right to remove this comment"
+				else if comment
+					if equals comment.author, me
+						next()
 					else
-						res.serverError 'No status on comment'
+						if comment.attachedStatus
+							Status.count
+								_id: comment.attachedStatus
+								at: me
+							, (err, nbStatus) ->
+								if err
+									res.serverError err
+								else if !nbStatus
+									res.serverError "You don't have the right to remove this comment"
+								else
+									next()
+						else
+							res.serverError 'No status on comment'
+				else
+					res.serverError 'No comment to update'
 
 	router.post '', (req, res) ->
 		userComment = req.data.comment
