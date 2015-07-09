@@ -233,7 +233,7 @@ StatusPackage =
 		id = authorId
 
 		if !status
-			new Error "status must not be undefined"
+			done new Error "status must not be undefined"
 
 		pointsValue = status.pointsValue || 0
 
