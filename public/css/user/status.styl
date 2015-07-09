@@ -39,13 +39,12 @@
 
 .status-actions
 	float right
-	margin -8px (- $smallPadding) (-2.5 * $mainPadding - $smallPadding) 0
+	margin -8px (- $smallPadding) (-2 * $mainPadding - $smallPadding) 0
 
 	.btn-action-plus-w
 	.btn-action-comment
 		background transparent
 		color $darkGray
-		font-weight bold
 		cursor pointer
 		.icon
 			background url(png("comment"))
@@ -111,11 +110,25 @@
 	.status-actions
 		margin-left 0
 
+		.btn-action-comment .icon
+				margin 10px 5px 10px
+				background-size 15px
+				size(15px, 15px)
+
+		.btn-action-plus-w
+			margin 10px 5px 10px
+			background-size 15px
+			size(15px, 15px)
+
+		.like-zone
+			font-size 10px
+
 	.comment-form .btn
 		width 50%
 
-	.like-zone
-		font-size 10px
+	.status-block .settings
+		width 100px
+
 
 @media (max-width: 767px)
 	.status-author
