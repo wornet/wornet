@@ -14,9 +14,10 @@ CommentPackage =
 				else null
 				status = req.data.status
 				req.getFriends (err, friends) =>
+					newAt = at||status.author.hashedId
 					if err
 						res.serverError err
-					else if !friends.column('_id').map(cesarLeft).contains(at) && at isnt hashedIdUser
+					else if !friends.column('_id').map(cesarLeft).contains(newAt) && newAt isnt hashedIdUser
 						res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis.")
 					else
 						Comment.create
