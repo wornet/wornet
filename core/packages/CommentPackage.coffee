@@ -13,28 +13,34 @@ CommentPackage =
 					req.data.status.at.hashedId
 				else null
 				status = req.data.status
-				Comment.create
-					author: req.user._id
-					content: req.data.comment.content || ""
-					attachedStatus: status._id
-					images: medias.images || []
-					videos: medias.videos || []
-					links: medias.links || []
-				, (err, originalComment) =>
-					unless err
-						comment = originalComment.toObject()
-						comment.author = req.user.publicInformations()
-						hashedIdAuthor = status.author.hashedId
-						usersToNotify = []
-						unless equals hashedIdUser, hashedIdAuthor
-							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at
-							usersToNotify.push at
-						@propagate comment, at || hashedIdAuthor
-						unless empty usersToNotify
-							@notify usersToNotify, status, req.user, comment
+				req.getFriends (err, friends) =>
+					if err
+						res.serverError err
+					else if !friends.column('_id').map(cesarLeft).contains(at) && at isnt hashedIdUser
+						res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis.")
+					else
+						Comment.create
+							author: req.user._id
+							content: req.data.comment.content || ""
+							attachedStatus: status._id
+							images: medias.images || []
+							videos: medias.videos || []
+							links: medias.links || []
+						, (err, originalComment) =>
+							unless err
+								comment = originalComment.toObject()
+								comment.author = req.user.publicInformations()
+								hashedIdAuthor = status.author.hashedId
+								usersToNotify = []
+								unless equals hashedIdUser, hashedIdAuthor
+									usersToNotify.push hashedIdAuthor
+								unless [null, hashedIdAuthor, hashedIdUser].contains at
+									usersToNotify.push at
+								@propagate comment, at || hashedIdAuthor
+								unless empty usersToNotify
+									@notify usersToNotify, status, req.user, comment
 
-						@getRecentCommentForRequest req, res, [status._id], done
+								@getRecentCommentForRequest req, res, [status._id], done
 			catch err
 				done err
 		else
