@@ -71,6 +71,7 @@ NoticePackage =
 	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
+		# stack = (new Error()).stack
 		Notice.remove created_at: $lt: (new Date).subMonths 6
 		userIds.each ->
 			userId = strval @
@@ -122,9 +123,7 @@ NoticePackage =
 				launcher: notice.launcher
 				attachedStatus: notice.status
 			, (err, notices) ->
-				if err or !notices
-					true
-				else
+				if ! err and notices
 					for notice in notices
 						notice.remove()
 
@@ -133,10 +132,15 @@ NoticePackage =
 		if @responsesToNotify[userId]?
 			if id isnt null
 				if @responsesToNotify[userId][id]?
+					if @responsesToNotify[userId][id] instanceof Waiter
+						@responsesToNotify[userId][id].unwatch()
 					delete @responsesToNotify[userId][id]
 					if empty @responsesToNotify[userId]
 						delete @responsesToNotify[userId]
 			else
+				each @responsesToNotify[userId], ->
+					if @ instanceof Waiter
+						@unwatch()
 				delete @responsesToNotify[userId]
 
 	# Register an action to do when a user receive a notification
@@ -173,13 +177,13 @@ NoticePackage =
 			id = self.waitForNotification userId, waiter
 			if id
 				waiter.timeoutKey = userId + '-' + id
-				self.timeouts[userId + '-' + id] = delay config.wornet.timeout.seconds, ->
+				self.timeouts[waiter.timeoutKey] = delay config.wornet.timeout.seconds, ->
 					req.session.reload (err) ->
 						res.json
 							notifyStatus: self.TIMEOUT
 							loggedFriends: req.getLoggedFriends()
 						self.remove userId, id
-						delete self.timeouts[userId + '-' + id]
+						delete self.timeouts[waiter.timeoutKey]
 
 
 module.exports = NoticePackage

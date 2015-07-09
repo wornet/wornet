@@ -540,7 +540,7 @@ trackEvent = do ->
 
 Array.uniqueMethod = (method) ->
 	(key) ->
-		args = Array.prototype.slice.call @, 1
+		args = Array.prototype.slice.call arguments, 1
 		for arg in args
 			present = do =>
 				for obj in @

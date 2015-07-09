@@ -170,7 +170,7 @@ StatusPackage =
 						status.author = req.user.publicInformations()
 
 						next = (usersToNotify) =>
-							place = status.at
+							place = status.at or status.author
 							@propagate status
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: status.author
 							NoticePackage.notify usersToNotify, null,
@@ -232,31 +232,33 @@ StatusPackage =
 	updatePoints: (req, status, authorId, adding, done) ->
 		id = authorId
 
-		if !status
-			new Error "status must not be undefined"
+		if status
 
-		pointsValue = status.pointsValue || 0
+			pointsValue = status.pointsValue || 0
 
-		User.findById id, (err, user) =>
-			if err
-				done err
-			else if user
-				if user.points or user.points is 0
-					newPoints = user.points + pointsValue * if adding
-						1
+			User.findById id, (err, user) =>
+				if err
+					done err
+				else if user
+					if user.points or user.points is 0
+						newPoints = user.points + pointsValue * if adding
+							1
+						else
+							-1
+
+						if newPoints < 0
+							newPoints = 0
+
+						req.user.points= newPoints
+						req.session.user.points= newPoints
+						User.updateById id,
+							points: newPoints
+						, done
 					else
-						-1
+						@initPoints req, user, done
+		else
 
-					if newPoints < 0
-						newPoints = 0
-
-					req.user.points= newPoints
-					req.session.user.points= newPoints
-					User.updateById id,
-						points: newPoints
-					, done
-				else
-					@initPoints req, user, done
+			done new Error "status must not be undefined"
 
 	initPoints: (req, user, done) ->
 		newPoints = 0
