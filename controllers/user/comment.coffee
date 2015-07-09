@@ -18,7 +18,7 @@ module.exports = (router) ->
 		me = req.user.id
 		userComment = req.data.comment
 
-		next = ()->
+		next = ->
 			Comment.remove
 				_id: userComment._id
 			, (err) ->
@@ -40,7 +40,12 @@ module.exports = (router) ->
 						if comment.attachedStatus
 							Status.count
 								_id: comment.attachedStatus
-								at: me
+								$or: [
+									author: me
+									at: null
+								,
+									at: me
+								]
 							, (err, nbStatus) ->
 								if err
 									res.serverError err
