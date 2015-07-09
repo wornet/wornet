@@ -702,7 +702,7 @@ Controllers =
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
 
-	Status: ($scope, smiliesService) ->
+	Status: ($scope, smiliesService, statusService) ->
 
 		initMedias = ->
 			$scope.medias =
@@ -723,18 +723,13 @@ Controllers =
 				data: media
 				success: (data)->
 					if data.id
-						if data.type is "image"
-							for image, index in $scope.medias.images
-								if image and image.id is data.id
-									$scope.medias.images.splice index, 1
-						else if data.type is "video"
-							for video, index in $scope.medias.videos
-								if video and video.id is data.id
-									$scope.medias.videos.splice index, 1
-						else if data.type is "link"
-							for link, index in $scope.medias.links
-								if link and link.id is data.id
-									$scope.medias.links.splice index, 1
+						for type in ["image", "video", "link"]
+							if data.type is type
+								key = type + 's'
+								for media, index in $scope.medias[key]
+									if media and media.id is data.id
+										$scope.medias[key].splice index, 1
+								break
 						$('.tab .medias img[src="' + data.src + '"]').parent().remove()
 					else
 						location.reload()

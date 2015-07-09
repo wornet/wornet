@@ -353,7 +353,7 @@ module.exports =
 	trace: (message) ->
 		if message is undefined
 			throw new Error 'Undefined trace'
-		message += '\n' + (message.stack || (new Error).stack.replace /^Error:/g, 'Stack trace:')
+		message += '\n' + (message.stack || (new Error("")).stack.replace /^Error:?/g, 'Stack trace:')
 		if config.debug and config.debug.skipJsFiles
 			message = message.replace /[\t ]*at[^\n]+\.js(:[0-9]+)*\)?[\t ]*[\n\r]/g, ''
 		message
@@ -389,7 +389,11 @@ module.exports =
 			req = gitlab
 			gitlab = true
 		if req
-			message += '\n\n' + req.method + ': ' + req.url + '\n\n' + JSON.stringify req.data, null, 4
+			message += '\n\n' + req.method + ': ' + req.url + '\n\n' + (if req.data
+				JSON.stringify req.data, null, 4
+			else
+				""
+			)
 		if gitlab
 			GitlabPackage.error message
 		log message, 'warn'
