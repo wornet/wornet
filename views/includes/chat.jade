@@ -11,7 +11,8 @@
 			.message(ng-repeat="message in chat.messages")
 				span.ok(ng-show="message.ok")
 					+glyph('ok')
-				img.received(ng-src="{{ message.from.thumb50 }}" ng-show="message.from && message.from.thumb50")
+				a(href="/user/profile/{{ message.from.hashedId }}/{{ message.from.name.full }}" ng-show="message.from && message.from.thumb50 && message.from.name")
+					img.received(ng-src="{{ message.from.thumb50 }}")
 				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content | smilies")
 				.date(data-date="{{ message.date }}" data-date-delay="180" class="{{ message.from ? 'date-left' : 'date-right' }}")
 					|&nbsp;
