@@ -704,22 +704,23 @@ do ->
 			'updatePoints'
 			'.points'
 			($span, e, status, medias, adding) ->
-				if getData('at') is getData('me')
-					s = textReplacements
-					points = 1 #simple status
-					if medias.images and medias.images.length > 0
-						points = 2 #status with photo
-					if medias.videos and medias.videos.length > 0
-						points = 3 if points = 1 #status with video but without photo
-						points = 4 if points = 2 #status with video and photo
+				if status and status.author
+					if getData('at') is getData('me') and status.author.hashedId is getData('me')
+						s = textReplacements
+						points = 1 #simple status
+						if medias.images and medias.images.length > 0
+							points = 2 #status with photo
+						if medias.videos and medias.videos.length > 0
+							points = 3 if points = 1 #status with video but without photo
+							points = 4 if points = 2 #status with video and photo
 
-					newPoints = parseInt($('.points b').html()) + if adding
-						(points * parseInt(getData 'numberOfFriends'))
-					else
-						- (status.pointsValue || 0)
-					if newPoints < 0
-						newPoints = 0
-					$('.points').html s("{points} point|{points} points", { points: '<b>' + newPoints + '</b>' }, newPoints)
+						newPoints = parseInt($('.points b').html()) + if adding
+							(points * parseInt(getData 'numberOfFriends'))
+						else
+							- (status.pointsValue || 0)
+						if newPoints < 0
+							newPoints = 0
+						$('.points').html s("{points} point|{points} points", { points: '<b>' + newPoints + '</b>' }, newPoints)
 		]
 		[
 			'tap'

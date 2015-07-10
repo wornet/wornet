@@ -249,8 +249,9 @@ StatusPackage =
 						if newPoints < 0
 							newPoints = 0
 
-						req.user.points= newPoints
-						req.session.user.points= newPoints
+						if equals req.user.id, id
+							req.user.points= newPoints
+							req.session.user.points= newPoints
 						User.updateById id,
 							points: newPoints
 						, done
