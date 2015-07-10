@@ -84,7 +84,7 @@ CommentPackage =
 
 			notice = generateNotice s("{username} a également commenté une publication.", username: commentator.name.full)
 
-			unless otherCommentators.length > 0
+			if otherCommentators.length > 0
 				otherCommentatorsIds = otherCommentators.map cesarRight
 				NoticePackage.notify otherCommentatorsIds, null,
 					action: 'notice'
