@@ -9,6 +9,7 @@
 	width 100%
 	height 0
 	z-index 3
+	margin 5px 5px 0 5px
 
 	.chat
 		float right
@@ -19,6 +20,7 @@
 		box-shadow(0 0 2px $darkGray)
 		border-radius(2px 2px 0 0)
 		background white
+		height $chatHeight
 
 		&.minimized
 			margin-top $chatHeight - $chatTitleHeight
@@ -129,8 +131,8 @@
 
 		textarea
 			padding 6px
-			width 100%
-			height 50px
+			width calc(100% - 1px)
+			height $chatMultiligneFormHeight - 1px
 			resize(none)
 
 		input
@@ -163,4 +165,4 @@
 
 #chat.multiline
 	.messages
-		height $chatHeight - 24px - 58px
+		height $chatHeight - $chatTitleHeight - $chatMultiligneFormHeight
