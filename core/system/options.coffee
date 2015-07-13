@@ -340,7 +340,46 @@ module.exports = (app, port) ->
 						.exec (err, coreNotifications) =>
 							if err
 								warn err, @
-							next getNotifications sessionInfos.notifications || [], coreNotifications || [], sessionInfos.friendAsks, sessionInfos.friends, user
+							coreNotificationsWithUsers = []
+							usersToSearch = []
+							statusToSearch = []
+							indexedStatus = []
+							for notice in coreNotifications
+								if notice.place and notice.launcher and notice.user
+									usersToSearch.push notice.launcher, notice.place, notice.user
+									statusToSearch.push notice.attachedStatus
+
+							usersToSearch = usersToSearch.unique()
+							statusToSearch = statusToSearch.unique()
+
+							parallel
+								getUsers: (done) =>
+									@getUsersByIds usersToSearch, (err, usersMap) ->
+										if err || !usersMap
+											done err
+										else
+											done null, usersMap
+								getStatus: (done) =>
+									Status.find
+										_id: $in: statusToSearch
+									, (err, statusList) ->
+										if err || !statusList
+											done err
+										else
+											done null, statusList
+							, (results) ->
+								for status in results.getStatus
+									indexedStatus[status._id] = status
+								for notice in coreNotifications
+									notice = notice.toObject()
+									notice.launcher = results.getUsers[notice.launcher]
+									notice.place = results.getUsers[notice.place]
+									notice.user = results.getUsers[notice.user]
+									notice.attachedStatus = indexedStatus[notice.attachedStatus]
+									coreNotificationsWithUsers.push notice
+								next getNotifications sessionInfos.notifications || [], coreNotificationsWithUsers || [], sessionInfos.friendAsks, sessionInfos.friends, user
+							, ->
+								null
 				else
 					next []
 			# test credentials with anti-brute-force protection

@@ -137,7 +137,7 @@ PlusWPackage =
 				null
 
 			if notice
-				notice.push 'like', liker._id, status._id
+				notice.push 'like', liker._id, status._id, cesarRight statusPlace.hashedId
 				NoticePackage.notify [cesarRight userToNotify], null,
 					action: 'notice'
 					author: liker
