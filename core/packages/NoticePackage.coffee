@@ -47,6 +47,7 @@ NoticePackage =
 				type: data.notice[1]
 				launcher: data.notice[2]
 				attachedStatus: data.notice[3]
+				place: data.notice[4]
 			, (err, notice) ->
 				if err
 					warn err

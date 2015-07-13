@@ -14,6 +14,18 @@ noticeSchema = OwnedSchema.extend
 	attachedStatus:
 		type: ObjectId
 		ref: 'StatusSchema'
+	place:
+		type: ObjectId
+		ref: 'UserSchema'
+	originService:
+		type: 'String'
+		enum: [
+			'espacePersonnel'
+			'espaceProfessionnel'
+			'dailyCapture'
+			'bouger'
+		]
+		default: 'espacePersonnel'
 
 noticeSchema.virtual('isUnread').get ->
 	@status is readOrUnread.unread

@@ -274,6 +274,61 @@ module.exports =
 						configurable: true
 
 
+
+
+
+
+
+	###
+	make content for notice
+
+	@param notice
+
+	@return content string
+	###
+	makeContent: (notice) ->
+		if (!notice.place or !notice.type) and notice.content
+			notice.content
+		else
+			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
+				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
+				img +
+				jd 'span(data-href="/user/profile/' +
+				place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + attachedStatus._id + '") ' +
+					text
+			switch notice.type
+				when 'status'
+					null
+				when 'comment'
+					null
+				when 'like'
+					likersFriends = notice.launcher.getFriends (err, friends) ->
+						if !err and friends
+							friends.column 'hashedId'
+						else
+							[]
+					if notice.user and notice.place and notice.launcher and notice.attachedStatus
+						userToNotify = notice.user
+						place = notice.place
+						launcher = notice.launcher
+						statusAuthor = cesarLeft notice.attachedStatus.author
+						if userToNotify.hashedId is place.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
+						else if userToNotify.hashedId is statusAuthor and userToNotify.hashedId isnt launcher.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if likersFriends.contains userToNotify.hashedId
+								s("{username} a aimé votre publication.", username: launcher.name.full)
+							else
+								s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
+						else
+							null
+					else
+						null
+				when 'birthday'
+					null
+				else
+					null
+
+
 	###
 	Get listed notifications
 
@@ -303,9 +358,10 @@ module.exports =
 				sameNotice = (notice) ->
 					hasNoId = ! notice[0]
 					hasNoId and notice[1] is @content
+
 				for notice in coreNotifications
-					if notice.id or notifications.has sameNotice.bind notice
-						push extend [notice.id, notice.content], read: notice.isRead
+					if notice._id or notifications.has sameNotice.bind notice
+						push extend [notice._id, makeContent notice], read: notice.isRead
 			if notifications.length
 				getDate = (notice) ->
 					date = new Date
