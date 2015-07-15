@@ -183,7 +183,7 @@ module.exports =
 			if typeof(file) is 'object' and file[0]
 				file = switch file[0]
 					when 'ios-app'
-						unless iosApp
+						if iosApp
 							file[1]
 					when 'non-ie'
 						if ie
