@@ -74,7 +74,11 @@ module.exports = (app) ->
 			methods =
 				js: uglifyJs
 				css: (str) ->
-					str.replace /[\r\n\t]/g, ''
+					str
+						.replace /[\r\n\t]/g, ''
+						.replace /\s+([\}\{;:])\s*/g, '$1'
+						.replace /\s*([\}\{;:])\s+/g, '$1'
+						.replace /;\}/g, '}'
 			###
 			In production mode, all scripts are minified with UglifyJS and joined in /js/all.js
 			And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
