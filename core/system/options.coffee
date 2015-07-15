@@ -371,7 +371,9 @@ module.exports = (app, port) ->
 								for status in results.getStatus
 									indexedStatus[status._id] = status
 								for notice in coreNotifications
+									isRead = notice.isRead
 									notice = notice.toObject()
+									notice.isRead = isRead
 									notice.launcher = results.getUsers[notice.launcher]
 									notice.place = results.getUsers[notice.place]
 									notice.user = results.getUsers[notice.user]

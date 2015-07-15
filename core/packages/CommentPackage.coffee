@@ -70,7 +70,7 @@ CommentPackage =
 				null
 
 			if notice
-				notice.push 'comment', commentator._id, status._id
+				notice.push 'comment', commentator._id, status._id, cesarRight statusPlace.hashedId
 				NoticePackage.notify [cesarRight userToNotify], null,
 					action: 'notice'
 					author: commentator

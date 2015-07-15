@@ -286,47 +286,57 @@ module.exports =
 
 	@return content string
 	###
-	makeContent: (notice) ->
+	makeContent: (notice, done) ->
 		if (!notice.place or !notice.type) and notice.content
 			notice.content
 		else
 			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
-				img +
+				done img +
 				jd 'span(data-href="/user/profile/' +
 				place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + attachedStatus._id + '") ' +
-					text
-			switch notice.type
-				when 'status'
-					null
-				when 'comment'
-					null
-				when 'like'
-					likersFriends = notice.launcher.getFriends (err, friends) ->
-						if !err and friends
-							friends.column 'hashedId'
-						else
-							[]
-					if notice.user and notice.place and notice.launcher and notice.attachedStatus
-						userToNotify = notice.user
-						place = notice.place
-						launcher = notice.launcher
-						statusAuthor = cesarLeft notice.attachedStatus.author
-						if userToNotify.hashedId is place.hashedId
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
-						else if userToNotify.hashedId is statusAuthor and userToNotify.hashedId isnt launcher.hashedId
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, if likersFriends.contains userToNotify.hashedId
-								s("{username} a aimé votre publication.", username: launcher.name.full)
-							else
-								s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
-						else
-							null
+					text + 'plop'
+
+			if notice.user and notice.place and notice.launcher and notice.attachedStatus
+				userToNotify = notice.user
+				place = notice.place
+				launcher = notice.launcher
+				statusAuthorHashedId = cesarLeft notice.attachedStatus.author
+				launcher.getFriends (err, friends) ->
+					if !err and friends
+						launcherFriends = friends.column 'hashedId'
 					else
-						null
-				when 'birthday'
-					null
-				else
-					null
+						launcherFriends = []
+					switch notice.type
+						when 'status'
+							null
+						when 'comment'
+							if userToNotify.hashedId is place.hashedId
+								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
+							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+									s("{username} a commenté votre publication.", username: launcher.name.full)
+								else
+									s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
+							else
+								null
+						when 'like'
+							if userToNotify.hashedId is place.hashedId
+								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
+							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+									s("{username} a aimé votre publication.", username: launcher.name.full)
+								else
+									s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
+							else
+								null
+
+						when 'birthday'
+							null
+						else
+							notice.content
+			else
+				notice.content
 
 
 	###
@@ -361,7 +371,8 @@ module.exports =
 
 				for notice in coreNotifications
 					if notice._id or notifications.has sameNotice.bind notice
-						push extend [notice._id, makeContent notice], read: notice.isRead
+						makeContent notice, (content) ->
+							push extend [notice._id, content], read: notice.isRead
 			if notifications.length
 				getDate = (notice) ->
 					date = new Date
