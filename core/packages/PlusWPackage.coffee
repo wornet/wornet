@@ -14,37 +14,44 @@ PlusWPackage =
 
 		@checkRights req, res, req.data.status, true, (err, ok) =>
 			if ok
-				parallel
-					plusW: (done) ->
-						PlusW.create
-							user: req.user._id
-							status: idStatus
-						, done
-					newNbLike: (done) =>
-						Status.findOneAndUpdate
-							_id: idStatus
-						,
-							$inc: nbLike: 1
-						, (err, status) =>
-							if err
-								done err
-							else if status
-								usersToNotify = []
-								hashedIdAuthor = statusReq.author.hashedId
-								#usersToNotify contains hashedIds tests in notify.
-								#It will be transformed just before NoticePackage calling
-								unless equals hashedIdUser, hashedIdAuthor
-									usersToNotify.push hashedIdAuthor
-								unless [null, hashedIdAuthor, hashedIdUser].contains at
-									usersToNotify.push at
-								unless empty usersToNotify
-									@notify usersToNotify, statusReq, req.user
-								done null, status.nbLike
-							else
-								warn (new Error "Le statut est introuvable."), req
-				, (result) ->
-					end null, result.newNbLike
-				, end
+				PlusW.count
+					user: req.user._id
+					status: idStatus
+				, (err, nbPlusW) ->
+					if err
+						done err
+					else
+						parallel
+							plusW: (done) ->
+								PlusW.create
+									user: req.user._id
+									status: idStatus
+								, done
+							newNbLike: (done) =>
+								Status.findOneAndUpdate
+									_id: idStatus
+								,
+									nbLike: nbPlusW + 1
+								, (err, status) =>
+									if err
+										done err
+									else if status
+										usersToNotify = []
+										hashedIdAuthor = statusReq.author.hashedId
+										#usersToNotify contains hashedIds tests in notify.
+										#It will be transformed just before NoticePackage calling
+										unless equals hashedIdUser, hashedIdAuthor
+											usersToNotify.push hashedIdAuthor
+										unless [null, hashedIdAuthor, hashedIdUser].contains at
+											usersToNotify.push at
+										unless empty usersToNotify
+											@notify usersToNotify, statusReq, req.user
+										done null, status.nbLike
+									else
+										warn (new Error "Le statut est introuvable."), req
+						, (result) ->
+							end null, result.newNbLike
+						, end
 			else
 				end err, 0
 
@@ -53,31 +60,46 @@ PlusWPackage =
 		idUser = req.user._id
 		@checkRights req, res, req.data.status, false, (err, ok) =>
 			if ok
-				parallel
-					plusW: (done) ->
-						PlusW.remove
-							user: idUser
-							status: idStatus
-						, done
-					newNbLike: (done) ->
-						Status.findOneAndUpdate
-							_id: idStatus
-						,
-							$inc: nbLike: -1
-						, (err, status) ->
-							if err
-								done err
-							else
-								NoticePackage.unnotify
-									action: 'notice'
-									notice:
-										type: 'like'
-										launcher: idUser
-										status: idStatus
-								done null, status.nbLike
-				, (result) ->
-					end null, result.newNbLike
-				, end
+				PlusW.count
+					user: idUser
+					status: idStatus
+				, (err, nbPlusW) ->
+					if err
+						done err
+					else
+						parallel
+							plusW: (done) ->
+								PlusW.remove
+									user: idUser
+									status: idStatus
+								, done
+							newNbLike: (done) ->
+								Status.findOneAndUpdate
+									_id: idStatus
+								,
+									nbLike: nbPlusW - 1
+								, (err, status) ->
+									if err
+										done err
+									else
+										#In some rare case when nbLike is < 0 we correct it
+										if status.nbLike < 0
+											Status.findOneAndUpdate
+												_id: idStatus
+											,
+												nbLike: 0
+											, (err, status) ->
+												null
+										NoticePackage.unnotify
+											action: 'notice'
+											notice:
+												type: 'like'
+												launcher: idUser
+												status: idStatus
+										done null, status.nbLike
+						, (result) ->
+							end null, result.newNbLike
+						, end
 			else
 				end err, 0
 

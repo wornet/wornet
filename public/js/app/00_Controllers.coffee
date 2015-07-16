@@ -1004,6 +1004,7 @@ Controllers =
 					status: status
 					at: at
 				success: (result) ->
+					result.newNbLike = 0 if result.newNbLike < 0
 					status.nbLike = result.newNbLike
 					refreshScope $scope
 
