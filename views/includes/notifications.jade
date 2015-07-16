@@ -60,3 +60,6 @@ mixin notifications(classes, mobile)
 										=s("Ignorer")
 								else
 									!=(notification[1] || '').replace(/(\/img\/default-photo\.jpg)%3F/, '$1?')
+									.notification-date: i.date(data-date=trim(notification[0], '"'))
+										|&nbsp;
+									| &nbsp;
