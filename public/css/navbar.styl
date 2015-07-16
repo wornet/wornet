@@ -144,6 +144,15 @@
 
 	.notification-list a
 		padding-right $bigPadding * 2
+		height $notificationThumbHeight + $mainPadding
+		.thumb
+			float left
+		span
+			font-size 14px
+		.notification-date
+			line-height $dateSize
+		.date
+			font-size $dateSize
 
 .suggests
 #underbar .suggests
@@ -218,6 +227,8 @@
 
 .loggedFriends-list
 	left 0
+	li a
+		line-height 35px
 
 @media (min-width: 768px)
 	.mobile-device
@@ -297,6 +308,23 @@
 		.glyphicon
 			line-height $headerHeight
 			font-size 25px
+
+		.notification-list
+			.glyphicon
+				font-size 8px
+				line-height 8px
+
+			.thumb
+				size($notificationThumbWidth, $notificationThumbHeight)
+				margin 0 5px 0 -5px
+		.loggedFriends-list
+			a
+			.friend
+				height 35px
+				line-height 35px
+			.thumb
+				size($notificationThumbWidth, $notificationThumbHeight)
+				margin 0 5px 0 -5px
 
 	.mobile-pill
 		abs()
