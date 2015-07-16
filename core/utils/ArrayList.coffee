@@ -177,7 +177,7 @@ ArrayList =
 	###
 	lastest: (count) ->
 		if @ instanceof Array
-			res = if count > @length
+			res = if count < @length
 				@slice @length - count
 			else
 				@slice()
