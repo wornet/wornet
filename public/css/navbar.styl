@@ -144,7 +144,9 @@
 
 	.notification-list a
 		padding-right $bigPadding * 2
-		height $notificationThumbHeight + $bigPadding
+		height $notificationThumbHeight + $mainPadding
+		&.friend-ask
+			height $notificationThumbHeight + $bigPadding
 		.thumb
 			float left
 		span
