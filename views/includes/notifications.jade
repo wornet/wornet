@@ -16,15 +16,11 @@ mixin notifications(classes, mobile)
 		ul.dropdown-menu.notification-list.left(role='menu' ng-controller="NotificationsCtrl" class=(mobile?"notification-list-mobile":""))
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
-					i.date(data-date="{{ notification[0] }}")
-						|&nbsp;
-					| &nbsp; 
-					=" "
 					span(ng-bind-html="trust(notification[1])")
-				a(ng-switch-when="askForFriend" href="/notification/{{ ifId(notification[0], $index) }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
-					i.date(data-date="{{ notification[0] }}")
+					.notification-date: i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
+				a(ng-switch-when="askForFriend" href="/notification/{{ ifId(notification[0], $index) }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
 					img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].name.full }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].name.full }}").thumb
 					=" "
 					- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
@@ -35,20 +31,20 @@ mixin notifications(classes, mobile)
 					| &nbsp; 
 					.btn.ignore-friend
 						=s("Ignorer")
-				a(ng-switch-default href="/notification/{{ $index }}")
-					i.date(data-date="{{ notification[0] }}")
+					.notification-date: i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
+				a(ng-switch-default href="/notification/{{ $index }}")
 					span(ng-bind-html="trust(notification[1])")
+					.notification-date: i.date(data-date="{{ notification[0] }}")
+							|&nbsp;
+						| &nbsp; 
 			if notificationsCount > 0
 				each notification, id in notifications.lastest(config.wornet.limits.notifications)
 					if notification && notification.length && notification[0]
 						- var askingFriend = objectToUser(notification[1])
 						li(class=(notification.read ? 'read' : null) data-id=trim(notification[0], '"'))
 							a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-								i.date(data-date=trim(notification[0], '"'))
-									|&nbsp;
-								| &nbsp; 
 								if askingFriend && askingFriend.hashedId
 									img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 									=" "
@@ -62,3 +58,6 @@ mixin notifications(classes, mobile)
 										=s("Ignorer")
 								else
 									!=(notification[1] || '').replace(/(\/img\/default-photo\.jpg)%3F/, '$1?')
+								.notification-date: i.date(data-date=trim(notification[0], '"'))
+										|&nbsp;
+									| &nbsp; 
