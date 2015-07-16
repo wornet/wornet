@@ -17,7 +17,7 @@ PlusWPackage =
 				PlusW.count
 					user: req.user._id
 					status: idStatus
-				, (err, nbPlusW) ->
+				, (err, nbPlusW) =>
 					if err
 						done err
 					else
@@ -63,7 +63,7 @@ PlusWPackage =
 				PlusW.count
 					user: idUser
 					status: idStatus
-				, (err, nbPlusW) ->
+				, (err, nbPlusW) =>
 					if err
 						done err
 					else
