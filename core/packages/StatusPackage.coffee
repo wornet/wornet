@@ -185,6 +185,7 @@ StatusPackage =
 										s("{username} a publié un statut.", username: req.user.fullName)
 									else
 										s("{username} a publié un statut sur votre profil.", username: req.user.fullName)
+								, 'status', req.user._id, status._id, cesarRight place.hashedId
 								]
 						at = status.at || null
 						if at is null
