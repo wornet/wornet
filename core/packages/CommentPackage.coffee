@@ -86,6 +86,7 @@ CommentPackage =
 
 			if otherCommentators.length > 0
 				otherCommentatorsIds = otherCommentators.map cesarRight
+				notice.push 'othercomments', commentator._id, status._id, cesarRight statusPlace.hashedId
 				NoticePackage.notify otherCommentatorsIds, null,
 					action: 'notice'
 					author: commentator

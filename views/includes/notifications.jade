@@ -5,7 +5,7 @@ mixin notifications(classes, mobile)
 	ul(class=classes pill): li(class=liClasses)
 		a.dropdown-toggle(href="#" data-toggle="dropdown")
 			if mobile
-				+glyph('globe')
+				span.glyphicon.btn-notification-mobile
 				span.pill.mobile-pill
 					=notificationsCount
 			else

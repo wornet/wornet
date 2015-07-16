@@ -344,6 +344,8 @@ module.exports = (app, port) ->
 							usersToSearch = []
 							statusToSearch = []
 							indexedStatus = []
+							parallelTab = {}
+
 							for notice in coreNotifications
 								if notice.place and notice.launcher and notice.user
 									usersToSearch.push notice.launcher, notice.place, notice.user
@@ -367,21 +369,36 @@ module.exports = (app, port) ->
 											done err
 										else
 											done null, statusList
-							, (results) ->
-								for status in results.getStatus
+							, (UserStatusResults) ->
+								for status in UserStatusResults.getStatus
 									indexedStatus[status._id] = status
 								for notice in coreNotifications
 									isRead = notice.isRead
 									notice = notice.toObject()
 									notice.isRead = isRead
-									notice.launcher = results.getUsers[notice.launcher]
-									notice.place = results.getUsers[notice.place]
-									notice.user = results.getUsers[notice.user]
+									notice.launcher = UserStatusResults.getUsers[notice.launcher]
+									notice.place = UserStatusResults.getUsers[notice.place]
+									notice.user = UserStatusResults.getUsers[notice.user]
 									notice.attachedStatus = indexedStatus[notice.attachedStatus]
+									if notice.launcher
+										parallelTab[notice._id] = [notice.launcher.getFriends, notice.launcher]
 									coreNotificationsWithUsers.push notice
-								next getNotifications sessionInfos.notifications || [], coreNotificationsWithUsers || [], sessionInfos.friendAsks, sessionInfos.friends, user
+
+								parallel parallelTab
+								, (friendsResults) ->
+									for newNotice in coreNotificationsWithUsers
+										friendsHashedIds = []
+										if newNotice.launcher
+											for friend in friendsResults[newNotice._id]
+												friendsHashedIds.push friend.hashedId
+											newNotice.launcherFriends = friendsHashedIds
+
+									next getNotifications sessionInfos.notifications || [], coreNotificationsWithUsers || [], sessionInfos.friendAsks, sessionInfos.friends, user
+								, ->
+									next []
+
 							, ->
-								null
+								next []
 				else
 					next []
 			# test credentials with anti-brute-force protection

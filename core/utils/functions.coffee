@@ -288,28 +288,28 @@ module.exports =
 	###
 	makeContent: (notice, done) ->
 		if (!notice.place or !notice.type) and notice.content
-			notice.content
+			done notice.content
 		else
 			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
 				done img +
 				jd 'span(data-href="/user/profile/' +
-				place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + attachedStatus._id + '") ' +
-					text + 'plop'
+				place.hashedId + '/' + encodeURIComponent(place.name.full) + (if attachedStatus then '#' + attachedStatus._id else '') + '") ' +
+					text
 
-			if notice.user and notice.place and notice.launcher and notice.attachedStatus
+			if notice.user and notice.place and notice.launcher
 				userToNotify = notice.user
 				place = notice.place
 				launcher = notice.launcher
-				statusAuthorHashedId = cesarLeft notice.attachedStatus.author
-				launcher.getFriends (err, friends) ->
-					if !err and friends
-						launcherFriends = friends.column 'hashedId'
-					else
-						launcherFriends = []
+				launcherFriends = notice.launcherFriends
+				if notice.attachedStatus and notice.type isnt 'birthday'
+					statusAuthorHashedId = cesarLeft notice.attachedStatus.author
 					switch notice.type
 						when 'status'
-							null
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if notice.attachedStatus.at is null
+								s("{username} a publié un statut.", username: launcher.fullName)
+							else
+								s("{username} a publié un statut sur votre profil.", username: launcher.fullName)
 						when 'comment'
 							if userToNotify.hashedId is place.hashedId
 								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
@@ -319,7 +319,9 @@ module.exports =
 								else
 									s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
 							else
-								null
+								done null
+						when 'othercomments'
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: commentator.name.full)
 						when 'like'
 							if userToNotify.hashedId is place.hashedId
 								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
@@ -329,14 +331,15 @@ module.exports =
 								else
 									s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
 							else
-								null
-
-						when 'birthday'
-							null
+								done null
 						else
-							notice.content
+							done notice.content
+				else if notice.type is 'birthday'
+					generateNotice launcher, place, userToNotify, null, s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: launcher.name.full)
+				else
+					done notice.content
 			else
-				notice.content
+				done notice.content
 
 
 	###
@@ -353,6 +356,7 @@ module.exports =
 			notifications = []
 			ids = []
 			push = (notification) ->
+
 				unless notification[0] and ids.contains notification[0]
 					notifications.push notification
 			notifications.each ->
@@ -373,6 +377,7 @@ module.exports =
 					if notice._id or notifications.has sameNotice.bind notice
 						makeContent notice, (content) ->
 							push extend [notice._id, content], read: notice.isRead
+
 			if notifications.length
 				getDate = (notice) ->
 					date = new Date
@@ -746,7 +751,12 @@ module.exports =
 				fulfill results
 				ended = true
 		treatments.each (key) ->
-			@ (err, result) ->
+			if @ instanceof Array
+				func = @[0]
+				context = @[1]
+			else
+				func = @
+			func.call context, (err, result) ->
 				if err
 					unless ended
 						reject err, key

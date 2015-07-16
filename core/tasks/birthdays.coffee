@@ -11,7 +11,7 @@ birthDaysTask =
 					jd 'span(data-href="/user/profile/' +
 					@hashedId + '/' + encodeURIComponent(@fullName) + '") ' +
 					s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: @fullName)
-				]
+				, 'birthday', @_id, null, @_id]
 
 	wishBirthDays: ->
 		today = new Date()
