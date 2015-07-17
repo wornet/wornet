@@ -321,7 +321,7 @@ module.exports =
 							else
 								done null
 						when 'othercomments'
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: commentator.name.full)
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: launcher.name.full)
 						when 'like'
 							if userToNotify.hashedId is place.hashedId
 								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
