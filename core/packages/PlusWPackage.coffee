@@ -15,7 +15,6 @@ PlusWPackage =
 		@checkRights req, res, req.data.status, true, (err, ok) =>
 			if ok
 				PlusW.count
-					user: req.user._id
 					status: idStatus
 				, (err, nbPlusW) =>
 					if err
@@ -61,7 +60,6 @@ PlusWPackage =
 		@checkRights req, res, req.data.status, false, (err, ok) =>
 			if ok
 				PlusW.count
-					user: idUser
 					status: idStatus
 				, (err, nbPlusW) =>
 					if err
