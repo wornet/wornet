@@ -992,6 +992,7 @@ Controllers =
 			return
 
 		$scope.toggleLike = (status, adding) ->
+			$('[data-id="'+status._id+'"] .btn-action-plus-w').attr 'disabled', true
 			if arguments.length < 2
 				adding = ! status.likedByMe
 			status.likedByMe = adding
@@ -999,14 +1000,16 @@ Controllers =
 				1
 			else
 				-1
+			status.nbLike = 0 if status.nbLike < 0
+			refreshScope $scope
 			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
 					status: status
 					at: at
 				success: (result) ->
-					result.newNbLike = 0 if result.newNbLike < 0
-					status.nbLike = result.newNbLike
-					refreshScope $scope
+					$('[data-id="'+status._id+'"] .btn-action-plus-w').removeAttr 'disabled'
+					true
+
 
 		$scope.nbLikeText = (status) ->
 			s = textReplacements

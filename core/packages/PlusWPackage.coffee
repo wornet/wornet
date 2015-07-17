@@ -1,5 +1,7 @@
 'use strict'
 
+locks = {}
+
 PlusWPackage =
 
 	put: (req, res, end) ->
@@ -12,94 +14,53 @@ PlusWPackage =
 			req.data.status.at.hashedId
 		else null
 
-		@checkRights req, res, req.data.status, true, (err, ok) =>
-			if ok
-				PlusW.count
-					status: idStatus
-				, (err, nbPlusW) =>
-					if err
-						done err
-					else
-						parallel
-							plusW: (done) ->
-								PlusW.create
-									user: req.user._id
-									status: idStatus
-								, done
-							newNbLike: (done) =>
-								Status.findOneAndUpdate
-									_id: idStatus
-								,
-									nbLike: nbPlusW + 1
-								, (err, status) =>
-									if err
-										done err
-									else if status
-										usersToNotify = []
-										hashedIdAuthor = statusReq.author.hashedId
-										#usersToNotify contains hashedIds tests in notify.
-										#It will be transformed just before NoticePackage calling
-										unless equals hashedIdUser, hashedIdAuthor
-											usersToNotify.push hashedIdAuthor
-										unless [null, hashedIdAuthor, hashedIdUser].contains at
-											usersToNotify.push at
-										unless empty usersToNotify
-											@notify usersToNotify, statusReq, req.user
-										done null, status.nbLike
-									else
-										warn (new Error "Le statut est introuvable."), req
-						, (result) ->
-							end null, result.newNbLike
-						, end
-			else
-				end err, 0
+		if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
+			locks[hashedIdUser + '-' + idStatus] = true
+			@checkRights req, res, req.data.status, true, (err, ok) =>
+				if ok
+					PlusW.create
+						user: req.user._id
+						status: idStatus
+					, (err, plusW) =>
+						delete locks[hashedIdUser + '-' + idStatus]
+						usersToNotify = []
+						hashedIdAuthor = statusReq.author.hashedId
+						#usersToNotify contains hashedIds tests in notify.
+						#It will be transformed just before NoticePackage calling
+						unless equals hashedIdUser, hashedIdAuthor
+							usersToNotify.push hashedIdAuthor
+						unless [null, hashedIdAuthor, hashedIdUser].contains at
+							usersToNotify.push at
+						unless empty usersToNotify
+							@notify usersToNotify, statusReq, req.user
+						end null
+				else
+					end err
+		else
+			delete locks[hashedIdUser + '-' + idStatus]
+			end null
 
 	delete: (req, res, end) ->
 		idStatus = req.data.status._id
 		idUser = req.user._id
 		@checkRights req, res, req.data.status, false, (err, ok) =>
 			if ok
-				PlusW.count
+				PlusW.remove
+					user: idUser
 					status: idStatus
-				, (err, nbPlusW) =>
+				, (err) ->
 					if err
-						done err
+						end err
 					else
-						parallel
-							plusW: (done) ->
-								PlusW.remove
-									user: idUser
-									status: idStatus
-								, done
-							newNbLike: (done) ->
-								Status.findOneAndUpdate
-									_id: idStatus
-								,
-									nbLike: nbPlusW - 1
-								, (err, status) ->
-									if err
-										done err
-									else
-										#In some rare case when nbLike is < 0 we correct it
-										if status.nbLike < 0
-											Status.findOneAndUpdate
-												_id: idStatus
-											,
-												nbLike: 0
-											, (err, status) ->
-												null
-										NoticePackage.unnotify
-											action: 'notice'
-											notice:
-												type: 'like'
-												launcher: idUser
-												status: idStatus
-										done null, status.nbLike
-						, (result) ->
-							end null, result.newNbLike
-						, end
+						NoticePackage.unnotify
+							action: 'notice'
+							notice:
+								type: 'like'
+								launcher: idUser
+								status: idStatus
+						end null
 			else
-				end err, 0
+				end err
 
 	checkRights: (req, res, status, liking, done) ->
 		idStatus = status._id

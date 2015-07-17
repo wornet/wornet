@@ -11,9 +11,6 @@ statusSchema = PostSchema.extend
 		type: String
 	pointsValue:
 		type: Number
-	nbLike:
-		type: Number
-		default: 0
 
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength

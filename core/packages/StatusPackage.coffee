@@ -62,11 +62,15 @@ StatusPackage =
 										likedStatus = {}
 										PlusW.find
 											status: $in: idsStatus
-											user: req.user.id
 										, (err, result) ->
-											statusResult = result.column 'status'
-											for id in idsStatus
-												likedStatus[id] = statusResult.contains id, equals
+											tabLike = []
+											for idStatus in idsStatus
+												tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
+											for like in result
+												tabLike[like.status].nbLike++
+												if equals id, like.user
+													tabLike[like.status].likedByMe = true
+
 											recentStatus.each ->
 												status = @toObject()
 												if @at is @author
@@ -82,7 +86,8 @@ StatusPackage =
 												status.status = @status
 												if @status is 'blocked'
 													status.content = ''
-												status.likedByMe = likedStatus[status._id]
+												status.likedByMe = tabLike[status._id].likedByMe
+												status.nbLike = tabLike[status._id].nbLike
 												recentStatusPublicData.push status
 											data.recentStatus = recentStatusPublicData
 											next()
