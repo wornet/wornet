@@ -35,9 +35,9 @@ PlusWPackage =
 							@notify usersToNotify, statusReq, req.user
 						end null
 				else
+					delete locks[hashedIdUser + '-' + idStatus]
 					end err
 		else
-			delete locks[hashedIdUser + '-' + idStatus]
 			end null
 
 	delete: (req, res, end) ->
