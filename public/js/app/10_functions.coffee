@@ -412,7 +412,7 @@ loggedFriends = (friends) ->
 		$.each friends, ->
 			if ids.indexOf(@hashedId) is -1
 				ids.push @hashedId
-				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; ' + safeHtml(@name.full) + ' &nbsp; <span class="glyphicon glyphicon-comment"></span></a></li>'
+				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; <span class="user-name">' + safeHtml(@name.full) + '&nbsp; </span><span class="glyphicon glyphicon-comment"></span></a></li>'
 			return
 		$ul.find('span.pill').text ids.length
 		$ul.find('.dropdown-menu').html(ul).find('li a').each (key) ->
