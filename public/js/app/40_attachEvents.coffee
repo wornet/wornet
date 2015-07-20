@@ -512,7 +512,7 @@ do ->
 		]
 		[
 			click
-			'.notifications ul a'
+			'.notifications ul a, .notifications-mobile ul a'
 			($a, e) ->
 				href = $a.find('[data-href]').data 'href'
 				id = $a.parents('li:first').attr 'data-id'

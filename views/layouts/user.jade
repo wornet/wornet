@@ -6,7 +6,7 @@ mixin friends(classes, mobile)
 	- var loggedFriends = user.friends.find({ present: true })
 	- classes += " " + (mobile?"loggedFriends-mobile":"loggedFriends nav right")
 	ul(class=classes): li
-		a.dropdown-toggle(href="#" data-toggle="dropdown")
+		a.dropdown-toggle( data-toggle="dropdown")
 			span
 				if mobile
 					+glyph('user')
@@ -22,12 +22,12 @@ mixin friends(classes, mobile)
 				each friend, id in loggedFriends
 					- friend = objectToUser(friend).publicInformations()
 					li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
-						.friend
-							img.thumb(src=friend.thumb50 alt=friend.name.full)
-							| &nbsp; 
+						img.thumb(src=friend.thumb50 alt=friend.name.full)
+						| &nbsp; 
+						span.user-name
 							=friend.name.full
-							| &nbsp; 
-							+glyph('comment')
+						| &nbsp; 
+						+glyph('comment')
 
 block append link
 	link(ng-if="smilies" rel="stylesheet" ng-href=style("smilies"))
@@ -58,10 +58,10 @@ block nav
 				.col-sm-6
 					|&nbsp;
 				ul.col-sm-6
-					li.right.open-shutter: a(href="#")
+					li.right.open-shutter: a
 						+glyph("list")
 					li.right.btn-group
-						a.dropdown-toggle(href="#" data-toggle="dropdown")
+						a.dropdown-toggle( data-toggle="dropdown")
 							=user.fullName
 							|&nbsp;
 							span.caret
@@ -86,7 +86,7 @@ block nav
 			+friends('', true)
 		.nav-icons.col-xs-2
 			if user
-				a.dropdown-toggle(href="#" data-toggle="dropdown")
+				a.dropdown-toggle( data-toggle="dropdown")
 					img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
 				ul.dropdown-menu.user.right(role='menu')
 					li: a(href="/user/profile")

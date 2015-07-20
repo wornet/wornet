@@ -238,6 +238,7 @@
 
 @media (min-width: 768px)
 	.mobile-device
+	.mobile-notification-date
 		display none
 	.standard-device
 		display block
@@ -273,7 +274,11 @@
 	.standard-device
 	ul.loggedFriends
 	ul.notifications
+	.notification-date
 		display none
+
+	.mobile-notification-date
+		display inline
 
 	.btn-notification-mobile
 		background url(png("W25x25"))
@@ -289,19 +294,51 @@
 				top -23px
 				float right
 
-	#wornet-navbar.mobile-device
-		text-align center
-		margin 0
+	#wornet-navbar
+		.mobile-device
+			text-align center
+			margin 0
+		.dropdown-menu
+			width calc(100% - 10px)
+			margin 0 $smallPadding
+			li
+				background-color $orange
+				&.read
+					background-color $darkOrange
+			&>li>a
+				height 40px
+				line-height $mobileNotificationTextSize
+			span
+				white-space pre-line
+				font-size $mobileNotificationTextSize
+			.date
+				font-size $mobileNotificationDateSize
+				color white
+
+			.friend-ask
+				height 55px
+
+			.accept-friend
+			.ignore-friend
+				font-size 10px
+				height 20px
+				line-height 10px
+				float right
+				margin-top 15px
+			.ignore-friend
+				margin-right $smallPadding
 
 	.nav-icons
 		line-height $headerHeight
 		padding 0
+		position static
 
 		a
 			display block
 			height $headerHeight
 
 		.user
+			width 50%
 			a
 				height auto
 
@@ -317,19 +354,24 @@
 
 		.notification-list
 			.glyphicon
-				font-size 8px
-				line-height 8px
+				font-size $mobileNavDropdownGlyphSize
+				line-height $mobileNavDropdownGlyphSize
 
 			.thumb
-				size($notificationThumbWidth, $notificationThumbHeight)
+				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
 				margin 0 5px 0 -5px
 		.loggedFriends-list
 			a
-			.friend
-				height 35px
-				line-height 35px
+				font-size $mobileNotificationTextSize
+				height 30px
+				span
+					line-height 25px
+				.glyphicon
+					font-size $mobileNavDropdownGlyphSize
+					line-height $mobileNavDropdownGlyphSize
+
 			.thumb
-				size($notificationThumbWidth, $notificationThumbHeight)
+				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
 				margin 0 5px 0 -5px
 
 	.mobile-pill

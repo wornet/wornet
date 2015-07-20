@@ -3,7 +3,7 @@ mixin notifications(classes, mobile)
 	- classes += " " + (mobile?"notifications-mobile":"notifications nav")
 	- var liClasses = (mobile?"":"btn-group")
 	ul(class=classes pill): li(class=liClasses)
-		a.dropdown-toggle(href="#" data-toggle="dropdown")
+		a.dropdown-toggle( data-toggle="dropdown")
 			if mobile
 				span.glyphicon.btn-notification-mobile
 				span.pill.mobile-pill
@@ -17,10 +17,15 @@ mixin notifications(classes, mobile)
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					span(ng-bind-html="trust(notification[1])")
+					|&nbsp;
+					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
+						|&nbsp;
 					.notification-date: i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
 				a(ng-switch-when="askForFriend" href="/notification/{{ ifId(notification[0], $index) }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
+					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
+						|&nbsp;
 					.notification-date: i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
@@ -36,6 +41,9 @@ mixin notifications(classes, mobile)
 						=s("Ignorer")
 				a(ng-switch-default href="/notification/{{ $index }}")
 					span(ng-bind-html="trust(notification[1])")
+					|&nbsp;
+					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
+						|&nbsp;
 					.notification-date: i.date(data-date="{{ notification[0] }}")
 							|&nbsp;
 						| &nbsp; 
@@ -49,7 +57,11 @@ mixin notifications(classes, mobile)
 									img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 									=" "
 									- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
-									!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+									span
+										!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+									| &nbsp;
+									i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
+										|&nbsp;
 									.notification-date: i.date(data-date=trim(notification[0], '"'))
 										|&nbsp;
 									| &nbsp;
@@ -60,6 +72,9 @@ mixin notifications(classes, mobile)
 										=s("Ignorer")
 								else
 									!=(notification[1] || '').replace(/(\/img\/default-photo\.jpg)%3F/, '$1?')
+									|&nbsp;
+									i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
+										|&nbsp;
 									.notification-date: i.date(data-date=trim(notification[0], '"'))
 										|&nbsp;
 									| &nbsp;
