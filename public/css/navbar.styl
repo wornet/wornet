@@ -301,10 +301,11 @@
 		.dropdown-menu
 			width calc(100% - 10px)
 			margin 0 $smallPadding
-			li
-				background-color $orange
-				&.read
-					background-color $darkOrange
+			&.notification-list-mobile
+				li
+					background-color $orange
+					&.read
+						background-color $darkOrange
 			&>li>a
 				height 40px
 				line-height $mobileNotificationTextSize
@@ -328,19 +329,19 @@
 			.ignore-friend
 				margin-right $smallPadding
 
-	.nav-icons
-		line-height $headerHeight
-		padding 0
-		position static
+		.nav-icons
+			line-height $headerHeight
+			padding 0
+			position static
 
-		a
-			display block
-			height $headerHeight
-
-		.user
-			width 50%
 			a
-				height auto
+				display block
+				height $headerHeight
+
+			.user
+				width 50%
+				a
+					height auto
 
 	.navthumb
 		overflow hidden
