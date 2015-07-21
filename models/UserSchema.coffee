@@ -133,6 +133,9 @@ userSchema = BaseSchema.extend
 		default: false
 	points:
 		type: Number
+	chatSound:
+		type: Number
+		default: 1
 ,
 	toObject:
 		virtuals: false
@@ -245,6 +248,7 @@ extend userSchema.methods,
 		informations.name = @name.toObject()
 		informations.name.full = @name.full
 		informations.points = @points || 0
+		informations.chatSound = @chatSound
 		informations
 
 	sha1Fallback: (plainText) ->

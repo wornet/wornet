@@ -1,4 +1,7 @@
 
+# array counting new messages by chat
+newChatMessages = {}
+
 waitForNotify = ->
 	at = getCachedData 'at'
 	Ajax.get '/user/notify' + (if at then '/' + at else ''),
@@ -17,6 +20,27 @@ waitForNotify = ->
 							message = objectResolve notification
 							users = message.users || []
 							users.push message.from
+							chats = getChats()
+							for id, chat of chats
+								if chat.users[0].hashedId is message.from.hashedId
+									chatOpen = chat.open
+									chatMinimized = chat.minimized
+									if chat.resetNewMessages
+										delete newChatMessages[message.from.hashedId]
+										chat.resetNewMessages = false
+							saveChats chats
+
+							idSound = getData('chatSound')
+							if !chatOpen or !document.hasFocus() or (chatOpen && document.hasFocus() && chatMinimized) and idSound isnt 0
+								new Audio(mp3 'chatSound_' + idSound).play()
+								if newChatMessages[message.from.hashedId]
+									newChatMessages[message.from.hashedId].nbMessages++
+								else
+									newChatMessages[message.from.hashedId] = { name: message.from.name.full, nbMessages: 1 }
+
+								chatService.updateNewMessages [message.from.hashedId], newChatMessages[message.from.hashedId].nbMessages
+								chatService.changePageTitle newChatMessages
+
 							chatService.chatWith users, message
 						when 'status'
 							statusService.receiveStatus notification.status

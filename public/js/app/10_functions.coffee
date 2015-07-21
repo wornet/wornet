@@ -414,12 +414,21 @@ loggedFriends = (friends) ->
 				ids.push @hashedId
 				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; <span class="user-name">' + safeHtml(@name.full) + '&nbsp; </span><span class="glyphicon glyphicon-comment"></span></a></li>'
 			return
+
 		$ul.find('span.pill').text ids.length
-		$ul.find('.dropdown-menu').html(ul).find('li a').each (key) ->
-			$(@).click ->
-				chatService.chatWith [objectResolve friends[key]]
+		if $ul.attr('class').indexOf('mobile') < 0
+			$ul.find('.dropdown-menu').find('li:not(.select-chat-sound, .divider)').remove()
+			$ul.find('.dropdown-menu').prepend(ul).find('li:not(.select-chat-sound) a').each (key) ->
+				$(@).click ->
+					chatService.chatWith [objectResolve friends[key]]
+					return
 				return
-			return
+		else
+			$ul.find('.dropdown-menu').html(ul).find('li:not(.select-chat-sound) a').each (key) ->
+				$(@).click ->
+					chatService.chatWith [objectResolve friends[key]]
+					return
+				return
 		return
 	return
 
@@ -508,6 +517,9 @@ lastest = (arr, count) ->
 readNotification = (id) ->
 	$('[data-id="' + id + '"]').addClass 'read'
 	Ajax.get '/user/notify/read/' + id
+
+mp3 = (name) ->
+	"/resources/mp3/"+name+".mp3"
 
 # Track an event and send it to analytics tools
 trackEvent = do ->

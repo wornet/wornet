@@ -275,6 +275,34 @@ Controllers =
 			refreshScope $scope
 			return
 
+		$scope.$on 'updateNewMessages', (e, userIds, nbOfNewMessages) ->
+			chats = getChats()
+			for id, chat of chats
+				chatUserIds = []
+				for userChat in chat.users
+					chatUserIds.push userChat.hashedId
+				if JSON.stringify(chatUserIds) is JSON.stringify(userIds)
+					chat.newMessages = nbOfNewMessages
+					if nbOfNewMessages is 0
+						chat.resetNewMessages = true
+
+			$scope.chats = saveChats chats
+			refreshScope $scope
+			return
+
+		$scope.$on 'changePageTitle', (e, newChatMessages) ->
+			index = 0
+			nbMessages = 0
+			s = textReplacements
+			for key, obj of newChatMessages
+				index++
+				name = obj.name
+				nbMessages += obj.nbMessages
+
+			if index > 1
+				$('title').html(s(nbMessages+' nouveaux messages'))
+			else
+				$('title').html(s('(' + nbMessages + ') ' + name))
 
 		$scope.close = (chat) ->
 			chat.open = false
@@ -633,6 +661,22 @@ Controllers =
 				.prop 'src', '/img/default-photo.jpg'
 
 		loadNewIFrames()
+
+		$scope.selectChatSound = (event, idSound) ->
+			cancel event
+			$scope.selectedSound = idSound
+			refreshScope $scope
+
+			$('[data-name="chatSound"]').data('value', idSound)
+
+			if idSound
+				new Audio(mp3 'chatSound_'+idSound).play()
+
+			Ajax.post 'user/chat/sound',
+				data: chatSound: idSound
+				sucess: (res) ->
+					return
+			return
 
 		return
 

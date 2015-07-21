@@ -30,6 +30,12 @@ Wornet = angular.module 'Wornet', [
 		clear: (users) ->
 			$rootScope.$broadcast 'clear', users
 			return
+		updateNewMessages: (userIds, nbOfNewMessages) ->
+			$rootScope.$broadcast 'updateNewMessages', userIds, nbOfNewMessages
+			return
+		changePageTitle: (newChatMessages) ->
+			$rootScope.$broadcast 'changePageTitle', newChatMessages
+			return
 	chatService
 ]
 
