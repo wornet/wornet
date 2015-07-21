@@ -17,7 +17,7 @@ mixin friends(classes, mobile)
 					| &nbsp; 
 					span.pill
 						=loggedFriends.length
-		ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl")
+		ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl" ng-init="selectedSound = " + JSON.stringify(user.chatSound))
 			if loggedFriends.length > 0
 				each friend, id in loggedFriends
 					- friend = objectToUser(friend).publicInformations()
@@ -28,6 +28,29 @@ mixin friends(classes, mobile)
 							=friend.name.full
 						| &nbsp; 
 						+glyph('comment')
+			if !mobile
+				li.divider(role="separator")
+				li.select-chat-sound
+					a(ng-click="selectChatSound($event, 0)")
+						span(ng-if="selectedSound == 0")
+							+glyph('ok-circle')
+							| &nbsp;
+						+glyph('volume-off')
+						| &nbsp;
+					a(ng-click="selectChatSound($event, 1)")
+						span(ng-if="selectedSound == 1")
+							+glyph('ok-circle')
+							| &nbsp;
+						+glyph('play')
+						=s("1")
+					a.test-orange(ng-click="selectChatSound($event, 2)")
+						span(ng-if="selectedSound == 2")
+							+glyph('ok-circle')
+							| &nbsp;
+						+glyph('play')
+						=s("2")
+					
+					
 
 block append link
 	link(ng-if="smilies" rel="stylesheet" ng-href=style("smilies"))
@@ -43,6 +66,7 @@ block nav
 				!=upperTitle
 		if user
 			+data("me", user.hashedId)
+			+data("chatSound", user.chatSound)
 			.mainLinks.col-sm-6
 				ul
 					li.left: a(href="/")

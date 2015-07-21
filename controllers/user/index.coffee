@@ -720,3 +720,20 @@ module.exports = (router) ->
 
 				else
 					res.serverError new PublicError s("Mot de passe incorrect")
+
+	router.post '/chat/sound', (req, res) ->
+		sound = req.data.chatSound
+		id = req.user._id
+		if id and sound
+			User.findOneAndUpdate
+				_id: id,
+			,
+				chatSound: sound
+			, (err, user) ->
+				if err
+					res.serverError err
+				else
+					req.user.chatSound = sound
+					res.json()
+		else
+			res.serverError new PublicError s("Vous n'avez choisi aucun son.")

@@ -730,6 +730,14 @@ do ->
 					chatListScope.chatList = chat.chatList
 					refreshScope chatListScope
 		]
+		[
+			'focus'
+			'.chat textarea'
+			($field, e) ->
+				idUser = $field.closest('.chat').find('[data-data][data-name="chatUser"]').attr("data-value").replace(/"/g, '')
+				$('title').html('Wornet')
+				chatService.updateNewMessages [idUser], 0
+		]
 	], ->
 		params = @
 		if @[0] is 'load'
