@@ -299,10 +299,10 @@ Controllers =
 				name = obj.name
 				nbMessages += obj.nbMessages
 
-			if index > 1
-				$('title').html(s(nbMessages+' nouveaux messages'))
+			$('title').html if index > 1
+			    s("{count} nouveaux messages", count: nbMessages)
 			else
-				$('title').html(s('(' + nbMessages + ') ' + name))
+			    '(' + nbMessages + ') ' + name
 
 		$scope.close = (chat) ->
 			chat.open = false
@@ -661,6 +661,9 @@ Controllers =
 				.prop 'src', '/img/default-photo.jpg'
 
 		loadNewIFrames()
+		$scope.supportAudio = typeof Audio is "function" and (new Audio).canPlayType and (new Audio).canPlayType('audio/mp3').replace(/no/, '')
+
+		audios = {}
 
 		$scope.selectChatSound = (event, idSound) ->
 			cancel event
@@ -670,7 +673,9 @@ Controllers =
 			$('[data-name="chatSound"]').data('value', idSound)
 
 			if idSound
-				new Audio(mp3 'chatSound_'+idSound).play()
+				if !audios[idSound]
+					audios[idSound] = new Audio(mp3 'chatSound_'+idSound)
+				audios[idSound].play()
 
 			Ajax.post 'user/chat/sound',
 				data: chatSound: idSound

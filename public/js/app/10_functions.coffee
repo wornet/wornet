@@ -416,7 +416,7 @@ loggedFriends = (friends) ->
 			return
 
 		$ul.find('span.pill').text ids.length
-		if $ul.attr('class').indexOf('mobile') < 0
+		if !$ul.hasClass('loggedFriends-mobile')
 			$ul.find('.dropdown-menu').find('li:not(.select-chat-sound, .divider)').remove()
 			$ul.find('.dropdown-menu').prepend(ul).find('li:not(.select-chat-sound) a').each (key) ->
 				$(@).click ->
