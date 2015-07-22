@@ -29,8 +29,8 @@ mixin friends(classes, mobile)
 						| &nbsp; 
 						+glyph('comment')
 			if !mobile
-				li.divider(role="separator")
-				li.select-chat-sound
+				li.divider(ng-if="supportAudio" role="separator")
+				li.select-chat-sound(ng-if="supportAudio")
 					a(ng-click="selectChatSound($event, 0)")
 						span(ng-if="selectedSound == 0")
 							+glyph('ok-circle')
@@ -43,7 +43,7 @@ mixin friends(classes, mobile)
 							| &nbsp;
 						+glyph('play')
 						=s("1")
-					a.test-orange(ng-click="selectChatSound($event, 2)")
+					a(ng-click="selectChatSound($event, 2)")
 						span(ng-if="selectedSound == 2")
 							+glyph('ok-circle')
 							| &nbsp;

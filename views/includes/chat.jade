@@ -3,8 +3,7 @@
 		h4(ng-click="minimize(chat)")
 			a.close(ng-click="close(chat); $event.stopPropagation();")
 				+glyph('remove-sign')
-			span(ng-repeat="(index, user) in chat.users")
-				+data("chatUser", "{{ user.hashedId }}")
+			span.users(ng-repeat="(index, user) in chat.users" data-hashed-id="{{ user.hashedId }}")
 				if index > 0
 					=", "
 				+link("/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}", "{{ user.name.full }}")(ng-click="$event.stopPropagation()")

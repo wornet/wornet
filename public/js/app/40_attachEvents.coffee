@@ -734,9 +734,11 @@ do ->
 			'focus'
 			'.chat textarea'
 			($field, e) ->
-				idUser = $field.closest('.chat').find('[data-data][data-name="chatUser"]').attr("data-value").replace(/"/g, '')
+				idUsers = []
+				$field.closest('.chat').find('.users').each (key, val) ->
+					idUsers.push $(val).data('hashed-id')
 				$('title').html('Wornet')
-				chatService.updateNewMessages [idUser], 0
+				chatService.updateNewMessages idUsers, 0
 		]
 	], ->
 		params = @

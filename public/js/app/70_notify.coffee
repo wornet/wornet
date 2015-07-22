@@ -1,6 +1,7 @@
 
 # array counting new messages by chat
 newChatMessages = {}
+audios = {}
 
 waitForNotify = ->
 	at = getCachedData 'at'
@@ -32,7 +33,9 @@ waitForNotify = ->
 
 							idSound = getData('chatSound')
 							if !chatOpen or !document.hasFocus() or (chatOpen && document.hasFocus() && chatMinimized) and idSound isnt 0
-								new Audio(mp3 'chatSound_' + idSound).play()
+								if !audios[idSound]
+									audios[idSound] = new Audio(mp3 'chatSound_'+idSound)
+								audios[idSound].play()
 								if newChatMessages[message.from.hashedId]
 									newChatMessages[message.from.hashedId].nbMessages++
 								else
