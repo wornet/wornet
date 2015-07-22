@@ -954,6 +954,10 @@ module.exports =
 				if createErr
 					done createErr, createdAlbum, photo
 				else
+					if createdAlbum
+						createdAlbum.refreshPreview (err) ->
+							if err
+								warn err
 					id = photo.id
 					PhotoPackage.add req, id
 					photoDirectory = __dirname + '/../../public/img/photo/'

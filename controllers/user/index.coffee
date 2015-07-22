@@ -352,14 +352,17 @@ module.exports = (router) ->
 			res.notFound()
 
 	router.put '/album/add', (req, res) ->
-		# Create a new album
-		album = extend user: req.user._id, req.body.album
-		album.lastEmpty = new Date
-		Album.create album, (err, album) ->
-			album.user = cesarLeft album.user
-			res.json
-				err: err
-				album: album
+		if req.body.album and req.body.album.name is "Photos de profil"
+			res.serverError new PublicError s("Ce nom est reservé.")
+		else
+			# Create a new album
+			album = extend user: req.user._id, req.body.album
+			album.lastEmpty = new Date
+			Album.create album, (err, album) ->
+				album.user = cesarLeft album.user
+				res.json
+					err: err
+					album: album
 
 	router.delete '/album/:id', (req, res) ->
 		id = req.params.id

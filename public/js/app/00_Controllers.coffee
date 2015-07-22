@@ -604,6 +604,18 @@ Controllers =
 			refreshScope $scope
 			return
 
+		s = textReplacements
+		$scope.photoDefaultName = s("Photos de profil")
+
+		$scope.setAsProfilePhoto = ->
+			Ajax.post '/user/profile/photo',
+				data:
+					photoId: $scope.loadedMedia.id
+				sucess: (err, res) ->
+					return
+			return
+
+
 		window.loadMedia = (type, media, concerMe) ->
 			$scope.loadMedia type, media, concerMe
 			delay 1, ->
