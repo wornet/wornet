@@ -48,3 +48,73 @@ module.exports = (router) ->
 				next()
 		else
 			next()
+
+	router.post '/photo', (req, res) ->
+		photoId = req.data.photoId
+
+		end = (user) ->
+			delete user._id
+			extend req.user, user
+			extend req.session.user, user
+			res.json()
+
+		if photoId
+			parallel
+				album: (done) ->
+					Album.findOne
+						user: req.user._id
+						name: "Photos de profil"
+					, (err, album) ->
+						if !err and album
+							done null, album
+						else
+							done err
+				, photo: (done) ->
+					Photo.findOne
+						_id: photoId
+					, (err, photo) ->
+						if !err and photo
+							done null, photo
+						else
+							done err
+				, (results) ->
+					if equals results.photo.album, results.album.id
+						User.findOneAndUpdate
+							_id: req.user._id
+						,
+							photoId: photoId
+						, (err, user) ->
+							if err
+								warn err
+							else
+								end user.toObject()
+					else
+						photo = results.photo.toObject()
+						photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
+						addPhoto req, photo, null, (err, album, newPhoto) ->
+							parallel
+								user: (done) ->
+									User.findOneAndUpdate
+										_id: req.user._id
+									,
+										photoId: newPhoto._id
+									, (err, user) ->
+										if err
+											done err
+										else
+											done null, user
+								, photo: (done) ->
+									Photo.findOneAndUpdate
+										_id: newPhoto._id
+									,
+										status: "published"
+									,(err, photo) ->
+										if !err and photo
+											done null, photo
+										else
+											done err
+								, (results) ->
+									end results.user.toObject()
+
+		else
+			res.serverError new PublicError s('Aucune photo selectionnée.')
