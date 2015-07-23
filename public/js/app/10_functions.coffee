@@ -521,6 +521,23 @@ readNotification = (id) ->
 mp3 = (name) ->
 	"/resources/mp3/"+name+".mp3"
 
+infoDialog = (title, message, done) ->
+	s = textReplacements
+	bootbox.dialog
+		message: '<i class="glyphicon glyphicon-info-sign" />&nbsp;' + message,
+		title: title,
+		buttons:
+			main:
+				label: "Confirmer",
+				className: "btn-primary",
+				callback: ->
+					done true
+			cancel:
+				label: "Annuler",
+				className: "btn",
+				callback: ->
+					done false
+
 # Track an event and send it to analytics tools
 trackEvent = do ->
 	lastKey = ''

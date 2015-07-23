@@ -352,7 +352,7 @@ module.exports = (router) ->
 			res.notFound()
 
 	router.put '/album/add', (req, res) ->
-		if req.body.album and req.body.album.name is "Photos de profil"
+		if req.body.album and req.body.album.name is photoDefaultName()
 			res.serverError new PublicError s("Ce nom est reservé.")
 		else
 			# Create a new album

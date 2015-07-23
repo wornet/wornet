@@ -608,11 +608,16 @@ Controllers =
 		$scope.photoDefaultName = s("Photos de profil")
 
 		$scope.setAsProfilePhoto = ->
-			Ajax.post '/user/profile/photo',
-				data:
-					photoId: $scope.loadedMedia.id
-				sucess: (err, res) ->
-					return
+			s = textReplacements
+			infoDialog s("Changement de ta photo de profil"), s("Cette photo remplacera l'actuelle photo de profil !"), (ok) ->
+				if ok
+					$('#media-viewer [data-dismiss]:first').click()
+					Ajax.post '/user/profile/photo',
+						data: photoId: $scope.loadedMedia.id
+						success: (res) ->
+							if $('#profile-photo') and res and res.src
+								$('#profile-photo img').thumbSrc res.src
+							return
 			return
 
 
@@ -691,7 +696,7 @@ Controllers =
 
 			Ajax.post 'user/chat/sound',
 				data: chatSound: idSound
-				sucess: (res) ->
+				success: (res) ->
 					return
 			return
 
@@ -1044,7 +1049,7 @@ Controllers =
 			Ajax.post '/user/comment',
 				data:
 					comment: comment
-				sucess: updateCommentList
+				success: updateCommentList
 			return
 
 		$scope.loadMedia = (type, media) ->

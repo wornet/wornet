@@ -27,7 +27,7 @@
 			| &nbsp; | &nbsp; 
 		.date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
 			|&nbsp;
-		.large-dropdown.settings
+		.large-dropdown.settings(ng-if="loadedMedia.concernMe")
 			a.dropdown-toggle(href="#" data-toggle="dropdown")
 				+glyph('cog')
 			ul.dropdown-menu(role="menu")
@@ -36,7 +36,7 @@
 						+glyph('wrench')
 						| &nbsp;
 						=s("Définir comme photo de profil")
-				li(ng-if="loadedMedia.concernMe")
+				li
 					a(ng-click="deleteMedia()")
 						+glyph('trash')
 						| &nbsp;
