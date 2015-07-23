@@ -52,11 +52,11 @@ module.exports = (router) ->
 	router.post '/photo', (req, res) ->
 		photoId = req.data.photoId
 
-		end = (user) ->
+		end = (user, newSrc) ->
 			delete user._id
 			extend req.user, user
 			extend req.session.user, user
-			res.json()
+			res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
 		if photoId
 			parallel
@@ -78,6 +78,8 @@ module.exports = (router) ->
 						else
 							done err
 				, (results) ->
+					photo = results.photo.toObject()
+					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
 						User.findOneAndUpdate
 							_id: req.user._id
@@ -87,10 +89,8 @@ module.exports = (router) ->
 							if err
 								warn err
 							else
-								end user.toObject()
+								end user.toObject(), photo.path
 					else
-						photo = results.photo.toObject()
-						photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 						addPhoto req, photo, null, (err, album, newPhoto) ->
 							parallel
 								user: (done) ->
@@ -114,7 +114,7 @@ module.exports = (router) ->
 										else
 											done err
 								, (results) ->
-									end results.user.toObject()
+									end results.user.toObject(), photo.path
 
 		else
 			res.serverError new PublicError s('Aucune photo selectionnée.')
