@@ -64,7 +64,7 @@ module.exports = (router) ->
 				album: (done) ->
 					Album.findOne
 						user: req.user._id
-						name: "Photos de profil"
+						name: photoDefaultName()
 					, (err, album) ->
 						if !err and album
 							done null, album
