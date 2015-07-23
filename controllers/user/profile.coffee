@@ -56,6 +56,7 @@ module.exports = (router) ->
 			delete user._id
 			extend req.user, user
 			extend req.session.user, user
+			req.cacheFlush 'user'
 			res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
 		if photoId
@@ -92,29 +93,35 @@ module.exports = (router) ->
 								end user.toObject(), photo.path
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
-							parallel
-								user: (done) ->
-									User.findOneAndUpdate
-										_id: req.user._id
-									,
-										photoId: newPhoto._id
-									, (err, user) ->
-										if err
-											done err
-										else
-											done null, user
-								, photo: (done) ->
-									Photo.findOneAndUpdate
-										_id: newPhoto._id
-									,
-										status: "published"
-									,(err, photo) ->
-										if !err and photo
-											done null, photo
-										else
-											done err
-								, (results) ->
-									end results.user.toObject(), photo.path
-
+							if err
+								res.serverError err
+							else
+								parallel
+									user: (done) ->
+										User.findOneAndUpdate
+											_id: req.user._id
+										,
+											photoId: newPhoto._id
+										, (err, user) ->
+											if err
+												done err
+											else
+												done null, user
+									, photo: (done) ->
+										Photo.findOneAndUpdate
+											_id: newPhoto._id
+										,
+											status: "published"
+										,(err, photo) ->
+											if !err and photo
+												done null, photo
+											else
+												done err
+									, (results) ->
+										end results.user.toObject(), photo.path
+									, (err) ->
+										res.serverError err
+				, (err) ->
+					res.serverError err
 		else
 			res.serverError new PublicError s('Aucune photo selectionnée.')
