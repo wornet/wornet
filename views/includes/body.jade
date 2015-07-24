@@ -19,17 +19,21 @@
 					=error
 
 	div(role="main")
+		+simpleModal(s("Mentions légales"))#legals: p
+			!=mdIncludeLangFile('cgu')
 		block body
 
 
 block footer
+	+simpleModal(s("Mentions légales"))#legals: p
+		!=mdIncludeLangFile('cgu')
 	footer
 		.row.col-sm-8
 			a.link.col-sm-3.col-xs-4(href="http://blog.wornet.fr/")
 				=s("Blog")
 			//- a.link.col-sm-3.col-xs-6(href="/jobs")
 				=s("Offres d'emplois")
-			a.link.col-sm-3.col-xs-4(href="/legals")
+			a.link.col-sm-3.col-xs-4(data-toggle="modal" data-target="#legals")
 				=s("Mentions légales")
 			span.copytag.col-sm-3.col-xs-4(data="right")
 				!=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
