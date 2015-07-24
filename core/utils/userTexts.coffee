@@ -12,6 +12,10 @@ module.exports = ->
 
 	firstName: s("Prénom")
 	lastName: s("Nom")
+	sex: s("Sexe")
+	chooseSex: s("Choisissez votre sexe")
+	man: s("Homme")
+	woman: s("Femme")
 	birthDate: s("Date de naissance")
 	confidentialityBirthDate: s("Masquer votre date de naissance")
 	email: s("Adresse e-mail")

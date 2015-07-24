@@ -176,5 +176,10 @@
 				h5
 					=userTexts.biography
 				p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
-					=profile.biography
+					=profile.biography	
+			if user.sex == "default" && isMe
+				.col-xs-12.alert.alert-info.missing-sex: span
+					=s("Vous n'avez pas renseigné votre sexe, vous pouvez le faire ")	
+					a(href="user/settings")
+						=s("dès à présent !")
 	.cb

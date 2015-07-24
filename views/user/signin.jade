@@ -64,20 +64,29 @@ block body
 							"right"
 						]).flash
 				.col-sm-6.col-xs-12
-					+formControl("name.fisrt")(
-						required
-						title=userTexts.firstName
-						pattern=pattern('simple-text')
-						ng-model="user.name.first"
-						name="name.first"
-						placeholder=userTexts.firstName).flash
-					+formControl("name.last")(
-						required
-						title=userTexts.lastName
-						pattern=pattern('simple-text')
-						ng-model="user.name.last"
-						name="name.last"
-						placeholder=userTexts.lastName).flash
+					.col-sm-6.col-xs-12.firstName
+						+formControl("name.fisrt")(
+							required
+							title=userTexts.firstName
+							pattern=pattern('simple-text')
+							ng-model="user.name.first"
+							name="name.first"
+							placeholder=userTexts.firstName).flash
+					.col-sm-6.col-xs-12.lastName
+						+formControl("name.last")(
+							required
+							title=userTexts.lastName
+							pattern=pattern('simple-text')
+							ng-model="user.name.last"
+							name="name.last"
+							placeholder=userTexts.lastName).flash
+					select.form-control(autocomplete="off" required name="sex")
+						option(value="" selected)
+							=userTexts.chooseSex
+						option(value="man")
+							=userTexts.man
+						option(value="woman")
+							=userTexts.woman	
 					+formControl("birthDate")(
 						required
 						type="date"

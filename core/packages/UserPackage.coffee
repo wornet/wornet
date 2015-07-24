@@ -340,7 +340,7 @@ UserPackage =
 				when 'email', 'password'
 					if val?
 						userModifications[key] = val
-				when 'city', 'birthCity', 'job', 'jobPlace', 'biography'
+				when 'city', 'birthCity', 'job', 'jobPlace', 'biography', 'sex'
 					userModifications[key] = val
 		userModifications
 
