@@ -38,8 +38,8 @@ CommentPackage =
 								unless [null, hashedIdAuthor, hashedIdUser].contains at
 									usersToNotify.push at
 								@propagate comment, at || hashedIdAuthor
-								unless empty usersToNotify
-									@notify usersToNotify, status, req.user, comment
+
+								@notify usersToNotify, status, req.user, comment
 
 								@getRecentCommentForRequest req, res, [status._id], done
 			catch err
