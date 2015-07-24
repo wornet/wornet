@@ -220,6 +220,7 @@ StatusPackage =
 	propagate: (status) ->
 		place = status.at or status.author
 		place = place.hashedId or place
+		status.nbLike = 0
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
