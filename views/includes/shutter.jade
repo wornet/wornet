@@ -10,12 +10,12 @@
 		| &nbsp; 
 		=s("Espace personnel")
 
-	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2016"))
+	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2016-2017"))
 		+glyph('envelope')
 		| &nbsp; 
 		=s("Espace professionnel")
 
-	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2017"))
+	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2017-2018"))
 		+glyph('camera')
 		| &nbsp; 
 		=s("Dailycapture")
@@ -26,5 +26,5 @@
 		a(href="http://blog.wornet.fr/")
 			=s("Blog")
 		| &nbsp;| &nbsp;
-		a(href="/legals")
+		a.legals(data-toggle="modal" data-target="#legals")
 			=s("Mentions légales")
