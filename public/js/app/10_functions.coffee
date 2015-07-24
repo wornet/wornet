@@ -300,7 +300,7 @@ do =>
 
 	key = (chat) ->
 		k = ''
-		for user of chat.users
+		for user in chat.users
 			for i, c of user.hashedId
 				if i%3
 					k += c
