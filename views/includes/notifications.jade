@@ -24,16 +24,15 @@ mixin notifications(classes, mobile)
 						|&nbsp;
 					| &nbsp; 
 				a(ng-switch-when="askForFriend" href="/notification/{{ ifId(notification[0], $index) }}" class="friend-ask" ng-attr-data-id="{{ notification[2] }}")
+					img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].name.full }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].name.full }}").thumb
+					=" "
+					- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
+					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					.notification-date: i.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					| &nbsp; 
-					img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].name.full }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].name.full }}").thumb
-					=" "
-					- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
-					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-					br
 					.btn.accept-friend
 						=s("Accepter")
 					| &nbsp; 
