@@ -18,6 +18,15 @@ userSchema = BaseSchema.extend
 			]
 			trim: true
 			required: true
+	sex:
+		type: String
+		enum: [
+			'default'
+			'man'
+			'woman'
+		]
+		required: true
+		default: 'default'
 	password:
 		type: String
 		required: true
@@ -249,6 +258,7 @@ extend userSchema.methods,
 		informations.name.full = @name.full
 		informations.points = @points || 0
 		informations.chatSound = @chatSound
+		informations.sex = @sex
 		informations
 
 	sha1Fallback: (plainText) ->

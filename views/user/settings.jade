@@ -11,11 +11,21 @@ block body
 				label
 					span
 						=userTexts.firstName
-					+formControl(name="name.first" value=user.firstName)
+					+formControl(name="name.first" value=user.firstName required)
 				label
 					span
 						=userTexts.lastName
-					+formControl(name="name.last" value=user.lastName)
+					+formControl(name="name.last" value=user.lastName required)
+				label
+					span
+						=userTexts.sex
+					select.form-control(autocomplete="off" value=user.sex required name="sex")
+						option(value="" selected=(user.sex=="default"))
+							=userTexts.chooseSex
+						option(value="man" selected=(user.sex=="man"))
+							=userTexts.man
+						option(value="woman" selected=(user.sex=="woman"))
+							=userTexts.woman	
 				label
 					span
 						=userTexts.birthDate

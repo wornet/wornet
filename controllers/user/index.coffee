@@ -87,6 +87,7 @@ module.exports = (router) ->
 					registerDate: new Date
 					email: req.body.email
 					password: req.body.password
+					sex: req.body.sex
 					birthDate: inputDate req.body.birthDate
 				, (saveErr, user) ->
 					if saveErr
