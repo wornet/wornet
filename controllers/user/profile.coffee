@@ -52,15 +52,15 @@ module.exports = (router) ->
 	router.post '/photo', (req, res) ->
 		photoId = req.data.photoId
 
-		end = (user, newSrc) ->
-			delete user._id
-			extend req.user, user
-			extend req.session.user, user
-			req.session.save()
-			req.cacheFlush 'user'
-			res.json src: newSrc.substr(newSrc.indexOf('/img'))
-
 		if photoId
+			end = (user, newSrc) ->
+				delete user._id
+				req.user.photoId = photoId
+				req.session.user.photoId = photoId
+				req.session.save()
+				req.cacheFlush 'user'
+				res.json src: newSrc.substr(newSrc.indexOf('/img'))
+
 			parallel
 				album: (done) ->
 					Album.findOne
