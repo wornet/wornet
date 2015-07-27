@@ -66,6 +66,28 @@ module.exports = (router) ->
 					req.session.friends = req.user.friends
 					req.session.user.numberOfFriends = req.session.user.friends.length
 
+					Notice.find
+						type: 'friendAccepted'
+						$or: [
+							launcher: me
+							place: him
+						,
+							launcher: him
+							place: me
+						,
+							launcher: him
+							place: him
+						,
+							launcher: me
+							place: me
+						]
+					, (err, notices) ->
+						for notice in notices
+							if notice.createdAt > (new Date).subDays 7
+								notice.remove()
+						if err
+							res.serverError err
+
 	# Without AJAX
 	router.get '/:id/:name', (req, res) ->
 		# When user ask some other user for friend

@@ -73,7 +73,7 @@ NoticePackage =
 	notify: (userIds, err, groupData, appendOtherUsers = false) ->
 		self = @
 		# stack = (new Error()).stack
-		Notice.remove created_at: $lt: (new Date).subMonths 6
+		Notice.remove createdAt: $lt: (new Date).subMonths 6
 		userIds.each ->
 			userId = strval @
 			if /^[0-9a-f]+$/ig.test userId

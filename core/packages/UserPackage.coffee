@@ -214,7 +214,7 @@ UserPackage =
 											addFriend: user
 											user: user.publicInformations()
 											notification: notice
-											notice: [notice]
+											notice: [notice, 'friendAccepted', me, null, user]
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
