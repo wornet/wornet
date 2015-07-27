@@ -45,9 +45,12 @@ statusSchema.pre 'remove', (next) ->
 	parallelRemove [
 		Comment
 		attachedStatus: @id
-	,
+	], [
 		PlusW
 		status: @id
+	], [
+		Notice
+		attachedStatus: @id
 	], next
 
 
