@@ -56,6 +56,7 @@ module.exports = (router) ->
 			delete user._id
 			extend req.user, user
 			extend req.session.user, user
+			req.session.save()
 			req.cacheFlush 'user'
 			res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
