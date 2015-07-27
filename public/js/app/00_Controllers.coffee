@@ -943,8 +943,7 @@ Controllers =
 						.parents('.status-block:first').slideUp ->
 							$(@).remove()
 							return
-					medias = {images:status.images, videos:status.videos, links:status.links}
-					$('.points').trigger 'updatePoints', [status, medias, false]
+					$('.points').trigger 'updatePoints', [status, false]
 					Ajax.delete '/user/status/' + status._id, ->
 						if status.images and status.images.length
 							delay 600, refreshMediaAlbums
@@ -996,13 +995,14 @@ Controllers =
 
 		$scope.send = (status) ->
 			scanAllLinks status.content || ''
-			$('.points').trigger 'updatePoints', [status, $scope.medias, true]
+
 			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
 				data:
 					status: status
 					at: at
 					medias: $scope.medias || null
 				success: (data) ->
+					$('.points').trigger 'updatePoints', [data.newStatus, true]
 					setRecentStatus data
 					refreshMediaAlbums()
 			status.content = ""

@@ -703,14 +703,14 @@ do ->
 		[
 			'updatePoints'
 			'.points'
-			($span, e, status, medias, adding) ->
+			($span, e, status, adding) ->
 				if status and status.author
 					if getData('at') is getData('me') and status.author.hashedId is getData('me')
 						s = textReplacements
 						points = 1 #simple status
-						if medias.images and medias.images.length > 0
+						if status.images and status.images.length > 0
 							points = 2 #status with photo
-						if medias.videos and medias.videos.length > 0
+						if status.videos and status.videos.length > 0
 							points = 3 if points = 1 #status with video but without photo
 							points = 4 if points = 2 #status with video and photo
 
