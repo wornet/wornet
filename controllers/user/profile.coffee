@@ -60,6 +60,7 @@ module.exports = (router) ->
 				# req.session.save()
 				# req.cacheFlush 'user'
 				# updateUser req.user, photoId: photoId, () ->
+				req.session.save()
 				res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
 			parallel
