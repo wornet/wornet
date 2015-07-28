@@ -68,7 +68,7 @@ StatusPackage =
 												tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
 											for like in result
 												tabLike[like.status].nbLike++
-												if equals id, like.user
+												if equals req.user.id, like.user
 													tabLike[like.status].likedByMe = true
 
 											recentStatus.each ->
