@@ -54,13 +54,10 @@ module.exports = (router) ->
 
 		if photoId
 			end = (newSrc) ->
-				# delete user._id
-				# req.user.photoId = photoId
-				# req.session.user.photoId = photoId
-				# req.session.save()
-				# req.cacheFlush 'user'
-				# updateUser req.user, photoId: photoId, () ->
-				req.session.save()
+				req.session.reload ->
+					req.user.photoId = photoId
+					req.session.user.photoId = photoId
+					req.session.save()
 				res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
 			parallel
@@ -85,15 +82,6 @@ module.exports = (router) ->
 					photo = results.photo.toObject()
 					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						# User.findOneAndUpdate
-						# 	_id: req.user._id
-						# ,
-						# 	photoId: photoId
-						# , (err, user) ->
-						# 	if err
-						# 		warn err
-						# 	else
-						# 		end user.toObject(), photo.path
 						updateUser req.session.user, photoId: photoId, () ->
 							end photo.path
 					else
@@ -103,15 +91,6 @@ module.exports = (router) ->
 							else
 								parallel
 									user: (done) ->
-										# User.findOneAndUpdate
-										# 	_id: req.user._id
-										# ,
-										# 	photoId: newPhoto._id
-										# , (err, user) ->
-										# 	if err
-										# 		done err
-										# 	else
-										# 		done null, user
 										updateUser req.session.user, photoId: photoId, done
 									, photo: (done) ->
 										Photo.findOneAndUpdate
