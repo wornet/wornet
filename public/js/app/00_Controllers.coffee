@@ -371,7 +371,11 @@ Controllers =
 								$(@).remove()
 								return
 			return
-		window.chatListScope = $scope
+		
+		Ajax.get '/user/chat/list', (chat) ->
+			$scope.chatList = chat.chatList
+			refreshScope $scope
+
 		return
 
 	LoginAndSignin: ($scope) ->
