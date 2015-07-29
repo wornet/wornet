@@ -31,7 +31,15 @@ ChatPackage =
 								if err
 									next err
 								else
+									# if we have received a message and we have never respond
+									# so, the chat go only in one direction
+									if !recipients || !recipients.length
+										for mess in messages
+											if ids.contains(mess.id, equals) and !userIds.contains mess.author
+												userIds.push mess.author
+
 									userIds.merge recipients.column('recipient').map strval
+
 									req.getUsersByIds userIds, (err, usersMap) ->
 										if err
 											log
@@ -59,6 +67,15 @@ ChatPackage =
 													message
 												.filter (message) ->
 													! message.invalid
+												.sort (a,b) ->
+													da = Date.fromId a.id
+													db = Date.fromId b.id
+													if da > db
+														1
+													else if da < db
+														-1
+													else
+														0
 						else
 							next null, []
 
