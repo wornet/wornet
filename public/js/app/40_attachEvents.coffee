@@ -723,14 +723,6 @@ do ->
 						$('.points').html s("{points} point|{points} points", { points: '<b>' + newPoints + '</b>' }, newPoints)
 		]
 		[
-			'tap'
-			'.open-chat-list'
-			($span, e) ->
-				Ajax.get '/user/chat/list', (chat) ->
-					chatListScope.chatList = chat.chatList
-					refreshScope chatListScope
-		]
-		[
 			'focus'
 			'.chat textarea'
 			($field, e) ->
