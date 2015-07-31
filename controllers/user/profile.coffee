@@ -54,8 +54,6 @@ module.exports = (router) ->
 
 		if photoId
 			end = (newSrc) ->
-				req.user.photoId = photoId
-				req.session.user.photoId = photoId
 				req.session.save (err) ->
 					res.json src: newSrc.substr(newSrc.indexOf('/img'))
 
@@ -81,7 +79,7 @@ module.exports = (router) ->
 					photo = results.photo.toObject()
 					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						updateUser req.session.user, photoId: photoId, () ->
+						updateUser req, photoId: photoId, () ->
 							end photo.path
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
@@ -90,7 +88,7 @@ module.exports = (router) ->
 							else
 								parallel
 									user: (done) ->
-										updateUser req.session.user, photoId: photoId, done
+										updateUser req, photoId: photoId, done
 									, photo: (done) ->
 										Photo.findOneAndUpdate
 											_id: newPhoto._id
