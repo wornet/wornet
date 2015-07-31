@@ -460,13 +460,13 @@ module.exports = (router) ->
 							info.album =
 								id: album._id
 								name: album.name
-						count++
-						PhotoPackage.fromAlbum album.id, (err, photos) ->
-							if err
-								photos = []
-							info.album.photos = photos
+							count++
+							PhotoPackage.fromAlbum album.id, (err, photos) ->
+								if err
+									photos = []
+								info.album.photos = photos
+								next()
 							next()
-						next()
 				if photo.user
 					count++
 					req.getUserById photo.user, (err, user) ->
