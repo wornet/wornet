@@ -28,7 +28,7 @@ StringUtils =
 	endWith: (needle) ->
 		@length > needle.length and @substr(-needle.length) is needle
 
-	ucFirst: () ->
+	ucFirst: ->
 		if @length
 			@[0].toUpperCase() + @.substring 1
 

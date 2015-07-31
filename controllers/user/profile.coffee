@@ -67,7 +67,7 @@ module.exports = (router) ->
 							done null, album
 						else
 							done err
-				, photo: (done) ->
+				photo: (done) ->
 					Photo.findOne
 						_id: photoId
 					, (err, photo) ->
@@ -79,7 +79,7 @@ module.exports = (router) ->
 					photo = results.photo.toObject()
 					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						updateUser req, photoId: photoId, () ->
+						updateUser req, photoId: photoId, ->
 							end photo.path
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
@@ -89,7 +89,7 @@ module.exports = (router) ->
 								parallel
 									user: (done) ->
 										updateUser req, photoId: photoId, done
-									, photo: (done) ->
+									photo: (done) ->
 										Photo.findOneAndUpdate
 											_id: newPhoto._id
 										,
