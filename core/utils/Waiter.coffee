@@ -62,7 +62,7 @@ class Waiter
 								req.session.user.friendAsks = req.user.friendAsks
 								req.session.friendAsks = req.user.friendAsks
 								req.session.notifications = (req.session.notifications || []).filter (data) ->
-									unless data[1]
+									unless data and data[1]
 										warn JSON.stringify(data) + ' does not contains [1] entry.'
 										false
 									else if typeof data[1] isnt 'object' or typeof data[1].hashedId is 'undefined'
