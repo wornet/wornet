@@ -477,10 +477,14 @@ module.exports =
 	@return int length
 	###
 	count: (arr, warnOnError = false) ->
-		intval if arr.length
-			arr.length
-		else if arr.getLength
-			arr.getLength()
+		if arr
+			intval if arr.length
+				arr.length
+			else if arr.getLength
+				arr.getLength()
+			else
+				warn "no length or getLength on " + arr if warnOnError
+				0
 		else
 			warn "no length or getLength on " + arr if warnOnError
 			0
