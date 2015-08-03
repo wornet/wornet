@@ -921,6 +921,15 @@ module.exports =
 		err
 
 	###
+	Prepend .mobile to path extension
+	@param string original path
+
+	@return string mobile path
+	###
+	mobilePath: (path) ->
+		path.replace /(\.[^\.]+$)/g, '.mobile$1'
+
+	###
 	Resize and save an image.
 	@param string source path
 	@param string destination path
@@ -929,12 +938,13 @@ module.exports =
 	###
 	resize: (src, dst, opts, done) ->
 		extend opts,
+			quality: .6
 			srcPath: src
 			dstPath: dst
 		imagemagick.resize opts, done
 		extend opts,
 			quality: .25
-			dstPath: dst.replace /(\.[^\.]+$)/g, '.mobile$1'
+			dstPath: mobilePath dst
 		imagemagick.resize opts, ->
 
 	###

@@ -54,7 +54,8 @@ module.exports = (app) ->
 					# delay 3000, done
 
 		userAgent = (req.getHeader 'user-agent') || ''
-		iosApp = (/Mobile\//.test userAgent) and (! /Safari\//.test userAgent)
+		isMobile = /Mobile[^a-zA-Z]/.test userAgent
+		iosApp = isMobile and ! /Safari\//.test userAgent
 		if req.urlWithoutParams is '/stat'
 			piwik = options.trackers().piwik
 			if piwik and piwik.target
@@ -151,6 +152,13 @@ module.exports = (app) ->
 					photoId = PhotoPackage.urlToId req.url
 					if photoId and PhotoPackage.restricted req, photoId
 						res.notFound()
+						return
+					if isMobile
+						path = mobilePath req.url
+						fs.exists __dirname + '/../../../public' + path, (exists) ->
+							if exists
+								req.url = path
+							done()
 						return
 				else if req.url.startWith '/fonts/glyphicons'
 					req.url = '/components/bootstrap' + req.url
