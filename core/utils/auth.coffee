@@ -7,7 +7,7 @@ Module that will handle our authentication tasks
 exports.remember = (res, id) ->
 	res.cookie config.wornet.remember.key, id,
 		maxAge: config.wornet.remember.ttl.days
-		httpOnly: false
+		httpOnly: true
 		signed: true
 
 # Get user id remembered with cookie

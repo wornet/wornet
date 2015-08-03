@@ -94,7 +94,7 @@
                         "secret": "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU",
                         "cookie": {
                             "path": "/",
-                            "httpOnly": false,
+                            "httpOnly": true,
                             "maxAge": null
                         },
                         "resave": true,

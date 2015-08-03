@@ -12,7 +12,7 @@ setCookie = (req, photoId, value, unset = false) ->
 		value = ''
 	req.res.cookie prefix + photoId, value,
 		domain: req
-		httpOnly: false
+		httpOnly: true
 		maxAge: maxAge
 		secure: (config.wornet.protocole is 'https')
 
