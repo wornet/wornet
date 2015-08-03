@@ -4,7 +4,7 @@ Controllers =
 
 		$scope.update = (album) ->
 
-			Ajax.post 'user/album/'+album.id,
+			Ajax.post 'user/album/' + album.id,
 				data: album
 				success: (data) ->
 					getAlbumsFromServer (err, albums) ->

@@ -60,8 +60,7 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
-						res.redirect './'
-						# res.json src: photo.photo
+						res.json src: photo.photo
 
 			parallel
 				album: (done) ->
