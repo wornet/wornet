@@ -539,7 +539,7 @@ infoDialog = (title, message, done) ->
 					done false
 
 template = do ->
-	version = $('link[href*="/app.css?"]').prop('href').split('?')[1]
+	version = $('link[href*="/app.css?"], link[href*="/all.css?"]').prop('href').split('?')[1]
 	(src) ->
 		'/template' + src + '?' + version
 
