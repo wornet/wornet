@@ -499,7 +499,7 @@ module.exports = (router) ->
 					warn data.error, req
 					done data
 				else unless (['image/png', 'image/jpeg']).contains image.type
-					data.error = "wrong-format"
+					data.error = "wrong-format : " + image.type
 					warn data.error, req
 					done data
 				else
