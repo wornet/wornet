@@ -538,6 +538,11 @@ infoDialog = (title, message, done) ->
 				callback: ->
 					done false
 
+template = do ->
+	version = $('link[href*="/app.css?"]').prop('href').split('?')[1]
+	(src) ->
+		'/template' + src + '?' + version
+
 # Track an event and send it to analytics tools
 trackEvent = do ->
 	lastKey = ''
