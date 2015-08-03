@@ -1,5 +1,14 @@
 'use strict'
 
+syncUserPhotos = (userModifications, photo) ->
+	userModifications.photoId = photo.id
+	userModifications.photo = photo.photo
+	userModifications.thumb = photo.thumb
+	for size in config.wornet.thumbSizes
+		userModifications['thumb' + size] = photo['thumb' + size]
+	PhotoPackage.forget req, photo.id
+	userModifications
+
 module.exports = (router) ->
 
 	router.get '', (req, res) ->
@@ -33,12 +42,7 @@ module.exports = (router) ->
 			options = safe: true
 			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
-					userModifications.photoId = photo.id
-					userModifications.photo = photo.photo
-					userModifications.thumb = photo.thumb
-					for size in config.wornet.thumbSizes
-						userModifications['thumb' + size] = photo['thumb' + size]
-					PhotoPackage.forget req, photo.id
+					syncUserPhotos userModifications, photo
 				else
 					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
 					delete userModifications.photoId
@@ -50,18 +54,12 @@ module.exports = (router) ->
 		photoId = req.data.photoId
 
 		if photoId
-			end = (newSrc) ->
-				PhotoPackage.forget req, photoId
-				updateUser req, photoId: photoId, (err) ->
+			end = (photo) ->
+				updateUser req, syncUserPhotos({}, photo), (err) ->
 					if err
 						res.serverError err
 					else
-						req.session.user.photoId = strval req.session.user.photoId
-						console['log'] ['before', req.session.user.photoId]
-						req.session.save ->
-							req.session.reload ->
-								console['log'] ['after', req.session.user.photoId]
-								res.json src: newSrc.substr newSrc.indexOf '/img'
+						res.json src: newSrc.substr newSrc.indexOf '/img'
 
 			parallel
 				album: (done) ->
@@ -82,10 +80,8 @@ module.exports = (router) ->
 						else
 							done err
 				, (results) ->
-					photo = results.photo.toObject()
-					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						end photo.path
+						end results.photo
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
 							if err
@@ -99,7 +95,7 @@ module.exports = (router) ->
 									if err
 										res.serverError err
 									else
-										end photo.path
+										end results.photo
 				, (err) ->
 					res.serverError err
 		else
