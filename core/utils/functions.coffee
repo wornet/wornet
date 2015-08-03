@@ -884,7 +884,6 @@ module.exports =
 			if object instanceof User
 				u = object
 			else
-				console['log'] [object.thumb50, object.photoId]
 				if object.thumb50
 					id = PhotoPackage.urlToId object.thumb50
 				u = new User
