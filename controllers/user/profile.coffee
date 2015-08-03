@@ -56,9 +56,9 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
-						log JSON.Stringify req.session.user, true, 2
+						log JSON.stringify req.session.user, true, 2
 						req.session.reload ->
-							log JSON.Stringify req.session.user, true, 2
+							log JSON.stringify req.session.user, true, 2
 							res.json src: newSrc.substr newSrc.indexOf '/img'
 
 			parallel
