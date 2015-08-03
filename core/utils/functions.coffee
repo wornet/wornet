@@ -851,16 +851,15 @@ module.exports =
 			req = null
 		else
 			user = req.user
-		for key, val of update
-			user[key] = val
 		try
 			User.updateById user._id, update, (err, resultUser) ->
 				unless err
 					extend user, update
 					if req
 						req.session.reload ->
-							extend req.user, update
-							extend req.session.user, update
+							for key, val of update
+								req.user[key] = resultUser[key]
+								req.session.user[key] = resultUser[key]
 							req.session.save()
 				done err, resultUser
 		catch err
