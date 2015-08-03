@@ -54,8 +54,8 @@ module.exports = (app) ->
 					# delay 3000, done
 
 		userAgent = (req.getHeader 'user-agent') || ''
-		isMobile = /Mobile[^a-zA-Z]/.test userAgent
-		iosApp = isMobile and ! /Safari\//.test userAgent
+		isMobile = -1 isnt userAgent.indexOf 'Mobile'
+		iosApp = isMobile and -1 is userAgent.indexOf 'Safari/'
 		if req.urlWithoutParams is '/stat'
 			piwik = options.trackers().piwik
 			if piwik and piwik.target
