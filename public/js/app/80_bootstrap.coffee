@@ -123,6 +123,7 @@ ControllersByService =
 	smiliesService: 'Status'
 	statusService: 'Status'
 	$sce: 'Notifications'
+	$http: 'Event'
 
 # Load controllers
 for controller, method of Controllers

@@ -25,13 +25,13 @@
 	z-index 1030
 
 #wrap
-#wornet-navbar
+.wornet-navbar
 	transition margin-right .2s
 
 	&.opened-shutter
 		margin-right 300px
 
-#wornet-navbar
+.wornet-navbar
 	font-size 14px
 	background $orange
 	height $headerHeight
@@ -267,9 +267,9 @@
 			margin-left -28px
 
 @media (min-width: 768px) and (orientation: portrait)
-	#wornet-navbar.opened-shutter
-		margin 0
-	#wornet-navbar
+	.wornet-navbar
+		&.opened-shutter
+			margin 0
 		li.open-shutter
 			display none
 	#wrap.opened-shutter
@@ -303,7 +303,7 @@
 				top -23px
 				float right
 
-	#wornet-navbar
+	.wornet-navbar
 		&.opened-shutter
 			margin 0
 		.mobile-device

@@ -371,12 +371,33 @@ Controllers =
 								$(@).remove()
 								return
 			return
-		
+
 		Ajax.get '/user/chat/list', (chat) ->
 			$scope.chatList = chat.chatList
 			refreshScope $scope
 
 		return
+
+	Event: ($scope, $http) ->
+		isMobile = ->
+			if window.matchMedia
+				!! window.matchMedia("(max-width:767px)").matches
+			else
+				window.innerWidth < 768
+		loadTemplate = ->
+			$scope.template = template (if isMobile()
+				'/mobile'
+			else
+				''
+			) + '/event'
+			refreshScope $scope
+
+		$http.get('/event/123')
+			.then (data) ->
+				$scope.event = data.data.event
+				refreshScope $scope
+
+		onResize loadTemplate
 
 	LoginAndSignin: ($scope) ->
 		keepTipedModel $scope, '#login-signin', 'user'
