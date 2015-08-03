@@ -33,16 +33,12 @@ block body
 							+link(app.url)
 						p
 							=app.description
-						p
-							=colon(s("Clé publique"))
-							b=app.publicKey
-						p
-							=(new Buffer(app.publicKey, 'base64')).toString()
-						p
-							=app.id
-						p
-							=colon(s("Clé secrète"))
-							b=app.secretKey
+						//- p
+						//- 	=colon(s("Clé publique"))
+						//- 	b=app.publicKey
+						//- p
+						//- 	=colon(s("Clé secrète"))
+						//- 	b=app.secretKey
 					+form("/user/app/" + app.publicKey)(ng-if="edited('" + app.publicKey + "')")
 						+formControl("text")(ng-model="app.name" name="name" placeholder=s("Nom de l'application"))
 						+formControl("url")(ng-model="app.url" name="url" placeholder=s("Adresse URL"))
