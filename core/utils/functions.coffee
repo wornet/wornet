@@ -859,7 +859,6 @@ module.exports =
 						for key, val of update
 							req.user[key] = resultUser[key]
 							req.session.user[key] = resultUser[key]
-							log req.session.user
 				done err, resultUser
 		catch err
 			done err

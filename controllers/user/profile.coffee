@@ -51,6 +51,7 @@ module.exports = (router) ->
 
 		if photoId
 			end = (newSrc) ->
+				PhotoPackage.forget req, photoId
 				updateUser req, photoId: photoId, (err) ->
 					if err
 						res.serverError err
