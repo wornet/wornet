@@ -851,8 +851,8 @@ module.exports =
 			req = null
 		else
 			user = req.user
-		# for key, val of update
-		# 	user[key] = val
+		for key, val of update
+			user[key] = val
 		try
 			User.updateById user._id, update, (err, resultUser) ->
 				unless err
