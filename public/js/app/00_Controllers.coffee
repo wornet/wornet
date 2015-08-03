@@ -708,6 +708,9 @@ Controllers =
 	Notifications: ($scope, notificationsService, $sce) ->
 		$scope.notifications = {}
 
+		ids = $('.notifications li[data-id]').map ->
+			$(@).data 'id'
+
 		$scope.ifId = (id, defaultValue) ->
 			if /^[0-9a-fA-F]+$/g.test id
 				id
@@ -719,14 +722,15 @@ Controllers =
 
 		$scope.$on 'receiveNotification', (e, notification) ->
 			id = notification.id || notification[0]
-			unless $scope.notifications[id]
+			unless $scope.notifications[id] or id in ids
 				$scope.notifications[id] = notification
 				refreshScope $scope
 				delay 1, refreshPill
 			return
 
 		$scope.$on 'setNotifications', (e, notifications) ->
-			$scope.notifications = notifications
+			$scope.notifications = notifications.filter (notification) ->
+				! notification[0] in ids
 			refreshScope $scope
 			delay 1, refreshPill
 			return
