@@ -11,7 +11,11 @@ StatusPackage =
 			if data.recentStatus and data.chat
 				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
-				res.json data
+				warn data
+				if res.endAt
+					warn res.endAt + JSON.stringify data, true, 2
+				else
+					res.json data
 		nextWithSession = ->
 			req.session.save (err) ->
 				warn err if err
