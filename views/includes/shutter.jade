@@ -1,4 +1,4 @@
-#shutter(class=(user.openedShutter ? 'opened-shutter' : null)): .inner-shutter
+#shutter(class=(user && user.openedShutter ? 'opened-shutter' : null)): .inner-shutter
 	ul.nav
 		li: a(href="/user/settings")
 			=s("Paramètres")

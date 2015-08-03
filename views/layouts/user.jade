@@ -3,52 +3,53 @@ extends ../layouts/wornet
 include ../includes/notifications
 
 mixin friends(classes, mobile)
-	- var loggedFriends = user.friends.find({ present: true })
-	- classes += " " + (mobile?"loggedFriends-mobile":"loggedFriends nav right")
-	ul(class=classes): li
-		a.dropdown-toggle( data-toggle="dropdown")
-			span
-				if mobile
-					+glyph('user')
-					span.pill.mobile-pill
-						=loggedFriends.length
-				else
-					=s("Amis connectés")
-					| &nbsp; 
-					span.pill
-						=loggedFriends.length
-		ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl" ng-init="selectedSound = " + JSON.stringify(user.chatSound))
-			if loggedFriends.length > 0
-				each friend, id in loggedFriends
-					- friend = objectToUser(friend).publicInformations()
-					li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
-						img.thumb(src=friend.thumb50 alt=friend.name.full)
+	if user
+		- var loggedFriends = user.friends.find({ present: true })
+		- classes += " " + (mobile?"loggedFriends-mobile":"loggedFriends nav right")
+		ul(class=classes): li
+			a.dropdown-toggle( data-toggle="dropdown")
+				span
+					if mobile
+						+glyph('user')
+						span.pill.mobile-pill
+							=loggedFriends.length
+					else
+						=s("Amis connectés")
 						| &nbsp; 
-						span.user-name
-							=friend.name.full
-						| &nbsp; 
-						+glyph('comment')
-			if !mobile
-				li.divider(ng-if="supportAudio" role="separator")
-				li.select-chat-sound(ng-if="supportAudio")
-					a(ng-click="selectChatSound($event, 0)")
-						span(ng-if="selectedSound == 0")
-							+glyph('ok-circle')
+						span.pill
+							=loggedFriends.length
+			ul.dropdown-menu.loggedFriends-list.right(role='menu' ng-controller="ProfileCtrl" ng-init="selectedSound = " + JSON.stringify(user.chatSound))
+				if loggedFriends.length > 0
+					each friend, id in loggedFriends
+						- friend = objectToUser(friend).publicInformations()
+						li: a(ng-click="chatWith(" + JSON.stringify(friend) + ")")
+							img.thumb(src=friend.thumb50 alt=friend.name.full)
+							| &nbsp; 
+							span.user-name
+								=friend.name.full
+							| &nbsp; 
+							+glyph('comment')
+				if !mobile
+					li.divider(ng-if="supportAudio" role="separator")
+					li.select-chat-sound(ng-if="supportAudio")
+						a(ng-click="selectChatSound($event, 0)")
+							span(ng-if="selectedSound == 0")
+								+glyph('ok-circle')
+								| &nbsp;
+							+glyph('volume-off')
 							| &nbsp;
-						+glyph('volume-off')
-						| &nbsp;
-					a(ng-click="selectChatSound($event, 1)")
-						span(ng-if="selectedSound == 1")
-							+glyph('ok-circle')
-							| &nbsp;
-						+glyph('play')
-						=s("1")
-					a(ng-click="selectChatSound($event, 2)")
-						span(ng-if="selectedSound == 2")
-							+glyph('ok-circle')
-							| &nbsp;
-						+glyph('play')
-						=s("2")
+						a(ng-click="selectChatSound($event, 1)")
+							span(ng-if="selectedSound == 1")
+								+glyph('ok-circle')
+								| &nbsp;
+							+glyph('play')
+							=s("1")
+						a(ng-click="selectChatSound($event, 2)")
+							span(ng-if="selectedSound == 2")
+								+glyph('ok-circle')
+								| &nbsp;
+							+glyph('play')
+							=s("2")
 					
 					
 
@@ -60,7 +61,7 @@ block params
 
 block nav
 	include ../includes/shutter
-	#wornet-navbar.wornet-navbar.wornet-navbar-fixed-top.standard-device.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+	.wornet-navbar.wornet-navbar-fixed-top.standard-device.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		.wornet-navbar-header
 			h1.col-xs-12
 				!=upperTitle
@@ -97,8 +98,8 @@ block nav
 										=s("Mon agenda")
 							li: a(href="/user/logout")
 									=s("Déconnexion")
-	#wornet-navbar.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
-		.nav-icon.col-xs-2.col-xs-offset-1
+	.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+		.nav-icons.col-xs-2.col-xs-offset-1
 			a(href="/")
 				+glyph("home")
 		.nav-icon.col-xs-2

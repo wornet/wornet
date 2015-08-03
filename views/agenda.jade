@@ -7,7 +7,7 @@ block body
 	else
 		.container(ng-app)
 			section#directives-calendar(ng-controller='CalendarCtrl')
-				.well(class=(user.openedShutter ? "col-xs-9" : null)): .row-fluid
+				.well(class=(user && user.openedShutter ? "col-xs-9" : null)): .row-fluid
 					.col-sm-5
 						.btn-group.calTools
 							button.btn(type='button', ng-click='addEvent()')

@@ -424,6 +424,27 @@ Controllers =
 
 		return
 
+	Event: ($scope, $http) ->
+		isMobile = ->
+			if window.matchMedia
+				!! window.matchMedia("(max-width:767px)").matches
+			else
+				window.innerWidth < 768
+		loadTemplate = ->
+			$scope.template = template (if isMobile()
+				'/mobile'
+			else
+				''
+			) + '/event'
+			refreshScope $scope
+
+		$http.get('/event/123')
+			.then (data) ->
+				$scope.event = data.data.event
+				refreshScope $scope
+
+		onResize loadTemplate
+
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
