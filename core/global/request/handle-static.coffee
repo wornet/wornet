@@ -7,6 +7,17 @@ zlib = require 'zlib'
 
 module.exports = (app) ->
 
+	templates = []
+	fs.realpath __dirname + '/../../../views/templates', (err, dir) ->
+		unless err
+			glob dir + '/**', (err, _templates) ->
+				unless err
+					for path in _templates
+						do (path) ->
+							fs.stat path, (err, stat) ->
+								if ! err and stat.isFile()
+									templates.push path.substring dir.length, path.length - 5
+
 	# Before each request
 	app.use (req, res, done) ->
 
@@ -61,81 +72,92 @@ module.exports = (app) ->
 						warn err, req
 			else
 				res.notFound()
-		else if /^\/((img|js|css|fonts|components)\/|favicon\.ico)/.test req.originalUrl
+		else if /^\/((img|js|css|fonts|components|template)\/|favicon\.ico)/.test req.originalUrl
 			res.setHeader 'cache-control', 'max-age=' + 90.days + ', public'
 			req.isStatic = true
-			ie = userAgent.match /MSIE[\/\s]([0-9\.]+)/g
-			ie = if ie
-				intval ie[0].substr 5
-			else
-				0
-			req.ie = ie
-			req.iosApp = iosApp
-			methods =
-				js: uglifyJs
-				css: (str) ->
-					str
-						.replace /[\r\n\t]/g, ''
-						.replace /\s+([\}\{;:])\s*/g, '$1'
-						.replace /\s*([\}\{;:])\s+/g, '$1'
-						.replace /;\}/g, '}'
-			###
-			In production mode, all scripts are minified with UglifyJS and joined in /js/all.js
-			And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
-			###
-			for lang, method of methods
-				if req.urlWithoutParams is '/' + lang + '/all.' + lang
-					res.setTimeLimit 200
-					acceptEncoding = (req.getHeader 'accept-encoding') || ''
-					file = __dirname + '/../../../.build/' + lang + '/all' + (
-						if iosApp
-							'-ios-app'
-						else if ie
-							'-ie-' + ie
+			if req.urlWithoutParams.startWith '/template/'
+				template = req.urlWithoutParams.substr 9
+				if template in templates
+					fs.readFile __dirname + '/../../../views/templates' + template + '.jade', (err, contents) ->
+						if err
+							res.notFound()
 						else
-							''
-					) + '.' + lang
-					gzip = /\bgzip\b/.test acceptEncoding
-					if gzip
-						file += '.gz'
-						compressMethod = zlib.gzip.bind zlib
-					else
-						compressMethod = (content, done) ->
-							done null, content
-					res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
-					list = options['main' + ucfirst(lang)]()
-					fs.readFile file, do (method, list) ->
-						(err, content) ->
-							if err
-								concatCallback '', list, method, (content) ->
-									# content = uglifyJs content
-									compressMethod content, (err, compressedContent) ->
-										if compressedContent and ! err
-											if gzip
-												res.setHeader 'content-encoding', 'gzip'
-											res.end compressedContent
-											fs.writeFile file, compressedContent
-								,
-									ie: ie
-									iosApp: iosApp
-							else
-								if gzip
-									res.setHeader 'content-encoding', 'gzip'
-								res.end content
-					return
-			req.url = req.urlWithoutParams
-			if req.url.startWith '/img/photo/'
-				req.url = profilePhotoUrl req.url
-				photoId = PhotoPackage.urlToId req.url
-				if photoId and PhotoPackage.restricted req, photoId
+							res.end jd contents
+				else
 					res.notFound()
-					return
-			else if req.url.startWith '/fonts/glyphicons'
-				req.url = '/components/bootstrap' + req.url
-				# Allow cross-origin from all wornet.fr subdomains
-				res.header 'access-control-allow-origin', '*'
-				res.header 'access-control-allow-methods', 'GET'
-			done()
+			else
+				ie = userAgent.match /MSIE[\/\s]([0-9\.]+)/g
+				ie = if ie
+					intval ie[0].substr 5
+				else
+					0
+				req.ie = ie
+				req.iosApp = iosApp
+				methods =
+					js: uglifyJs
+					css: (str) ->
+						str
+							.replace /[\r\n\t]/g, ''
+							.replace /\s+([\}\{;:])\s*/g, '$1'
+							.replace /\s*([\}\{;:])\s+/g, '$1'
+							.replace /;\}/g, '}'
+				###
+				In production mode, all scripts are minified with UglifyJS and joined in /js/all.js
+				And all styles are minified with deleting \r, \n and \t and joined in /css/all.css
+				###
+				for lang, method of methods
+					if req.urlWithoutParams is '/' + lang + '/all.' + lang
+						res.setTimeLimit 200
+						acceptEncoding = (req.getHeader 'accept-encoding') || ''
+						file = __dirname + '/../../../.build/' + lang + '/all' + (
+							if iosApp
+								'-ios-app'
+							else if ie
+								'-ie-' + ie
+							else
+								''
+						) + '.' + lang
+						gzip = /\bgzip\b/.test acceptEncoding
+						if gzip
+							file += '.gz'
+							compressMethod = zlib.gzip.bind zlib
+						else
+							compressMethod = (content, done) ->
+								done null, content
+						res.setHeader 'content-type', 'text/' + (if lang is 'js' then 'javascript' else 'css') + '; charset=utf-8'
+						list = options['main' + ucfirst(lang)]()
+						fs.readFile file, do (method, list) ->
+							(err, content) ->
+								if err
+									concatCallback '', list, method, (content) ->
+										# content = uglifyJs content
+										compressMethod content, (err, compressedContent) ->
+											if compressedContent and ! err
+												if gzip
+													res.setHeader 'content-encoding', 'gzip'
+												res.end compressedContent
+												fs.writeFile file, compressedContent
+									,
+										ie: ie
+										iosApp: iosApp
+								else
+									if gzip
+										res.setHeader 'content-encoding', 'gzip'
+									res.end content
+						return
+				req.url = req.urlWithoutParams
+				if req.url.startWith '/img/photo/'
+					req.url = profilePhotoUrl req.url
+					photoId = PhotoPackage.urlToId req.url
+					if photoId and PhotoPackage.restricted req, photoId
+						res.notFound()
+						return
+				else if req.url.startWith '/fonts/glyphicons'
+					req.url = '/components/bootstrap' + req.url
+					# Allow cross-origin from all wornet.fr subdomains
+					res.header 'access-control-allow-origin', '*'
+					res.header 'access-control-allow-methods', 'GET'
+				done()
 		else
 			# Secure with basic authentification in requiered in config
 			if basicAuth
