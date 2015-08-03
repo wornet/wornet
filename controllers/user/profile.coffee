@@ -54,12 +54,11 @@ module.exports = (router) ->
 
 		if photoId
 			end = (newSrc) ->
-				req.session.reload (err) ->
-					warn err if err
-					updateUser req, photoId: photoId, ->
-						req.session.save (err) ->
-							warn err if err
-							res.json src: newSrc.substr newSrc.indexOf '/img'
+				updateUser req, photoId: photoId, (err) ->
+					if err
+						res.serverError
+					else
+						res.json src: newSrc.substr newSrc.indexOf '/img'
 
 			parallel
 				album: (done) ->
