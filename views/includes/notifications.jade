@@ -2,7 +2,7 @@ mixin notifications(classes, mobile)
 	- var notificationsCount = count(notifications, true)
 	- classes += " " + (mobile?"notifications-mobile":"notifications nav")
 	- var liClasses = (mobile?"":"btn-group")
-	ul(class=classes pill): li(class=liClasses)
+	ul(class=classes pill data-ids=Object.keys(notifications)): li(class=liClasses)
 		a.dropdown-toggle( data-toggle="dropdown")
 			if mobile
 				span.glyphicon.btn-notification-mobile
@@ -48,32 +48,31 @@ mixin notifications(classes, mobile)
 						| &nbsp; 
 			if notificationsCount > 0
 				each notification, id in notifications.lastest(config.wornet.limits.notifications)
-					if notification && notification.length && notification[0]
-						- var askingFriend = objectToUser(notification[1])
-						li(class=(notification.read ? 'read' : null) data-id=trim(notification[0], '"'))
-							a(href="/notification/" + (/^[0-9a-fA-F]+$/g.test(notification[0]) ? notification[0] : id) class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
-								if askingFriend && askingFriend.hashedId
-									img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
-									=" "
-									- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
-									span
-										!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-									| &nbsp;
-									i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
-										|&nbsp;
-									.notification-date: i.date(data-date=trim(notification[0], '"'))
-										|&nbsp;
-									| &nbsp;
-									.btn.accept-friend
-										=s("Accepter")
-									| &nbsp;
-									.btn.ignore-friend
-										=s("Ignorer")
-								else
-									!=(notification[1] || '').replace(/(\/img\/default-photo\.jpg)%3F/, '$1?')
+					- var askingFriend = objectToUser(notification[1])
+					li(class=(notification.read ? 'read' : null) data-id=trim(notification[0], '"'))
+						a(href="/notification/" + trim(notification[0], '"') class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+							if askingFriend && askingFriend.hashedId
+								img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
+								=" "
+								- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
+								span
+									!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+								| &nbsp;
+								i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
 									|&nbsp;
-									i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
-										|&nbsp;
-									.notification-date: i.date(data-date=trim(notification[0], '"'))
-										|&nbsp;
-									| &nbsp;
+								.notification-date: i.date(data-date=trim(notification[0], '"'))
+									|&nbsp;
+								| &nbsp;
+								.btn.accept-friend
+									=s("Accepter")
+								| &nbsp;
+								.btn.ignore-friend
+									=s("Ignorer")
+							else
+								!=(notification[1] || '').replace(/(\/img\/default-photo\.jpg)%3F/, '$1?')
+								|&nbsp;
+								i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
+									|&nbsp;
+								.notification-date: i.date(data-date=trim(notification[0], '"'))
+									|&nbsp;
+								| &nbsp;
