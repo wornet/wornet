@@ -56,10 +56,12 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
+						req.session.user.photoId = strval req.session.user.photoId
 						console['log'] ['before', req.session.user.photoId]
-						req.session.reload ->
-							console['log'] ['after', req.session.user.photoId]
-							res.json src: newSrc.substr newSrc.indexOf '/img'
+						req.session.save ->
+							req.session.reload ->
+								console['log'] ['after', req.session.user.photoId]
+								res.json src: newSrc.substr newSrc.indexOf '/img'
 
 			parallel
 				album: (done) ->
