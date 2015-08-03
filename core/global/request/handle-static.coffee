@@ -159,6 +159,19 @@ module.exports = (app) ->
 					res.header 'access-control-allow-methods', 'GET'
 				done()
 		else
+			save = req.session.save
+			reload = req.session.reload
+			now = time()
+			e = null
+			req.session.reload = ->
+				now = time()
+				e = new Error "reload"
+				reload.apply @, arguments
+			req.session.save = ->
+				elapsed = time() - now
+				if elapsed > 2.seconds
+					warn "Session sauvée après " + elapsed + "ms" + e.stack, req
+				save.apply @, arguments
 			# Secure with basic authentification in requiered in config
 			if basicAuth
 				saveUser = null

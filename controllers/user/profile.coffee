@@ -56,15 +56,11 @@ module.exports = (router) ->
 		if photoId
 			end = (photo) ->
 				PhotoPackage.forget req, photo.id
-				req.session.reload ->
-					req.session.user = extend {}, req.session.user
-					updateUser req, syncUserPhotos({}, photo), (err) ->
-						if err
-							res.serverError err
-						else
-							console['log'] [req.session.user.thumb50, req.session.user.photoId]
-							req.session.save ->
-								res.json src: photo.photo
+				updateUser req, syncUserPhotos({}, photo), (err) ->
+					if err
+						res.serverError err
+					else
+						res.json src: photo.photo
 
 			parallel
 				album: (done) ->
