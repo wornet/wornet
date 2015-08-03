@@ -11,7 +11,6 @@ StatusPackage =
 			if data.recentStatus and data.chat
 				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
-				warn data
 				if res.endAt
 					warn res.endAt + JSON.stringify data, true, 2
 				else
