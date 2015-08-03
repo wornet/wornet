@@ -231,13 +231,11 @@ module.exports = (router) ->
 		for setting in ['newsletter', 'noticeFriendAsk', 'noticePublish', 'noticeMessage']
 			userModifications[setting] = !! req.body[setting]
 		###
-		updateUser req.user, userModifications, (err) ->
+		updateUser req, userModifications, (err) ->
 			err = humanError err
 			save = ->
 				if userModifications.password
 					delete userModifications.password
-				extend req.user, userModifications
-				extend req.session.user, userModifications
 			if req.xhr
 				if err
 					res.serverError err
@@ -261,14 +259,9 @@ module.exports = (router) ->
 
 	toggleShutter = (req, res, opened) ->
 		res.json()
-		updateUser req.user, openedShutter: opened, (err) ->
+		updateUser req, openedShutter: opened, (err) ->
 			if err
 				throw err
-			else
-				req.session.reload ->
-					req.user.openedShutter = opened
-					req.session.user.openedShutter = opened
-					req.session.save()
 
 	router.post '/shutter/open', (req, res) ->
 		toggleShutter req, res, true
@@ -540,8 +533,6 @@ module.exports = (router) ->
 			thumb: null
 		for size in config.wornet.thumbSizes
 			userModifications['thumb' + size] = null
-		extend req.session.user, userModifications
-		extend req.user, userModifications
 		updateUser req, photoId: null, (err) ->
 			res.json err: err
 
@@ -575,8 +566,6 @@ module.exports = (router) ->
 			count++
 			if equals req.user.photoId, media.id
 				count++
-				req.user.photoId = null
-				req.session.user.photoId = null
 				updateUser req, photoId: null, next
 			where =
 				_id: media.id
