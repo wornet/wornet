@@ -94,18 +94,19 @@ exports.login = (req, res, done) ->
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
-	if req.session.user?
-		exports.auth req, res, req.session.user, next
-	else
-		exports.remembered req, (user, err, id) ->
-			if user
-				exports.remember res, id
-				exports.auth req, res, user, next
-			else
-				if exports.isNewVisitor req
-					res.locals.isNewVisitor = true
-				exports.remember res, config.wornet.remember.off
-				next()
+	req.session.load ->
+		if req.session.user?
+			exports.auth req, res, req.session.user, next
+		else
+			exports.remembered req, (user, err, id) ->
+				if user
+					exports.remember res, id
+					exports.auth req, res, user, next
+				else
+					if exports.isNewVisitor req
+						res.locals.isNewVisitor = true
+					exports.remember res, config.wornet.remember.off
+					next()
 
 ###
 Return true if a value is in a list (after solving jokers)
