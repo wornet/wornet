@@ -60,7 +60,8 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
-						res.json src: photo.photo
+						res.redirect './'
+						# res.json src: photo.photo
 
 			parallel
 				album: (done) ->
@@ -92,11 +93,13 @@ module.exports = (router) ->
 									_id: newPhoto._id
 								,
 									status: "published"
-								, (err) ->
+								,
+									safe: true
+								, (err, photo) ->
 									if err
 										res.serverError err
 									else
-										end results.photo
+										end photo
 				, (err) ->
 					res.serverError err
 		else
