@@ -18,6 +18,7 @@ do initXhrPool = ->
 $document = $(document)
 	# When send back an AJAX request
 	.ajaxSend (event, xhr, settings) ->
+		pauseNotifications()
 		$.xhrPool.push xhr
 		$.xhrUrls.push (settings.type || 'get').toLowerCase() + ':' + settings.url
 	# When receive back an AJAX request
@@ -70,4 +71,5 @@ $document = $(document)
 				else
 					# Get new CSRF token from meta tags given in the AJAX response
 					_csrf = $(data).find('meta[name="_csrf"]').attr 'content'
+		resumeNotifications()
 		return
