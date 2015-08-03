@@ -1,7 +1,7 @@
 
 #wrap(class=((!statusCode || statusCode <= 200) && user && user.openedShutter ? 'opened-shutter' : null))
 	block nav
-	+ie('if lte IE 7')
+	+ie('if lte IE 8')
 		.alert.alert-danger
 			- var upgradeUrl = "http://rowsehappy.com/"
 			- var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"

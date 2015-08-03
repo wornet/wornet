@@ -926,6 +926,9 @@ module.exports =
 			srcPath: src
 			dstPath: dst
 		imagemagick.resize opts, done
+		(opts.customArgs or= []).push "-define jp2:rate=0.5"
+		opts.dstPath += '.mobile'
+		imagemagick.resize opts, done
 
 	###
 	Return default profile photo name.
@@ -1123,7 +1126,7 @@ module.exports =
 	@return string complete text
 	###
 	colon: (text) ->
-		text + s(" : ")
+		s("{text} : ", text: text)
 
 	###
 	Return current display locale
@@ -1251,10 +1254,10 @@ module.exports =
 		a.toString 'base64'
 
 	###
-	Base 64 encode
+	Base 64 decode
 	@param string
 
-	@return string encoded
+	@return string decoded
 	###
 	atob: (a) ->
 		b = new Buffer a, 'base64'

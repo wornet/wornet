@@ -98,17 +98,17 @@ block nav
 							li: a(href="/user/logout")
 									=s("Déconnexion")
 	#wornet-navbar.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user.openedShutter ? 'opened-shutter' : null)): .container-fluid
-		.nav-icons.col-xs-2.col-xs-offset-1
+		.nav-icon.col-xs-2.col-xs-offset-1
 			a(href="/")
 				+glyph("home")
-		.nav-icons.col-xs-2
+		.nav-icon.col-xs-2
 			a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
 				+glyph("envelope")
-		.nav-icons.col-xs-2
+		.nav-icon.col-xs-2
 			+notifications('', true)
-		.nav-icons.col-xs-2
+		.nav-icon.col-xs-2
 			+friends('', true)
-		.nav-icons.col-xs-2
+		.nav-icon.col-xs-2
 			if user
 				a.dropdown-toggle( data-toggle="dropdown")
 					img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb

@@ -16,8 +16,54 @@ Controllers =
 			if album.description
 				album.description.edit = false
 			refreshScope $scope
+			return
 		return
 
+	App: ($scope) ->
+
+		opened = {}
+
+
+		angular.extend $scope,
+
+			app: {}
+
+			open: (id) ->
+				opened[id] = 1
+				return
+
+			close: (id) ->
+				delete opened[id]
+				return
+
+			opened: (id) ->
+				opened[id] is 1
+
+			edited: (id) ->
+				opened[id] is 2
+
+			edit: (app) ->
+				for id, state of opened
+					opened[id] = 1
+				@app = app
+				opened[app.publicKey] = 2
+				return
+
+			delete: (appId, $event) ->
+
+				s = textReplacements
+				bootbox.confirm s("Êtes-vous sûr de vouloir supprimer cette application ?"), (ok) ->
+					if ok
+						$($event.target)
+							.parents('ul.dropdown-menu:first').trigger 'click'
+							.parents('.app:first').slideUp ->
+								$(@).remove()
+								return
+						Ajax.delete '/user/app/' + appId, ->
+							return
+					return
+				return
+		return
 
 	Calendar: ($scope) ->
 		# Crud handle create, remove, update and get utils for /agenda URL
@@ -371,12 +417,16 @@ Controllers =
 								$(@).remove()
 								return
 			return
-		
+
 		Ajax.get '/user/chat/list', (chat) ->
 			$scope.chatList = chat.chatList
 			refreshScope $scope
 
 		return
+
+	Head: ($scope) ->
+		$scope.$on 'enableSmilies', (e, enabled) ->
+			$scope.smilies = enabled
 
 	LoginAndSignin: ($scope) ->
 		keepTipedModel $scope, '#login-signin', 'user'
@@ -767,10 +817,6 @@ Controllers =
 				$scope.user.email = value
 
 		return
-
-	Head: ($scope) ->
-		$scope.$on 'enableSmilies', (e, enabled) ->
-			$scope.smilies = enabled
 
 	Status: ($scope, smiliesService, statusService) ->
 

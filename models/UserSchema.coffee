@@ -501,6 +501,9 @@ userSchema.pre 'remove', (next) ->
 	], [
 		ResetPassword
 		user: @id
+	], [
+		App
+		user: @id
 	], next
 
 userSchema.plugin require 'mongoose-simple-random'

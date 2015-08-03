@@ -13,7 +13,7 @@ mixin meta(name, content)
 
 mixin link(href, name)
 	a.link&attributes(attributes)(href=href)
-		=name
+		=(name || href)
 
 mixin script(src)
 	script(src=src)
