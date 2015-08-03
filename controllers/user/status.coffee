@@ -8,11 +8,11 @@ module.exports = (router) ->
 	router.get '/recent', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res, null, chat: []
 
-	router.get '/and/chat/:id', (req, res) ->
-		StatusPackage.getRecentStatusForRequest req, res, req.params.id
+	router.get '/and/chat/:updatedAt/:id', (req, res) ->
+		StatusPackage.getRecentStatusForRequest req, res, req.params.id, null, req.params.updatedAt
 
-	router.get '/and/chat', (req, res) ->
-		StatusPackage.getRecentStatusForRequest req, res
+	router.get '/and/chat/:updatedAt', (req, res) ->
+		StatusPackage.getRecentStatusForRequest req, res, null, null, req.params.updatedAt
 
 	router.delete '/:id', (req, res) ->
 		# We cannot use findOneAndRemove because it does not execute pre-remove hook
@@ -54,10 +54,10 @@ module.exports = (router) ->
 									next status
 
 
-	router.put '/add/:id', (req, res) ->
+	router.put '/add/:updatedAt/:id', (req, res) ->
 		StatusPackage.put req, res, (status) ->
-			StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status
+			StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status, req.params.updatedAt
 
-	router.put '/add', (req, res) ->
+	router.put '/add/:updatedAt', (req, res) ->
 		StatusPackage.put req, res, (status) ->
-			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status
+			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status, req.params.updatedAt
