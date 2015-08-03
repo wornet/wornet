@@ -53,7 +53,7 @@ module.exports = (router) ->
 			end = (newSrc) ->
 				updateUser req, photoId: photoId, (err) ->
 					if err
-						res.serverError
+						res.serverError err
 					else
 						res.json src: newSrc.substr newSrc.indexOf '/img'
 
