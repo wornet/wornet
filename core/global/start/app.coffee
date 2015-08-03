@@ -23,7 +23,7 @@ module.exports = (defer, start) ->
 
 	app.use session
 		# Express session options
-		resave: true,
+		resave: false,
 		saveUninitialized: false,
 		secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
 		key: "w"
