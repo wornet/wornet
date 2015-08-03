@@ -587,3 +587,16 @@ Array.uniqueMethod = (method) ->
 Array::uniquePush = Array.uniqueMethod 'push'
 
 Array::uniqueUnshift = Array.uniqueMethod 'unshift'
+
+getLastestUpdateChatId = ->
+	lastestDate = ''
+	chats = getChats()
+	for id, chat of chats
+		for message in chat.messages
+			dateToTest = new Date message.date
+			if !lastestDate or dateToTest > lastestDate
+				lastestDate = dateToTest
+	if lastestDate
+		'/' + lastestDate.getTime()
+	else
+		'/0'

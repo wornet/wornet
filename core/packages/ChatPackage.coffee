@@ -1,11 +1,12 @@
 'use strict'
 
 ChatPackage =
-	all: (req, me, next) ->
-		if typeof(me) is 'function'
-			next = me
-			me = req.user.id
-		MessageRecipient.find recipient: me, (err, messageRecipients) ->
+	all: (req, next) ->
+		@where req, {}, next
+
+	where: (req, where, next) ->
+		me = req.user.id
+		MessageRecipient.find extend(recipient: me, where), (err, messageRecipients) ->
 			if err
 				next err
 			else
@@ -15,19 +16,18 @@ ChatPackage =
 					to = strval r.recipient
 					unless userIds.contains to
 						userIds.push to
-				Message.find
-					$or: [
+				Message.find (extend $or: [
 						_id: $in: ids
 					,
 						author: me
-					]
-				, (err, messages) ->
+					], where
+				), (err, messages) ->
 					if err
 						next err
 					else
 						if messages
 							messageIds = (m.id for m in messages when equals(m.author, me) and !m.maskedFor.contains me)
-							MessageRecipient.find message: $in: messageIds, (err, recipients) ->
+							MessageRecipient.find (extend message: $in: messageIds, where), (err, recipients) ->
 								if err
 									next err
 								else
@@ -80,7 +80,7 @@ ChatPackage =
 							next null, []
 
 	list: (req, res) ->
-		@all req, req.user.id, (err, chats) ->
+		@all req, (err, chats) ->
 			chatList = []
 			idList = []
 			for message in chats

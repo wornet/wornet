@@ -1067,7 +1067,7 @@ Controllers =
 		$scope.send = (status) ->
 			scanAllLinks status.content || ''
 
-			Ajax.put '/user/status/add' + (if at then '/' + at else ''),
+			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
 				data:
 					status: status
 					at: at
@@ -1180,7 +1180,7 @@ Controllers =
 		select = if getSessionItem 'chats'
 			'recent'
 		else
-			'and/chat'
+			'and/chat' + getLastestUpdateChatId()
 
 		Ajax.get '/user/status/' + select + (if at then '/' + at else ''), setRecentStatus
 
