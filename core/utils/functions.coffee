@@ -846,6 +846,7 @@ module.exports =
 	@param callback executed when everything is done
 	###
 	updateUser: (req, update, done) ->
+		console['log'] update
 		if req instanceof User
 			user = req
 			req = null
@@ -883,6 +884,7 @@ module.exports =
 			if object instanceof User
 				u = object
 			else
+				console['log'] [object.thumb50, object.photoId]
 				if object.thumb50
 					id = PhotoPackage.urlToId object.thumb50
 				u = new User
