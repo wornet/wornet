@@ -18,18 +18,16 @@ module.exports = (router) ->
 		# We cannot use findOneAndRemove because it does not execute pre-remove hook
 		me = req.user._id
 		next = (status) ->
-			#unless equals status.author, me
-				# NoticePackage.notify [status.author], null,
-				# 	action: 'notice'
-				# 	notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
+			# unless equals status.author, me
+			#	NoticePackage.notify [status.author], null,
+			#		action: 'notice'
+			#		notice: [s("{name} a supprimé un statut que vous aviez posté sur son profil.", name: req.user.fullName)]
 			res.json deletedStatus: status
 
 		switch req.params.id
 
 			when StatusPackage.DEFAULT_STATUS_ID
-				req.user.firstStepsDisabled = true
-				req.session.user.firstStepsDisabled = true
-				updateUser req.user, firstStepsDisabled: true, ->
+				updateUser req, firstStepsDisabled: true, ->
 				res.json()
 
 			else

@@ -1,5 +1,13 @@
 'use strict'
 
+syncUserPhotos = (userModifications, photo) ->
+	userModifications.photoId = photo.id
+	userModifications.photo = photo.photo
+	userModifications.thumb = photo.thumb
+	for size in config.wornet.thumbSizes
+		userModifications['thumb' + size] = photo['thumb' + size]
+	userModifications
+
 module.exports = (router) ->
 
 	router.get '', (req, res) ->
@@ -13,12 +21,9 @@ module.exports = (router) ->
 		# When user edit his profile
 		userModifications = UserPackage.getUserModificationsFromRequest req
 		next = ->
-			updateUser req.user, userModifications, (err) ->
+			updateUser req, userModifications, (err) ->
 				if err
 					req.flash 'profileErrors', err
-				else
-					extend req.user, userModifications
-					extend req.session.user, userModifications
 				res.redirect '/user/profile'
 			###
 			User.findById req.user.id, (err, user) ->
@@ -36,12 +41,8 @@ module.exports = (router) ->
 			options = safe: true
 			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
-					userModifications.photoId = photo.id
-					userModifications.photo = photo.photo
-					userModifications.thumb = photo.thumb
-					for size in config.wornet.thumbSizes
-						userModifications['thumb' + size] = photo['thumb' + size]
 					PhotoPackage.forget req, photo.id
+					syncUserPhotos userModifications, photo
 				else
 					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
 					delete userModifications.photoId
@@ -53,13 +54,16 @@ module.exports = (router) ->
 		photoId = req.data.photoId
 
 		if photoId
-			end = (newSrc) ->
-				req.session.reload (err) ->
-					warn err if err
-					updateUser req, photoId: photoId, ->
-						req.session.save (err) ->
-							warn err if err
-							res.json src: newSrc.substr newSrc.indexOf '/img'
+			end = (photo) ->
+				PhotoPackage.forget req, photo.id
+				req.session.reload ->
+					updateUser req, syncUserPhotos({}, photo), (err) ->
+						if err
+							res.serverError err
+						else
+							console['log'] [req.session.user.thumb50, req.session.user.photoId]
+							req.session.save ->
+								res.json src: photo.photo
 
 			parallel
 				album: (done) ->
@@ -80,11 +84,8 @@ module.exports = (router) ->
 						else
 							done err
 				, (results) ->
-					photo = results.photo.toObject()
-					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						updateUser req, photoId: photoId, ->
-							end photo.path
+						end results.photo
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
 							if err
@@ -98,7 +99,7 @@ module.exports = (router) ->
 									if err
 										res.serverError err
 									else
-										end photo.path
+										end results.photo
 				, (err) ->
 					res.serverError err
 		else
