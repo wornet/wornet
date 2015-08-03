@@ -845,15 +845,23 @@ module.exports =
 	@param object update key-value list of updated attributes
 	@param callback executed when everything is done
 	###
-	updateUser: (user, update, done) ->
-		unless user instanceof User
-			user = user.user
+	updateUser: (req, update, done) ->
+		if req instanceof User
+			user = req
+			req = null
+		else
+			user = req.user
 		# for key, val of update
 		# 	user[key] = val
 		try
 			User.updateById user._id, update, (err, resultUser) ->
 				unless err
 					extend user, update
+					if req
+						req.session.reload ->
+							extend req.user, update
+							extend req.session.user, update
+							req.session.save()
 				done err, resultUser
 		catch err
 			done err

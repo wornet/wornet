@@ -27,9 +27,7 @@ module.exports = (router) ->
 		switch req.params.id
 
 			when StatusPackage.DEFAULT_STATUS_ID
-				req.user.firstStepsDisabled = true
-				req.session.user.firstStepsDisabled = true
-				updateUser req.user, firstStepsDisabled: true, ->
+				updateUser req, firstStepsDisabled: true, ->
 				res.json()
 
 			else

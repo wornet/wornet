@@ -13,12 +13,9 @@ module.exports = (router) ->
 		# When user edit his profile
 		userModifications = UserPackage.getUserModificationsFromRequest req
 		next = ->
-			updateUser req.user, userModifications, (err) ->
+			updateUser req, userModifications, (err) ->
 				if err
 					req.flash 'profileErrors', err
-				else
-					extend req.user, userModifications
-					extend req.session.user, userModifications
 				res.redirect '/user/profile'
 			###
 			User.findById req.user.id, (err, user) ->
@@ -82,8 +79,7 @@ module.exports = (router) ->
 					photo = results.photo.toObject()
 					photo.path = __dirname + '/../../public/img/photo/' + photo._id + '.jpg'
 					if equals results.photo.album, results.album.id
-						updateUser req, photoId: photoId, ->
-							end photo.path
+						end photo.path
 					else
 						addPhoto req, photo, null, (err, album, newPhoto) ->
 							if err
