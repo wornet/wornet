@@ -79,12 +79,14 @@
 		color $mediumGray
 
 .upload-container
-	margin $mainPadding
+	margin $mainPadding $mainPadding $mainPadding 0
 	position relative
 	// border-radius(4px)
 	border 2px solid $orange
 	box-sizing border-box
 	height 88px
+	@media (max-width: 768px)
+		margin $mainPadding 0 0 0
 
 	.progress-bar
 		position absolute
