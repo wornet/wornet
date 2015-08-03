@@ -6,7 +6,6 @@ syncUserPhotos = (userModifications, photo) ->
 	userModifications.thumb = photo.thumb
 	for size in config.wornet.thumbSizes
 		userModifications['thumb' + size] = photo['thumb' + size]
-	PhotoPackage.forget req, photo.id
 	userModifications
 
 module.exports = (router) ->
@@ -42,6 +41,7 @@ module.exports = (router) ->
 			options = safe: true
 			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
+					PhotoPackage.forget req, photo.id
 					syncUserPhotos userModifications, photo
 				else
 					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
@@ -55,6 +55,7 @@ module.exports = (router) ->
 
 		if photoId
 			end = (photo) ->
+				PhotoPackage.forget req, photo.id
 				updateUser req, syncUserPhotos({}, photo), (err) ->
 					if err
 						res.serverError err
