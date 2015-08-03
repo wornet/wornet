@@ -926,9 +926,10 @@ module.exports =
 			srcPath: src
 			dstPath: dst
 		imagemagick.resize opts, done
-		(opts.customArgs or= []).push "-define jp2:rate=0.5"
-		opts.dstPath += '.mobile'
-		imagemagick.resize opts, done
+		extend opts,
+			quality: .4
+			dstPath: dst + '.mobile'
+		imagemagick.resize opts, ->
 
 	###
 	Return default profile photo name.
