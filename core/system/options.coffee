@@ -506,6 +506,7 @@ module.exports = (app, port) ->
 				next = ->
 					res.safeHeader ->
 						render.apply res, params
+
 				@locals.trackers = options.trackers()
 				@locals.vars = if @req.user
 					@req.user.columns ['role', 'age', 'openedShutter', 'job', 'jobPlace', 'city', 'numberOfFriends']

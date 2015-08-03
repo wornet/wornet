@@ -2,17 +2,19 @@
 
 StatusPackage =
 
-	getRecentStatusForRequest: (req, res, id = null, data = {}) ->
+	getRecentStatusForRequest: (req, res, id = null, data = {}, updatedAt = null) ->
 		onProfile = id or req.data.at
-		@getRecentStatus req, res, id, data, onProfile
+		@getRecentStatus req, res, id, data, onProfile, updatedAt
 
-	getRecentStatus: (req, res, id = null, data = {}, onProfile = false) ->
+	getRecentStatus: (req, res, id = null, data = {}, onProfile = false, updatedAt = null) ->
+		id = req.getRequestedUserId id
 		next = _next = =>
 			if data.recentStatus and data.chat
 				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
+
 				if res.endAt
-					warn res.endAt + JSON.stringify data, true, 2
+					warn JSON.stringify(res.endAt, true, 2) + JSON.stringify data, true, 2
 				else
 					res.json data
 		nextWithSession = ->
@@ -22,14 +24,18 @@ StatusPackage =
 					warn err if err
 					_next()
 		unless data.chat
-			ChatPackage.all req, (err, chat) ->
+			updatedAt *= 1
+			where = if updatedAt
+				_id: $gt: new ObjectId(Math.floor(updatedAt / 1000).toString(16) + '0000000000000000').path
+			else
+				{}
+			ChatPackage.where req, where, (err, chat) ->
 				if err
 					warn err
 				else
 					data.chat = chat
 					next()
 		req.getFriends (err, friends, friendAsks) =>
-			id = req.getRequestedUserId id
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.with req.user.id
 			where = @where id, connectedPeopleAndMe, onProfile
