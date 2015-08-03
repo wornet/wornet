@@ -24,6 +24,9 @@ photoSrc = (prefix) ->
 			'default-photo'
 	)
 
+photoSchema.virtual('path').get ->
+	__dirname + '/../../public/img/photo/' + @_id + '.jpg'
+
 photoSchema.virtual('photo').get ->
 	photoSrc.call @
 
