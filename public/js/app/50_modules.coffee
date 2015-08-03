@@ -6,6 +6,8 @@ do (window, s = textReplacements) ->
 	# Default errors
 	window.SERVER_ERROR_DEFAULT_MESSAGE = s("Perte de la connexion internet. La dernière action n'a pas pu être effectuée.")
 
+	preventOutGoing = exists 'iframe.app'
+
 	# Display a loading animation when page is loading
 	window.onbeforeunload = (event) ->
 		window._e = event
@@ -22,12 +24,22 @@ do (window, s = textReplacements) ->
 				else
 					true
 			! allEmpty
-		if somethingWaiting
+		if preventOutGoing
+			preventOutGoing = false
+			return s("Attention, l'application tente de vous faire quitter Wornet, pour profiter de l'application sans quitter Wornet, cliquez sur [Rester sur la page]")
+		else if somethingWaiting
 			return s("Attention, des modifications n'ont pas encore été sauvegardées.")
 		else
 			$.xhrPool.abortAll()
 			showLoader()
 		return
+
+	if preventOutGoing
+		$('iframe.app').load ->
+			delay 500, ->
+				preventOutGoing = false
+				return
+			return
 
 	$(window)
 		.on "offline", ->
@@ -90,5 +102,6 @@ $('.loading').each ->
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
 onResize ->
+	$('iframe.app').height $('body').height() - 72
 	$('[data-ratio]').ratio()
 	return

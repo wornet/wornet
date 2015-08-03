@@ -34,6 +34,9 @@ size(width = false, height = width)
 	width width
 	height height
 
+blur()
+    css3-prefix("filter", unquote("blur(" + arguments + ")"))
+
 border-radius()
 	// Fonction pour arondir les bordures d'une boite.
 	css3-prefix("border-radius", arguments)

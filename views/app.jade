@@ -1,0 +1,9 @@
+extends layouts/user
+
+block body
+	.col-xs-12.col-sm-3
+		h3
+			=app.name
+		p
+			=app.description
+	iframe.app.col-xs-12.col-sm-9(src=app.url)

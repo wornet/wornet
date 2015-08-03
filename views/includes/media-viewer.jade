@@ -31,13 +31,11 @@
 			a.dropdown-toggle(href="#" data-toggle="dropdown")
 				+glyph('cog')
 			ul.dropdown-menu(role="menu")
-				li
-					a(ng-click="setAsProfilePhoto()")
-						+glyph('wrench')
-						| &nbsp;
-						=s("Définir comme photo de profil")
-				li
-					a(ng-click="deleteMedia()")
-						+glyph('trash')
-						| &nbsp;
-						=s("Supprimer ce média")
+				li: a(ng-click="setAsProfilePhoto()")
+					+glyph('wrench')
+					| &nbsp;
+					=s("Définir comme photo de profil")
+				li: a(ng-click="deleteMedia()")
+					+glyph('trash')
+					| &nbsp;
+					=s("Supprimer ce média")

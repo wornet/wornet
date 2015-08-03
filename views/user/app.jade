@@ -1,0 +1,61 @@
+extends ../layouts/user
+
+block body
+	.col-xs-12: .well.loading(ng-controller="AppCtrl")
+		h3
+			=s("Applications")
+		+alert(appAlerts)
+		hr
+		.col-xs-12.col-sm-6.fit
+			each app in apps
+				.app
+					.aside.settings.continue
+						a.dropdown-toggle(href="#" data-toggle="dropdown")
+							+glyph('cog')
+						ul.dropdown-menu(role="menu")
+							li: a.ajax(href="#" ng-click="delete('" + app.publicKey + "', $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer cette application"))
+								+glyph('trash')
+								| &nbsp; 
+								=s("Supprimer")
+							li: a.ajax(href="#" ng-click='edit(' + JSON.stringify(app.publicInformations()) + ')' data-toggle="tooltip" data-placement="top" title=s("Modifier cette application"))
+								+glyph('edit')
+								| &nbsp; 
+								=s("Modifier")
+					h4
+						a.ajax(href="#" ng-click="open('" + app.publicKey + "')" ng-if="! opened('" + app.publicKey + "')")
+							+glyph('plus')
+						a.ajax(href="#" ng-click="close('" + app.publicKey + "')" ng-if="opened('" + app.publicKey + "')")
+							+glyph('minus')
+						| &nbsp; 
+						+link(app.launchUrl, app.name)
+					div(ng-if="opened('" + app.publicKey + "')")
+						p
+							+link(app.url)
+						p
+							=app.description
+						p
+							=colon(s("Clé publique"))
+							b=app.publicKey
+						p
+							=(new Buffer(app.publicKey, 'base64')).toString()
+						p
+							=app.id
+						p
+							=colon(s("Clé secrète"))
+							b=app.secretKey
+					+form("/user/app/" + app.publicKey)(ng-if="edited('" + app.publicKey + "')")
+						+formControl("text")(ng-model="app.name" name="name" placeholder=s("Nom de l'application"))
+						+formControl("url")(ng-model="app.url" name="url" placeholder=s("Adresse URL"))
+						+formControl("textarea")(ng-model="app.description" name="description" placeholder=s("Description"))
+						input.col-xs-12.fit.btn.btn-primary(type="submit" value=s("Modifier"))
+					hr
+
+		+form("/user/app/add", "PUT").col-xs-12.col-sm-6
+			p: b
+				=s("Créer une nouvelle application")
+			+formControl("text")(name="name" placeholder=s("Nom de l'application"))
+			+formControl("url")(name="url" placeholder=s("Adresse URL"))
+			+formControl("textarea")(name="description" placeholder=s("Description"))
+			input.col-xs-12.fit.btn.btn-primary(type="submit" value=s("Ajouter"))
+
+		.cb
