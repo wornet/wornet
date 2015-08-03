@@ -57,6 +57,7 @@ module.exports = (router) ->
 			end = (photo) ->
 				PhotoPackage.forget req, photo.id
 				req.session.reload ->
+					req.session.user = extend {}, req.session.user
 					updateUser req, syncUserPhotos({}, photo), (err) ->
 						if err
 							res.serverError err
