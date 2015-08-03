@@ -94,7 +94,7 @@ exports.login = (req, res, done) ->
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->
-	req.session.load ->
+	req.session.reload ->
 		if req.session.user?
 			exports.auth req, res, req.session.user, next
 		else
