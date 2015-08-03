@@ -544,7 +544,7 @@ module.exports = (app, port) ->
 					data.err = strval(data.err || s("Erreur inconnue"))
 				if data.err and ! noReport
 					GitlabPackage.error data.err
-				data._csrf = data._csrf || @locals._csrf
+				data._csrf ||= @locals._csrf
 				json.call @, data
 			setTimeLimit: (time = 0) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'
