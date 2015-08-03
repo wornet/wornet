@@ -436,6 +436,8 @@ module.exports = (app, port) ->
 		for key, val of responseErrors
 			app.response[key] = do (key, val) ->
 				(model = {}, noReport) ->
+					if val is 404
+						log 'not found'
 					if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
 						model = err: model
 					err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
