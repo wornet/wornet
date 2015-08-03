@@ -927,8 +927,8 @@ module.exports =
 			dstPath: dst
 		imagemagick.resize opts, done
 		extend opts,
-			quality: .4
-			dstPath: dst + '.mobile'
+			quality: .25
+			dstPath: dst.replace /(\.[^\.]+$)/g, '.mobile$1'
 		imagemagick.resize opts, ->
 
 	###
