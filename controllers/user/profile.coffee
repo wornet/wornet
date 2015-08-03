@@ -60,7 +60,7 @@ module.exports = (router) ->
 					if err
 						res.serverError err
 					else
-						res.json src: newSrc.substr newSrc.indexOf '/img'
+						res.json src: photo.photo
 
 			parallel
 				album: (done) ->
