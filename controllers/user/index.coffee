@@ -68,9 +68,6 @@ module.exports = (router) ->
 		else if req.body.password isnt req.body.passwordCheck and req.body.step is "2"
 			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
 			res.redirect signinUrl
-		else unless req.body.sex in ['man', 'woman']
-			req.flash 'signinErrors', UserErrors.MISSING_SEX
-			res.redirect signinUrl
 
 		# Pre-Registration
 		# else if (new Date) < new Date("2015-02-16") and ! count and ! require(__dirname + '/../../core/system/preRegistration')().contains email
@@ -81,6 +78,9 @@ module.exports = (router) ->
 		else if req.body.step is "2"
 			if empty req.body.legals
 				req.flash 'signinErrors', UserErrors.AGREEMENT_REQUIRED
+				res.redirect signinUrl
+			else unless req.body.sex in ['man', 'woman']
+				req.flash 'signinErrors', UserErrors.MISSING_SEX
 				res.redirect signinUrl
 			else
 				# A full name must contains a space but is not needed at the first step
