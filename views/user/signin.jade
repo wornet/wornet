@@ -80,8 +80,8 @@ block body
 							ng-model="user.name.last"
 							name="name.last"
 							placeholder=userTexts.lastName).flash
-					select.form-control(autocomplete="off" required name="sex")
-						option(value="" selected)
+					select.form-control(autocomplete="off" required name="sex" ng-model="user.sex")
+						option(value="")
 							=userTexts.chooseSex
 						option(value="man")
 							=userTexts.man
