@@ -1,8 +1,8 @@
 mixin notifications(classes, mobile)
 	- var notificationsCount = count(notifications, true)
-	- classes += " " + (mobile?"notifications-mobile":"notifications nav")
-	- var liClasses = (mobile?"":"btn-group")
-	ul(class=classes pill data-ids=Object.keys(notifications)): li(class=liClasses)
+	- classes += " " + (mobile ? "notifications-mobile" : "notifications nav")
+	- var liClasses = (mobile ? "" : "btn-group")
+	ul(class=classes pill): li(class=liClasses)
 		a.dropdown-toggle( data-toggle="dropdown")
 			if mobile
 				span.glyphicon.btn-notification-mobile
