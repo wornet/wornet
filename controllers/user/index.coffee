@@ -6,6 +6,7 @@ UserErrors =
 	INVALID_PASSWORD_CONFIRM: s("Veuillez entrer des mots de passe identiques.")
 	AGREEMENT_REQUIRED: s("Veuillez prendre connaissance et accepter les conditions générales d’utilisation et la politique de confidentialité.")
 	PRE_REGISTER: s("Inscriptions limitées aux-préinscrits jusqu'au 16 février. Vous êtes invité à vous réinscrire à cette date.")
+	MISSING_SEX: s("Veuillez indiquer si vous êtes un homme ou une femme.")
 
 module.exports = (router) ->
 
@@ -66,6 +67,9 @@ module.exports = (router) ->
 			res.redirect signinUrl
 		else if req.body.password isnt req.body.passwordCheck and req.body.step is "2"
 			req.flash 'signinErrors', UserErrors.INVALID_PASSWORD_CONFIRM
+			res.redirect signinUrl
+		else unless req.body.sex in ['man', 'woman']
+			req.flash 'signinErrors', UserErrors.MISSING_SEX
 			res.redirect signinUrl
 
 		# Pre-Registration
