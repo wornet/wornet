@@ -711,8 +711,8 @@ do ->
 						if status.images and status.images.length > 0
 							points = 2 #status with photo
 						if status.videos and status.videos.length > 0
-							points = 3 if points = 1 #status with video but without photo
-							points = 4 if points = 2 #status with video and photo
+							points = 3 if points is 1 #status with video but without photo
+							points = 4 if points is 2 #status with video and photo
 
 						newPoints = parseInt($('.points b').html()) + if adding
 							(points * parseInt(getData 'numberOfFriends'))
