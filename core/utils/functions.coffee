@@ -846,7 +846,6 @@ module.exports =
 	@param callback executed when everything is done
 	###
 	updateUser: (req, update, done) ->
-		console['log'] update
 		if req instanceof User
 			user = req
 			req = null
