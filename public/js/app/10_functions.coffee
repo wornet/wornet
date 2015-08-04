@@ -502,7 +502,7 @@ withFormData = ($form, done) ->
 # Get {count} lastest elements of {arr}
 lastest = (arr, count) ->
 	if arr instanceof Array
-		res = if count > arr.length
+		res = if count < arr.length
 			arr.slice arr.length - count
 		else
 			arr.slice()

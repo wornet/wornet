@@ -15,9 +15,17 @@ do initXhrPool = ->
 			return
 	$.xhrUrls = []
 
+tabId = do ->
+	alphabet = 'azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN1234567890'
+	r = ''
+	for i in [0..32]
+		r += alphabet.charAt Math.floor alphabet.length * Math.random()
+	r
+
 $document = $(document)
 	# When send back an AJAX request
 	.ajaxSend (event, xhr, settings) ->
+		xhr.setRequestHeader 't', tabId
 		$.xhrPool.push xhr
 		$.xhrUrls.push (settings.type || 'get').toLowerCase() + ':' + settings.url
 	# When receive back an AJAX request
