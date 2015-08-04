@@ -65,10 +65,12 @@ NoticePackage =
 
 	respond: (callback, err, data, tabToIgnore) ->
 		if callback instanceof Waiter
-			unless callback.req and tabToIgnore and tabToIgnore is callback.req.getHeader 't'
-				callback.respond err, data
+			if callback.req and tabToIgnore and tabToIgnore is callback.req.getHeader 't'
+				return false
+			callback.respond err, data
 		else
 			callback err, data
+		true
 
 	# Send a notification to users
 	notify: (userIds, err, groupData, appendOtherUsers = false, tabToIgnore) ->
@@ -87,12 +89,14 @@ NoticePackage =
 							otherUserIds = userIds.filter (id) ->
 								id isnt userId
 						done = ->
-							if self.responsesToNotify[userId]? and self.responsesToNotify[userId].getLength() > 0
-								self.responsesToNotify[userId].each (id) ->
+							if self.responsesToNotify[userId]?
+								each self.responsesToNotify[userId], (id) ->
 									key = userId + '-' + id
 									self.clearTimeout key
-									self.respond @, err, data, tabToIgnore
-								delete self.responsesToNotify[userId]
+									if self.respond @, err, data, tabToIgnore
+										delete self.responsesToNotify[userId][id]
+								unless count self.responsesToNotify[userId]
+									delete self.responsesToNotify[userId]
 							else
 								unless self.notificationsToSend[userId]
 									self.notificationsToSend[userId] = {}
