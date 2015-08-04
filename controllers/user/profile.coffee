@@ -84,7 +84,7 @@ module.exports = (router) ->
 					if equals results.photo.album, results.album.id
 						end results.photo
 					else
-						addPhoto req, photo, null, (err, album, newPhoto) ->
+						addPhoto req, results.photo, null, (err, album, newPhoto) ->
 							if err
 								res.serverError err
 							else
