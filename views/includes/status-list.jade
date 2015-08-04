@@ -74,7 +74,6 @@
 							=s("Commenter")
 			.cb
 		if config.wornet.comments.enabled
-			+data('commentsEnabled', true)
 			.comment-list(ng-if="status.comments && status.comments.length")
 				.comment-block(ng-repeat="comment in status.comments" data-data="{{ comment._id }}")
 					- var init = "comment.edit = false;"
@@ -110,3 +109,6 @@
 					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
 					input.btn.btn-primary(type="submit" value=s("Envoyer"))
 					input.btn.cancel(type="button" ng-click="status.commentForm = false" value=s("Annuler"))
+					
+if config.wornet.comments.enabled
+	+data('commentsEnabled', true)
