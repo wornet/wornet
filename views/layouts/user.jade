@@ -134,7 +134,7 @@ block nav
 					+glyph('search')
 				.suggests
 					ul: li(ng-repeat="user in query.users")
-						a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							.user-name
 								| {{ user.name.full }}
@@ -144,7 +144,8 @@ block nav
 						a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
 							+glyph('comment')
 						a.col-xs-3.chat-with(
-							ng-if="! user.isAFriend && ! user.askedForFriend"
+							ng-if="canBeAddedAsAFriend(user)"
+							ng-click="askForFriend(user)"
 							href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
 							data-target=".errors"
 							data-click="success"
@@ -152,7 +153,6 @@ block nav
 							data-ask-for-friend="{{ user.hashedId }}"
 						)
 							+glyph('plus')
-						span.col-xs-3.chat-with(ng-if="user.isAFriend && ! user.askedForFriend")
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding

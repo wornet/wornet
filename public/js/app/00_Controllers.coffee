@@ -782,6 +782,16 @@ Controllers =
 		return
 
 	Search: ($scope) ->
+
+		askedForFriends = []
+
+		$scope.askForFriend = (user) ->
+			askedForFriends.push user.hashedId
+			return
+
+		$scope.canBeAddedAsAFriend = (user) ->
+			! user.isAFriend and ! user.askedForFriend and ! (user.hashedId in askedForFriends)
+
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
 			$scope.query.action = '#'
