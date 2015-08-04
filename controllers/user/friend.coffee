@@ -83,7 +83,7 @@ module.exports = (router) ->
 						]
 					, (err, notices) ->
 						for notice in notices
-							if notice.createdAt > (new Date).subDays 7
+							if notice.createdAt > (new Date).subHours config.wornet.friends.hoursBeforeRemoveNotification
 								notice.remove()
 						if err
 							res.serverError err
