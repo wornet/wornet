@@ -29,7 +29,7 @@
 	transition margin-right .2s
 
 	&.opened-shutter
-		margin-right 300px
+		margin-right $shutterWidth
 
 .wornet-navbar
 	font-size 14px
@@ -64,7 +64,6 @@
 				a
 					display block
 					height $headerHeight
-					line-height $headerHeight / 2
 					padding 0 15px
 
 	.container-fluid
@@ -266,16 +265,16 @@
 			top 5px
 			margin-left -28px
 
-@media (min-width: 768px) and (orientation: portrait)
-	.wornet-navbar
-		&.opened-shutter
-			margin 0
-		li.open-shutter
-			display none
-	#wrap.opened-shutter
-		margin 0
-	#shutter.opened-shutter
-		width 0
+// @media (min-width: 768px) and (orientation: portrait)
+// 	.wornet-navbar
+// 		&.opened-shutter
+// 			margin 0
+// 		li.open-shutter
+// 			display none
+// 	#wrap.opened-shutter
+// 		margin 0
+// 	#shutter.opened-shutter
+// 		width 0
 
 @media (max-width: 767px)
 	.mobile-device
@@ -307,11 +306,11 @@
 				float right
 
 	.wornet-navbar
-		&.opened-shutter
-			margin 0
 		.mobile-device
 			text-align center
 			margin 0
+		.notifications-mobile .dropdown-menu>li>a
+			line-height $mobileNotificationTextSize
 		.dropdown-menu
 			width calc(100% - 10px)
 			margin 0 $smallPadding
@@ -320,9 +319,6 @@
 					background-color $orange
 					&.read
 						background-color $darkOrange
-			&>li>a
-				height 40px
-				line-height $mobileNotificationTextSize
 			span
 				white-space pre-line
 				font-size $mobileNotificationTextSize
@@ -355,8 +351,6 @@
 
 			.user
 				width 50%
-				a
-					height auto
 
 	.navthumb
 		overflow hidden

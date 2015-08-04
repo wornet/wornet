@@ -8,6 +8,8 @@ if window.localStorage
 $.expr[':'].icontains = (a, i, m) ->
 	$(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0
 
+# Shorthand to exec a callback (second parameter) after a delay
+# (fisrt parameter) specified in milliseconds
 delay = (ms, cb) ->
 	if typeof ms is 'function'
 		cb = ms
