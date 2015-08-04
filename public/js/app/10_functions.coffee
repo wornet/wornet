@@ -274,12 +274,15 @@ keepScroll = (sel) ->
 # Save chat messages and states in local session
 saveChats = (chats) ->
 	for k, chat of chats
-		for message in chat.messages
-			if message.$$hashKey
-				delete message.$$hashKey
-		for user in chat.users
-			if user.$$hashKey
-				delete user.$$hashKey
+		if k
+			for message in chat.messages
+				if message.$$hashKey
+					delete message.$$hashKey
+			for user in chat.users
+				if user.$$hashKey
+					delete user.$$hashKey
+		else
+			delete chats[k]
 	chatsCopy = JSON.parse JSON.stringify chats
 	if window.sessionStorage
 		for k, chat of chatsCopy
@@ -325,13 +328,16 @@ getChats = ->
 		chats = (objectResolve getSessionValue 'chats') || {}
 		for k, chat of chats
 			users = {}
-			for user in chat.users
-				users[user.hashedId] = user
-			for message in chat.messages
-				if typeof(message.from) is 'string'
-					message.from = users[message.from]
-				if typeof(message.to) is 'string'
-					message.to = users[message.to]
+			if chat.users and chat.users.length
+				for user in chat.users
+					users[user.hashedId] = user
+				for message in chat.messages
+					if typeof(message.from) is 'string'
+						message.from = users[message.from]
+					if typeof(message.to) is 'string'
+						message.to = users[message.to]
+			else
+				delete chats[k]
 	catch e
 		chats = {}
 	if typeof(chats) isnt 'object'

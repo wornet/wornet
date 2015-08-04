@@ -253,6 +253,8 @@ Controllers =
 				user.hashedId isnt me
 			ids = (user.hashedId for user in users)
 			id = ids.join ','
+			unless id
+				return
 			if chats[id]
 				currentChat = chats[id]
 				unless chats[id].open
@@ -268,30 +270,25 @@ Controllers =
 			if chat.minimized?
 				delete chat.minimized
 				modified = true
-			if message
-				if currentChat.messages and currentChat.messages.length > 0
-					lastMessage = lastest(currentChat.messages, 1)[0]
-					if lastMessage.users
-						toFetch = lastMessage.users
-					else
-						toFetch = [ lastMessage.from ]
-					for user in toFetch
-						if user.hashedId is message.from.hashedId and user.thumb50 isnt message.from.thumb50
-							$img = $('img[data-user-thumb="' + user.hashedId + '"]:first').thumbSrc(message.from.thumb50.replace('50x', ''))
-							if exists $img
-								src = $img.prop('src').replace /\/photo\/[0-9]+x/g, '/photo/'
-								for size in getCachedData 'thumbSizes'
-									user['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
-								for mess in currentChat.messages
-									if mess.from
-										if mess.from.hashedId is message.from.hashedId
+			if message and currentChat.messages and currentChat.messages.length > 0
+				for chatMessage in currentChat.messages by -1
+					if chatMessage.from and (user = chatMessage.from).hashedId is message.from.hashedId and user.thumb50 isnt message.from.thumb50
+						$img = $('img[data-user-thumb="' + user.hashedId + '"]:first').thumbSrc(message.from.thumb50.replace('50x', ''))
+						if exists $img
+							src = $img.prop('src').replace /\/photo\/[0-9]+x/g, '/photo/'
+							for size in getCachedData 'thumbSizes'
+								user['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
+							for mess in currentChat.messages
+								if mess.from
+									if mess.from.hashedId is message.from.hashedId
+										for size in getCachedData 'thumbSizes'
+											mess.from['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
+								if mess.users
+									for aUser in mess.users
+										if aUser.hashedId is message.from.hashedId
 											for size in getCachedData 'thumbSizes'
-												mess.from['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
-									if mess.users
-										for aUser in mess.users
-											if aUser.hashedId is message.from.hashedId
-												for size in getCachedData 'thumbSizes'
-													aUser['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
+												aUser['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
+						break
 				if message.from.hashedId is me
 					delete message.from
 				currentChat.messages.push message
@@ -446,9 +443,7 @@ Controllers =
 								return
 			return
 
-		Ajax.get '/user/chat/list', (chat) ->
-			$scope.chatList = chat.chatList
-			refreshScope $scope
+		window.chatListScope = $scope
 
 		return
 

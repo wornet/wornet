@@ -732,6 +732,14 @@ do ->
 				$('title').html('Wornet')
 				chatService.updateNewMessages idUsers, 0
 		]
+		[
+			'tap'
+			'.open-chat-list'
+			($span, e) ->
+				Ajax.get '/user/chat/list', (chat) ->
+					chatListScope.chatList = chat.chatList
+					refreshScope chatListScope
+		]
 	], ->
 		params = @
 		if @[0] is 'load'
