@@ -26,7 +26,6 @@ emptyAlbumsTask =
 			, (e) ->
 
 
-setInterval emptyAlbumsTask.checkForEmptyAlbums, 1.day
-#setInterval emptyAlbumsTask.checkForEmptyAlbums, 10000
+setInterval emptyAlbumsTask.checkForEmptyAlbums, 1.hour
 
 module.exports = emptyAlbumsTask
