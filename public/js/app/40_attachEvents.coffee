@@ -4,6 +4,12 @@ loadIFrameEvents = []
 
 do ->
 
+	syncShutter = ($a) ->
+		Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+		delay 200, ->
+			if $a
+				$a.blur()
+			return
 	# events to recognize as a click
 	click = 'touchtap click'
 	# attribute to trigger the delayed source feature
@@ -87,6 +93,18 @@ do ->
 			$img.removeAttr delayedSrcAttr
 			return
 		return
+
+	.on 'swiperight', ->
+		$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+		$('#directives-calendar > .well').removeClass 'col-xs-9'
+		syncShutter()
+		cancel e
+
+	.on 'swipeleft', ->
+		$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
+		$('#directives-calendar > .well').addClass 'col-xs-9'
+		syncShutter()
+		cancel e
 
 	# Start of issue #232
 	# .scroll (e) ->
@@ -586,10 +604,7 @@ do ->
 			($a, e) ->
 				$('.wornet-navbar, #wrap, #shutter').toggleClass 'opened-shutter'
 				$('#directives-calendar > .well').toggleClass 'col-xs-9'
-				Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
-				delay 200, ->
-					$a.blur()
-					return
+				syncShutter $a
 				cancel e
 		]
 		[

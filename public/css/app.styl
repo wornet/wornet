@@ -358,7 +358,7 @@ label
 	.nav
 	.inner-shutter > a
 	ul a
-		width 300px
+		width $shutterWidth
 
 	.inner-shutter > a
 	ul a
@@ -800,14 +800,14 @@ iframe.app
 		&.bg3
 			cover('background-image/small/3')
 
-	#shutter
-	li.open-shutter
+	// #shutter
+	// li.open-shutter
 	#they-use-wornet
 		display none
 
-	#wrap
-		&.opened-shutter
-			margin-right 0
+	// #wrap
+	// 	&.opened-shutter
+	// 		margin-right 0
 
 	#createAccountTitle
 		padding-bottom $bigPadding
@@ -890,3 +890,12 @@ iframe.app
 
 			img
 				size(30px)
+
+@media (max-width: 1024px)
+	.wornet-navbar .dropdown-menu>li>a
+		height $headerHeight + $mainPadding
+		line-height $headerHeight
+
+	#wrap.opened-shutter
+	#wrap.opened-shutter .wornet-navbar
+		margin-left - $shutterWidth

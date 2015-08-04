@@ -122,9 +122,13 @@ getCachedData = do ->
 		else
 			data[name] = getData name
 
+
 # Shorthand to exec a callback (second parameter) after a delay
 # (fisrt parameter) specified in milliseconds
 delay = (ms, cb) ->
+	if typeof ms is 'function'
+		cb = ms
+		ms = 50
 	setTimeout cb, ms
 
 
