@@ -23,8 +23,11 @@ do ->
 	_x = 0
 	_y = 0
 
+	touchEvent = (e) ->
+		e.originalEvent.targetTouches and
+
 	pointer = (e) ->
-		if e.originalEvent.targetTouches
+		if touchEvent e
 			e.originalEvent.targetTouches[0]
 		else
 			e
@@ -94,17 +97,23 @@ do ->
 			return
 		return
 
-	.on 'swiperight', ->
-		$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
-		$('#directives-calendar > .well').removeClass 'col-xs-9'
-		syncShutter()
-		cancel e
+	.on 'swiperight', (e) ->
+		if touchEvent(e) and exists '#shutter'
+			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+			$('#directives-calendar > .well').removeClass 'col-xs-9'
+			syncShutter()
+			cancel e
+		else
+			true
 
-	.on 'swipeleft', ->
-		$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
-		$('#directives-calendar > .well').addClass 'col-xs-9'
-		syncShutter()
-		cancel e
+	.on 'swipeleft', (e) ->
+		if touchEvent(e) and exists '#shutter'
+			$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
+			$('#directives-calendar > .well').addClass 'col-xs-9'
+			syncShutter()
+			cancel e
+		else
+			true
 
 	# Start of issue #232
 	# .scroll (e) ->

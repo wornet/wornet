@@ -99,6 +99,9 @@ $('.loading').each ->
 		return
 	return
 
+unless exists '#shutter'
+	$('.opened-shutter').removeClass 'opened-shutter'
+
 # Force the height of the elements (with data-ratio attribute) to keep the specified ratio
 # And refresh each time the window is resized
 onResize ->
