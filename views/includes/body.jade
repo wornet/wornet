@@ -88,6 +88,7 @@ block cookie-banner
 if allData
 	each value, name in allData
 		+data(name, value)
++data('thumbSizes', config.wornet.thumbSizes)
 if trackers.piwik || trackers.googleAnalytics
 	+data("vars", vars)
 if trackers.piwik

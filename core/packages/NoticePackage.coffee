@@ -63,14 +63,15 @@ NoticePackage =
 			clearTimeout @timeouts[key]
 			delete @timeouts[key]
 
-	respond: (callback, err, data) ->
+	respond: (callback, err, data, tabToIgnore) ->
 		if callback instanceof Waiter
-			callback.respond err, data
+			unless callback.req and tabToIgnore and tabToIgnore is callback.req.getHeader 't'
+				callback.respond err, data
 		else
 			callback err, data
 
 	# Send a notification to users
-	notify: (userIds, err, groupData, appendOtherUsers = false) ->
+	notify: (userIds, err, groupData, appendOtherUsers = false, tabToIgnore) ->
 		self = @
 		# stack = (new Error()).stack
 		Notice.remove createdAt: $lt: (new Date).subMonths 6
@@ -90,7 +91,7 @@ NoticePackage =
 								self.responsesToNotify[userId].each (id) ->
 									key = userId + '-' + id
 									self.clearTimeout key
-									self.respond @, err, data
+									self.respond @, err, data, tabToIgnore
 								delete self.responsesToNotify[userId]
 							else
 								unless self.notificationsToSend[userId]

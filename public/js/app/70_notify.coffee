@@ -20,7 +20,6 @@ waitForNotify = ->
 						when 'message'
 							message = objectResolve notification
 							users = message.users || []
-							users.push message.from
 							chats = getChats()
 							for id, chat of chats
 								if chat.users[0].hashedId is message.from.hashedId
