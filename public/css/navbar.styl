@@ -291,6 +291,9 @@
 
 	.btn-notification-mobile
 		background url(png("W25x25"))
+		@media (-webkit-min-device-pixel-ratio:2)
+			background url(png("W50x50"))
+			background-size(25px 25px)
 		size(25px, 25px)
 		margin-top 15px
 
