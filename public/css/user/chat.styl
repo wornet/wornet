@@ -9,18 +9,17 @@
 	width 100%
 	height 0
 	z-index 3
-	margin 5px 5px 0 5px
+	margin $smallPadding $smallPadding 0 $smallPadding
 
 	.chat
 		float right
-		width $chatWidth
-		//margin 5px
+		size($chatWidth, $chatHeight)
+		margin 0 $smallPadding
 		// border 1px solid $gray
 		border-bottom none
 		box-shadow(0 0 2px $darkGray)
 		border-radius(2px 2px 0 0)
 		background white
-		height $chatHeight
 
 		&.minimized
 			margin-top $chatHeight - $chatTitleHeight
