@@ -89,6 +89,7 @@ block body
 							=userTexts.woman	
 					+formControl("birthDate")(
 						required
+						ng-class="{ empty: ! user.birthDate }"
 						type="date"
 						title=userTexts.birthDate
 						min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')

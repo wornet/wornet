@@ -63,6 +63,9 @@ do (window, s = textReplacements) ->
 			label: texts.en.OK
 			callback: callback
 
+	if ~navigator.userAgent.indexOf 'Android'
+		$('body').addClass 'android'
+
 	# Fix iOS missing placeholder on date inputs
 	$('input[type="date"]').each ->
 		$date = $ @
