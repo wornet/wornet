@@ -118,7 +118,8 @@ block body
 				.cb
 
 		+simpleModal(s("Conditions générales"))#legals: p
-			!=mdIncludeLangFile('cgu')
+			//-!=mdIncludeLangFile('cgu')
+			div(lang-template="cgu")
 
 		//- +simpleModal(s("Politique de confidentialité"))#privacyPolicy: p
 			!=mdIncludeLangFile('privacy')
