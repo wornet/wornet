@@ -24,11 +24,11 @@ do ->
 	_y = 0
 
 	touchEvent = (e) ->
-		e.originalEvent.targetTouches and
+		e.originalEvent.targetTouches
 
 	pointer = (e) ->
-		if touchEvent e
-			e.originalEvent.targetTouches[0]
+		if t = touchEvent e
+			t[0]
 		else
 			e
 
