@@ -401,7 +401,7 @@ module.exports = (router) ->
 			set.name = req.data.name.content
 		else
 			res.serverError new PublicError s("Le titre de l'album est obligatoire.")
-		if req.data.description
+		if req.data.description and req.data.description.content
 			set.description = req.data.description.content
 
 		if set.getLength() isnt 0
@@ -422,8 +422,8 @@ module.exports = (router) ->
 				, done
 			], ->
 				res.json()
-			, ->
-				res.notFound()
+			, (err) ->
+				res.serverError err
 
 
 	router.put '/video/add', (req, res) ->
