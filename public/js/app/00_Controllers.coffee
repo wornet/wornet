@@ -875,6 +875,11 @@ Controllers =
 			if value
 				$scope.user.email = value
 
+		$('.modal').on 'shown.bs.modal', ->
+			$('body')
+				.height '9999px'
+				.height ''
+
 		return
 
 	Status: ($scope, smiliesService, statusService) ->
