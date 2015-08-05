@@ -19,14 +19,10 @@
 					=error
 
 	div(role="main")
-		+simpleModal(s("Mentions légales"))#legals: p
-			!=mdIncludeLangFile('cgu')
 		block body
 
 
 block footer
-	+simpleModal(s("Mentions légales"))#legals: p
-		!=mdIncludeLangFile('cgu')
 	footer
 		.row.col-sm-8
 			a.link.col-sm-3.col-xs-4(href="http://blog.wornet.fr/")
@@ -84,6 +80,9 @@ block cookie-banner
 					button.btn(type='button', data-dismiss='modal')
 						=s("Fermer")
 
+
++simpleModal(s("Mentions légales"))#legals
+	div(lang-template="cgu")
 
 if allData
 	each value, name in allData

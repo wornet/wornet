@@ -8,6 +8,7 @@ zlib = require 'zlib'
 module.exports = (app) ->
 
 	templates = []
+	markdowns = []
 	fs.realpath __dirname + '/../../../views/templates', (err, dir) ->
 		unless err
 			glob dir + '/**', (err, _templates) ->
@@ -17,6 +18,16 @@ module.exports = (app) ->
 							fs.stat path, (err, stat) ->
 								if ! err and stat.isFile()
 									templates.push path.substring dir.length, path.length - 5
+	fs.realpath __dirname + '/../../../views/includes', (err, dir) ->
+		unless err
+			glob dir + '/**', (err, _markdowns) ->
+				unless err
+					for path in _markdowns
+						do (path) ->
+							if path.endWith '.md'
+								fs.stat path, (err, stat) ->
+									if ! err and stat.isFile()
+										markdowns.push path.substring dir.length, path.length - 3
 
 	# Before each request
 	app.use (req, res, done) ->
@@ -77,13 +88,19 @@ module.exports = (app) ->
 			res.setHeader 'cache-control', 'max-age=' + 90.days + ', public'
 			req.isStatic = true
 			if req.urlWithoutParams.startWith '/template/'
-				template = req.urlWithoutParams.substr 9
-				if template in templates
-					fs.readFile __dirname + '/../../../views/templates' + template + '.jade', (err, contents) ->
+				path = req.urlWithoutParams.substr 9
+				if path in templates
+					fs.readFile __dirname + '/../../../views/templates' + path + '.jade', (err, contents) ->
 						if err
 							res.notFound()
 						else
 							res.end jd contents
+				else if path in markdowns
+					fs.readFile __dirname + '/../../../views/includes' + path + '.md', (err, contents) ->
+						if err
+							res.notFound()
+						else
+							res.end md contents
 				else
 					res.notFound()
 			else

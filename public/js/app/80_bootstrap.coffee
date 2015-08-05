@@ -106,6 +106,20 @@ Wornet = angular.module 'Wornet', [
 		refreshPillOfList $element[0]
 		return
 
+.directive 'langTemplate', ->
+	scope: {}
+	template: '<div ng-include="\'/template/\' + template + \'/\' + lang" ng-if="loaded"></div>'
+	link: ($scope, $element, $attributes) ->
+		$scope.lang = $('html').prop 'lang'
+		$scope.template = $attributes.langTemplate
+		$scope.loaded = false
+		$element.parents('.modal:first').on 'show.bs.modal', ->
+			$scope.$apply ->
+				$scope.loaded = true
+				return
+			return
+		return
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 
