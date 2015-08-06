@@ -134,8 +134,6 @@ exports.isAuthenticated = (req, res, next) ->
 			done = ->
 				# Access map
 				auth = [
-					"/admin"
-					"/agenda"
 					"/photos"
 					"/report/**"
 					"/user/**"
@@ -148,21 +146,37 @@ exports.isAuthenticated = (req, res, next) ->
 					"/user/signin"
 				]
 
-				blacklist = user: [
+				admin = [
 					"/admin"
 				]
 
-				unless config.wornet.agenda and config.wornet.agenda.enabled
-					blacklist.user.push '/agenda'
+				adminIfNotEnabled = (conf, route) ->
+					if conf
+						auth.push route
+					else
+						admin.push route
+
+				adminIfNotEnabled config.wornet.agenda and config.wornet.agenda.enabled, '/agenda'
+				adminIfNotEnabled config.wornet.app and config.wornet.app.enabled, '/user/app'
 
 				res.locals.noIndex = false
 				route = req.url
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
 				# If the URL is in the access restricted list
-				if inList(route, auth) and ! inList(route, whitelist)
+				if inList route, admin
+					if role is 'admin'
+						res.locals.noIndex = true
+						next()
+					else
+						model = url: route
+						res.unautorized model
+				else if inList(route, auth) and ! inList(route, whitelist)
 					# If any user are connected
-					unless req.user
+					if req.user
+						res.locals.noIndex = true
+						next()
+					else
 						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
 						isARouteWithoutMessage = (route is '/')
 						if req.isJSON
@@ -175,14 +189,6 @@ exports.isAuthenticated = (req, res, next) ->
 							if isARouteWithoutMessage
 								req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
 							res.redirect "/"
-
-					# Check blacklist for this user's role
-					else if blacklist[role] and inList route, blacklist[role]
-						model = url: route
-						res.unautorized model
-					else
-						res.locals.noIndex = true
-						next()
 				else
 					next()
 
