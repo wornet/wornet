@@ -366,24 +366,29 @@ module.exports = (router) ->
 		id = req.params.id
 		me = req.user.id
 		end = ->
-			parallelRemove [
-				Album
-				_id: id
-				user: me
-			], [
-				Status
+			# we can't do parallelRemove because we have to remove the status first
+			# to don't have versionError when we save status on photoSchema pre save
+			Status.remove
 				album: id
 				$or: [
 					author: me
 				,
 					at: me
 				]
-			], (err) ->
+			, (err, count) ->
 				if err
 					res.serverError err
 				else
-					req.flash 'profileSuccess', s("Album supprimé")
-					res.json goingTo: '/'
+					Album.remove
+						_id: id
+						user: me
+					, (err, count) ->
+						if err
+							res.serverError err
+						else
+							req.flash 'profileSuccess', s("Album supprimé")
+							res.json goingTo: '/'
+							
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err
 			if photo and ! err and equals photo.album, id
