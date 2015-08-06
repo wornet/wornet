@@ -112,7 +112,7 @@ block nav
 		.nav-icon.col-xs-2
 			if user
 				a.dropdown-toggle( data-toggle="dropdown")
-					img(ng-src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
+					img(ng-src=user.thumb200 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).navthumb
 				ul.dropdown-menu.user.right(role='menu')
 					li: a(href="/user/profile")
 							=s("Mon profil")
