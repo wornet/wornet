@@ -83,7 +83,7 @@
 							+glyph('cog')
 						ul.dropdown-menu(role="menu")
 							li(ng-if="comment.isMine")
-								a.ajax(href="#" ng-click="comment.edit = true;" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
+								a.ajax(href="#" non-block-click="comment.edit = true;" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
 									+glyph('pencil')
 									| &nbsp; 
 									=s("Modifier")

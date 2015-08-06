@@ -120,6 +120,24 @@ Wornet = angular.module 'Wornet', [
 			return
 		return
 
+.directive 'nonBlockClick', ['$timeout', ($timeout) ->
+	link: ($scope, $element, $attributes) ->
+		$element.on 'touchtap click', ->
+			href = $element.attr 'href'
+			ajax = $element.hasClass 'ajax'
+			$element.removeAttr 'href'
+			$element.removeClass 'ajax'
+			$timeout ->
+				if href
+					$element.prop 'href', href
+				if ajax
+					$element.addClass 'ajax'
+				$scope.$eval $attributes.nonBlockClick
+				return
+			return
+		return
+]
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 
