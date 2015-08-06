@@ -145,6 +145,10 @@
 
     "wornet": {
 
+        "app": {
+            "enabled": false
+        },
+
         "asset": {
             "image": {
                 "base64Limit": 30000
@@ -185,6 +189,10 @@
         "defaultHost": "www.wornet.fr",
 
         "errorsToIssue": 10,
+
+        "events": {
+            "enabled": false
+        },
 
         "friends": {
             "hoursBeforeRemoveNotification": 168
