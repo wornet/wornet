@@ -388,7 +388,7 @@ module.exports = (router) ->
 						else
 							req.flash 'profileSuccess', s("Album supprimé")
 							res.json goingTo: '/'
-							
+
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err
 			if photo and ! err and equals photo.album, id
