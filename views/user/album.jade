@@ -19,18 +19,18 @@ block body
 					ul.dropdown-menu(role="menu")
 						if !isPhotoDefaultName(album.name)
 							li
-								a.ajax(href="#" ng-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
+								a.ajax(href="#" non-block-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
 									+glyph('pencil')
 									| &nbsp; 
 									=s("Modifier le titre de l'album")
 							li
 								if album.description
-									a.ajax(href="" ng-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
+									a.ajax(href="#" non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
 										+glyph('pencil')
 										| &nbsp; 
 										=s("Modifier la description")
 								else
-									a.ajax(href="" ng-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
+									a.ajax(href="#" non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
 										+glyph('plus')
 										| &nbsp; 
 										=s("Ajouter une description")

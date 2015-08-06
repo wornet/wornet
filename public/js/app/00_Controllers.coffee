@@ -875,6 +875,7 @@ Controllers =
 			if value
 				$scope.user.email = value
 
+		#hack for enable scroll on legals modal
 		$('.modal').on 'shown.bs.modal', ->
 			$('body')
 				.height '9999px'
