@@ -426,15 +426,16 @@ loggedFriends = (friends) ->
 			return
 
 		$ul.find('span.pill').text ids.length
-		if !$ul.hasClass('loggedFriends-mobile')
-			$ul.find('.dropdown-menu').find('li:not(.select-chat-sound, .divider)').remove()
-			$ul.find('.dropdown-menu').prepend(ul).find('li:not(.select-chat-sound) a').each (key) ->
+		$dropdown = $ul.find '.dropdown-menu'
+		if ! $ul.hasClass 'loggedFriends-mobile'
+			$dropdown.find('li:not(.select-chat-sound, .divider)').remove()
+			$dropdown.prepend(ul).find('li:not(.select-chat-sound) a').each (key) ->
 				$(@).click ->
 					chatService.chatWith [objectResolve friends[key]]
 					return
 				return
 		else
-			$ul.find('.dropdown-menu').html(ul).find('li:not(.select-chat-sound) a').each (key) ->
+			$dropdown.html(ul).find('li:not(.select-chat-sound) a').each (key) ->
 				$(@).click ->
 					chatService.chatWith [objectResolve friends[key]]
 					return
