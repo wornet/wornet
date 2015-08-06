@@ -17,17 +17,15 @@ do ->
 
 	# variables for touch, tap and swipe handle
 	touchTarget = null
+	isTouchEvent = false
 	touch = 0
 	x = 0
 	y = 0
 	_x = 0
 	_y = 0
 
-	touchEvent = (e) ->
-		e.originalEvent.targetTouches
-
 	pointer = (e) ->
-		if t = touchEvent e
+		if t = (e.originalEvent and e.originalEvent.targetTouches)
 			t[0]
 		else
 			e
@@ -51,9 +49,10 @@ do ->
 		dy = y - _y
 		ax = Math.abs dx
 		ay = Math.abs dy
+		isTouchEvent = 0 is (e.type + '').indexOf 'touch'
 		if ax > 50 or ay > 50
-			$(e.target)
-				.trigger 'swipe', [dx, dy]
+			$(touchTarget)
+				.trigger 'swipe', [dx, dy, isTouchEvent]
 				.trigger if ax > ay
 					if dx > 0
 						'swiperight'
@@ -64,10 +63,11 @@ do ->
 						'swipedown'
 					else
 						'swipeup'
+				, [isTouchEvent]
 		else if ax < 4 and ay < 4 and $.now() - touch <= 200
 			$(touchTarget)
 				.trigger 'tap'
-				.trigger if e.type is 'touchstart'
+				.trigger if 0 is (e.type + '').indexOf 'touch'
 					'touchtap'
 				else
 					'mousetap'
@@ -97,8 +97,8 @@ do ->
 			return
 		return
 
-	.on 'swiperight', (e) ->
-		if touchEvent(e) and exists '#shutter'
+	.on 'swiperight', (e, isTouchEvent) ->
+		if isTouchEvent and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
 			$('#directives-calendar > .well').removeClass 'col-xs-9'
 			syncShutter()
@@ -106,8 +106,8 @@ do ->
 		else
 			true
 
-	.on 'swipeleft', (e) ->
-		if touchEvent(e) and exists '#shutter'
+	.on 'swipeleft', (e, isTouchEvent) ->
+		if isTouchEvent and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
 			$('#directives-calendar > .well').addClass 'col-xs-9'
 			syncShutter()
@@ -427,8 +427,8 @@ do ->
 			'tap'
 			'a.dropdown-toggle'
 			($a, e) ->
-				$dropdown = $a.next('ul.dropdown-menu')
-				if $dropdown.find('li').length is 0 and $dropdown.is(':visible')
+				$dropdown = $a.next 'ul.dropdown-menu'
+				if $dropdown.find('li').length is 0 and $dropdown.is ':visible'
 					$dropdown.toggle()
 				return
 		]
