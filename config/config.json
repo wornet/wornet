@@ -210,6 +210,7 @@
             "albumNameLength": 100,
             "albumShortNameLength": 20,
             "biographyLength": 140,
+            "statusPageCount": 50,
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10

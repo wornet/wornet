@@ -32,6 +32,10 @@ userSchema = BaseSchema.extend
 		required: true
 	photoId:
 		type: ObjectId
+		ref: 'PhotoSchema'
+	photoAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
 	token:
 		type: String
 		default: ->
@@ -246,7 +250,13 @@ extend userSchema.methods,
 		preRegistration.contains @email
 
 	publicInformations: (thumbSizes = null) ->
-		values = ['hashedId', 'present']
+		values = [
+			'hashedId'
+			'present'
+			'chatSound'
+			'sex'
+			'photoAlbumId'
+		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]
 		else unless thumbSizes instanceof Array
@@ -257,8 +267,6 @@ extend userSchema.methods,
 		informations.name = @name.toObject()
 		informations.name.full = @name.full
 		informations.points = @points || 0
-		informations.chatSound = @chatSound
-		informations.sex = @sex
 		informations
 
 	sha1Fallback: (plainText) ->

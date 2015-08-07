@@ -138,6 +138,42 @@ Wornet = angular.module 'Wornet', [
 		return
 ]
 
+.directive 'scrollDetect', ->
+	link: ($scope, $element, $attributes) ->
+		getOffset = ->
+			$scope.$eval $attributes.offset
+		callback = $scope.$eval $attributes.callback
+		gap = $scope.$eval $attributes.gap
+		$scrollable = if $attributes.scrollable
+			$ $attributes.scrollable
+		else
+			$document
+		lock = false
+		$scrollable.scroll ->
+			scrollTopMax = $scrollable[0].scrollHeight
+			if 'undefined' is typeof scrollBottom
+				scrollTopMax = document.body.scrollHeight - document.body.offsetHeight
+			else
+				scrollTopMax -= $scrollable[0].offsetHeight
+
+			if $scrollable.scrollTop() > (scrollTopMax - gap) and offset = getOffset()
+				data = {}
+				if offset
+					data.offset = offset
+				if ! lock and $scope.$eval $attributes.verifyToLoad
+					lock = true
+					url = $scope.$eval $attributes.url
+					$element.addClass 'loading'
+					Ajax.post url,
+						data: data
+						success: (data) ->
+							$element.removeClass 'loading'
+							callback offset, data
+							return
+					.always ->
+						lock = false
+		return
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 

@@ -42,12 +42,13 @@ MailPackage =
 		if html is null
 			html = text
 			text = html
-				.replace /&/g, '&amp;'
-				.replace /</g, '&lt;'
-				.replace />/g, '&gt;'
-				.replace /"/g, '&quot;'
-				.replace /'/g, '&#039;'
-				.replace /\n/g, '<br>'
+				.replace /<(br|\/p|\/div)>/g, '\n'
+				.replace /<.*?>/g, ''
+				.replace /&lt;/g, '<'
+				.replace /&gt;/g, '>'
+				.replace /&quot;/g, '"'
+				.replace /&#039;/g, "'"
+				.replace /&amp;/g, '&'
 		if from is null
 			from = 'Wornet <contact@wornet.fr>'
 

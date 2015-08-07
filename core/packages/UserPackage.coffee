@@ -27,10 +27,14 @@ UserPackage =
 			0
 		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
-	getAlbums: (userIds, done) ->
+	getAlbums: (userIds, limit, done) ->
+		if 'function' is typeof limit
+			done = limit
+			limit = 0
 		Album.find
 			user: $in: userIds
-		.sort _id: 'asc'
+		.sort lastAdd: 'desc'
+		.limit limit || 0
 		.exec (err, albums) ->
 			if err
 				done err
@@ -41,28 +45,57 @@ UserPackage =
 				for id in userIds
 					result[id] = []
 				for album in albums
-					album = album.toObject()
-					album.nbPhotos = 0
-					tabAlbum[album._id] = album
-					albumIds.push album._id
+					result[album.user].push album
+				done null, result
 
-				Photo.find
-					album: $in: albumIds
-				, (err, photos) ->
-					if err
-						done err
-					else
-						for photo in photos
-							tabAlbum[photo.album].nbPhotos++
-						for album in albums
-							result[album.user].push tabAlbum[album._id]
-						for id in userIds
-							result[id].sort (a, b) ->
-								if a.name is photoDefaultName()
-									-1
-								else
-									1
-						done null, result
+	getAlbumsForMedias: (userIds, done) ->
+		# @getAlbums userIds, 4, (err, allAlbums) ->
+			if err
+				done err
+			else
+				albumIds = []
+				albumToUser = {}
+				each allAlbums, ->
+					Array::push.apply albumIds, @map (album) ->
+						albumToUser[album.id] = album.user
+						album._id
+
+				Photo.aggregate [
+					$match:
+						album: $in: albumIds
+				,
+					$group:
+						_id: "$album"
+						count: $sum: 1
+				], (err, allData) ->
+					for data in allData
+						albumId = data._id
+						count = data.count
+						userId = albumToUser[albumId]
+						albums = allAlbums[userId]
+						Photo.find album: albumId , (err, photos) ->
+							if err
+								done err
+							else
+								for photo in photos
+									albumOwner = albumToUser[photo.album]
+									albums = allAlbums[albumOwner]
+									allAlbums
+									tabAlbum[photo.album].nbPhotos++
+									if tabAlbum[photo.album].preview contains photo._id
+										for prev in tabAlbum[photo.album].preview
+											prev = photo
+
+								tabAlbum
+									.sort (a, b) ->
+										if a.name is photoDefaultName()
+											-1
+										else
+											1
+									.slice 0, 3
+
+								done null, tabAlbum
+
 
 	search: ->
 		for arg in arguments
