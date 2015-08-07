@@ -538,7 +538,22 @@ Controllers =
 				setMediaAlbums albums
 			return
 
+		$scope.mediaTitle = ->
+			if $scope.albums
+				s = textReplacements
+				if $scope.isMe
+					s('Mes medias ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', nbAlbum: $scope.albums.length, $scope.albums.length).toUpperCase()
+				else
+					s('Medias de {profileName} ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', { profileName: $scope.profileFirstName, nbAlbum: $scope.albums.length }, $scope.albums.length).toUpperCase()
+
+		$scope.albumTitle = (album) ->
+			if album
+				s = textReplacements
+				'> ' + s('{albumTitle} ({nbPhoto} photo)|{albumTitle} ({nbPhoto} photos)', { albumTitle: album.name, nbPhoto: album.nbPhotos}, album.nbPhotos)
+
+
 		return
+
 
 	MediaViewer: ($scope) ->
 
