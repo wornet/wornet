@@ -56,7 +56,8 @@ module.exports = (router) ->
 		if photoId
 			end = (photo) ->
 				PhotoPackage.forget req, photo.id
-				updateUser req, syncUserPhotos({}, photo), (err) ->
+				data = album: photo.album
+				updateUser req, syncUserPhotos(data, photo), (err) ->
 					if err
 						res.serverError err
 					else
@@ -64,10 +65,13 @@ module.exports = (router) ->
 
 			parallel
 				album: (done) ->
-					Album.findOne
+					data =
 						user: req.user._id
-						name: photoDefaultName()
-					, (err, album) ->
+					if req.user.photoAlbumId
+						data._id = req.user.photoAlbumId
+					else
+						data.name = photoDefaultName()
+					Album.findOne data, (err, album) ->
 						if !err and album
 							done null, album
 						else

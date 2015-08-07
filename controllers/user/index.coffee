@@ -296,6 +296,12 @@ module.exports = (router) ->
 				err: err
 				albums: albums[req.user.id]
 
+	router.get '/albums/medias', (req, res) ->
+		UserPackage.getAlbumsForMedias [req.user.id], (err, albums) ->
+			res.json
+				err: err
+				result: albums[req.user.id]
+
 	# Display images in an album
 	router.get '/album/:id', (req, res) ->
 		end = (model) ->
@@ -406,29 +412,33 @@ module.exports = (router) ->
 			set.name = req.data.name.content
 		else
 			res.serverError new PublicError s("Le titre de l'album est obligatoire.")
-		if req.data.description and req.data.description.content
-			set.description = req.data.description.content
 
-		if set.getLength() isnt 0
-			parallel [(done) ->
-				Status.update
-					album: id
-				,
-					albumName: set.name
-				,
-					multi: true
-				, done
-			, (done) ->
-				Album.update
-					_id: id
-					user: req.user.id
-				,
-					set
-				, done
-			], ->
-				res.json()
-			, (err) ->
-				res.serverError err
+		if req.data.name and req.data.name.content is photoDefaultName()
+			res.serverError new PublicError s("Ce nom est reservé.")
+		else
+			if req.data.description and req.data.description.content
+				set.description = req.data.description.content
+
+			if set.getLength() isnt 0
+				parallel [(done) ->
+					Status.update
+						album: id
+					,
+						albumName: set.name
+					,
+						multi: true
+					, done
+				, (done) ->
+					Album.update
+						_id: id
+						user: req.user.id
+					,
+						set
+					, done
+				], ->
+					res.json()
+				, (err) ->
+					res.serverError err
 
 
 	router.put '/video/add', (req, res) ->

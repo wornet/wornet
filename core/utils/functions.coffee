@@ -993,6 +993,13 @@ module.exports =
 						createdAlbum.refreshPreview (err) ->
 							if err
 								warn err
+					Album.findOneAndUpdate
+						_id: albumId
+					,
+						lastAdd: new Date()
+					, (err, album) ->
+						if err
+							warn err
 					id = photo.id
 					PhotoPackage.add req, id
 					photoDirectory = __dirname + '/../../public/img/photo/'

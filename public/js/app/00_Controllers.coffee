@@ -901,7 +901,7 @@ Controllers =
 
 		return
 
-	Status: ($scope, smiliesService, statusService) ->
+	Status: ($scope, smiliesService, statusService, paginate) ->
 
 		initMedias = ->
 			$scope.medias =
@@ -986,13 +986,21 @@ Controllers =
 		richText = (text) ->
 			scanAllLinks smiliesService.filter(text), true
 
-		setRecentStatus = (data) ->
+		lastStatusLoadedCount = null
+
+		$scope.loadStatusList = setRecentStatus = (offset, data) ->
+			if 'object' is typeof offset
+				data = offset
+				offset = null
 			has = (key) ->
 				data[key] and typeof data[key] is 'object' and data[key].length
 			if has 'chat'
 				chatService.all data.chat
 			if has 'recentStatus'
-				$scope.recentStatus = data.recentStatus.map (status) ->
+				$scope.recentStatus ||= []
+				recentStatusIds = $scope.recentStatus.map (status) ->
+					status._id
+				chunk = data.recentStatus.map (status) ->
 					status.images
 						.map (image) ->
 							if location.protocol is 'https:' and image.src.indexOf('http:') is 0
@@ -1016,6 +1024,13 @@ Controllers =
 					status.content = richText status.content
 					status.nbLike ||= 0
 					status
+				for status in chunk
+					index = recentStatusIds.indexOf status._id
+					if ~index
+						$scope.recentStatus[index] = status
+					else
+						$scope.recentStatus.push status
+				lastStatusLoadedCount = chunk.length
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
 					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
@@ -1042,6 +1057,8 @@ Controllers =
 						cursor[0].scrollIntoView()
 						cursor.remove()
 						return
+			else
+				lastStatusLoadedCount = 0
 			return
 
 		videoHosts =
@@ -1246,7 +1263,23 @@ Controllers =
 		else
 			'and/chat' + getLastestUpdateChatId()
 
-		Ajax.get '/user/status/' + select + (if at then '/' + at else ''), setRecentStatus
+		$scope.getLoadUrl = ->
+			'/user/status/' + select + (if at then '/' + at else '')
+
+		$scope.statusRemaining = ->
+			($scope.recentStatus || []).length > 0 and lastStatusLoadedCount > 0 and lastStatusLoadedCount <= getCachedData 'statusPageCount'
+
+		$scope.getStatusOffset = ->
+			statusList = $scope.recentStatus || []
+			if statusList.length
+				statusList[statusList.length - 1]._id
+			else
+				null
+
+		Ajax.post $scope.getLoadUrl(),
+			data: {}
+			success: (data) ->
+				setRecentStatus data
 
 		getAlbums (err, albums) ->
 			unless err

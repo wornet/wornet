@@ -110,6 +110,9 @@
 					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
 					input.btn.btn-primary(type="submit" value=s("Envoyer"))
 					input.btn.cancel(type="button" ng-click="status.commentForm = false" value=s("Annuler"))
-					
+
+div(scroll-detect verify-to-load="statusRemaining()" gap="300" url="getLoadUrl()" offset="getStatusOffset()" callback="loadStatusList").status-loading
++data('statusPageCount', config.wornet.limits.statusPageCount)
+
 if config.wornet.comments.enabled
 	+data('commentsEnabled', true)
