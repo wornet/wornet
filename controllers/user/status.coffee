@@ -2,16 +2,16 @@
 
 module.exports = (router) ->
 
-	router.get '/recent/:id', (req, res) ->
+	router.post '/recent/:id', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res, req.params.id, chat: []
 
-	router.get '/recent', (req, res) ->
+	router.post '/recent', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res, null, chat: []
 
-	router.get '/and/chat/:updatedAt/:id', (req, res) ->
+	router.post '/and/chat/:updatedAt/:id', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res, req.params.id, null, req.params.updatedAt
 
-	router.get '/and/chat/:updatedAt', (req, res) ->
+	router.post '/and/chat/:updatedAt', (req, res) ->
 		StatusPackage.getRecentStatusForRequest req, res, null, null, req.params.updatedAt
 
 	router.delete '/:id', (req, res) ->
