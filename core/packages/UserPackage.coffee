@@ -36,11 +36,33 @@ UserPackage =
 				done err
 			else
 				result = {}
+				albumIds = []
+				tabAlbum = {}
 				for id in userIds
 					result[id] = []
 				for album in albums
-					result[album.user].push album
-				done null, result
+					album = album.toObject()
+					album.nbPhotos = 0
+					tabAlbum[album._id] = album
+					albumIds.push album._id
+
+				Photo.find
+					album: $in: albumIds
+				, (err, photos) ->
+					if err
+						done err
+					else
+						for photo in photos
+							tabAlbum[photo.album].nbPhotos++
+						for album in albums
+							result[album.user].push tabAlbum[album._id]
+						for id in userIds
+							result[id].sort (a, b) ->
+								if a.name is photoDefaultName()
+									-1
+								else
+									1
+						done null, result
 
 	search: ->
 		for arg in arguments
