@@ -17,7 +17,7 @@ block body
 					a.dropdown-toggle(data-toggle="dropdown")
 						+glyph('cog')
 					ul.dropdown-menu(role="menu")
-						if !isPhotoDefaultName(album.name)
+						if user.photoAlbumId ? album.id !== user.photoAlbumId : ! isPhotoDefaultName(album.name)
 							li
 								a.ajax(non-block-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
 									+glyph('pencil')
