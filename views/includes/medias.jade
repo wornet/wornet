@@ -1,15 +1,12 @@
-.well.loading(ng-controller="MediasCtrl").medias-block
-	if isMe
-		h3.myMedias
-			=strtoupper(s("Mes médias"))
-	else
-		h3
-			=strtoupper(s("Médias de {owner}", { owner: profile.firstName }))
+.well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
+	h3(ng-class="{ myMedias: isMe }")
+		| {{ mediaTitle() }}
 	hr
-	.album(ng-repeat="album in albums" ng-click="selectAlbum(album)" ng-if=(config.wornet.media.displayAlbumTitle ? undefined : "album.preview && album.preview.length"))
-		if config.wornet.media.displayAlbumTitle
-			h4 {{ album.name }}
+	.album(ng-repeat="album in albums")
+		a(href="/user/album/{{ album._id }}")
+			h4 {{ albumTitle(album) }}
 		.preview
-			a(href="/user/album/{{ album._id }}")
-				img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
+			img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
 	.cb
+		a(href="")
+			=s('Afficher tous les albums...')
