@@ -137,6 +137,56 @@ module.exports = (router) ->
 
 	adminOnly '/stats/ages', stats _id: 1
 
+	adminOnly '/stats/medias', (info) ->
+		parallel
+			status: Status.count.bind Status
+			albums: Album.count.bind Album
+			photos: Photo.count.bind Photo
+			liens: Link.count.bind Link
+			'vidéos': Video.count.bind Video
+			'mesages de chat': Message.count.bind Message
+			notifications: Notice.count.bind Notice
+			'événements': Event.count.bind Event
+			invitations: Invitation.count.bind Invitation
+			'mentions W': PlusW.count.bind PlusW
+			applications: App.count.bind App
+		, (results) ->
+			r = ''
+			for key, count of results
+				r += jd 'p ' + count + ' ' + key
+			info r
+		, (err) ->
+			info err
+
+	godOnly '/retina', (info) ->
+		Photo.find()
+		.limit 100
+
+	godOnly '/album/profile', (info) ->
+		User.find photoAlbumId: null
+		.limit 100
+		.exec (err, users) ->
+			if err
+				info err
+			else if users.length
+				treatments = {}
+				each users, ->
+					treatments[@id] = (done) =>
+						Album.find
+							user: @_id
+							name: photoDefaultName()
+						, (err, album) =>
+							if err
+								done err
+							else
+								@photoAlbumId = album.id
+								@save done
+				parallel treatments, ->
+					info users.length + " utilisateurs mis à jour"
+				, info
+			else
+				info "Boulot terminé"
+
 	# http links to https
 	godOnly '/https', (info) ->
 		count = 0
