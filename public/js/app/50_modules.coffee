@@ -1,4 +1,4 @@
-do (window, s = textReplacements) ->
+do (window, navigator, s = textReplacements) ->
 	# No click delay with phone touch
 	if window.FastClick
 		FastClick.attach document.body
@@ -63,8 +63,26 @@ do (window, s = textReplacements) ->
 			label: texts.en.OK
 			callback: callback
 
-	if ~navigator.userAgent.indexOf 'Android'
+	userAgent = (navigator || {}).userAgent || ''
+
+	if ~userAgent.indexOf 'Android'
 		$('body').addClass 'android'
+
+	if (~userAgent.indexOf 'iPhone') || (~userAgent.indexOf 'iPad')
+		$document
+		.on 'mouseover', '.m-btns a, .m-btns .btn', (e) ->
+			$(@).click()
+			cancel e
+		.on 'touchstart', '.open-shutter a', ->
+			$a = $ 'ul.nav > li > a'
+			href = $a.attr 'href'
+			$a.removeAttr 'href'
+			$a.click ->
+				delay ->
+					$a.attr 'href', href
+					return
+				return
+			return
 
 	# Fix iOS missing placeholder on date inputs
 	$('input[type="date"]').each ->

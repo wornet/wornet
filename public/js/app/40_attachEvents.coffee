@@ -39,7 +39,7 @@ do ->
 	.on 'touchstart mousedown', (e) ->
 		p = pointer e
 		_x = x = p.pageX
-		_y = y = p.pageY
+		_y = y = p.pageY - $document.scrollTop()
 		touch = $.now()
 		touchTarget = e.target
 		return
@@ -91,8 +91,10 @@ do ->
 			$img.attr 'src', $img.data delayedSrcAttr
 			$img.on 'error', ->
 				$img.parent().parent().remove()
+				return
 			$img.on 'load', ->
 				$img.parents('.fade-on-load:first').removeClass 'not-loaded'
+				return
 			$img.removeAttr delayedSrcAttr
 			return
 		return
