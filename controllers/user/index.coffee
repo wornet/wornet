@@ -262,10 +262,10 @@ module.exports = (router) ->
 				res.redirect '/user/settings'
 
 	toggleShutter = (req, res, opened) ->
-		res.json()
 		updateUser req, openedShutter: opened, (err) ->
 			if err
-				throw err
+				warn err
+			res.json()
 
 	router.post '/shutter/open', (req, res) ->
 		toggleShutter req, res, true
