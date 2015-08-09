@@ -1,9 +1,8 @@
 #shutter(class=(user && user.openedShutter ? 'opened-shutter' : null)): .inner-shutter
-	ul.nav
-		li: a(href="/user/settings")
-			=s("Paramètres")
-			| &nbsp; 
-			+glyph('cog')
+	ul.nav: li: a(href="/user/settings")
+		=s("Paramètres")
+		| &nbsp; 
+		+glyph('cog')
 
 	a(href="/user/profile")
 		+glyph('user')
