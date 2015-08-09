@@ -136,6 +136,12 @@ module.exports =
 		catch err
 			warn err
 	###
+	Unlink JPEG file and its mobile version if it exists
+	###
+	unlinkJpg: (src, done) ->
+		unlink src + '.jpg', done
+		unlink src + '.mobile.jpg', ->
+	###
 	Compress JS code
 	@param string intial code
 
@@ -936,15 +942,21 @@ module.exports =
 	@param callback executed when resizing is done
 	###
 	resize: (src, dst, opts, done) ->
-		extend opts,
+		mobile = if opts.mobile
+			delete opts.mobile
+			true
+		else
+			false
+		opts = opts.with
 			quality: .6
 			srcPath: src
 			dstPath: dst
 		imagemagick.resize opts, done
-		extend opts,
-			quality: .25
-			dstPath: mobilePath dst
-		imagemagick.resize opts, ->
+		unless mobile
+			imagemagick.resize opts.with
+				quality: .25
+				dstPath: mobilePath dst
+			, ->
 
 	###
 	Return default profile photo name.
@@ -997,23 +1009,30 @@ module.exports =
 							done resizeErr, createdAlbum, photo
 						else
 							sizes = config.wornet.thumbSizes
+							suffixes = config.wornet.thumbSuffixes
 							pending = sizes.length
 							for size in sizes
-								thumb = photoDirectory + size + 'x' + id + '.jpg'
-								resize image.path, thumb,
-									strip : false,
-									width : size,
-									height : size + "^",
-									customArgs: [
-										"-auto-orient"
-										"-gravity", "center"
-										"-extent", size + "x" + size
-									]
-								, (resizeErr) ->
-									if resizeErr
-										done resizeErr, createdAlbum, photo
-									else unless --pending
-										done null, createdAlbum, photo
+								for suffixe, ratio of suffixes
+									do (size, suffixe, ratio) ->
+										thumb = photoDirectory + size + 'x' + id + suffixe + '.jpg'
+										size *= ratio
+										opts =
+											strip : false,
+											width : size,
+											height : size + "^",
+											customArgs: [
+												"-auto-orient"
+												"-gravity", "center"
+												"-extent", size + "x" + size
+											]
+										if ratio > 1 or size is 50
+											opts.mobile = true
+										resize image.path, thumb, opts, (resizeErr) ->
+											if ratio is 1
+												if resizeErr
+													done resizeErr, createdAlbum, photo
+												else unless --pending
+													done null, createdAlbum, photo
 		if notProfilePhoto
 			next()
 		else
@@ -1395,7 +1414,7 @@ module.exports =
 	@return string rewrited url
 	###
 	profilePhotoUrl: (url) ->
-		url.replace /^(\/img\/photo\/[^\/]+)\/[^\/]+\.jpg$/g, '$1.jpg'
+		url.replace /^(\/img\/photo\/[^\/]+)\/[^\/@]+((@[0-9]+x)?\.jpg)$/g, '$1$2'
 
 	###
 	Wrap text with quotes and escape quotes and backslashes within it
