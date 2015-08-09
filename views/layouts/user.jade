@@ -61,7 +61,7 @@ block params
 
 block nav
 	include ../includes/shutter
-	.wornet-navbar.wornet-navbar-fixed-top.standard-device.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
+	.wornet-navbar.wornet-navbar-fixed-top.standard-device.m-btns.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		.wornet-navbar-header
 			h1.col-xs-12
 				!=upperTitle
@@ -133,7 +133,7 @@ block nav
 						)#search
 					+glyph('search')
 				.suggests
-					ul: li(ng-repeat="user in query.users")
+					ul(dpr): li(ng-repeat="user in query.users")
 						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							.user-name
