@@ -14,6 +14,8 @@ Wornet = angular.module 'Wornet', [
 		'self'
 		'http://www.youtube.com/embed/**'
 		'https://www.youtube.com/embed/**'
+		'http://www.youtube-nocookie.com/embed/**'
+		'https://www.youtube-nocookie.com/embed/**'
 		'http://www.dailymotion.com/embed/video/**'
 		'https://www.dailymotion.com/embed/video/**'
 	]

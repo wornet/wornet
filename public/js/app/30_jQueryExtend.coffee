@@ -71,8 +71,8 @@ $.fn.extend
 		@each ->
 			$block = $ @
 			ratio = (r || $block.data 'ratio') * 1
-			unless isNaN(ratio)
-				$block.height $block.width() / ratio
+			if (! isNaN ratio) and (w = $block.width())
+				$block.height w / ratio
 			return
 	# Update the src attribute of a thumb and all other thumbs with the same id
 	thumbSrc: (src) ->

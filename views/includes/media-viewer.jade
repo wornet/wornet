@@ -17,7 +17,7 @@
 					+glyph('circle-arrow-left')
 				a.next(ng-click="next()" ng-class="{ disabled: loadedMedia.last }")
 					+glyph('circle-arrow-right')
-		iframe(ng-switch-when="video" ng-src="{{ loadedMedia.href }}" frameborder="0" allowfullscreen data-ratio="1.7778")
+		iframe(ng-switch-when="video" ng-src="{{ videoHref() }}" frameborder="0" allowfullscreen data-ratio="1.7778")
 		div(ng-switch-default)=s("Format de média inconnu")
 	.modal-footer
 		span.info(ng-if="loadedMedia.user")
@@ -28,7 +28,7 @@
 		.date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
 			|&nbsp;
 		.large-dropdown.settings(ng-if="loadedMedia.concernMe")
-			a.dropdown-toggle(href="#" data-toggle="dropdown")
+			a.dropdown-toggle(data-toggle="dropdown")
 				+glyph('cog')
 			ul.dropdown-menu(role="menu")
 				li: a(ng-click="setAsProfilePhoto()")
