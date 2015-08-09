@@ -100,6 +100,12 @@ Wornet = angular.module 'Wornet', [
 		return
 ]
 
+.directive 'dpr', ->
+	link: ($scope, $element)->
+		if window.devicePixelRatio > 1
+			$scope.$watch $element.dpr
+		return
+
 .directive 'pill', ->
 	scope: true
 	link: ($scope, $element) ->

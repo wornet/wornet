@@ -280,6 +280,12 @@
 
         "thumbSizes": [50, 90, 200],
 
+        "thumbSuffixes": {
+            "": 1,
+            "@2x": 2,
+            "@3x": 3
+        },
+
         "timeout": 30,
 
         "trackers": {

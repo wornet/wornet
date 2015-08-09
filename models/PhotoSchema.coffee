@@ -63,9 +63,10 @@ photoSchema.pre 'remove', (done) ->
 
 photoSchema.post 'remove', ->
 	photoDirectory = __dirname + '/../public/img/photo/'
-	unlink photoDirectory + @id + '.jpg'
+	unlinkJpg photoDirectory + @id
 	for size in config.wornet.thumbSizes
-		unlink photoDirectory + size + 'x' + @id + '.jpg'
+		for suffixe, ratio of config.wornet.thumbSuffixes
+			unlinkJpg photoDirectory + size + 'x' + @id + suffixe
 	PhotoPackage.refreshAlbum @album
 
 module.exports = photoSchema

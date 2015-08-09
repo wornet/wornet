@@ -165,6 +165,9 @@ module.exports = (app) ->
 						return
 				req.url = req.urlWithoutParams
 				if req.url.startWith '/img/photo/'
+					if '@' is (req.originalUrl.substr -7, 1) and 'x.' is (req.originalUrl.substr -5, 2)
+						isMobile = false
+						req.url = req.originalUrl
 					req.url = profilePhotoUrl req.url
 					photoId = PhotoPackage.urlToId req.url
 					if photoId and PhotoPackage.restricted req, photoId
