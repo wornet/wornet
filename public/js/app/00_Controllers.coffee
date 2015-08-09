@@ -624,6 +624,9 @@ Controllers =
 					return
 			return
 
+		$scope.videoHref = ->
+			(($scope.loadedMedia || {}).href || '').replace '.youtube.com/', '.youtube-nocookie.com/'
+
 		$scope.loadMedia = (type, media, concernMe) ->
 			media = $.extend
 				concernMe: concernMe
@@ -720,8 +723,8 @@ Controllers =
 			return
 
 
-		window.loadMedia = (type, media, concerMe) ->
-			$scope.loadMedia type, media, concerMe
+		window.loadMedia = (type, media, concernMe) ->
+			$scope.loadMedia type, media, concernMe
 			delay 1, ->
 				$('#media-viewer').modal()
 				return
@@ -897,7 +900,7 @@ Controllers =
 		$scope.thumbnail = (url) ->
 			url
 				.replace /\/\/www\.youtube\.com\/embed\/([a-z0-9_-]+)/ig, '//img.youtube.com/vi/$1/0.jpg'
-				.replace /\/\/www\.dailymotion\.com\/embed\/video\/([a-z0-9_-]+)/ig, 'www.dailymotion.com/thumbnail/video/$1'
+				.replace /\/\/www\.dailymotion\.com\/embed\/video\/([a-z0-9_-]+)/ig, '//www.dailymotion.com/thumbnail/video/$1'
 
 		$scope.removeMedia = (media) ->
 			Ajax.delete '/user/media/preview',
@@ -1169,7 +1172,9 @@ Controllers =
 
 		$scope.loadMedia = (type, media) ->
 			loadMedia type, media
-
+			$('#media-viewer').one 'shown.bs.modal', ->
+				$('iframe[data-ratio]').ratio()
+				return
 			return
 
 		$scope.toggleLike = (status, adding) ->

@@ -567,10 +567,10 @@ fieldset.tab .btn
 		float none
 		size(480px, 270px)
 		@media (max-width: 564px)
-			size(240px, 135px)
+			size($mobilePlayerWidth, $mobilePlayerHeight)
 
 	img.video-preview
-		size(240px, 180px)
+		size($mobilePlayerWidth, $mobilePosterHeight)
 
 	a:not(.album-name)
 		display block
@@ -752,6 +752,18 @@ iframe.app
 		width 70%
 		@media (max-width: 768px)
 			width calc(100% - 20px)
+
+a.mobile-video
+	size($mobilePlayerWidth, $mobilePlayerHeight)
+	overflow hidden
+	rel()
+	img.video-preview
+		rel(($mobilePlayerHeight - $mobilePosterHeight) / 2)
+	.glyphicon
+		opacity(.7)
+		abs(($mobilePlayerHeight - $playConfigSize) / 2, ($mobilePlayerWidth - $playConfigSize) / 2)
+		color white
+		font-size $playConfigSize
 
 // Imports.
 @import "includes/tooltip"
