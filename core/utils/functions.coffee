@@ -1316,7 +1316,7 @@ module.exports =
 			file = file.string
 		file = ('' + file).replace /^\/img\//g, '/'
 		version = (config.wornet.assetVersion ||= generateSalt 6)
-		if /https?:\/\//g.test file
+		if /^https?:\/\//g.test file
 			file + '.' + extension + '?' + version
 		else
 			source = 'public' + profilePhotoUrl '/' + directory + '/' + file + '.' + extension
@@ -1327,7 +1327,7 @@ module.exports =
 				if fs.existsSync assetSource
 					stat = fs.statSync assetSource
 				else if assetSource isnt source and fs.existsSync source
-					stat = fs.statSync assetSource
+					stat = fs.statSync source
 				if /\/app\.styl$/g.test source
 					for dir in ['css', 'css/includes', 'css/lib', 'css/user']
 						dirStat = fs.statSync __dirname + '/../../public/' + dir
