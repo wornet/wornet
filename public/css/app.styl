@@ -442,36 +442,6 @@ h2
 	line-height 28px
 
 
-.album
-	// background $ultraLightOrange
-	// border-radius(4px)
-	width 100%
-	padding 0 $smallPadding $smallPadding 0
-	transition(.2s all)
-	margin 0 $mainPadding $mainPadding 0
-	//cursor pointer
-	float left
-
-	//&:hover
-	//	background $lightOrange
-
-	h4
-		font-weight bold
-		font-size 15px
-		margin 0 0 $smallPadding
-
-	.description
-		margin 2px 0 0
-
-	.preview
-		size(100%)
-		padding 0
-		img
-			display block
-			float left
-			margin $smallPadding 0 0 $smallPadding
-			size($thumbWidth, $thumbHeight)
-
 .description
 	font-size 11px
 
@@ -556,30 +526,6 @@ input.glued
 
 fieldset.tab .btn
 	margin-bottom 0
-
-.medias
-	h3
-		clear left
-		margin 0
-		padding-top $mainPadding
-
-	iframe
-	img
-		size(90px)
-		float left
-		margin 0 $smallPadding $smallPadding 0
-
-	iframe.preview
-		float none
-		size(480px, 270px)
-		@media (max-width: 564px)
-			size(240px, 135px)
-
-	img.video-preview
-		size(240px, 180px)
-
-	a:not(.album-name)
-		display block
 
 span.image-box i.glyphicon
 	float left
@@ -767,6 +713,7 @@ iframe.app
 @import "user/status"
 @import "user/comment"
 @import "user/chat"
+@import "user/medias"
 @import "agenda"
 
 @media (max-width: 414px)
@@ -888,20 +835,9 @@ iframe.app
 
 
 @media (max-width: 991px)
-
 	footer
 		// Tailles du pied de page.
 		size(100%, $mobileFooterHeight)
-
-	.album
-		h4
-			font-size 13px
-
-		.preview
-			size(2 * (30 + $smallPadding))
-
-			img
-				size(30px)
 
 @media (max-width: 1024px)
 	.wornet-navbar .dropdown-menu>li>a
