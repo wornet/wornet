@@ -1,0 +1,13 @@
+extends ../layouts/user
+
+block body
+	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
+		#all-albums.well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
+			h3(ng-class="{ myMedias: isMe }")
+				| {{ mediaTitle() }}
+			hr
+			.album(ng-repeat="album in albums")
+				a.album-name(href="/user/album/{{ album._id }}")
+					| {{ albumTitle(album) }}
+				.preview
+					img(ng-repeat="photo in album.preview" ng-src="/img/photo/50x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")

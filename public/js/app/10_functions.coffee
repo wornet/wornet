@@ -367,15 +367,18 @@ getAlbumsFromServer = (done) ->
 		window.getAlbumsFromServer.waitingCallbacks = [done]
 		at = (getCachedData 'at') || ''
 		key = albumKey()
-		if at
-			at = '/with/' + at
-		Ajax.get '/user/albums' + at, (data) ->
+		if !at
+			at = (getCachedData 'me') || ''
+		Ajax.get 'user/albums/medias/' + at, (data) ->
 			err = data.err || null
 			if data.albums
 				albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 				setSessionValue key, albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
-				done err, albums
+				if data.nbAlbums
+					done err, albums, data.nbAlbums
+				else
+					done err, albums
 			window.getAlbumsFromServer.waitingCallbacks = false
 			return
 		.error ->
@@ -406,7 +409,7 @@ removeDeprecatedAlbums = (albums) ->
 	sixDaysEarlier = today.subDays 6
 	results = []
 	if albums
-		for album in albums
+		for id, album of albums
 			if !album.lastEmpty or (album.lastEmpty and (new Date(album.lastEmpty) > sixDaysEarlier or album.preview.length isnt 0))
 				results.push album
 	results

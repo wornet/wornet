@@ -1,26 +1,13 @@
-.well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
+.well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName) + "; profileHashedId = "+ JSON.stringify(profile.hashedId)).medias-block
 	h3(ng-class="{ myMedias: isMe }")
 		| {{ mediaTitle() }}
 	hr
-	.album(ng-if="albumProfile.preview.length > 0 || isMe")
-		a(href="/user/album/{{ albumProfile._id }}" ng-if="albumProfile.preview.length > 0")
-			h4 {{ albumTitle(album) }}
-		span(ng-if="!albumProfile.preview")
-			h4 
-				=s("Photos de profil")
-		.preview
-			img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg" ng-if="albumProfile.preview.length > 0")
-			iframe(name="upload")
-			.photo-options
-				+form("/user/photo", "FILE")#profile-photo-media(target="upload")
-					.progress-radial: .overlay
-						img.upload-thumb
-						input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
 	.album(ng-repeat="album in albums")
-		a(href="/user/album/{{ album._id }}")
-			h4 {{ albumTitle(album) }}
+		a.album-name(href="/user/album/{{ album._id }}")
+			| {{ albumTitle(album) }}
 		.preview
-			img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', id)")
+			img(ng-repeat="photo in album.preview" ng-src="/img/photo/50x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")
+	hr.cb
+	a.all-albums(href="/user/albums/{{ profileHashedId }}")
+		=s('Afficher tous les albums...')
 	.cb
-		a(href="")
-			=s('Afficher tous les albums...')
