@@ -533,16 +533,27 @@ Controllers =
 				return
 			return
 
-		getAlbums (err, albums) ->
-			unless err
-				setMediaAlbums albums
-			return
+		if $('#all-albums').length
+			at = getCachedData 'at'
+			if !at
+				at = getCachedData 'me'
+			Ajax.get '/user/albums/all/' + at, (data) ->
+				$scope.nbNonEmptyAlbums = data.nbAlbums || 0
+				unless data.err
+					setMediaAlbums data.albums
+				return
+		else
+			getAlbums (err, albums, nbAlbums) ->
+				$scope.nbNonEmptyAlbums = nbAlbums || 0
+				unless err
+					setMediaAlbums albums
+				return
 
 		$scope.mediaTitle = ->
 			if $scope.albums
 				s = textReplacements
 				if $scope.isMe
-					s('Mes medias ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', nbAlbum: $scope.albums.length, $scope.albums.length).toUpperCase()
+					s('Mes medias ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', nbAlbum: $scope.nbNonEmptyAlbums, $scope.nbNonEmptyAlbums).toUpperCase()
 				else
 					s('Medias de {profileName} ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', { profileName: $scope.profileFirstName, nbAlbum: $scope.albums.length }, $scope.albums.length).toUpperCase()
 
@@ -551,6 +562,9 @@ Controllers =
 				s = textReplacements
 				'> ' + s('{albumTitle} ({nbPhoto} photo)|{albumTitle} ({nbPhoto} photos)', { albumTitle: album.name, nbPhoto: album.nbPhotos}, album.nbPhotos)
 
+		$scope.loadMedia = (type, media) ->
+			loadMedia type, media
+			return
 
 		return
 

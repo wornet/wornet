@@ -1,0 +1,109 @@
+#profile-photo-media
+	size(50px, 100%)
+	rel()
+
+	.btn
+		abs()
+		bottom 0
+		margin $progressRadialWidth
+		width 50px - 4 * $progressRadialWidth
+		color $nearlyWhite
+		background-color rgba(115,100,95,.5)
+
+	.progress-radial
+	.progress-radial .overlay
+	img.upload-thumb
+	input.upload
+	.loader
+		abs()
+		size(100%)
+
+	input.upload
+		cursor pointer
+		opacity(0)
+
+	.progress-radial
+	.progress-radial .overlay
+	img.upload-thumb
+		cursor pointer
+		if $photoRadius
+			border-radius($photoRadius)
+		transition(all .2s)
+
+	.progress-radial
+		padding $progressRadialWidth
+		background-color $darkOrange
+		.overlay
+			rel()
+			background-color white
+
+.album
+	// background $ultraLightOrange
+	// border-radius(4px)
+	width 100%
+	padding 0 $smallPadding $smallPadding 0
+	transition(.2s all)
+	margin 0 $mainPadding $mainPadding 0
+	//cursor pointer
+	float left
+
+	//&:hover
+	//	background $lightOrange
+
+	h4
+		font-size 16px
+		margin 0 0 $smallPadding
+
+	.description
+		margin 2px 0 0
+
+	.preview
+		size(100%)
+		padding 0
+		img
+			display block
+			float left
+			margin $smallPadding 0 0 $smallPadding
+			size($thumbWidth, $thumbHeight)
+
+.medias
+.medias-block
+	h3
+		clear left
+		margin 0
+		padding-top $mainPadding
+
+	iframe
+	img
+		size(90px)
+		float left
+		margin 0 $smallPadding $smallPadding 0
+
+	iframe.preview
+		float none
+		size(480px, 270px)
+		@media (max-width: 564px)
+			size(240px, 135px)
+
+	img.video-preview
+		size(240px, 180px)
+
+	a:not(.album-name)
+		display block
+	a
+		color $linkColor
+		&.all-albums
+			float right
+		&.album-name
+			font-size 16px
+
+@media (max-width: 991px)
+	.album
+		h4
+			font-size 13px
+
+		.preview
+			size(2 * (30 + $smallPadding))
+
+			img
+				size(30px)

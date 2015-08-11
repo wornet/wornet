@@ -27,14 +27,13 @@ UserPackage =
 			0
 		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
-	getAlbums: (userIds, limit, done) ->
+	getAlbums: (userIds, done) ->
 		if 'function' is typeof limit
 			done = limit
 			limit = 0
 		Album.find
 			user: $in: userIds
 		.sort lastAdd: 'desc'
-		.limit limit || 0
 		.exec (err, albums) ->
 			if err
 				done err
@@ -48,53 +47,90 @@ UserPackage =
 					result[album.user].push album
 				done null, result
 
-	getAlbumsForMedias: (userIds, done) ->
-		# @getAlbums userIds, 4, (err, allAlbums) ->
-			if err
-				done err
-			else
-				albumIds = []
-				albumToUser = {}
-				each allAlbums, ->
-					Array::push.apply albumIds, @map (album) ->
-						albumToUser[album.id] = album.user
-						album._id
+	isMeOrAFriend: (req, hashedId) ->
+		if req.user.hashedId is hashedId
+			true
+		else
+			req.getFriends (err, friends, friendAsks) ->
+				isAFriend = if friends and friends.getLength() > 0
+					friends.has hashedId: hashedId
+			isAFriend
 
-				Photo.aggregate [
-					$match:
-						album: $in: albumIds
-				,
-					$group:
-						_id: "$album"
-						count: $sum: 1
-				], (err, allData) ->
-					for data in allData
-						albumId = data._id
-						count = data.count
-						userId = albumToUser[albumId]
-						albums = allAlbums[userId]
-						Photo.find album: albumId , (err, photos) ->
+	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
+		if @isMeOrAFriend req, hashedId
+			idUser = cesarRight hashedId
+			UserAlbums.findOne
+				user: idUser
+			, (err, userAlbums) ->
+				if err
+					warn err
+				else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
+					done null, {}, 0
+				else
+					Album.find
+						user: idUser
+					.sort lastAdd: 'desc'
+					.exec (err, allAlbums) ->
+						albumIdsList = allAlbums.column '_id'
+						Photo.aggregate [
+							$match:
+								status: "published"
+								album: $in: albumIdsList
+						,
+							$group:
+								_id: "$album"
+								count: $sum: 1
+						], (err, allData) ->
 							if err
-								done err
+								warn err
 							else
-								for photo in photos
-									albumOwner = albumToUser[photo.album]
-									albums = allAlbums[albumOwner]
-									allAlbums
-									tabAlbum[photo.album].nbPhotos++
-									if tabAlbum[photo.album].preview contains photo._id
-										for prev in tabAlbum[photo.album].preview
-											prev = photo
+								# all non empty albums
+								allData = allData.filter (data) ->
+									data.count isnt 0
+								nbAlbumsNotEmpty = allData.length
+								albumIds = userAlbums.lastFour
 
-								tabAlbum
-									.sort (a, b) ->
-										if a.name is photoDefaultName()
-											-1
-										else
-											1
-									.slice 0, 3
+								tabAlbum = {}
+								photoIds = []
+								if !all
+									albums = allAlbums.filter (album) ->
+										userAlbums.lastFour.contains album._id
+									# to keep the order
+									for id in userAlbums.lastFour
+										for album in albums
+											if strval(id) is strval(album._id)
+												albumObj = album.toObject()
+												albumObj.preview = []
+												for data in allData
+													if equals data._id, album._id
+														albumObj.nbPhotos = data.count
+												photoIds = photoIds.concat album.preview
+												tabAlbum[album.id] = albumObj
+								else
+									for album in allAlbums
+										albumObj = album.toObject()
+										albumObj.preview = []
+										for data in allData
+											if equals data._id, album._id
+												albumObj.nbPhotos = data.count
+										photoIds = photoIds.concat album.preview
+										tabAlbum[album.id] = albumObj
 
-								done null, tabAlbum
+								Photo.find
+									_id: $in: photoIds
+									status: "published"
+								, (err, photos) ->
+									if err
+										warn err
+									else
+										for photo in photos
+											photoPath = photo.photo
+											photo = photo.toObject()
+											photo.src = photoPath
+											tabAlbum[photo.album].preview.push photo
+										done null, tabAlbum, nbAlbumsNotEmpty
+		else
+			res.serverError new PublicError s('Vous ne pouvez pas voir ces médias.')
 
 
 	search: ->

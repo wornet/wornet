@@ -977,10 +977,6 @@ module.exports =
 				if createErr
 					done createErr, createdAlbum, photo
 				else
-					if createdAlbum
-						createdAlbum.refreshPreview (err) ->
-							if err
-								warn err
 					Album.findOneAndUpdate
 						_id: albumId
 					,
@@ -988,6 +984,10 @@ module.exports =
 					, (err, album) ->
 						if err
 							warn err
+					if !notProfilePhoto
+						updateUser req, photoAlbumId: albumId, (err, user) ->
+							if err
+								warn err
 					id = photo.id
 					PhotoPackage.add req, id
 					photoDirectory = __dirname + '/../../public/img/photo/'
@@ -1020,6 +1020,9 @@ module.exports =
 									if resizeErr
 										done resizeErr, createdAlbum, photo
 									else unless --pending
+										UserAlbums.touchAlbum req.user, albumId, (err, result) ->
+											if err
+												warn err
 										done null, createdAlbum, photo
 		if notProfilePhoto
 			next()
