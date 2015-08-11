@@ -102,6 +102,9 @@ module.exports = (router) ->
 									if err
 										res.serverError err
 									else
+										album.refreshPreview (err) ->
+											if err
+												warn err
 										end photo
 				, (err) ->
 					res.serverError err

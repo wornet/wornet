@@ -296,11 +296,28 @@ module.exports = (router) ->
 				err: err
 				albums: albums[req.user.id]
 
-	router.get '/albums/medias', (req, res) ->
-		UserPackage.getAlbumsForMedias [req.user.id], (err, albums) ->
+	router.get '/albums/medias/:hashedId', (req, res) ->
+		# hashedId is me or at (of a friend)
+		hashedId = req.params.hashedId
+		UserPackage.getAlbumsForMedias req, hashedId, false, (err, albums, nbAlbums) ->
 			res.json
 				err: err
-				result: albums[req.user.id]
+				albums: albums
+				nbAlbums: nbAlbums
+
+	router.get '/albums/:hashedId', (req, res) ->
+		res.render 'user/album-list',
+			profile: req.user
+			isMe: req.user.hashedId is req.params.hashedId
+
+	router.get '/albums/all/:hashedId', (req, res) ->
+		# hashedId is me or at (of a friend)
+		hashedId = req.params.hashedId
+		UserPackage.getAlbumsForMedias req, hashedId, true, (err, albums, nbAlbums) ->
+			res.json
+				err: err
+				albums: albums
+				nbAlbums: nbAlbums
 
 	# Display images in an album
 	router.get '/album/:id', (req, res) ->
