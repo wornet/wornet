@@ -65,6 +65,8 @@
 			float left
 			margin $smallPadding 0 0 $smallPadding
 			size($thumbWidth, $thumbHeight)
+	.album-name
+		color $linkColor
 
 .medias
 .medias-block
@@ -88,7 +90,7 @@
 	img.video-preview
 		size(240px, 180px)
 
-	a:not(.album-name)
+	a:not(.album-name, .album-number)
 		display block
 	a
 		color $linkColor
@@ -96,6 +98,10 @@
 			float right
 		&.album-name
 			font-size 16px
+
+#all-albums
+	.preview img
+		size(90px)
 
 @media (max-width: 991px)
 	.album

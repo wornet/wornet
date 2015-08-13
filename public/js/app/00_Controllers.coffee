@@ -549,18 +549,15 @@ Controllers =
 					setMediaAlbums albums
 				return
 
-		$scope.mediaTitle = ->
+		$scope.nbAlbum = ->
 			if $scope.albums
 				s = textReplacements
-				if $scope.isMe
-					s('Mes medias ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', nbAlbum: $scope.nbNonEmptyAlbums, $scope.nbNonEmptyAlbums).toUpperCase()
-				else
-					s('Medias de {profileName} ({nbAlbum} album)|Mes medias ({nbAlbum} albums)', { profileName: $scope.profileFirstName, nbAlbum: $scope.albums.length }, $scope.albums.length).toUpperCase()
+				s('({nbAlbum} album)|({nbAlbum} albums)', nbAlbum: $scope.nbNonEmptyAlbums, $scope.nbNonEmptyAlbums).toUpperCase()
 
-		$scope.albumTitle = (album) ->
+		$scope.nbPhotos = (album) ->
 			if album
 				s = textReplacements
-				'> ' + s('{albumTitle} ({nbPhoto} photo)|{albumTitle} ({nbPhoto} photos)', { albumTitle: album.name, nbPhoto: album.nbPhotos}, album.nbPhotos)
+				s('({nbPhoto} photo)|({nbPhoto} photos)', {nbPhoto: album.nbPhotos}, album.nbPhotos)
 
 		$scope.loadMedia = (type, media) ->
 			loadMedia type, media
@@ -1002,7 +999,7 @@ Controllers =
 
 		lastStatusLoadedCount = null
 
-		$scope.loadStatusList = setRecentStatus = (offset, data) ->
+		$scope.loadStatusList = setRecentStatus = (offset, data, toPush = true) ->
 			if 'object' is typeof offset
 				data = offset
 				offset = null
@@ -1043,7 +1040,10 @@ Controllers =
 					if ~index
 						$scope.recentStatus[index] = status
 					else
-						$scope.recentStatus.push status
+						if toPush
+							$scope.recentStatus.push status
+						else
+							$scope.recentStatus.uniqueUnshift status
 				lastStatusLoadedCount = chunk.length
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
@@ -1167,7 +1167,7 @@ Controllers =
 					medias: $scope.medias || null
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
-					setRecentStatus data
+					setRecentStatus data, null, false
 					refreshMediaAlbums()
 			status.content = ""
 			initMedias()

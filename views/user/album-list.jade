@@ -2,12 +2,22 @@ extends ../layouts/user
 
 block body
 	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
-		#all-albums.well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
+		+data('at', profile.hashedId)
+		#all-albums.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
 			h3(ng-class="{ myMedias: isMe }")
-				| {{ mediaTitle() }}
+				if isMe
+					=s("Mes medias").toUpperCase() + ' '
+					span.album-number(ng-bind-html="nbAlbum()")
+				else
+					=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
+					span.album-number(ng-bind-html="nbAlbum()")
 			hr
 			.album(ng-repeat="album in albums")
-				a.album-name(href="/user/album/{{ album._id }}")
-					| {{ albumTitle(album) }}
+				span.album-name
+					| > &nbsp;
+				span.album-name(ng-bind-html="album.name")
+				| &nbsp;
+				a.album-name(href="/user/album/{{ album._id }}" ng-bind-html="nbPhotos(album)")
 				.preview
-					img(ng-repeat="photo in album.preview" ng-src="/img/photo/50x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")
+					img(ng-repeat="photo in album.preview" ng-src="/img/photo/90x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")
+			.cb

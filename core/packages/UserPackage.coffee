@@ -51,10 +51,9 @@ UserPackage =
 		if req.user.hashedId is hashedId
 			true
 		else
-			req.getFriends (err, friends, friendAsks) ->
-				isAFriend = if friends and friends.getLength() > 0
-					friends.has hashedId: hashedId
-			isAFriend
+			friendsHashedIds = req.user.friends.map (friend) ->
+				friend.hashedId
+			friendsHashedIds.contains hashedId
 
 	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
 		if @isMeOrAFriend req, hashedId
@@ -99,22 +98,23 @@ UserPackage =
 									for id in userAlbums.lastFour
 										for album in albums
 											if strval(id) is strval(album._id)
-												albumObj = album.toObject()
-												albumObj.preview = []
 												for data in allData
 													if equals data._id, album._id
+														albumObj = album.toObject()
+														albumObj.preview = []
 														albumObj.nbPhotos = data.count
-												photoIds = photoIds.concat album.preview
-												tabAlbum[album.id] = albumObj
+														photoIds = photoIds.concat album.preview
+														tabAlbum[album.id] = albumObj
 								else
 									for album in allAlbums
-										albumObj = album.toObject()
-										albumObj.preview = []
 										for data in allData
 											if equals data._id, album._id
+												albumObj = album.toObject()
+												albumObj.preview = []
 												albumObj.nbPhotos = data.count
-										photoIds = photoIds.concat album.preview
-										tabAlbum[album.id] = albumObj
+												photoIds = photoIds.concat album.preview
+												tabAlbum[album.id] = albumObj
+											
 
 								Photo.find
 									_id: $in: photoIds
