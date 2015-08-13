@@ -1,10 +1,18 @@
 .well.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName) + "; profileHashedId = "+ JSON.stringify(profile.hashedId)).medias-block
 	h3(ng-class="{ myMedias: isMe }")
-		| {{ mediaTitle() }}
+		if isMe
+			=s("Mes medias").toUpperCase() + ' '
+			a.album-number(href="/user/albums/{{ profileHashedId }}" ng-bind-html="nbAlbum()")
+		else
+			=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
+			a.album-number(href="/user/albums/{{ profileHashedId }}" ng-bind-html="nbAlbum()")
 	hr
 	.album(ng-repeat="album in albums")
-		a.album-name(href="/user/album/{{ album._id }}")
-			| {{ albumTitle(album) }}
+		span.album-name
+			| > &nbsp;
+		span.album-name(ng-bind-html="album.name")
+		| &nbsp;
+		a.album-name(href="/user/album/{{ album._id }}" ng-bind-html="nbPhotos(album)")
 		.preview
 			img(ng-repeat="photo in album.preview" ng-src="/img/photo/50x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")
 	hr.cb

@@ -175,12 +175,71 @@ module.exports = (router) ->
 						Album.find
 							user: @_id
 							name: photoDefaultName()
-						, (err, album) =>
+						, (err, albumList) =>
 							if err
 								done err
 							else
-								@photoAlbumId = album.id
-								@save done
+								if albumList.length > 0
+									# In case of many "Photos de profil" albums
+									if albumList.length > 1
+										if @photoId
+											Photo.findOne
+												_id: @photoId
+											, (err, photo) =>
+												if err
+													done err
+												else
+													albumId = photo.album
+									else
+										albumId = albumList[0]._id
+
+									@photoAlbumId = albumId
+									@save()
+
+									lastFour = []
+									limit = if albumId
+										lastFour.push albumId
+										3
+									else
+										4
+
+									Album.find
+										user: @_id
+										name: $ne: photoDefaultName()
+									.select('_id')
+									.sort(lastAdd:'desc')
+									.limit(limit)
+									.exec (err, albumIds) =>
+										if err
+											warn err
+										else
+											albumIds = albumIds.map (obj) ->
+												obj._id
+											lastFour = lastFour.concat albumIds
+
+										UserAlbums.findOne
+											user: @_id
+										, (err, userAlbum) =>
+											if !userAlbum or err
+												UserAlbums.create
+													user: @_id
+													lastFour: lastFour
+												, (err, newUserAlbum) =>
+													if err
+														warn err
+													else
+														done()
+											else
+												userAlbum.update
+													lastFour: lastFour
+												, (err, newUserAlbum) =>
+													if err
+														warn err
+													else
+														done()
+
+								else
+									done()
 				parallel treatments, ->
 					info users.length + " utilisateurs mis à jour"
 				, info

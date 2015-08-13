@@ -41,8 +41,14 @@ module.exports = (router) ->
 			options = safe: true
 			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
-					PhotoPackage.forget req, photo.id
-					syncUserPhotos userModifications, photo
+					Album.findOne
+						_id: photo.album
+					, (err, album) ->
+						if !err and album
+							album.refreshPreview done
+					done = ->
+						PhotoPackage.forget req, photo.id
+						syncUserPhotos userModifications, photo
 				else
 					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
 					delete userModifications.photoId

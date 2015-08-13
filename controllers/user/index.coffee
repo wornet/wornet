@@ -306,9 +306,13 @@ module.exports = (router) ->
 				nbAlbums: nbAlbums
 
 	router.get '/albums/:hashedId', (req, res) ->
-		res.render 'user/album-list',
-			profile: req.user
-			isMe: req.user.hashedId is req.params.hashedId
+		User.findById cesarRight(req.params.hashedId), (err, user) ->
+			if user and ! err
+				res.render 'user/album-list',
+					profile: user
+					isMe: req.user.hashedId is req.params.hashedId
+			else
+				res.notFound()
 
 	router.get '/albums/all/:hashedId', (req, res) ->
 		# hashedId is me or at (of a friend)
@@ -409,8 +413,9 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 						else
-							req.flash 'profileSuccess', s("Album supprimé")
-							res.json goingTo: '/'
+							UserAlbums.removeAlbum req.user, id, (err) ->
+								req.flash 'profileSuccess', s("Album supprimé")
+								res.json goingTo: '/'
 
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err
