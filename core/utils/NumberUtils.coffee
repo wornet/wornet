@@ -20,7 +20,13 @@ multiples =
 
 multiples.each (key) ->
 	value = @
-	Number.prototype.__defineGetter__ key, ->
+	Number::__defineGetter__ key, ->
 		@ * value
+
+Number::toRadians = ->
+	@ * Math.PI / 180
+
+Number::toDegrees = ->
+	@ * 180 / Math.PI
 
 module.exports = multiples

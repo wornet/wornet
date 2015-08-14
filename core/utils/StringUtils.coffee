@@ -1,5 +1,5 @@
 StringUtils =
-	toSearchRegExp: ->
+	accents: (toRegEpx = false) ->
 		letters =
 			a: 'âàäã'
 			e: 'éèêë'
@@ -12,8 +12,14 @@ StringUtils =
 		query = @toLowerCase()
 		for letter, list of letters
 			list = '[' + letter + list + ']'
-			query = query.replace (new RegExp list, 'gi'), list
-		pattern = '(' + query.replace(/\s+/g, '|') + ')'
+			query = query.replace (new RegExp list, 'gi'), if toRegEpx
+				list
+			else
+				letter
+		query
+
+	toSearchRegExp: ->
+		pattern = '(' + @accents(true).replace(/\s+/g, '|') + ')'
 		new RegExp pattern, 'gi'
 
 	contains: (needle) ->
@@ -31,6 +37,10 @@ StringUtils =
 	ucFirst: ->
 		if @length
 			@[0].toUpperCase() + @.substring 1
+
+	capitalize: ->
+		if @length
+			@[0].toUpperCase() + @.substring(1).toLowerCase()
 
 safeExtend String.prototype, StringUtils
 

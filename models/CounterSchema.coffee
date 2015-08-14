@@ -4,6 +4,7 @@ counterSchema = new Schema
 	name:
 		type: String
 		required: true
+		index: true
 	count:
 		type: Number
 		default: 0

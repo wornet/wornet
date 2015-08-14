@@ -42,6 +42,8 @@ module.exports = (defer, start) ->
 		defer.forEach (done) ->
 			done app
 
+		defer.done = true
+
 		glob coreDir + 'global/start/**/*.coffee', (er, files) ->
 			files.forEach (file) ->
 				require file

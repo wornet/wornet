@@ -6,7 +6,10 @@ require './core/global/start/bootstrap'
 
 defer = []
 app.onready = (done) ->
-	defer.push done
+	if defer.done
+		done app
+	else
+		defer.push done
 
 # Load all files contained in autoloadDirectories
 onready = require coreDir + 'system/autoload'
