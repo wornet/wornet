@@ -3,7 +3,9 @@ extends ../layouts/user
 block body
 	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
 		+data('at', profile.hashedId)
-		#all-albums.loading(ng-controller="MediasCtrl" ng-init="isMe = " + isMe + "; profileFirstName = " + JSON.stringify(profile.firstName)).medias-block
+		- var init = "isMe = " + isMe + ";"
+		- init += "profileFirstName = " + JSON.stringify(profile.firstName) + ";"
+		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init).medias-block
 			h3(ng-class="{ myMedias: isMe }")
 				if isMe
 					=s("Mes medias").toUpperCase() + ' '

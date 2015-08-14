@@ -299,11 +299,13 @@ module.exports = (router) ->
 	router.get '/albums/medias/:hashedId', (req, res) ->
 		# hashedId is me or at (of a friend)
 		hashedId = req.params.hashedId
-		UserPackage.getAlbumsForMedias req, hashedId, false, (err, albums, nbAlbums) ->
-			res.json
-				err: err
-				albums: albums
-				nbAlbums: nbAlbums
+		User.findById cesarRight(req.params.hashedId), (err, user) ->
+			UserPackage.getAlbumsForMedias req, hashedId, false, (err, albums, nbAlbums) ->
+				res.json
+					err: err
+					albums: albums
+					nbAlbums: nbAlbums
+					user: user.publicInformations()
 
 	router.get '/albums/:hashedId', (req, res) ->
 		User.findById cesarRight(req.params.hashedId), (err, user) ->
@@ -415,7 +417,7 @@ module.exports = (router) ->
 						else
 							UserAlbums.removeAlbum req.user, id, (err) ->
 								req.flash 'profileSuccess', s("Album supprimé")
-								res.json goingTo: '/'
+								res.json goingTo: '/user/profile'
 
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err

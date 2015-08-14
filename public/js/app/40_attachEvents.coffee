@@ -254,7 +254,7 @@ do ->
 		]
 		[
 			'error'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e, error) ->
 				$form.find('input[type="submit"]').prop 'disabled', false
 				$loader = $form.find '.loader'
@@ -263,7 +263,7 @@ do ->
 		]
 		[
 			'upload'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e, body) ->
 				$form.find('input[type="submit"]').prop 'disabled', false
 				$img = $form.find 'img.upload-thumb'
@@ -311,7 +311,7 @@ do ->
 		]
 		[
 			'submit'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e) ->
 				$form.find('input[type="submit"]').prop 'disabled', true
 				$img = $form.find 'img.upload-thumb'
@@ -321,6 +321,7 @@ do ->
 					prevent e
 					file = $form.find('input[type="file"]')[0].files[0]
 					formData.append 'photo', file
+					formData.append 'mediaFlag', $form.find('input[type="hidden"]:first').val()
 					formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
 					xhr.open 'POST', $form.prop('action'), true

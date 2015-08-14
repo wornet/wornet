@@ -58,26 +58,38 @@ userAlbumsSchema.statics.removeAlbum = (user, albumId, done) ->
 					if err
 						done err
 					else
+						albumIds = albumIdsList.column '_id'
 						Photo.aggregate [
 							$match:
 								status: "published"
-								album: $in: albumIdsList
+								album: $in: albumIds
 						,
 							$group:
 								_id: "$album"
 								count: $sum: 1
 						], (err, notEmptyAlbums) ->
-							#hack for let coffescript declare the variables before the label
-							a = null
-							`firstloop: //`
-							for id in albumIdsList
-								for data in notEmptyAlbums
-									# We have found the first album which is in all ordered albums and in the not empty albums
-									if strval(data._id) is strval(id)
-										userAlbums.lastFour.push id
-										userAlbums.save()
-										`break firstloop`
-										return
+							# #hack for let coffescript declare the variables before the label
+							# a = null
+							# `firstloop: //`
+							# for id in albumIdsList
+							# 	for data in notEmptyAlbums
+							# 		# We have found the first album which is in all ordered albums and in the not empty albums
+							# 		if strval(data._id) is strval(id)
+							# 			userAlbums.lastFour.push id
+							# 			userAlbums.save()
+							# 			`break firstloop`
+							# 			return
+							# done()
+							do ->
+								for id in albumIds
+									for data in notEmptyAlbums
+										# We have found the first album which is in all ordered albums and in the not empty albums
+										if strval(data._id) is strval(id)
+											unless userAlbums.lastFour.contains id
+												userAlbums.lastFour.push id
+												return
+							userAlbums.save()
 							done()
-							
+
+
 module.exports = userAlbumsSchema
