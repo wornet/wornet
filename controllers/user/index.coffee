@@ -659,31 +659,42 @@ module.exports = (router) ->
 				else
 					res.notFound()
 
+	searchesByIp = {}
+
 	router.get '/search/:query', (req, res) ->
-		regexp = req.params.query.toSearchRegExp()
-		friends = req.session.friends.filter (user) ->
-			regexp.test user.fullName
-		limit = UserPackage.DEFAULT_SEARCH_LIMIT
-		done = ->
-			res.json users: friends.unique('id').map (user) ->
-				user = objectToUser user
-				isAFriend = (req.session.friends || []).has id: user.id
-				extend user.publicInformations(),
-					isAFriend: isAFriend
-					askedForFriend: ! isAFriend and (req.session.friendAsks || {}).has hashedId: user.hashedId
-		if friends.length >= 8
-			friends = friends.slice 0, limit
-			done()
-		else
-			limit -= friends.length
-			exclude = [req.user.id]
-			exclude.merge friends.column 'id'
-			UserPackage.search exclude, regexp, limit, (err, users) ->
-				if err
-					res.serverError err
-				else
-					friends.merge users
+		ip = req.connection.remoteAddress
+		if searchesByIp[ip]
+			searchesByIp[ip][0].publicJson()
+			clearTimeout searchesByIp[ip][1]
+		searchesByIp[ip] = [
+			res
+			delay 1.second, ->
+				delete searchesByIp[ip]
+				regexp = req.params.query.toSearchRegExp()
+				friends = req.session.friends.filter (user) ->
+					regexp.test user.fullName
+				limit = UserPackage.DEFAULT_SEARCH_LIMIT
+				done = ->
+					res.json users: friends.unique('id').map (user) ->
+						user = objectToUser user
+						isAFriend = (req.session.friends || []).has id: user.id
+						extend user.publicInformations(),
+							isAFriend: isAFriend
+							askedForFriend: ! isAFriend and (req.session.friendAsks || {}).has hashedId: user.hashedId
+				if friends.length >= 8
+					friends = friends.slice 0, limit
 					done()
+				else
+					limit -= friends.length
+					exclude = [req.user.id]
+					exclude.merge friends.column 'id'
+					UserPackage.search exclude, regexp, limit, (err, users) ->
+						if err
+							res.serverError err
+						else
+							friends.merge users
+							done()
+		]
 
 	router.get '/confirm/:hashedId/:token', (req, res) ->
 		id = cesarRight req.params.hashedId
