@@ -543,8 +543,9 @@ Controllers =
 					setMediaAlbums data.albums
 				return
 		else
-			getAlbums (err, albums, nbAlbums) ->
+			getAlbums (err, albums, nbAlbums, user) ->
 				$scope.nbNonEmptyAlbums = nbAlbums || 0
+				$scope.mediaUser = user
 				unless err
 					setMediaAlbums albums
 				return
@@ -562,6 +563,17 @@ Controllers =
 		$scope.loadMedia = (type, media) ->
 			loadMedia type, media
 			return
+
+		$scope.checkProfileAlbum = () ->
+			if $scope.mediaUser and $scope.mediaUser.photoAlbumId and $scope.albums
+				albumIds = $scope.albums.map (obj) ->
+					obj._id
+				if $scope.mediaUser.photoAlbumId in albumIds
+					false
+				else
+					true
+			else
+				true
 
 		return
 

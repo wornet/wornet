@@ -216,7 +216,6 @@ module.exports = (router) ->
 											albumIds = albumIds.map (obj) ->
 												obj._id
 											lastFour = lastFour.concat albumIds
-
 										UserAlbums.findOne
 											user: @_id
 										, (err, userAlbum) =>

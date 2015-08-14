@@ -1,14 +1,39 @@
-#profile-photo-media
-	size(50px, 100%)
-	rel()
+
+.photo-options-media
+	float left
+	margin 0 $mainPadding 0 0
+	width 100%
 
 	.btn
+		margin $smallPadding 0 0
+		width 100%
+
+@media (max-width: 767px)
+	.photo-options-media .btn
+		width ($photoWidth / 2)
+	#profile-photo-media
+		size($photoWidth / 2, $photoHeight / 2)
+		.btn
+			width calc(100% - 8px)
+			i
+				display none
+
+@media (max-width: 423px)
+	.photo-options-media
+		float none
+		width ($photoWidth / 2)
+		margin 0 auto 10px
+
+
+#profile-photo-media
+	size(100%, 50px)
+	rel()
+
+	span
+		margin-top $mainPadding
 		abs()
-		bottom 0
-		margin $progressRadialWidth
-		width 50px - 4 * $progressRadialWidth
-		color $nearlyWhite
-		background-color rgba(115,100,95,.5)
+		width 100%
+		left 0
 
 	.progress-radial
 	.progress-radial .overlay
@@ -16,6 +41,7 @@
 	input.upload
 	.loader
 		abs()
+		left 0
 		size(100%)
 
 	input.upload
@@ -30,12 +56,18 @@
 			border-radius($photoRadius)
 		transition(all .2s)
 
+	img.upload-thumb
+		display none
+
 	.progress-radial
 		padding $progressRadialWidth
 		background-color $darkOrange
 		.overlay
 			rel()
 			background-color white
+			text-align center
+			vertical-align middle
+
 
 .album
 	// background $ultraLightOrange

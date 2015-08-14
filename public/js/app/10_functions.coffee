@@ -375,8 +375,8 @@ getAlbumsFromServer = (done) ->
 				albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 				setSessionValue key, albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
-				if data.nbAlbums
-					done err, albums, data.nbAlbums
+				if data.nbAlbums and data.user
+					done err, albums, data.nbAlbums, data.user
 				else
 					done err, albums
 			window.getAlbumsFromServer.waitingCallbacks = false
