@@ -531,7 +531,9 @@ module.exports = (app, port) ->
 							throw e
 					finally
 						@endAt = new Error "End here:"
-			json: (data = {}, noReport) ->
+			publicJson: (data = {}, noReport) ->
+				@json data, noReport, true
+			json: (data = {}, noReport, _public) ->
 				if typeof @ is 'undefined'
 					log "No context"
 				if data.statusCode? and data.statusCode is 500
@@ -544,7 +546,8 @@ module.exports = (app, port) ->
 					data.err = strval(data.err || s("Erreur inconnue"))
 				if data.err and ! noReport
 					GitlabPackage.error data.err
-				data._csrf ||= @locals._csrf
+				unless _public
+					data._csrf ||= @locals._csrf
 				json.call @, data
 			setTimeLimit: (time = 0) ->
 				if typeof(@excedeedTimeout) isnt 'undefined'

@@ -24,7 +24,7 @@ mixin style(href)
 mixin redirectHome()
 	p
 		!=s("Vous allez être redirigé vers {link}", { link: jd('a(href="/").\n\t' + s("www.wornet.fr")) })
-	!=jd('script\n\t:coffee\n\t\tsetTimeout ->\n\t\t\tlocation.href = \'/\'\n\t\t, ' + config.wornet.redirectionDelay)
+	!=jd('script\n\t:coffee-script\n\t\tsetTimeout ->\n\t\t\tlocation.href = \'/\'\n\t\t, ' + config.wornet.redirectionDelay)
 
 mixin data(name, value)
 	!=data(name, value)
