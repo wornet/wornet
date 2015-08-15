@@ -3,9 +3,13 @@
 module.exports = (router) ->
 
 	router.get '/:at', (req, res) ->
-		at = req.params.at
-		# Wait for new notifications
-		NoticePackage.waitForJson req.user.id, req, res, at
+		if req.user
+			at = req.params.at
+			# Wait for new notifications
+			NoticePackage.waitForJson req.user.id, req, res, at
+		else
+			delay 2.minutes, ->
+				res.json()
 
 	router.get '', (req, res) ->
 		# Wait for new notifications
