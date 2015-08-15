@@ -80,7 +80,7 @@ module.exports = (app) ->
 				]
 					key[0][key[1]] = key[0][key[1]].replace /^\/stat/, '/piwik.php'
 				tries = 0
-				_try = ->
+				do _try = ->
 					proxy.web req, res, target: piwik.target, (err) ->
 						if err
 							if ++tries < 3
