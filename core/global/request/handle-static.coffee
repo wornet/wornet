@@ -79,9 +79,14 @@ module.exports = (app) ->
 					[req._parsedUrl, 'href']
 				]
 					key[0][key[1]] = key[0][key[1]].replace /^\/stat/, '/piwik.php'
-				proxy.web req, res, target: piwik.target, (err) ->
-					if err
-						warn err, req
+				tries = 0
+				_try = ->
+					proxy.web req, res, target: piwik.target, (err) ->
+						if err
+							if ++tries < 3
+								do _try
+							else
+								res.end()
 			else
 				res.notFound()
 		else if /^\/((img|js|css|fonts|components|template)\/|favicon\.ico)/.test req.originalUrl
