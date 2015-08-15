@@ -670,7 +670,7 @@ module.exports = (router) ->
 			res
 			delay 1.second, ->
 				delete searchesByIp[ip]
-				regexp = req.params.query.toSearchRegExp()
+				regexp = req.params.query.toBeginRegExp true
 				friends = req.session.friends.filter (user) ->
 					regexp.test user.fullName
 				limit = UserPackage.DEFAULT_SEARCH_LIMIT

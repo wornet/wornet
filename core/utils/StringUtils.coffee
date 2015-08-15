@@ -1,3 +1,8 @@
+splitPattern = (str, escape = false) ->
+	if escape
+		str = str.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
+	'(' + str.accents(true).replace(/\s+/g, '|') + ')'
+
 StringUtils =
 	accents: (toRegEpx = false) ->
 		letters =
@@ -18,8 +23,12 @@ StringUtils =
 				letter
 		query
 
-	toSearchRegExp: ->
-		pattern = '(' + @accents(true).replace(/\s+/g, '|') + ')'
+	toSearchRegExp: (escape = false) ->
+		pattern = splitPattern @, escape
+		new RegExp pattern, 'gi'
+
+	toBeginRegExp: (escape = false) ->
+		pattern = '^' + splitPattern(@, escape)
 		new RegExp pattern, 'gi'
 
 	contains: (needle) ->

@@ -60,7 +60,7 @@ UserPackage =
 		done ||= ->
 		query ||= "-"
 		limit ||= @DEFAULT_SEARCH_LIMIT
-		regexp ||= query.toSearchRegExp()
+		regexp ||= query.toBeginRegExp true
 		User.find
 			'name.first': regexp
 			'name.last': regexp
