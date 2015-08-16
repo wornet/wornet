@@ -8,6 +8,7 @@ if (piwikSettings = getData 'piwik')
 	_paq.push ['trackPageView']
 	_paq.push ['enableLinkTracking']
 	_paq.push ['setTrackerUrl', (piwikSettings.host || '') + '/stat']
+	_paq.push ['setUserId', getCachedData 'me']
 	_paq.push ['setSiteId', piwikSettings.id]
 
 # Google Analytics
