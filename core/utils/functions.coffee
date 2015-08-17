@@ -996,7 +996,7 @@ module.exports =
 					, (err, album) ->
 						if err
 							warn err
-					if !notProfilePhoto
+					if !notProfilePhoto and !req.user.photoAlbumId
 						updateUser req, photoAlbumId: albumId, (err, user) ->
 							if err
 								warn err
@@ -1039,17 +1039,19 @@ module.exports =
 												if resizeErr
 													done resizeErr, createdAlbum, photo
 												else unless --pending
-													UserAlbums.touchAlbum req.user, albumId, (err, result) ->
-														if err
-															warn err
 													done null, createdAlbum, photo
 		if notProfilePhoto
 			next()
 		else
-			defaultName = photoDefaultName()
-			albumProperties =
-				user: req.user.id
-				name: defaultName
+			if req.user and req.user.photoAlbumId
+				albumProperties =
+					user: req.user.id
+					_id: req.user.photoAlbumId
+			else
+				defaultName = photoDefaultName()
+				albumProperties =
+					user: req.user.id
+					name: defaultName
 			Album.findOne albumProperties, (err, album) ->
 				if album
 					albumId = album.id

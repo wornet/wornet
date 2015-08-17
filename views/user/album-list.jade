@@ -14,6 +14,8 @@ block body
 					=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
 					span.album-number(ng-bind-html="nbAlbum()")
 			hr
+			div(ng-if="!isMe && nbNonEmptyAlbums === 0"): h6
+				=s("Votre ami n'a pas encore partagé de photos.")
 			.album(ng-repeat="album in albums")
 				span.album-name
 					| > &nbsp;

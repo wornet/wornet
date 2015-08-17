@@ -9,7 +9,7 @@
 	hr
 	div(ng-if="!isMe && nbNonEmptyAlbums === 0"): h6
 		=s("Votre ami n'a pas encore partagé de photos.")
-	.album(ng-if="isMe && checkProfileAlbum()")
+	#add-profile-photo.album(ng-if="isMe && checkProfileAlbum()")
 		.album-name
 			| > &nbsp;
 			=s(photoDefaultName())
@@ -18,7 +18,7 @@
 			+form("/user/photo", "FILE")#profile-photo-media(target="upload")
 				input(type="hidden" name="mediaFlag" value="O")
 				.progress-radial: .overlay
-					img.upload-thumb(data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
+					img#upload-thumb-media.upload-thumb(data-user-thumb=profile.hashedId)
 					span
 						=s('Ajouter une photo de profil')
 					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")

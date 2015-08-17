@@ -411,7 +411,8 @@ removeDeprecatedAlbums = (albums) ->
 	if albums
 		for id, album of albums
 			if !album.lastEmpty or (album.lastEmpty and (new Date(album.lastEmpty) > sixDaysEarlier or album.preview.length isnt 0))
-				results.push album
+				if typeof(album) isnt "function"
+					results.push album
 	results
 
 refreshMediaAlbums = getAlbumsFromServer

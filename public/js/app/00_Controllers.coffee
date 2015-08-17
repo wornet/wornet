@@ -1101,13 +1101,21 @@ Controllers =
 		@override window.refreshMediaAlbums
 		###
 		refreshMediaAlbums = ->
-			getAlbumsFromServer (err, albums) ->
-				unless err
+			Ajax.get 'user/albums', (data) ->
+				err = data.err || null
+				if data.albums
+					albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 					$scope.albums = albums
 					refreshScope $scope
-					if window.setMediaAlbums
-						setMediaAlbums albums
-				return
+					if window.refreshMediaAlbums
+						window.refreshMediaAlbums()
+			# getAlbumsFromServer (err, albums) ->
+			# 	unless err
+			# 		$scope.albums = albums
+			# 		refreshScope $scope
+			# 		# if window.refreshMediaAlbums
+			# 		# 	refreshMediaAlbums albums
+			# 	return
 			return
 
 		$scope.delete = (status, $event) ->
@@ -1153,7 +1161,6 @@ Controllers =
 				data:
 					album: album
 			$scope.selectAlbum album
-			$scope.albums.push $scope.currentAlbum
 			album =
 				name: ''
 				description: ''
@@ -1307,11 +1314,12 @@ Controllers =
 			success: (data) ->
 				setRecentStatus data
 
-		getAlbums (err, albums) ->
-			unless err
-				$scope.albums = albums
-				refreshScope $scope
-			return
+		# getAlbums (err, albums) ->
+		# 	unless err
+		# 		$scope.albums = albums
+		# 		refreshScope $scope
+		# 	return
+		refreshMediaAlbums()
 
 		initMedias()
 

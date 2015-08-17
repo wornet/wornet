@@ -45,6 +45,9 @@ module.exports = (router) ->
 						_id: photo.album
 					, (err, album) ->
 						if !err and album
+							UserAlbums.touchAlbum req.user, album._id, (err, result) ->
+								if err
+									warn err
 							album.refreshPreview done
 					done = ->
 						PhotoPackage.forget req, photo.id

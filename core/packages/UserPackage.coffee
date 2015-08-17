@@ -114,7 +114,7 @@ UserPackage =
 												albumObj.nbPhotos = data.count
 												photoIds = photoIds.concat album.preview
 												tabAlbum[album.id] = albumObj
-											
+
 
 								Photo.find
 									_id: $in: photoIds
@@ -434,5 +434,28 @@ UserPackage =
 				when 'city', 'birthCity', 'job', 'jobPlace', 'biography', 'sex'
 					userModifications[key] = val
 		userModifications
+
+	setAsProfilePhoto: (req, res, photo, done) ->
+		if photo
+			Photo.findOneAndUpdate
+				_id: photo._id
+			,
+				status: "published"
+			, (err, photoBase) ->
+				if err
+					warn err
+				else
+					updateUser req, photoId: photo._id, ->
+						Album.findOne
+							_id: photoBase.album
+						, (err, album) ->
+							if !err and album
+								UserAlbums.touchAlbum req.user, album._id, (err, result) ->
+									if err
+										warn err
+								album.refreshPreview done
+
+		else
+			warn new Error s("Aucune ou plusieurs Photos envoyées à setAsProfilePhoto")
 
 module.exports = UserPackage
