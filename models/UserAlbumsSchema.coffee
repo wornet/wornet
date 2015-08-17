@@ -20,10 +20,13 @@ userAlbumsSchema.statics.touchAlbum = (user, albumId, done) ->
 			userAlbums.user = user._id
 			toCreate = true
 		if strval(user.photoAlbumId) is strval(albumId)
-			if userAlbums.lastFour and userAlbums.lastFour.length
+			if userAlbums.lastFour and userAlbums.lastFour.length and userAlbums.lastFour.contains strval(albumId)
 				done()
 			else
-				userAlbums.lastFour = [user.photoAlbumId]
+				if userAlbums.lastFour
+					userAlbums.lastFour.unshift user.photoAlbumId
+				else
+					userAlbums.lastFour = [user.photoAlbumId]
 				unless toCreate
 					userAlbums.save done
 				else
@@ -31,10 +34,20 @@ userAlbumsSchema.statics.touchAlbum = (user, albumId, done) ->
 		else
 			end = userAlbums.lastFour.filter (id) ->
 				strval(id) isnt strval(albumId)
-			.slice 1, 3
+
+			if end.contains user.photoAlbumId, equals
+				end = end.slice 1, 3
+
+
 			userAlbums.lastFour = [albumId].concat end
-			if user.photoAlbumId
+			if user.photoAlbumId and !userAlbums.lastFour.contains user.photoAlbumId, equals
 				userAlbums.lastFour.unshift user.photoAlbumId
+
+			limit = if userAlbums.lastFour.contains user.photoAlbumId, equals
+				4
+			else
+				3
+			userAlbums.lastFour = userAlbums.lastFour.slice 0, limit
 			unless toCreate
 				userAlbums.save done
 			else

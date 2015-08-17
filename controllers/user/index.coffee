@@ -415,9 +415,14 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 						else
-							UserAlbums.removeAlbum req.user, id, (err) ->
-								req.flash 'profileSuccess', s("Album supprimé")
-								res.json goingTo: '/user/profile'
+							done = ->
+								UserAlbums.removeAlbum req.user, id, (err) ->
+									req.flash 'profileSuccess', s("Album supprimé")
+									res.json goingTo: '/user/profile'
+							if strval(req.user.photoAlbumId) is strval(id)
+								updateUser req, photoAlbumId: null, done
+							else
+								done()
 
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err
@@ -520,11 +525,15 @@ module.exports = (router) ->
 		images = req.files.photo || []
 		unless images instanceof Array
 			images = [images]
-		done = (data) ->
+		done = (data, photo) ->
 			model.images.push data
 			if model.images.length is images.length
 				model.images.reverse()
-				res.render templateFolder + '/upload-photo', model
+				if req.body.mediaFlag and req.body.mediaFlag is "O" and photo
+					UserPackage.setAsProfilePhoto req, res, photo, ->
+						res.render templateFolder + '/upload-photo', model
+				else
+					res.render templateFolder + '/upload-photo', model
 		lastestAlbum = null
 		if images.length > 0
 			images.each ->
@@ -548,7 +557,7 @@ module.exports = (router) ->
 								warn err, req
 							else
 								data.src = photo.thumb200
-							done data
+							done data, photo
 					if album is "new"
 						if lastestAlbum
 							album = lastestAlbum

@@ -297,13 +297,16 @@ do ->
 								statusScope.albums = albums
 								setSessionValue albumKey(), albums
 								refreshScope statusScope
-							getAlbumsFromServer ->
+							getAlbumsFromServer (err, albums, nbAlbums, user) ->
+								$('#add-profile-photo').hide()
+								setMediaAlbums albums
 								refreshScope statusScope
 								return
 						$img.fadeOut 'fast', ->
 							$loader = $form.find '.loader'
 							$loader.fadeOut 'fast', $loader.remove
 							$img.thumbSrc(newSource).fadeIn 'fast'
+
 							return
 					else
 						$form.trigger 'error', [$newImg.text()]
@@ -321,7 +324,11 @@ do ->
 					prevent e
 					file = $form.find('input[type="file"]')[0].files[0]
 					formData.append 'photo', file
-					formData.append 'mediaFlag', $form.find('input[type="hidden"]:first').val()
+
+					mediaFlag = $form.find('input[name="mediaFlag"]:first')
+					if mediaFlag
+						formData.append 'mediaFlag', mediaFlag.val()
+
 					formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
 					xhr.open 'POST', $form.prop('action'), true

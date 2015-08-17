@@ -155,6 +155,9 @@ StatusPackage =
 												originalStatus.save()
 											count = albums.length
 											albums.each ->
+												UserAlbums.touchAlbum req.user, @_id, (err, result) ->
+													if err
+														warn err
 												@refreshPreview (err) ->
 													if err
 														warn err
