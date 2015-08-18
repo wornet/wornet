@@ -384,12 +384,13 @@ Controllers =
 
 		$scope.send = (message, id) ->
 			if message.content and message.content.length
+				content = window.richText message.content, true
 				chatData =
 					date: new Date
-					content: message.content
+					content: content
 				postData =
 					action: 'message'
-					content: message.content
+					content: content
 				chats[id].messages.push chatData
 				notify id, postData, ->
 					chatData.ok = true
@@ -972,7 +973,7 @@ Controllers =
 					hideLoader()
 
 
-		scanLink = (href, sendMedia = true) ->
+		scanLink = (href, sendMedia = true, displayVideoLink = false) ->
 			https = href.substr(0, 5) is 'https'
 			href = href.replace /^(https?)?:?\/\//, ''
 			test = href.replace /^www\./, ''
@@ -992,7 +993,10 @@ Controllers =
 					return
 				else
 					# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
-					''
+					if displayVideoLink
+						'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+					else
+						''
 			else
 				if sendMedia
 					$scope.medias.links.push
@@ -1004,21 +1008,24 @@ Controllers =
 						https: https
 					return
 				else
-					'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+					'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
 
-		scanAllLinks = (text, transformToLinks = false) ->
+		scanAllLinks = (text, transformToLinks = false, displayVideoLink) ->
 			((' ' + text)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
 					if transformToLinks
-						space + scanLink link, false
+						space + scanLink link, false, displayVideoLink
 					else
 						scanLink link
 						all
 			).substr 1
 
-		richText = (text) ->
-			scanAllLinks smiliesService.filter(text), true
+
+		richText = (text, displayVideoLink) ->
+			scanAllLinks smiliesService.filter(text), true, displayVideoLink
+
+		window.richText = richText
 
 		lastStatusLoadedCount = null
 
