@@ -9,7 +9,7 @@
 	hr
 	div(ng-if="!isMe && nbNonEmptyAlbums === 0"): h6
 		=s("Votre ami n'a pas encore partagé de photos.")
-	#add-profile-photo.album(ng-if="isMe && checkProfileAlbum()")
+	#add-profile-photo.album(ng-if="isMe")
 		.album-name
 			| > &nbsp;
 			=s(photoDefaultName())

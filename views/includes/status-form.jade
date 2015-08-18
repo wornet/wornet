@@ -32,10 +32,10 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.btn-primary.col-xs-12
 		div(ng-switch-when="select-album")
-			.album-select
-				label
+			.album-select.col-xs-12
+				label.col-xs-12.col-sm-4.col-sm-offset-1
 					=s('Selectionner un album : ')
-				select(ng-options="album as album.name for album in albums" ng-model="item" ng-change="selectAlbum(item)")
+				select.col-xs-12.col-sm-6(ng-options="album as album.name for album in albums" ng-model="item" ng-change="selectAlbum(item)")
 			.cb.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
 					=s("Créer un album")

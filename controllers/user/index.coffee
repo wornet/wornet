@@ -580,12 +580,14 @@ module.exports = (router) ->
 			res.render templateFolder + '/upload-photo', model
 
 	router.delete '/photo', (req, res) ->
+		photoId = req.user.photoId
 		userModifications =
 			photoId: null
 			thumb: null
 		for size in config.wornet.thumbSizes
 			userModifications['thumb' + size] = null
 		updateUser req, photoId: null, (err) ->
+			PhotoPackage.delete photoId, 'published'
 			res.json err: err
 
 	router.delete '/media', (req, res) ->

@@ -1,21 +1,27 @@
 extends ../layouts/user
 
 block body
-	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
+	.col-xs-12: .well.loading
 		+data('at', profile.hashedId)
 		- var init = "isMe = " + isMe + ";"
 		- init += "profileFirstName = " + JSON.stringify(profile.firstName) + ";"
+		- init += "profileHashedId = " + JSON.stringify(profile.hashedId) + ";"
+		- init += "profileFullName = " + JSON.stringify(profile.fullName) + ";"
 		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init).medias-block
 			h3(ng-class="{ myMedias: isMe }")
 				if isMe
 					=s("Mes medias").toUpperCase() + ' '
 					span.album-number(ng-bind-html="nbAlbum()")
 				else
-					=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
+					a(href="/user/profile/{{ profileHashedId }}/{{ profileFullName }}")
+						=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
 					span.album-number(ng-bind-html="nbAlbum()")
 			hr
-			div(ng-if="!isMe && nbNonEmptyAlbums === 0"): h6
-				=s("Votre ami n'a pas encore partagé de photos.")
+			div(ng-if="nbNonEmptyAlbums === 0")
+				h6(ng-if="!isMe")
+					=s("Votre ami n'a pas encore partagé de photos.")
+				h6(ng-if="isMe")
+					=s("Aucun média publié.")
 			.album(ng-repeat="album in albums")
 				span.album-name
 					| > &nbsp;

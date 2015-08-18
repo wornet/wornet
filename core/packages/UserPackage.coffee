@@ -66,6 +66,8 @@ UserPackage =
 				else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
 					done null, {}, 0
 				else
+					theLastFour = userAlbums.lastFour
+
 					Album.find
 						user: idUser
 					.sort lastAdd: 'desc'
@@ -87,15 +89,14 @@ UserPackage =
 								allData = allData.filter (data) ->
 									data.count isnt 0
 								nbAlbumsNotEmpty = allData.length
-								albumIds = userAlbums.lastFour
 
 								tabAlbum = {}
 								photoIds = []
 								if !all
 									albums = allAlbums.filter (album) ->
-										userAlbums.lastFour.contains album._id
+										theLastFour.contains album._id
 									# to keep the order
-									for id in userAlbums.lastFour
+									for id in theLastFour
 										for album in albums
 											if strval(id) is strval(album._id)
 												for data in allData
@@ -114,7 +115,6 @@ UserPackage =
 												albumObj.nbPhotos = data.count
 												photoIds = photoIds.concat album.preview
 												tabAlbum[album.id] = albumObj
-
 
 								Photo.find
 									_id: $in: photoIds
