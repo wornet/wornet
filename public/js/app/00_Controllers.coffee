@@ -813,11 +813,14 @@ Controllers =
 			chatService.chatWith [objectResolve user]
 			return
 
-		$scope.deleteFriend = (id) ->
-			Ajax.delete '/user/friend',
-				data: id: id
-				success: ->
-					location.reload()
+		$scope.deleteFriend = (id, fullName) ->
+			s = textReplacements
+			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer {fullName} de votre liste d'amis ?", fullName: fullName), (ok) ->
+				if ok
+					Ajax.delete '/user/friend',
+						data: id: id
+						success: ->
+							location.reload()
 			return
 
 		$scope.deletePhoto = ($event) ->
