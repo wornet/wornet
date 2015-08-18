@@ -71,7 +71,7 @@
 				=s("Discuter")
 				| &nbsp;
 				+glyph('comment')
-			a.block(ng-click="deleteFriend('" + profile.hashedId + "')")
+			a.block(ng-click="deleteFriend('" + profile.hashedId + "', '" + profile.fullName + "')")
 				=s("Retirer des amis")
 				| &nbsp;
 				+glyph('minus')
