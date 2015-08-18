@@ -190,15 +190,15 @@ getFullName = ->
 for key in ['name.full', 'fullName']
 	userSchema.virtual(key)
 		.get getFullName
-		.set (name) ->
-			unless name is 'Anonyme'
-				if name?
-					split = name.split ' '
-				else
-					split = [null, null]
-				@name.first = split[0]
-				@name.last = split[1]
-			return
+		# .set (name) ->
+		# 	unless name is 'Anonyme'
+		# 		if name?
+		# 			split = name.split ' '
+		# 		else
+		# 			split = [null, null]
+		# 		@name.first = split[0]
+		# 		@name.last = split[1]
+		# 	return
 
 userSchema.virtual('firstName').get ->
 	@name.first
