@@ -524,6 +524,10 @@ Controllers =
 		window.setMediaAlbums = (albums) ->
 			$scope.albums = albums
 			refreshScope $scope
+			if checkProfileAlbum()
+				$('#add-profile-photo').show()
+			else
+				$('#add-profile-photo').hide()
 			return
 
 		window.refreshMediaAlbums = ->
@@ -539,8 +543,9 @@ Controllers =
 				at = getCachedData 'me'
 			Ajax.get '/user/albums/all/' + at, (data) ->
 				$scope.nbNonEmptyAlbums = data.nbAlbums || 0
+				albums = removeDeprecatedAlbums data.albums
 				unless data.err
-					setMediaAlbums data.albums
+					setMediaAlbums albums
 				return
 		else
 			getAlbums (err, albums, nbAlbums, user) ->
@@ -564,7 +569,7 @@ Controllers =
 			loadMedia type, media
 			return
 
-		$scope.checkProfileAlbum = () ->
+		checkProfileAlbum = () ->
 			if $scope.mediaUser and $scope.mediaUser.photoAlbumId and $scope.albums
 				albumIds = $scope.albums.map (obj) ->
 					obj._id
@@ -757,6 +762,7 @@ Controllers =
 						success: (res) ->
 							if $('#profile-photo') and res and res.src
 								$('#profile-photo img').thumbSrc res.src
+							window.refreshMediaAlbums()
 							return
 			return
 
@@ -815,11 +821,13 @@ Controllers =
 			return
 
 		$scope.deletePhoto = ($event) ->
-			Ajax.delete '/user/photo'
+			Ajax.delete '/user/photo', ->
+				window.refreshMediaAlbums()
 			$ $event.target
 				.parents '[ng-controller]:first'
 				.find '.upload-thumb'
 				.prop 'src', '/img/default-photo.jpg'
+			return
 
 		loadNewIFrames()
 		$scope.supportAudio = typeof Audio is "function" and (new Audio).canPlayType and (new Audio).canPlayType('audio/mp3').replace(/no/, '')
@@ -1109,13 +1117,6 @@ Controllers =
 					refreshScope $scope
 					if window.refreshMediaAlbums
 						window.refreshMediaAlbums()
-			# getAlbumsFromServer (err, albums) ->
-			# 	unless err
-			# 		$scope.albums = albums
-			# 		refreshScope $scope
-			# 		# if window.refreshMediaAlbums
-			# 		# 	refreshMediaAlbums albums
-			# 	return
 			return
 
 		$scope.delete = (status, $event) ->
