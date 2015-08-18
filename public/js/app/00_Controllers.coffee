@@ -1220,12 +1220,16 @@ Controllers =
 			return
 
 		$scope.deleteComment = (comment) ->
-			Ajax.delete '/user/comment',
-				data:
-					comment: comment
+			s = textReplacements
+			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce commentaire ?"), (ok) ->
+				if ok
+					Ajax.delete '/user/comment',
+						data:
+							comment: comment
 
-			$('.comment-block[data-data="' + comment._id + '"]').slideUp ->
-				$(@).remove()
+					$('.comment-block[data-data="' + comment._id + '"]').slideUp ->
+						$(@).remove()
+						return
 				return
 			return
 
