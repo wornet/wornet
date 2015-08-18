@@ -43,14 +43,16 @@ StatusPackage =
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.with req.user.id
 			where = @where id, connectedPeopleAndMe, onProfile
+			limit = config.wornet.limits.statusPageCount
 			if req.data.offset
+				limit = config.wornet.limits.scrollStatusPageCount
 				_objectId = req.data.offset
 				if /^[0-9a-fA-F]{24}$/.test _objectId
 					where._id = $lt: new ObjectId(_objectId).path
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0
-					.limit config.wornet.limits.statusPageCount
+					.limit limit
 					.sort date: 'desc'
 					.select '_id date author at content status images videos links album albumName pointsValue nbLike'
 					.exec (err, recentStatus) ->
