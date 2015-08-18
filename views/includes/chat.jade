@@ -18,7 +18,7 @@
 					+glyph('ok')
 				a(href="/user/profile/{{ message.from.hashedId }}/{{ message.from.name.full }}" ng-show="message.from && message.from.thumb50 && message.from.name")
 					img.received(ng-src="{{ message.from.thumb50 }}" data-user-thumb="{{ message.from.hashedId }}" data-thumb-size="50")
-				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content | smilies")
+				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content")
 				.date(data-date="{{ message.date }}" data-date-delay="180" class="{{ message.from ? 'date-left' : 'date-right' }}")
 					|&nbsp;
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
