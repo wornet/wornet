@@ -29,6 +29,9 @@ mixin friends(classes, mobile)
 								=friend.name.full
 							| &nbsp; 
 							+glyph('comment')
+				else
+					li: a: span
+						=s("Aucun ami connecté pour le moment.")
 				if !mobile
 					li.divider(ng-if="supportAudio" role="separator")
 					li.select-chat-sound(ng-if="supportAudio")
