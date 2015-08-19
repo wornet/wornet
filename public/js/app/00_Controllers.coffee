@@ -994,7 +994,11 @@ Controllers =
 				else
 					# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
 					if displayVideoLink
-						'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+						hrefToDisplay = if href.length > 34
+							href.substr(0, 34) + '...'
+						else
+							href
+						'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
 					else
 						''
 			else
@@ -1008,7 +1012,11 @@ Controllers =
 						https: https
 					return
 				else
-					'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
+					hrefToDisplay = if href.length > 34
+						href.substr(0, 34) + '...'
+					else
+						href
+					'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
 
 		scanAllLinks = (text, transformToLinks = false, displayVideoLink) ->
 			((' ' + text)

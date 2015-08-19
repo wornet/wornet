@@ -59,7 +59,7 @@
 					+glyph('play')
 		div(ng-if="status.links.length > 0")
 			h3=s("Liens")
-			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
+			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
 	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "'")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
