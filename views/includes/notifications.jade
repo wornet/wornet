@@ -76,3 +76,6 @@ mixin notifications(classes, mobile)
 								.notification-date: i.date(data-date=trim(notification[0], '"'))
 									|&nbsp;
 								| &nbsp;
+			else
+				li.read: a: span
+					=s("Vous n'avez aucune notification pour le moment.")
