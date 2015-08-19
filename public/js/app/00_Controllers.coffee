@@ -658,7 +658,7 @@ Controllers =
 							success: ->
 								deletableMedia = null
 								if media.mediaId
-									delay 600, refreshMediaAlbums
+									delay 600, window.refreshMediaAlbums
 								else
 									location.reload()
 								hideLoader()
@@ -755,7 +755,7 @@ Controllers =
 
 		$scope.setAsProfilePhoto = ->
 			s = textReplacements
-			infoDialog s("Changement de ta photo de profil"), s("Cette photo remplacera l'actuelle photo de profil !"), (ok) ->
+			infoDialog s("Changement de ta photo de profil"), s("Cette photo remplacera l'actuelle photo de profil !"), "Confirmer", "Annuler", (ok) ->
 				if ok
 					$('#media-viewer [data-dismiss]:first').click()
 					Ajax.post '/user/profile/photo',
@@ -816,7 +816,7 @@ Controllers =
 
 		$scope.deleteFriend = (id, fullName) ->
 			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer {fullName} de votre liste d'amis ?", fullName: fullName), (ok) ->
+			infoDialog s("Confirmation"), s("Êtes-vous sûr de vouloir supprimer {fullName} de votre liste d'amis ?", fullName: fullName), (ok) ->
 				if ok
 					Ajax.delete '/user/friend',
 						data: id: id
@@ -1231,7 +1231,7 @@ Controllers =
 
 		$scope.deleteComment = (comment) ->
 			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce commentaire ?"), (ok) ->
+			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce commentaire ?"), (ok) ->
 				if ok
 					Ajax.delete '/user/comment',
 						data:
