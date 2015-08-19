@@ -415,8 +415,6 @@ removeDeprecatedAlbums = (albums) ->
 					results.push album
 	results
 
-refreshMediaAlbums = getAlbumsFromServer
-
 # Refresh logged friends menu
 loggedFriends = (friends) ->
 	$('.loggedFriends, .loggedFriends-mobile').each ->
@@ -536,22 +534,26 @@ readNotification = (id) ->
 mp3 = (name) ->
 	"/resources/mp3/"+name+".mp3"
 
-infoDialog = (title, message, done) ->
+infoDialog = (title, message, labelOk, labelKo, done) ->
+	if 'function' is typeof labelOk
+		done = labelOk
+		labelOk = "Oui"
+		labelKo = "Non"
 	s = textReplacements
 	bootbox.dialog
-		message: '<i class="glyphicon glyphicon-info-sign" />&nbsp;' + message,
+		message: message,
 		title: title,
 		buttons:
-			main:
-				label: "Confirmer",
-				className: "btn-primary",
-				callback: ->
-					done true
 			cancel:
-				label: "Annuler",
+				label: labelKo,
 				className: "btn",
 				callback: ->
 					done false
+			main:
+				label: labelOk,
+				className: "btn-primary",
+				callback: ->
+					done true
 
 template = do ->
 	version = $('link[href*="/app.css?"], link[href*="/all.css?"]').prop('href').split('?')[1]
