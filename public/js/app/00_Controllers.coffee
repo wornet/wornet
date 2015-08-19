@@ -1131,7 +1131,7 @@ Controllers =
 
 		$scope.delete = (status, $event) ->
 			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
+			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
 				if ok
 					$($event.target)
 						.parents('ul.dropdown-menu:first').trigger 'click'
