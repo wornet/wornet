@@ -1292,6 +1292,7 @@ Controllers =
 		at = getCachedData 'at'
 
 		$scope.$on 'receiveStatus', (e, status) ->
+			status.content = richText status.content
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
