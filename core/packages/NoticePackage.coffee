@@ -194,11 +194,10 @@ NoticePackage =
 	readNotice: (req, id, all, done) ->
 		if !all and !id
 			done new PublicError s("L'id ne peut être vide si on ne traite pas toutes les notifications")
-		where = if all
-			user: req.user.id
-		else
-			_id: id
-			user: req.user.id
+		where = user: req.user.id
+		.with if !all
+		    _id: id
+
 		Notice.update where,
 			status: readOrUnread.read
 		,
