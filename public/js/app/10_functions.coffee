@@ -216,7 +216,7 @@ notificationPrint = (elt) ->
 
 refreshPillOfList = (elt) ->
 	$ul = $ elt
-	count = $ul.find('ul li').not('.read').length
+	count = $ul.find('ul li').not('.read, .activities-list, .read-all, .divider').length
 	$ul.find('.pill').css('visibility', 'visible').text count
 	return
 

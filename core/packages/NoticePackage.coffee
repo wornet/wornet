@@ -191,5 +191,31 @@ NoticePackage =
 						self.remove userId, id
 						delete self.timeouts[waiter.timeoutKey]
 
+	readNotice: (req, id, all, done) ->
+		if !all and !id
+			done new PublicError s("L'id ne peut être vide si on ne traite pas toutes les notifications")
+		where = if all
+			user: req.user.id
+		else
+			_id: id
+			user: req.user.id
+		Notice.update where,
+			status: readOrUnread.read
+		,
+			multi: true
+		, (err, notice) ->
+			if err
+				done err
+			else if notice
+				req.session.notifications = req.session.notifications
+					.filter (notification) ->
+						notification and notification.length
+					.map (notification) ->
+						if all or notification[0] is id
+							notification.read = true
+				done()
+			else
+				done new PublicError s("Notification non trouvée.")
+
 
 module.exports = NoticePackage
