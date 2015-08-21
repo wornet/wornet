@@ -821,6 +821,35 @@ Controllers =
 			return
 		return
 
+	NotificationList: ($scope) ->
+		$scope.notificationList = []
+		lastNoticeLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/notify/list/' + $scope.getNoticeOffset()
+
+		$scope.noticeRemaining = ->
+			($scope.notificationList || []).length > 0 and lastNoticeLoadedCount > 0 and lastNoticeLoadedCount <= getCachedData 'noticePageCount'
+
+		$scope.getNoticeOffset = ->
+			notificationList = $scope.notificationList || []
+			if notificationList.length
+				notificationList[notificationList.length - 1]._id
+			else
+				0
+
+		$scope.setRecentNotice = (data) ->
+			lastNoticeLoadedCount = data.notices.length
+			$scope.notificationList = $scope.notificationList.concat data.notices
+			refreshScope $scope
+			return
+
+		Ajax.post '/user/notify/list/' + $scope.getNoticeOffset(),
+			data: {}
+			success: (data) ->
+				$scope.setRecentNotice data
+		return
+
 	Profile: ($scope, chatService) ->
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
@@ -1049,10 +1078,7 @@ Controllers =
 
 		lastStatusLoadedCount = null
 
-		$scope.loadStatusList = setRecentStatus = (offset, data, toPush = true) ->
-			if 'object' is typeof offset
-				data = offset
-				offset = null
+		$scope.loadStatusList = setRecentStatus = (data, toPush = true) ->
 			has = (key) ->
 				data[key] and typeof data[key] is 'object' and data[key].length
 			if has 'chat'
@@ -1217,7 +1243,7 @@ Controllers =
 					medias: $scope.medias || null
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
-					setRecentStatus data, null, false
+					setRecentStatus data, false
 					refreshMediaAlbums()
 			status.content = ""
 			initMedias()
@@ -1350,11 +1376,6 @@ Controllers =
 			success: (data) ->
 				setRecentStatus data
 
-		# getAlbums (err, albums) ->
-		# 	unless err
-		# 		$scope.albums = albums
-		# 		refreshScope $scope
-		# 	return
 		refreshMediaAlbums()
 
 		initMedias()

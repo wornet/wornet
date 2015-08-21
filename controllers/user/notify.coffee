@@ -57,3 +57,40 @@ module.exports = (router) ->
 				res.serverError err
 			else
 				res.json()
+
+	router.get '/list/all', (req, res) ->
+		req.user.getFriends (err, friends, friendAsks) ->
+			if err
+				res.serverError err
+			else
+				friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
+				isMe = true
+				res.render 'user/notification-list',
+					isMe: isMe
+					numberOfFriends: friends.length
+					friends: if isMe then friendsThumb else []
+
+	router.post '/list/:id', (req, res) ->
+		where = user: req.user._id
+		.with if req.params.id
+			_objectId = req.params.id
+			if /^[0-9a-fA-F]{24}$/.test _objectId
+				_id: $lt: new ObjectId(_objectId).path
+
+		limit = if req.param.id
+			config.wornet.limits.scrollNoticePageCount
+		else
+			config.wornet.limits.noticePageCount
+
+		Notice.find where
+		.sort _id: 'desc'
+		.limit limit
+		.exec (err, notices) ->
+			if err
+				res.serverError err
+			else
+				notices = notices.map (notice) ->
+					notice = notice.toObject()
+					notice.date = Date.fromId notice._id
+					notice
+				res.json notices: notices

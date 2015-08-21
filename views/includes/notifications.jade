@@ -82,7 +82,7 @@ mixin notifications(classes, mobile)
 								| &nbsp;
 				li.divider.cb
 				li.activities-list
-					a.activities
+					a.activities(href="/user/notify/list/all")
 						=s("Mon journal d'activité")
 			else
 				li.read: a: span
