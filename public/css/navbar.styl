@@ -141,11 +141,22 @@
 	.loggedFriends-list a
 		padding-right $bigPadding * 2
 
+	.divider
+		margin 0
+
+	.notification-list
+		padding 0
+
 	.notification-list a
 		padding-right $bigPadding * 2
 		height $notificationThumbHeight + $mainPadding
 		&.friend-ask
 			height $notificationThumbHeight + $bigPadding
+		&.read-all-notifs
+		&.activities
+			float right
+			height $notificationThumbHeight - $mainPadding
+			padding 3px 40px
 		.thumb
 			float left
 		span

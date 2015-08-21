@@ -14,6 +14,10 @@ mixin notifications(classes, mobile)
 				span.pill
 					=notificationsCount
 		ul.dropdown-menu.notification-list.left(role='menu' ng-controller="NotificationsCtrl" class=(mobile?"notification-list-mobile":""))
+			li.read-all
+				a.read-all-notifs(ng-click="readAll()")
+					=s("Tout marquer comme lu")
+			li.divider.cb
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					span(ng-bind-html="trust(notification[1])")
@@ -76,6 +80,10 @@ mixin notifications(classes, mobile)
 								.notification-date: i.date(data-date=trim(notification[0], '"'))
 									|&nbsp;
 								| &nbsp;
+				li.divider.cb
+				li.activities-list
+					a.activities
+						=s("Mon journal d'activité")
 			else
 				li.read: a: span
 					=s("Vous n'avez aucune notification pour le moment.")

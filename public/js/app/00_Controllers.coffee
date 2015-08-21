@@ -807,6 +807,18 @@ Controllers =
 			delay 1, refreshPill
 			return
 
+		$scope.readAll = ->
+			liUnread = $('.notification-list, .notification-list-mobile').find('li').not('.read, .activities-list, .read-all, .divider')
+			if liUnread.length
+				Ajax.post '/user/notify/read/all',
+					data: {}
+					success: ->
+						return
+
+				liUnread.addClass('read')
+				refreshPill()
+
+			return
 		return
 
 	Profile: ($scope, chatService) ->
