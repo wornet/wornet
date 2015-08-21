@@ -176,7 +176,7 @@ Wornet = angular.module 'Wornet', [
 						data: data
 						success: (data) ->
 							$element.removeClass 'loading'
-							callback offset, data
+							callback data
 							return
 					.always ->
 						lock = false

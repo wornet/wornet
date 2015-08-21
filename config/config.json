@@ -212,6 +212,8 @@
             "biographyLength": 140,
             "statusPageCount": 50,
             "scrollStatusPageCount": 25,
+            "noticePageCount": 50,
+            "scrollNoticePageCount": 25,
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10
