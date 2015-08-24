@@ -525,10 +525,7 @@ Controllers =
 		window.setMediaAlbums = (albums) ->
 			$scope.albums = albums
 			refreshScope $scope
-			if checkProfileAlbum()
-				$('#add-profile-photo').show()
-			else
-				$('#add-profile-photo').hide()
+			$('#add-profile-photo')[if checkProfileAlbum() then 'show' else 'hide']()
 			return
 
 		window.refreshMediaAlbums = ->
@@ -794,6 +791,7 @@ Controllers =
 
 		$scope.$on 'receiveNotification', (e, notification) ->
 			id = notification.id || notification[0]
+			$('.no-notice').parent().hide()
 			unless $scope.notifications[id] or id in ids
 				$scope.notifications[id] = notification
 				refreshScope $scope

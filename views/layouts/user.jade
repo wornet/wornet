@@ -30,7 +30,7 @@ mixin friends(classes, mobile)
 							| &nbsp; 
 							+glyph('comment')
 				else
-					li: a: span
+					li: a: span.no-logged-friend
 						=s("Aucun ami connecté pour le moment.")
 				if !mobile
 					li.divider(ng-if="supportAudio" role="separator")
