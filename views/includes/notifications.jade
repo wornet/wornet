@@ -85,5 +85,5 @@ mixin notifications(classes, mobile)
 					a.activities(href="/user/notify/list/all")
 						=s("Mon journal d'activité")
 			else
-				li.read: a: span
+				li.read: a: span.no-notice
 					=s("Vous n'avez aucune notification pour le moment.")

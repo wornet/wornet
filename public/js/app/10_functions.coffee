@@ -428,6 +428,11 @@ loggedFriends = (friends) ->
 			return
 
 		$ul.find('span.pill').text ids.length
+
+		if ul is ''
+			s = textReplacements
+			ul = '<li><a><span class="no-logged-friend">' + s('Aucun ami connecté pour le moment.') + '</span></a></li>'
+
 		$dropdown = $ul.find '.dropdown-menu'
 		if ! $ul.hasClass 'loggedFriends-mobile'
 			$dropdown.find('li:not(.select-chat-sound, .divider)').remove()
