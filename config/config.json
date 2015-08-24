@@ -216,7 +216,8 @@
             "scrollNoticePageCount": 25,
             "displayStatusLength": 614,
             "realStatusLength": 1228,
-            "mailsAtOnce": 10
+            "mailsAtOnce": 10,
+            "monthsBeforeRemoveNotice": 1
         },
 
         "lockFriendAsk": [

@@ -821,7 +821,7 @@ Controllers =
 			return
 		return
 
-	NotificationList: ($scope) ->
+	NotificationList: ($scope, $sce) ->
 		$scope.notificationList = []
 		lastNoticeLoadedCount = null
 
@@ -840,6 +840,8 @@ Controllers =
 
 		$scope.setRecentNotice = (data) ->
 			lastNoticeLoadedCount = data.notices.length
+			for notice in data.notices
+				notice.content = $sce.trustAsHtml notice.content
 			$scope.notificationList = $scope.notificationList.concat data.notices
 			refreshScope $scope
 			return

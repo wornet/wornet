@@ -4,10 +4,10 @@ block body
 	.col-sm-4.col-xs-12.pad-right
 		if isMe
 			include ../includes/friends
+			include ../includes/asks-for-friend
 	.col-sm-8.col-xs-12.pad-left: #notification-list.well.loading(ng-controller="NotificationListCtrl")
 		.notice(ng-repeat="notice in notificationList")
-			a(href="/notification/{{ notice._id }}")
-				span(ng-bind-html="notice.content")
+			a(href="/notification/{{ notice._id }}" ng-bind-html="notice.content")
 				|&nbsp;
 			i.mobile-notification-date.date(data-date="{{ notice.date }}")
 				|&nbsp;
