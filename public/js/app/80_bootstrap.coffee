@@ -198,7 +198,7 @@ ControllersByService =
 	chatService: 'Profile'
 	smiliesService: 'Status'
 	statusService: 'Status'
-	$sce: 'Notifications'
+	$sce: 'Notifications NotificationList'
 	$http: 'Event'
 
 # Load controllers

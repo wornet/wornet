@@ -69,6 +69,7 @@ module.exports = (router) ->
 					isMe: isMe
 					numberOfFriends: friends.length
 					friends: if isMe then friendsThumb else []
+					friendAsks: if isMe then friendAsks else {}
 
 	router.post '/list/:id', (req, res) ->
 		where = user: req.user._id
