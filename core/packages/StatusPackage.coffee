@@ -253,8 +253,8 @@ StatusPackage =
 		if medias.images and medias.images.length > 0
 			points = 2 # status with photo
 		if medias.videos and medias.videos.length > 0
-			points = 3 if points = 1 # status with video but without photo
-			points = 4 if points = 2 # status with video and photo
+			points = 3 if points is 1 # status with video but without photo
+			points = 4 if points is 2 # status with video and photo
 
 		pointsToAdd = points * nbOfFriends
 
