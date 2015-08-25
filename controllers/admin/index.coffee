@@ -192,6 +192,9 @@ module.exports = (router) ->
 													albumId = photo.album
 									else
 										albumId = albumList[0]._id
+										albumList[0].refreshPreview (err) ->
+											if err
+												warn err
 
 									@photoAlbumId = albumId
 									@save()
@@ -206,36 +209,55 @@ module.exports = (router) ->
 									Album.find
 										user: @_id
 										name: $ne: photoDefaultName()
-									.select('_id')
 									.sort(lastAdd:'desc')
-									.limit(limit)
-									.exec (err, albumIds) =>
+									.exec (err, albums) =>
 										if err
 											warn err
 										else
-											albumIds = albumIds.map (obj) ->
+											albumIds = albums.map (obj) ->
 												obj._id
-											lastFour = lastFour.concat albumIds
-										UserAlbums.findOne
-											user: @_id
-										, (err, userAlbum) =>
-											if !userAlbum or err
-												UserAlbums.create
-													user: @_id
-													lastFour: lastFour
-												, (err, newUserAlbum) =>
-													if err
-														warn err
-													else
-														done()
-											else
-												userAlbum.update
-													lastFour: lastFour
-												, (err, newUserAlbum) =>
-													if err
-														warn err
-													else
-														done()
+											Photo.aggregate [
+												$match:
+													status: "published"
+													album: $in: albumIds
+											,
+												$group:
+													_id: "$album"
+													count: $sum: 1
+											], (err, allData) =>
+												if err
+													warn err
+												else
+													tabData = {}
+													for data in allData
+														tabData[data._id] = data.count
+													for album in albums
+														if tabData[album._id] > 0
+															lastFour.push album._id
+															album.refreshPreview (err) ->
+																if err
+																	warn err
+													lastFour = lastFour.slice 0, 4
+													UserAlbums.findOne
+														user: @_id
+													, (err, userAlbum) =>
+														if !userAlbum or err
+															UserAlbums.create
+																user: @_id
+																lastFour: lastFour
+															, (err, newUserAlbum) =>
+																if err
+																	warn err
+																else
+																	done()
+														else
+															userAlbum.update
+																lastFour: lastFour
+															, (err, newUserAlbum) =>
+																if err
+																	warn err
+																else
+																	done()
 
 								else
 									done()
