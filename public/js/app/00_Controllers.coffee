@@ -298,6 +298,9 @@ Controllers =
 				saveChatState currentChat
 				saveChats chats
 			refreshScope $scope
+			delay 1, ->
+				$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
+
 			return
 
 		$scope.$on 'all', (e, messages = []) ->
@@ -421,8 +424,9 @@ Controllers =
 
 	ChatList: ($scope) ->
 
-		$scope.chatWith = (user) ->
+		$scope.chatWith = (user, $event) ->
 			chatService.chatWith [objectResolve user]
+			$($event.target).parents('.modal-content').find('button[data-dismiss]:first').trigger 'click'
 			return
 
 		$scope.mask = (user) ->

@@ -1,5 +1,5 @@
 #chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : null))
-	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{ minimized: chat.minimized }")
+	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{ minimized: chat.minimized }" data-chat-id="{{ chatId }}")
 		h4(ng-click="minimize(chat)")
 			a.close(ng-click="close(chat); $event.stopPropagation();")
 				+glyph('remove-sign')
