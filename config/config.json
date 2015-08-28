@@ -181,6 +181,33 @@
             "enabled" : true
         },
 
+        "contact": {
+            "emails": {
+                "suggestions": [
+                    "suggestions@wornet.fr",
+                    "bastien.miclo@wornet.fr",
+                    "jeremy.bayle@wornet.fr"
+                ],
+                "bugs": [
+                    "bugs@wornet.fr",
+                    "bastien.miclo@wornet.fr",
+                    "jeremy.bayle@wornet.fr"
+                ],
+                "partenariats": [
+                    "manuel.costes@wornet.fr"
+                ],
+                "investissements": [
+                    "manuel.costes@wornet.fr"
+                ],
+                "autres": [
+                    "contact@wornet.fr"
+                ],
+                "test": [
+                    "jeremy.bayle@wornet.fr"
+                ]
+            }
+        },
+
         "db": {
             "host": "127.0.0.1",
             "basename": "wornet"

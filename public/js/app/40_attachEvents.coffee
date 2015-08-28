@@ -628,7 +628,7 @@ do ->
 		]
 		[
 			click
-			'.footer a:not(.legals)'
+			'.footer a:not(.legals, .contact)'
 			($a, e) ->
 				window.open $a.attr 'href'
 				cancel e

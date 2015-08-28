@@ -453,6 +453,28 @@ Controllers =
 
 		return
 
+	Contact: ($scope) ->
+		$scope.contact = {}
+		$scope.send = ->
+			if $scope.contact.motif and $scope.contact.message
+				$('#contact-error').hide()
+				$('#contact-error').html ''
+				Ajax.put '/contact',
+					data:
+						motif: $scope.contact.motif
+						message: $scope.contact.message
+					success: ->
+						$('#contact [data-dismiss="modal"]:first').click()
+						$scope.contact = {}
+
+			else
+				s= textReplacements
+				$('#contact-error').html s('Le motif et le message sont obligatoires')
+				$('#contact-error').show()
+			return
+
+		return
+
 	Event: ($scope, $http) ->
 		isMobile = ->
 			if window.matchMedia
