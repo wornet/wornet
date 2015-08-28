@@ -83,6 +83,10 @@ block cookie-banner
 
 +simpleModal(s("Mentions légales"))#legals
 	div(lang-template="cgu")
+	
+
+#contact.modal.fade: .modal-dialog: .modal-content
+	div(lang-template="contact")
 
 if allData
 	each value, name in allData
