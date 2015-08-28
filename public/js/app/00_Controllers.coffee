@@ -1103,6 +1103,7 @@ Controllers =
 		window.richText = richText
 
 		lastStatusLoadedCount = null
+		$scope.nbCommentLoaded = false
 
 		$scope.loadStatusList = setRecentStatus = (data, toPush = true) ->
 			has = (key) ->
@@ -1161,7 +1162,11 @@ Controllers =
 										$scope.recentStatus.map (status) ->
 											if data.commentList[status._id]
 												status.comments = data.commentList[status._id]
+												status.nbComment = data.commentList[status._id].length
+											else
+												status.nbComment = 0
 											status
+										$scope.nbCommentLoaded = true
 										refreshScope $scope
 									return
 							return
@@ -1281,6 +1286,7 @@ Controllers =
 				for status in $scope.recentStatus
 					if data.commentList[status._id]
 						status.comments = data.commentList[status._id]
+						status.nbComment = data.commentList[status._id].length
 						refreshScope $scope
 						break
 
@@ -1352,6 +1358,10 @@ Controllers =
 		$scope.nbLikeText = (status) ->
 			s = textReplacements
 			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
+
+		$scope.nbCommentText = (status) ->
+			s = textReplacements
+			s("{nbComm} commentaire|{nbComm} commentaires", { nbComm: status.nbComment }, status.nbComment)
 
 		at = getCachedData 'at'
 
