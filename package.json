@@ -54,7 +54,8 @@
 		"phantomjs": "~1.9.16",
 		"formidable": "~1.0.17",
 		"lusca": "~1.0.3",
-		"http-proxy": "~1.8.1"
+		"http-proxy": "~1.8.1",
+		"ua-parser-js": "~0.7.9"
 	},
 	"devDependencies": {
 		"grunt": "^0.4.1",
