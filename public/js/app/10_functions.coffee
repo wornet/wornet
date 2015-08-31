@@ -622,3 +622,6 @@ getLastestUpdateChatId = ->
 		'/' + lastestDate.getTime()
 	else
 		'/0'
+
+window.isMe = (hashedId) ->
+	hashedId is getCachedData('me')

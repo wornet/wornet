@@ -59,3 +59,20 @@ module.exports = (router) ->
 	router.put '/add/:updatedAt', (req, res) ->
 		StatusPackage.put req, res, (status) ->
 			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status, req.params.updatedAt
+
+	router.post '/', (req, res) ->
+		if req.data.status and req.user
+			Status.update
+				_id: req.data.status._id
+				author: req.user.id
+			,
+				content: req.data.status.content || ''
+			, (err, status) ->
+				if err
+					res.serverError err
+				else if !status
+					res.serverError "You don't have the right to update this status"
+				else
+					res.json()
+		else
+			res.serverError new PublicError 'No status to update'

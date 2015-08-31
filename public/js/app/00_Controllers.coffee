@@ -1136,6 +1136,7 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText status.content
+					status.isMine = isMe(status.author.hashedId)
 					status.nbLike ||= 0
 					status
 				for status in chunk
@@ -1326,6 +1327,14 @@ Controllers =
 				data:
 					comment: comment
 				success: updateCommentList
+			return
+
+		$scope.updateStatus = (status) ->
+			Ajax.post '/user/status',
+				data:
+					status: status
+			status.content = richText status.content
+			refreshScope $scope
 			return
 
 		$scope.loadMedia = (type, media) ->

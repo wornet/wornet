@@ -1,9 +1,16 @@
 .status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}" ng-if="(status.images && status.images.length) || (status.links && status.links.length) || (status.videos && status.videos.length) || (status.content && status.content.length)")
 	//- .nostyle(data-starpush="{{ status._id }}")
-	.aside.settings.continue(ng-if="status.author.hashedId")
+	- var init = "status.edit = false;"
+	- init += "status.originalContent = status.content;"
+	.aside.settings.continue(ng-init=init ng-if="status.author.hashedId")
 		a.dropdown-toggle(data-toggle="dropdown")
 			+glyph('cog')
 		ul.dropdown-menu(role="menu")
+			li(ng-if="status.concernMe && status.isMine")
+				a.ajax(ng-click="status.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier ce contenu"))
+					+glyph('pencil')
+					| &nbsp; 
+					=s("Modifier")
 			li(ng-if="status.concernMe")
 				a.ajax(ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
 					+glyph('trash')
@@ -37,7 +44,12 @@
 	.status-content
 		.alert.alert-info.glued(ng-if="status.status === 'blocked'")
 			=s("Ce contenu a été bloqué.")
-	.status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked'" ng-bind-html="status.content")
+	.status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked' && !status.edit" ng-bind-html="status.content")
+	.status-content-edit(ng-if="status.edit")
+		+form()(ng-submit="status.edit = false; updateStatus(status); status.originalContent = status.content;").cb
+			textarea.form-control(focus ng-model='status.content' placeholder=s("Contenu"))
+			input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="status.content = status.originalContent; status.edit = false" value=s("Annuler"))
+			input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
 	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
 		div(ng-if="status.images.length > 0")
 			h3(ng-if="status.album")
