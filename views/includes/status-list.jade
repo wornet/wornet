@@ -69,7 +69,7 @@
 					span.like-zone
 						| {{ nbLikeText(status) }}
 				if config.wornet.comments.enabled
-					span.btn-action-comment(ng-click="status.commentForm = true; status.commentList = true")
+					span.btn-action-comment(ng-click="showCommentBlock(status)")
 						span.btn.icon
 						span(ng-if="nbCommentLoaded")
 							| {{ nbCommentText(status) }}
