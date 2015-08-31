@@ -1436,3 +1436,6 @@ module.exports =
 	###
 	quoteString: (str) ->
 		'"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+
+	getBrowserInformations: (req) ->
+		ua = global.uaparser req.headers['user-agent']
