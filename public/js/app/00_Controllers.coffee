@@ -1407,6 +1407,14 @@ Controllers =
 			else
 				null
 
+		$scope.showCommentBlock = (status) ->
+			delay 1, ->
+				status.commentForm = true
+				status.commentList = true
+				refreshScope statusScope
+				return
+			return
+
 		Ajax.post $scope.getLoadUrl(),
 			data: {}
 			success: (data) ->
