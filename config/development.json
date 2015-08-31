@@ -19,7 +19,14 @@
 
     	"prettyHtml": true,
 
-        "staticServer": ""
+        "staticServer": "",
 
+        "contact": {
+            "emails": {
+                "test": [
+                    "jeremy.bayle@wornet.fr"
+                ]
+            }
+        }
     }
 }
