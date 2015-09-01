@@ -66,7 +66,9 @@ module.exports = (router) ->
 				_id: req.data.status._id
 				author: req.user.id
 			,
-				content: req.data.status.content || ''
+				content: req.data.status.content || ""
+				videos: req.data.status.videos || []
+				links: req.data.status.links || []
 			, (err, status) ->
 				if err
 					res.serverError err
