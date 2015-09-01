@@ -1040,7 +1040,7 @@ Controllers =
 					hideLoader()
 
 
-		scanLink = (href, sendMedia = true, displayVideoLink = false) ->
+		scanLink = (href, sendMedia = true, displayVideoLink = false, status = null) ->
 			https = href.substr(0, 5) is 'https'
 			href = href.replace /^(https?)?:?\/\//, ''
 			test = href.replace /^www\./, ''
@@ -1054,8 +1054,16 @@ Controllers =
 			s = textReplacements
 			if video
 				if sendMedia
-					$scope.medias.videos.push
-						href: video
+					if status
+						status.videos.push
+							href: video
+							concernMe: true
+							statusId: status._id
+						refreshScope $scope
+						return ''
+					else
+						$scope.medias.videos.push
+							href: video
 					Ajax.put '/user/video/add', video: url: video
 					return
 				else
@@ -1070,9 +1078,22 @@ Controllers =
 						''
 			else
 				if sendMedia
-					$scope.medias.links.push
-						href: href
-						https: https
+					if status
+						status.links = status.links.filter (link) ->
+							link.href isnt href
+						status.links.push
+							href: href
+							https: https
+						refreshScope $scope
+						hrefToDisplay = if href.length > 34
+							href.substr(0, 34) + '...'
+						else
+							href
+						return '<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+					else
+						$scope.medias.links.push
+							href: href
+							https: https
 					Ajax.put '/user/link/add', link:
 						name: href
 						url: href
@@ -1085,20 +1106,23 @@ Controllers =
 						href
 					'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
 
-		scanAllLinks = (text, transformToLinks = false, displayVideoLink) ->
+		scanAllLinks = (text, transformToLinks = false, displayVideoLink, status) ->
 			((' ' + text)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
 					if transformToLinks
 						space + scanLink link, false, displayVideoLink
 					else
-						scanLink link
-						all
+						ret = scanLink link, true, false, status
+						if status
+							space + ret
+						else
+							all
 			).substr 1
 
 
-		richText = (text, displayVideoLink) ->
-			scanAllLinks smiliesService.filter(text), true, displayVideoLink
+		richText = (text, transformToLinks = true, displayVideoLink, status = null) ->
+			scanAllLinks smiliesService.filter(text), transformToLinks, displayVideoLink, status
 
 		window.richText = richText
 
@@ -1330,10 +1354,12 @@ Controllers =
 			return
 
 		$scope.updateStatus = (status) ->
+			#We have to do this before post because it also put videos in status.videos
+			contentToDisplay = richText status.content, false, false, status
 			Ajax.post '/user/status',
 				data:
 					status: status
-			status.content = richText status.content
+			status.content = contentToDisplay
 			refreshScope $scope
 			return
 
@@ -1422,6 +1448,21 @@ Controllers =
 				status.commentList = true
 				refreshScope statusScope
 				return
+			return
+
+		unlink = (text) ->
+			(((' ' + text)
+				.replace /(<a\s)(.*?)(href=\")(.*?)(\">)(.*?)(<\/a>)/gi, (match, p1, p2, p3, p4, p5, p6, p7, offset, string) ->
+					p4 + ' '
+			).substr 1)
+
+		$scope.toggleStatusState = (status, edit) ->
+			status.edit = edit
+			status.content = if edit
+				unlink smiliesService.unfilter status.content
+			else
+				status.originalContent
+			refreshScope $scope
 			return
 
 		Ajax.post $scope.getLoadUrl(),
