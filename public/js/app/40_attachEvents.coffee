@@ -67,7 +67,7 @@ do ->
 		else if ax < 4 and ay < 4 and $.now() - touch <= 200
 			$(touchTarget)
 				.trigger 'tap'
-				.trigger if 0 is (e.type + '').indexOf 'touch'
+				.trigger if e.type is 'touchstart'
 					'touchtap'
 				else
 					'mousetap'
