@@ -1,0 +1,18 @@
+#likker-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="PlusWListCtrl" tabindex="-1")
+	.modal-dialog: .modal-content
+		.modal-header
+			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+			h4.modal-title
+				=s("Mention j'aime")
+		.modal-body
+			.likker(ng-repeat='likker in likkers' data-id='{{ likker.hashedId }}')
+				img(ng-src="{{ likker.thumb50 }}" alt="{{ likker.name.full }}" data-id="{{ likker.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ likker.name.full }}").thumb
+				a(ng-class="" href="/user/profile/{{ likker.hashedId }}/{{ likker.name.full | urlencode }}")
+					.user-name
+						| {{ likker.name.full }}
+				.user-points
+					| {{ likker.points }}
+					=' '+s("points")
+				.cb
+			div(scroll-detect verify-to-load="likkersRemaining()" gap="300" url="getLoadUrl()" offset="getLikkersOffset()" callback="loadLikkersList" scrollable="#likker-list .modal-body" additionnal-data="getAdditionnalData()").likkers-loading
+			+data('likkersPageCount', config.wornet.limits.likkersPageCount)

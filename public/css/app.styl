@@ -750,6 +750,19 @@ a.mobile-video
 #contact-error
 	display none
 
+#likker-list
+	.likker
+		.user-points
+			font-size 10px
+		a
+			color $linkColor
+		.user-name
+			display inline
+	.modal-body
+		height (($thumbHeight + ($smallPadding * 2)) * $numberOfLikerDisplayed) + $bigPadding
+		overflow auto
+
+
 // Imports.
 @import "includes/tooltip"
 @import "navbar"
