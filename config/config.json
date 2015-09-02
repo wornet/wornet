@@ -238,7 +238,7 @@
             "scrollStatusPageCount": 25,
             "noticePageCount": 50,
             "scrollNoticePageCount": 25,
-            "likkersPageCount": 25,
+            "likersPageCount": 25,
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10,

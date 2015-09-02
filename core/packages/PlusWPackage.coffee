@@ -143,7 +143,7 @@ PlusWPackage =
 				.with if offset
 				    _id: $gt: new ObjectId(offset).path
 				PlusW.find where
-					.limit config.wornet.limits.likkersPageCount
+					.limit config.wornet.limits.likersPageCount
 					.sort createdAt: 'desc'
 					.exec (err, plusWs) ->
 						if err
@@ -151,10 +151,10 @@ PlusWPackage =
 						else if !plusWs or !plusWs.length
 							done null, []
 						else
-							likkersId = plusWs.map (plusW) ->
+							likersId = plusWs.map (plusW) ->
 								plusW.user
 							User.find
-								_id: $in: likkersId
+								_id: $in: likersId
 							, (err, users) ->
 								if err
 									done err
