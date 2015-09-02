@@ -16,8 +16,8 @@ module.exports = (router) ->
 		PlusWPackage.delete req, res, nbLikeChangeResponse.bind res
 
 	router.post '/list', (req, res) ->
-		PlusWPackage.get req, res, req.data.status, (err, likkers) ->
+		PlusWPackage.get req, res, req.data.status, (err, likers) ->
 			if err
 				res.serverError err
 			else
-				res.json likkers: likkers
+				res.json likers: likers

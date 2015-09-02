@@ -873,27 +873,27 @@ Controllers =
 		return
 
 	PlusWList: ($scope) ->
-		$scope.likkers = {}
+		$scope.likers = {}
 		window.plusWListScope = $scope
-		$scope.lastLikkersLoadedCount = null
+		$scope.lastlikersLoadedCount = null
 
 		$scope.getLoadUrl = ->
 			'/user/plusW/list'
 
-		$scope.likkersRemaining = ->
-			($scope.likkers || []).length > 0 and $scope.lastLikkersLoadedCount > 0 and $scope.lastLikkersLoadedCount <= getCachedData 'likkersPageCount'
+		$scope.likersRemaining = ->
+			($scope.likers || []).length > 0 and $scope.lastlikersLoadedCount > 0 and $scope.lastlikersLoadedCount <= getCachedData 'likersPageCount'
 
-		$scope.getLikkersOffset = ->
-			likkersList = $scope.likkers || []
-			if likkersList.length
-				likkersList[likkersList.length - 1].plusWId
+		$scope.getlikersOffset = ->
+			likersList = $scope.likers || []
+			if likersList.length
+				likersList[likersList.length - 1].plusWId
 			else
 				null
 
-		$scope.loadLikkersList = (chunk) ->
-			$scope.lastLikkersLoadedCount = chunk.likkers.length
-			for likker in chunk.likkers
-				$scope.likkers.push likker
+		$scope.loadlikersList = (chunk) ->
+			$scope.lastlikersLoadedCount = chunk.likers.length
+			for liker in chunk.likers
+				$scope.likers.push liker
 			refreshScope $scope
 
 		$scope.getAdditionnalData = ->
@@ -1490,17 +1490,17 @@ Controllers =
 			return
 
 		lock = false
-		$scope.displayLikkerList = (status) ->
+		$scope.displaylikerList = (status) ->
 			if !window.isMobile() and !lock
 				lock = true
 				Ajax.post '/user/plusW/list',
 					data: status: status
 					success: (data) ->
-						window.plusWListScope.lastLikkersLoadedCount = data.likkers.length
-						window.plusWListScope.likkers = data.likkers
+						window.plusWListScope.lastlikersLoadedCount = data.likers.length
+						window.plusWListScope.likers = data.likers
 						window.plusWListScope.status = status
 						refreshScope window.plusWListScope
-						$('#likker-list').modal 'show'
+						$('#liker-list').modal 'show'
 						lock = false
 						return
 			return

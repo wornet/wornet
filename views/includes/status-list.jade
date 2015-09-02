@@ -78,7 +78,7 @@
 			.status-actions
 				if config.wornet.plusW.enabled
 					span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe }" ng-click="toggleLike(status)")
-					span.like-zone(ng-click="displayLikkerList(status)")
+					span.like-zone(ng-click="displaylikerList(status)")
 						| {{ nbLikeText(status) }}
 				if config.wornet.comments.enabled
 					span.btn-action-comment(ng-click="showCommentBlock(status)")
