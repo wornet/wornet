@@ -172,7 +172,7 @@ Wornet = angular.module 'Wornet', [
 		lock = false
 		$scrollable.scroll ->
 			scrollTopMax = $scrollable[0].scrollHeight
-			if 'undefined' is typeof scrollBottom
+			if !$attributes.scrollable
 				scrollTopMax = document.body.scrollHeight - document.body.offsetHeight
 			else
 				scrollTopMax -= $scrollable[0].offsetHeight
@@ -181,6 +181,9 @@ Wornet = angular.module 'Wornet', [
 				data = {}
 				if offset
 					data.offset = offset
+				if $attributes.additionnalData
+					$additionnalData = $scope.$eval $attributes.additionnalData
+					data = $.extend data, $additionnalData
 				if ! lock and $scope.$eval $attributes.verifyToLoad
 					lock = true
 					url = $scope.$eval $attributes.url

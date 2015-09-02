@@ -476,13 +476,9 @@ Controllers =
 		return
 
 	Event: ($scope, $http) ->
-		isMobile = ->
-			if window.matchMedia
-				!! window.matchMedia("(max-width:767px)").matches
-			else
-				window.innerWidth < 768
+
 		loadTemplate = ->
-			$scope.template = template (if isMobile()
+			$scope.template = template (if window.isMobile()
 				'/mobile'
 			else
 				''
@@ -874,6 +870,34 @@ Controllers =
 			data: {}
 			success: (data) ->
 				$scope.setRecentNotice data
+		return
+
+	PlusWList: ($scope) ->
+		$scope.likkers = {}
+		window.plusWListScope = $scope
+		$scope.lastLikkersLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/plusW/list'
+
+		$scope.likkersRemaining = ->
+			($scope.likkers || []).length > 0 and $scope.lastLikkersLoadedCount > 0 and $scope.lastLikkersLoadedCount <= getCachedData 'likkersPageCount'
+
+		$scope.getLikkersOffset = ->
+			likkersList = $scope.likkers || []
+			if likkersList.length
+				likkersList[likkersList.length - 1].plusWId
+			else
+				null
+
+		$scope.loadLikkersList = (chunk) ->
+			$scope.lastLikkersLoadedCount = chunk.likkers.length
+			for likker in chunk.likkers
+				$scope.likkers.push likker
+			refreshScope $scope
+
+		$scope.getAdditionnalData = ->
+			status: $scope.status
 		return
 
 	Profile: ($scope, chatService) ->
@@ -1463,6 +1487,22 @@ Controllers =
 			else
 				status.originalContent
 			refreshScope $scope
+			return
+
+		lock = false
+		$scope.displayLikkerList = (status) ->
+			if !window.isMobile() and !lock
+				lock = true
+				Ajax.post '/user/plusW/list',
+					data: status: status
+					success: (data) ->
+						window.plusWListScope.lastLikkersLoadedCount = data.likkers.length
+						window.plusWListScope.likkers = data.likkers
+						window.plusWListScope.status = status
+						refreshScope window.plusWListScope
+						$('#likker-list').modal 'show'
+						lock = false
+						return
 			return
 
 		Ajax.post $scope.getLoadUrl(),

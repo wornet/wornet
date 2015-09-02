@@ -625,3 +625,9 @@ getLastestUpdateChatId = ->
 
 window.isMe = (hashedId) ->
 	hashedId is getCachedData('me')
+
+window.isMobile = ->
+	if window.matchMedia
+		!! window.matchMedia("(max-width:767px)").matches
+	else
+		window.innerWidth < 768
