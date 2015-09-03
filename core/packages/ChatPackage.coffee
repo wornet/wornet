@@ -33,12 +33,12 @@ ChatPackage =
 								else
 									# if we have received a message and we have never respond
 									# so, the chat go only in one direction
-									if !recipients || !recipients.length
-										for mess in messages
-											if ids.contains(mess.id, equals) and !userIds.contains mess.author
-												userIds.push mess.author
+									userRecipient = recipients.column('recipient').map strval
+									for mess in messages
+										if ids.contains(mess.id, equals) and !userRecipient.contains(mess.author) and !mess.maskedFor.contains me, equals
+											userIds.push mess.author
 
-									userIds.merge recipients.column('recipient').map strval
+									userIds.merge userRecipient
 
 									req.getUsersByIds userIds, (err, usersMap) ->
 										if err
