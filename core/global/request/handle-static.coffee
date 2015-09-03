@@ -30,24 +30,21 @@ module.exports = (app) ->
 									if ! err and stat.isFile()
 										markdowns.push path.substring dir.length, path.length - 3
 
+	if !dateTimeAtStart
+		dateTimeAtStart = do ->
+			today = new Date()
+			today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate() + '_' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds()
+	fs.exists __dirname + '/../../../routeLog/', (exists) ->
+		unless exists
+			fs.mkdir __dirname + '/../../../routeLog/'
+
 	# Before each request
 	app.use (req, res, done) ->
 
 		if config.wornet.logRoutes
-			if !dateTimeAtStart
-				today = new Date()
-				dateTimeAtStart = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate() + '_' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds()
-
 			fileName =  dateTimeAtStart + '-routes.log'
-			logNext = ->
-				fs.appendFile  __dirname + '/../../../routeLog/' + fileName, '\n' + req.url, (err) ->
-					return
-			fs.exists __dirname + '/../../../routeLog/', (exists) ->
-				unless exists
-					fs.mkdir __dirname + '/../../../routeLog/', logNext
-				else
-					logNext()
-
+			fs.appendFile  __dirname + '/../../../routeLog/' + fileName, '\n' + req.url, (err) ->
+				return
 
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		req.response = res
