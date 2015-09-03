@@ -251,9 +251,15 @@
 	border-radius(0 0 2px 2px)
 
 .notification-list
-	max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
+.notification-list-mobile
 	overflow-y auto
 	overflow-x hidden
+
+.notification-list
+	max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
+
+.notification-list-mobile
+	max-height ((36px + 3px) * $numberOfNoticeBeforeScrollBar) + ((20px) * 2) + $smallPadding
 
 .loggedFriends-list
 	left 0
@@ -389,7 +395,7 @@
 				line-height $mobileNavDropdownGlyphSize
 
 			.thumb
-				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
+				size($mobileNotificationThumbHeight, $mobileNotificationThumbWidth)
 				margin 0 5px 0 -5px
 		.loggedFriends-list
 			a
