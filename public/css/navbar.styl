@@ -148,7 +148,7 @@
 		padding 0
 
 	.notification-list a
-		padding-right $bigPadding * 2
+		padding-right $bigPadding * 2 + $smallPadding
 		height $notificationThumbHeight + $mainPadding
 		&.friend-ask
 			height $notificationThumbHeight + $bigPadding
@@ -249,6 +249,11 @@
 .loggedFriends-list
 .notification-list
 	border-radius(0 0 2px 2px)
+
+.notification-list
+	max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
+	overflow-y auto
+	overflow-x hidden
 
 .loggedFriends-list
 	left 0
