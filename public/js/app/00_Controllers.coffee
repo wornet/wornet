@@ -1491,7 +1491,7 @@ Controllers =
 
 		lock = false
 		$scope.displaylikerList = (status) ->
-			if !window.isMobile() and !lock
+			if !window.isMobile() and !lock and status.nbLike
 				lock = true
 				Ajax.post '/user/plusW/list',
 					data: status: status
