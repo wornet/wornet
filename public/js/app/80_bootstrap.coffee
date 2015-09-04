@@ -75,31 +75,32 @@ Wornet = angular.module 'Wornet', [
 		love: ["*_*"]
 		cry: [":'("]
 		heart: ["<3", "&lt;3"]
-	filter: (text, safe = false) ->
-		unless safe
-			text = safeHtml text
-		for className, codes of smilies
-			pattern = codes.map(regExpEscape).join '|'
-			regExp = new RegExp pattern, 'g'
-			text = text.replace regExp, (code) ->
-				unless enableSmilies
-					enableSmilies = true
-					$rootScope.$broadcast 'enableSmilies', true
-				'<i class="' + className + '">' + code + '</i>'
-		text
-	unfilter: (text, safe = false) ->
-		for className, codes of smilies
-			pattern = ''
-			for code in codes
-				pattern += '<i class="' + className + '">' + regExpEscape(code) + '</i>|'
-			pattern = pattern.substr 0, pattern.length - 1
-			regExp = new RegExp pattern, 'g'
-			text = text.replace regExp, (code) ->
-				unless enableSmilies
-					enableSmilies = true
-					$rootScope.$broadcast 'enableSmilies', true
-				codes[0]
-		text
+	window.smiliesService =
+		filter: (text, safe = false) ->
+			unless safe
+				text = safeHtml text
+			for className, codes of smilies
+				pattern = codes.map(regExpEscape).join '|'
+				regExp = new RegExp pattern, 'g'
+				text = text.replace regExp, (code) ->
+					unless enableSmilies
+						enableSmilies = true
+						$rootScope.$broadcast 'enableSmilies', true
+					'<i class="' + className + '">' + code + '</i>'
+			text
+		unfilter: (text, safe = false) ->
+			for className, codes of smilies
+				pattern = ''
+				for code in codes
+					pattern += '<i class="' + className + '">' + regExpEscape(code) + '</i>|'
+				pattern = pattern.substr 0, pattern.length - 1
+				regExp = new RegExp pattern, 'g'
+				text = text.replace regExp, (code) ->
+					unless enableSmilies
+						enableSmilies = true
+						$rootScope.$broadcast 'enableSmilies', true
+					codes[0]
+			text
 ]
 
 #Angular Wornet directives

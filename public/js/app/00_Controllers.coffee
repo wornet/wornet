@@ -298,8 +298,9 @@ Controllers =
 				saveChatState currentChat
 				saveChats chats
 			refreshScope $scope
-			delay 1, ->
-				$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
+			if !message
+				delay 1, ->
+					$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
 
 			return
 
@@ -387,7 +388,7 @@ Controllers =
 
 		$scope.send = (message, id) ->
 			if message.content and message.content.length
-				content = window.richText message.content, true
+				content = richText $scope, message.content, true
 				chatData =
 					date: new Date
 					content: content
@@ -1063,93 +1064,6 @@ Controllers =
 					serverError()
 					hideLoader()
 
-
-		scanLink = (href, sendMedia = true, displayVideoLink = false, status = null) ->
-			https = href.substr(0, 5) is 'https'
-			href = href.replace /^(https?)?:?\/\//, ''
-			test = href.replace /^www\./, ''
-			video = do ->
-				for url, regexps of videoHosts
-					for regexp in regexps
-						match = test.match regexp
-						if match and match.length > 1
-							return url.replace '$1', match[1]
-				null
-			s = textReplacements
-			if video
-				if sendMedia
-					if status
-						status.videos.push
-							href: video
-							concernMe: true
-							statusId: status._id
-						refreshScope $scope
-						return ''
-					else
-						$scope.medias.videos.push
-							href: video
-					Ajax.put '/user/video/add', video: url: video
-					return
-				else
-					# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
-					if displayVideoLink
-						hrefToDisplay = if href.length > 34
-							href.substr(0, 34) + '...'
-						else
-							href
-						'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
-					else
-						''
-			else
-				if sendMedia
-					if status
-						status.links = status.links.filter (link) ->
-							link.href isnt href
-						status.links.push
-							href: href
-							https: https
-						refreshScope $scope
-						hrefToDisplay = if href.length > 34
-							href.substr(0, 34) + '...'
-						else
-							href
-						return '<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
-					else
-						$scope.medias.links.push
-							href: href
-							https: https
-					Ajax.put '/user/link/add', link:
-						name: href
-						url: href
-						https: https
-					return
-				else
-					hrefToDisplay = if href.length > 34
-						href.substr(0, 34) + '...'
-					else
-						href
-					'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
-
-		scanAllLinks = (text, transformToLinks = false, displayVideoLink, status) ->
-			((' ' + text)
-				.replace /(\s)www\./g, '$1http://www.'
-				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
-					if transformToLinks
-						space + scanLink link, false, displayVideoLink
-					else
-						ret = scanLink link, true, false, status
-						if status
-							space + ret
-						else
-							all
-			).substr 1
-
-
-		richText = (text, transformToLinks = true, displayVideoLink, status = null) ->
-			scanAllLinks smiliesService.filter(text), transformToLinks, displayVideoLink, status
-
-		window.richText = richText
-
 		lastStatusLoadedCount = null
 		$scope.nbCommentLoaded = false
 
@@ -1183,7 +1097,7 @@ Controllers =
 						$.each status[key], ->
 							@statusId = status._id
 							@concernMe = status.concernMe
-					status.content = richText status.content
+					status.content = richText $scope, status.content
 					status.isMine = isMe(status.author.hashedId)
 					status.nbLike ||= 0
 					status
@@ -1230,16 +1144,6 @@ Controllers =
 			else
 				lastStatusLoadedCount = 0
 			return
-
-		videoHosts =
-			'//www.dailymotion.com/embed/video/$1': [
-				/^dai\.ly\/([a-z0-9_-]+)/i
-				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
-			]
-			'//www.youtube.com/embed/$1': [
-				/^youtu\.be\/([a-z0-9_-]+)/i
-				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
-			]
 
 		###
 		@override window.refreshMediaAlbums
@@ -1308,13 +1212,13 @@ Controllers =
 			match = href.match /src="([^"]+)"/g
 			if match and match.length > 1
 				href = match[1]
-			scanLink href
+			scanLink $scope, href
 			link.href = ''
 
 			return
 
 		$scope.send = (status) ->
-			scanAllLinks status.content || ''
+			scanAllLinks $scope, status.content || ''
 
 			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
 				data:
@@ -1343,7 +1247,7 @@ Controllers =
 			if status.newComment
 				comment = status.newComment
 				statusMedias = $.extend {}, $scope.medias
-				scanAllLinks comment.content || ''
+				scanAllLinks $scope, comment.content || ''
 				commentMedias = $.extend {}, $scope.medias
 				$scope.medias = $.extend {}, statusMedias
 				Ajax.put '/user/comment/add',
@@ -1379,7 +1283,7 @@ Controllers =
 
 		$scope.updateStatus = (status) ->
 			#We have to do this before post because it also put videos in status.videos
-			contentToDisplay = richText status.content, false, false, status
+			contentToDisplay = richText $scope, status.content, false, false, status
 			Ajax.post '/user/status',
 				data:
 					status: status
@@ -1425,7 +1329,7 @@ Controllers =
 		at = getCachedData 'at'
 
 		$scope.$on 'receiveStatus', (e, status) ->
-			status.content = richText status.content
+			status.content = richText $scope, status.content
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
