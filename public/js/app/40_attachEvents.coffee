@@ -497,9 +497,21 @@ do ->
 								if ok and ! $('[data-id="' + id + '"]').parents('.friend-ask').find('.accept-friend').eq(0).click().length
 									# To fix: id is a user hashed id and not the friend id as expected from the friend controller
 									Ajax.post '/user/friend/accept', data: id: id
-				if $btn.is '.destroyable'
-					$btn.fadeOut ->
-						$btn.remove()
+						else
+							$('.remove-friend-ask').show()
+							$('.add-friend-ask').hide()
+				prevent e
+		]
+		[
+			click
+			'[data-remove-friend-ask], [ng-attr-data-remove-friend-ask]'
+			($btn, e) ->
+				id = $btn.data 'remove-friend-ask'
+				Ajax.delete '/user/friend/pending',
+					data: userId: id
+					success: (data) ->
+						$('.remove-friend-ask').hide()
+						$('.add-friend-ask').show()
 				prevent e
 		]
 		[

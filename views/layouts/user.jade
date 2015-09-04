@@ -137,7 +137,7 @@ block nav
 					+glyph('search')
 				.suggests
 					ul(dpr): li(ng-repeat="user in query.users")
-						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend, 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							.user-name
 								| {{ user.name.full }}
@@ -146,7 +146,7 @@ block nav
 								=' '+s("points")
 						a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
 							+glyph('comment')
-						a.col-xs-3.chat-with(
+						a.col-xs-3.chat-with.add-friend-ask(
 							ng-if="canBeAddedAsAFriend(user)"
 							ng-click="askForFriend(user)"
 							href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
@@ -156,6 +156,14 @@ block nav
 							data-ask-for-friend="{{ user.hashedId }}"
 						)
 							+glyph('plus')
+						a.col-xs-3.remove-friend-ask(
+							ng-if="user.askedForFriend"
+							data-target=".errors"
+							data-click="success"
+							data-param0=s("Demande annulée")
+							data-remove-friend-ask="{{ user.hashedId }}"
+						)
+							+glyph('remove')
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding
