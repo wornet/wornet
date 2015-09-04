@@ -309,8 +309,9 @@ Controllers =
 						goToBottomm = true
 			refreshScope $scope
 			#force scroll at bottom
-			if goToBottomm
-				$('.chat[data-chat-id="' + message.from.hashedId + '"] .messages:first').scrollTop((scrollHeight - height))
+			if goToBottom
+				newScrollHeight = $('.chat[data-chat-id="' + message.from.hashedId + '"] .messages')[0].scrollHeight
+				$('.chat[data-chat-id="' + message.from.hashedId + '"] .messages:first').scrollTop(newScrollHeight)
 			if !message
 				delay 1, ->
 					$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
