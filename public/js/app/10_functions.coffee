@@ -631,3 +631,96 @@ window.isMobile = ->
 		!! window.matchMedia("(max-width:767px)").matches
 	else
 		window.innerWidth < 768
+
+videoHosts =
+	'//www.dailymotion.com/embed/video/$1': [
+		/^dai\.ly\/([a-z0-9_-]+)/i
+		/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
+	]
+	'//www.youtube.com/embed/$1': [
+		/^youtu\.be\/([a-z0-9_-]+)/i
+		/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
+	]
+
+richText = ($scope, text, transformToLinks = true, displayVideoLink, status = null) ->
+	scanAllLinks $scope, smiliesService.filter(text), transformToLinks, displayVideoLink, status
+
+scanAllLinks = ($scope, text, transformToLinks = false, displayVideoLink, status) ->
+	((' ' + text)
+		.replace /(\s)www\./g, '$1http://www.'
+		.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+			if transformToLinks
+				space + scanLink $scope, link, false, displayVideoLink
+			else
+				ret = scanLink $scope, link, true, false, status
+				if status
+					space + ret
+				else
+					all
+	).substr 1
+
+scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = null) ->
+	https = href.substr(0, 5) is 'https'
+	href = href.replace /^(https?)?:?\/\//, ''
+	test = href.replace /^www\./, ''
+	video = do ->
+		for url, regexps of videoHosts
+			for regexp in regexps
+				match = test.match regexp
+				if match and match.length > 1
+					return url.replace '$1', match[1]
+		null
+	s = textReplacements
+	if video
+		if sendMedia
+			if status
+				status.videos.push
+					href: video
+					concernMe: true
+					statusId: status._id
+				refreshScope $scope
+				return ''
+			else
+				$scope.medias.videos.push
+					href: video
+			Ajax.put '/user/video/add', video: url: video
+			return
+		else
+			# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
+			if displayVideoLink
+				hrefToDisplay = if href.length > 34
+					href.substr(0, 34) + '...'
+				else
+					href
+				'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+			else
+				''
+	else
+		if sendMedia
+			if status
+				status.links = status.links.filter (link) ->
+					link.href isnt href
+				status.links.push
+					href: href
+					https: https
+				refreshScope $scope
+				hrefToDisplay = if href.length > 34
+					href.substr(0, 34) + '...'
+				else
+					href
+				return '<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+			else
+				$scope.medias.links.push
+					href: href
+					https: https
+			Ajax.put '/user/link/add', link:
+				name: href
+				url: href
+				https: https
+			return
+		else
+			hrefToDisplay = if href.length > 34
+				href.substr(0, 34) + '...'
+			else
+				href
+			'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
