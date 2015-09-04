@@ -366,9 +366,13 @@ extend userSchema.methods,
 								exists: exists
 					if friend
 						exists = equals askedTo, friend.askedFrom
-						unless exists
+						if !exists and friend.status isnt "refused"
 							err = new PublicError s("Une demande est déjà en attente.")
-						next()
+							next()
+						else
+							friend.status = 'waiting'
+							friend.save next
+
 						# if config.wornet.lockFriendAsk.contains friend.status
 						# 	err = new PublicError s("Une demande est déjà en attente.")
 						# 	next()
