@@ -297,7 +297,19 @@ Controllers =
 			if modified
 				saveChatState currentChat
 				saveChats chats
+				goToBottomm = false
+				if message and message.from
+					messagesDiv = $('.chat[data-chat-id="' + message.from.hashedId + '"] .messages')[0]
+					scrollHeight = messagesDiv.scrollHeight
+					scrollTop = $(messagesDiv).scrollTop()
+					height = $(messagesDiv).height()
+					#we go to bottom of chat if we are already at the bottom before chat update
+					if (scrollHeight - height) is scrollTop
+						goToBottomm = true
 			refreshScope $scope
+			#force scroll at bottom
+			if goToBottomm
+				$('.chat[data-chat-id="' + message.from.hashedId + '"] .messages:first').scrollTop((scrollHeight - height))
 			if !message
 				delay 1, ->
 					$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
