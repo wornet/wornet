@@ -500,6 +500,7 @@ do ->
 						else
 							$('.remove-friend-ask').show()
 							$('.add-friend-ask').hide()
+							$btn.hide()
 				prevent e
 		]
 		[
@@ -512,6 +513,7 @@ do ->
 					success: (data) ->
 						$('.remove-friend-ask').hide()
 						$('.add-friend-ask').show()
+						$btn.hide()
 				prevent e
 		]
 		[
