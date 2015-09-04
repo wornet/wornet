@@ -304,7 +304,8 @@ Controllers =
 					scrollTop = $(messagesDiv).scrollTop()
 					height = $(messagesDiv).height()
 					#we go to bottom of chat if we are already at the bottom before chat update
-					if (scrollHeight - height) is scrollTop
+					#there is a gap of 5 px because of some difference between browsers on scrollTop() result
+					if (scrollHeight - height - 5) < scrollTop
 						goToBottomm = true
 			refreshScope $scope
 			#force scroll at bottom
