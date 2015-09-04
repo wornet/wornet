@@ -358,6 +358,11 @@ UserPackage =
 					else
 						friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
 						end = (isAFriend) ->
+							myfriendAskPending = false
+							if !isAFriend and !empty friendAsks
+								for id, friendAsk of friendAsks
+									if friendAsk.hashedId is req.user.hashedId
+										myfriendAskPending = true
 							res.render template,
 								isMe: isMe
 								askedForFriend: askedForFriend
@@ -368,6 +373,7 @@ UserPackage =
 								numberOfFriends: friends.length
 								friends: if isMe then friendsThumb else []
 								friendAsks: if isMe then friendAsks else {}
+								myfriendAskPending: myfriendAskPending
 								userTexts: userTexts()
 								users: users
 						if isAFriend is null

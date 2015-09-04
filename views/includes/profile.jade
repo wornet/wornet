@@ -98,15 +98,25 @@
 							+glyph("star{{ isABestFriend ? '' : '-empty' }}")
 				else
 					br
-					a.add-friend.destroyable.inline-button.btn.btn-primary(
+					a.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
 						href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 						data-target=".profileError"
 						data-click="success"
 						data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
 						data-ask-for-friend=profile.hashedId
+						style="display:" + (myfriendAskPending?"none":"inline-block")
 					)
 						+glyph('user')
 						=' '+strtoupper(s("Ajouter à la liste d'amis"))
+					a.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
+						data-target=".profileError"
+						data-click="success"
+						data-param0=s("Demande annulée")
+						data-remove-friend-ask=profile.hashedId
+						style="display:" + (!myfriendAskPending?"none":"inline-block")
+					)
+						+glyph('remove')
+						=' '+strtoupper(s("Annuler la demande"))
 		if isAFriend || isMe
 			if ! profile.birthDate || profile.maskBirthDate
 				if profile.birthCity
