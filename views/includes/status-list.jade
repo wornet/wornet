@@ -81,7 +81,7 @@
 					span.like-zone(ng-click="displaylikerList(status)")
 						| {{ nbLikeText(status) }}
 				if config.wornet.comments.enabled
-					span.btn-action-comment(ng-click="showCommentBlock(status)")
+					span.btn-action-comment(ng-click="toggleCommentBlock(status)")
 						span.btn.icon
 						span(ng-if="nbCommentLoaded")
 							| {{ nbCommentText(status) }}
@@ -121,7 +121,7 @@
 				+form()(ng-submit="sendComment(status)").cb
 					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
 					input.btn.btn-primary(type="submit" value=s("Envoyer"))
-					input.btn.cancel(type="button" ng-click="status.commentForm = false; status.commentList = false" value=s("Annuler"))
+					input.btn.cancel(type="button" ng-click="toggleCommentBlock(status)" value=s("Annuler"))
 
 div(scroll-detect verify-to-load="statusRemaining()" gap="300" url="getLoadUrl()" offset="getStatusOffset()" callback="loadStatusList").status-loading
 +data('statusPageCount', config.wornet.limits.statusPageCount)
