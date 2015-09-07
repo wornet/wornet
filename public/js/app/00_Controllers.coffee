@@ -1032,7 +1032,7 @@ Controllers =
 		return
 
 	Status: ($scope, smiliesService, statusService, paginate) ->
-
+		s = textReplacements
 		initMedias = ->
 			$scope.medias =
 				links: []
@@ -1163,7 +1163,6 @@ Controllers =
 			return
 
 		$scope.delete = (status, $event) ->
-			s = textReplacements
 			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
 				if ok
 					$($event.target)
@@ -1186,10 +1185,23 @@ Controllers =
 			Ajax.get '/report/' + status._id
 			return
 
+		$scope.sharedAlbumDefaultName = s("Publications d'amis")
+		temporarySharedAlbumId = null
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
-			$scope.media.step = null
+			at = getData 'at'
+			if !at or at is getData 'me'
+				$scope.media.step = null
+			else
+				sharedAlbumId = getData('sharedAlbumId') || temporarySharedAlbumId
+				if sharedAlbumId
+					Ajax.get 'user/album/one/' + sharedAlbumId, (data) ->
+						$scope.selectAlbum data.album
+						refreshScope $scope
+				else
+					$scope.createAlbum {name: $scope.sharedAlbumDefaultName, description: ''}, at
+				$scope.media.step = "add"
 			return
 
 		$scope.selectAlbum = (album) ->
@@ -1199,11 +1211,15 @@ Controllers =
 			loadNewIFrames()
 			return
 
-		$scope.createAlbum = (album) ->
+		$scope.createAlbum = (album, at) ->
 			removeSessionItem albumKey()
 			Ajax.put '/user/album/add',
 				data:
 					album: album
+					at: at
+				success: (data) ->
+					if at
+						temporarySharedAlbumId = data.album._id
 			$scope.selectAlbum album
 			album =
 				name: ''
@@ -1264,7 +1280,6 @@ Controllers =
 			return
 
 		$scope.deleteComment = (comment) ->
-			s = textReplacements
 			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce commentaire ?"), (ok) ->
 				if ok
 					Ajax.delete '/user/comment',
@@ -1322,11 +1337,9 @@ Controllers =
 
 
 		$scope.nbLikeText = (status) ->
-			s = textReplacements
 			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
 
 		$scope.nbCommentText = (status) ->
-			s = textReplacements
 			s("{nbComm} commentaire|{nbComm} commentaires", { nbComm: status.nbComment }, status.nbComment)
 
 		at = getCachedData 'at'
