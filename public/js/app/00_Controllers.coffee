@@ -553,7 +553,9 @@ Controllers =
 			return
 
 		window.refreshMediaAlbums = ->
-			getAlbumsFromServer (err, albums) ->
+			getAlbumsFromServer (err, albums, nbAlbums, user) ->
+				$scope.nbNonEmptyAlbums = nbAlbums || 0
+				$scope.mediaUser = user
 				unless err
 					setMediaAlbums albums
 				return
@@ -1229,7 +1231,7 @@ Controllers =
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
 					setRecentStatus data, false
-					refreshMediaAlbums()
+					window.refreshMediaAlbums()
 			status.content = ""
 			initMedias()
 
@@ -1334,7 +1336,7 @@ Controllers =
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
-				refreshMediaAlbums()
+				window.refreshMediaAlbums()
 			return
 
 		$scope.$on 'receiveComment', (e, comment) ->
