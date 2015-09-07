@@ -76,7 +76,9 @@ NoticePackage =
 	notify: (userIds, err, groupData, appendOtherUsers = false, tabToIgnore) ->
 		self = @
 		# stack = (new Error()).stack
-		Notice.remove createdAt: $lt: (new Date).subMonths config.wornet.limits.monthsBeforeRemoveNotice
+		aMonthAgo = (new Date).subMonths config.wornet.limits.monthsBeforeRemoveNotice
+		id = Math.floor(aMonthAgo.getTime() / 1000).toString(16) + "0000000000000000"
+		Notice.remove _id: $lt: id
 		userIds.each ->
 			userId = strval @
 			if /^[0-9a-f]+$/ig.test userId
