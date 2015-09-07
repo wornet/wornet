@@ -78,7 +78,10 @@ NoticePackage =
 		# stack = (new Error()).stack
 		aMonthAgo = (new Date).subMonths config.wornet.limits.monthsBeforeRemoveNotice
 		id = Math.floor(aMonthAgo.getTime() / 1000).toString(16) + "0000000000000000"
-		Notice.remove _id: $lt: id
+		Notice.remove
+			_id: $lt: id
+		, (err, count) ->
+			true
 		userIds.each ->
 			userId = strval @
 			if /^[0-9a-f]+$/ig.test userId
