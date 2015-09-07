@@ -383,9 +383,21 @@ module.exports = (router) ->
 			res.serverError new PublicError s("Ce nom est reservé.")
 		else
 			# Create a new album
-			album = extend user: req.user._id, req.body.album
+			at = req.body.at
+			album = extend user: if at
+				cesarRight at
+			else
+				req.user._id
+			, req.body.album
 			album.lastEmpty = new Date
 			Album.create album, (err, album) ->
+				if at
+					User.update
+						_id: album.user
+					,
+						sharedAlbumId: album._id
+					, (err, user) ->
+						warn err if err
 				album.user = cesarLeft album.user
 				res.json
 					err: err
@@ -421,6 +433,8 @@ module.exports = (router) ->
 									res.json goingTo: '/user/profile'
 							if strval(req.user.photoAlbumId) is strval(id)
 								updateUser req, photoAlbumId: null, done
+							else if strval(req.user.sharedAlbumId) is strval(id)
+								updateUser req, sharedAlbumId: null, done
 							else
 								done()
 
@@ -469,6 +483,14 @@ module.exports = (router) ->
 				, (err) ->
 					res.serverError err
 
+	router.get '/album/one/:id', (req, res) ->
+		Album.findOne
+			_id: req.params.id
+		, (err, album) ->
+			if err
+				res.serverError err
+			else
+				res.json album: album
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video

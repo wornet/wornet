@@ -149,6 +149,9 @@ userSchema = BaseSchema.extend
 	chatSound:
 		type: Number
 		default: 1
+	sharedAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
 ,
 	toObject:
 		virtuals: false
@@ -256,6 +259,7 @@ extend userSchema.methods,
 			'chatSound'
 			'sex'
 			'photoAlbumId'
+			'sharedAlbumId'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]

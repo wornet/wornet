@@ -156,15 +156,16 @@ StatusPackage =
 												originalStatus.albumName = albums[0].name
 												originalStatus.save()
 											count = albums.length
-											albums.each ->
-												UserAlbums.touchAlbum req.user, @_id, (err, result) ->
-													if err
-														warn err
-												@refreshPreview (err) ->
-													if err
-														warn err
-													unless --count
-														done status
+											albums.each (key, album) ->
+												req.getUserById album.user, (err, user) =>
+													UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
+														if err
+															warn err
+													@refreshPreview (err) ->
+														if err
+															warn err
+														unless --count
+															done status
 										else
 											done status
 								else
