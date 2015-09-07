@@ -81,7 +81,7 @@ NoticePackage =
 		Notice.remove
 			_id: $lt: id
 		, (err, count) ->
-			true
+			warn err if err
 		userIds.each ->
 			userId = strval @
 			if /^[0-9a-f]+$/ig.test userId
