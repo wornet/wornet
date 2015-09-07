@@ -456,6 +456,7 @@ Controllers =
 
 	Contact: ($scope) ->
 		$scope.contact = {}
+		s = textReplacements
 		$scope.send = ->
 			if $scope.contact.motif and $scope.contact.message
 				$('#contact-error').hide()
@@ -465,11 +466,11 @@ Controllers =
 						motif: $scope.contact.motif
 						message: $scope.contact.message
 					success: ->
+						toastr.success s("Votre message a bien été envoyé. Merci !"), s "C'est fait"
 						$('#contact [data-dismiss="modal"]:first').click()
 						$scope.contact = {}
 
 			else
-				s= textReplacements
 				$('#contact-error').html s('Le motif et le message sont obligatoires')
 				$('#contact-error').show()
 			return

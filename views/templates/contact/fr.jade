@@ -9,6 +9,7 @@ div#contact(ng-controller="ContactCtrl")
 
 	.modal-body
 		#contact-error.alert.alert-danger
+		=s("Vous rencontrez un problème ? Vous avez une idée ? Vous souhaitez échanger avec nous ? N'hésitez pas à nous envoyer un mail. Nous y répondrons dans les plus brefs délais. ")
 		form#contact-form
 			select.form-control(name="motif" autocomplete="off" required ng-model="contact.motif")
 				option(value='')
