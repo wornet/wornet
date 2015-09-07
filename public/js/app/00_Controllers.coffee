@@ -1370,10 +1370,10 @@ Controllers =
 			else
 				null
 
-		$scope.showCommentBlock = (status) ->
+		$scope.toggleCommentBlock = (status) ->
 			delay 1, ->
-				status.commentForm = true
-				status.commentList = true
+				status.commentForm = !status.commentForm
+				status.commentList = !status.commentList
 				refreshScope statusScope
 				return
 			return
