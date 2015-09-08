@@ -260,6 +260,8 @@
 
 .notification-list-mobile
 	max-height ((36px + 3px) * $numberOfNoticeBeforeScrollBar) + ((20px) * 2) + $mainPadding
+	@media (max-width: 321px)
+		max-height (36px * $iphone4NumberOfNoticeBeforeScrollBar) + 20px + $mainPadding
 
 .loggedFriends-list
 	left 0
