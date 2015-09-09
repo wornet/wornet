@@ -1068,7 +1068,6 @@ Controllers =
 					hideLoader()
 
 		lastStatusLoadedCount = null
-		$scope.nbCommentLoaded = false
 
 		$scope.loadStatusList = setRecentStatus = (data, toPush = true) ->
 			has = (key) ->
@@ -1102,11 +1101,14 @@ Controllers =
 							@concernMe = status.concernMe
 					status.content = richText $scope, status.content
 					status.isMine = isMe(status.author.hashedId)
+					status.nbComment = 0
 					status.nbLike ||= 0
 					status
 				for status in chunk
 					index = recentStatusIds.indexOf status._id
 					if ~index
+						if $scope.recentStatus[index].nbComment
+							status.nbComment = $scope.recentStatus[index].nbComment
 						$scope.recentStatus[index] = status
 					else
 						if toPush
@@ -1117,7 +1119,6 @@ Controllers =
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
 					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
-
 					if statusIds.length
 						delay 1, ->
 							Ajax.bigGet 'user/comment',
@@ -1132,7 +1133,6 @@ Controllers =
 											else
 												status.nbComment = 0
 											status
-										$scope.nbCommentLoaded = true
 										refreshScope $scope
 									return
 							return
@@ -1238,7 +1238,6 @@ Controllers =
 
 		$scope.send = (status) ->
 			scanAllLinks $scope, status.content || ''
-
 			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
 				data:
 					status: status
@@ -1247,7 +1246,8 @@ Controllers =
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
 					setRecentStatus data, false
-					window.refreshMediaAlbums()
+					if window.refreshMediaAlbums
+						window.refreshMediaAlbums()
 			status.content = ""
 			initMedias()
 

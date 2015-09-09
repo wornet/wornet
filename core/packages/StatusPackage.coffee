@@ -244,6 +244,7 @@ StatusPackage =
 		place = status.at or status.author
 		place = place.hashedId or place
 		status.nbLike = 0
+		status.nbComment = 0
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
