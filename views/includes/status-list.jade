@@ -83,7 +83,7 @@
 				if config.wornet.comments.enabled
 					span.btn-action-comment(ng-click="toggleCommentBlock(status)")
 						span.btn.icon
-						span(ng-if="nbCommentLoaded")
+						span
 							| {{ nbCommentText(status) }}
 			.cb
 		if config.wornet.comments.enabled
