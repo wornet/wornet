@@ -1,15 +1,15 @@
 # Piwik
 if (piwikSettings = getData 'piwik')
-	_paq = _paq || []
+	window['_' + 'paq'] = (paq = window['_' + 'paq'] || [])
 	do ->
 		i = 0
 		for key, val of getData 'vars'
-			_paq.push ['setCustomVariable', ++i, key, val, "visit"]
-	_paq.push ['trackPageView']
-	_paq.push ['enableLinkTracking']
-	_paq.push ['setTrackerUrl', (piwikSettings.host || '') + '/stat']
-	_paq.push ['setUserId', getCachedData 'me']
-	_paq.push ['setSiteId', piwikSettings.id]
+			paq.push ['setCustomVariable', ++i, key, val, "visit"]
+	paq.push ['trackPageView']
+	paq.push ['enableLinkTracking']
+	paq.push ['setTrackerUrl', (piwikSettings.host || '') + '/stat']
+	paq.push ['setUserId', getCachedData 'me']
+	paq.push ['setSiteId', piwikSettings.id]
 
 # Google Analytics
 if (googleAnalyticsSettings = getData 'googleAnalytics')
