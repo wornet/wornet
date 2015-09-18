@@ -8,6 +8,7 @@ module.exports = (router) ->
 				if req.user.email in list
 					done (info) ->
 						res.render 'admin/index', info: info
+					, req, res
 				else
 					res.notFound()
 
@@ -40,6 +41,10 @@ module.exports = (router) ->
 					for user in all
 						ul += '\n\tli: a(href="/admin/login/' + user.hashedId + '") ' + user.email
 					jd ul
+
+	# http links to https
+	adminOnly '/', (info, req, res) ->
+		res.render 'admin/menu'
 
 	# http links to https
 	adminOnly '/port', (info) ->
