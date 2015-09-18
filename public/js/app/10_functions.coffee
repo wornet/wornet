@@ -579,7 +579,11 @@ trackEvent = do ->
 			time = $.now()
 			key = e + '-' + b + '-' + c
 			if time - lastTime > 500 or lastKey isnt key
-				window['_' + 'paq'].push ['trackEvent', e, b, c]
+				if window['_' + 'paq']
+					try
+						window['_' + 'paq'].push ['trackEvent', e, b, c]
+					catch e
+						console['log'] e
 				lastTime = time
 				lastKey = key
 
