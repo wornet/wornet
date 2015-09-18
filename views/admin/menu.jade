@@ -1,0 +1,19 @@
+extends ../layouts/user
+
+mixin btn(href, src)
+	a.btn(href="/admin/" + href style="width: 220px; height: 220px; padding: 20px; text-align: center; margin: 20px;")
+		img(src=png(src))
+		br
+		br
+		block
+
+block body
+	.container:.well
+		+btn("stats", "admin/stats")
+			| Statistiques générales
+		+btn("stats/medias", "admin/stats")
+			| Statistiques des médias
+		+btn("bouger", "admin/bouger")
+			| Bouger
+		+btn("signalements", "admin/signalements")
+			| Signalements
