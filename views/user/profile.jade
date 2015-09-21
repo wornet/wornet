@@ -1,24 +1,34 @@
 extends ../layouts/user
 
 block body
-	.col-sm-4.col-xs-12.pad-right
-		//- Friends
-		if isMe
-			include ../includes/friends
-			include ../includes/asks-for-friend
+	- var sideClass = ""
+	- var middleClass = ""
+	if isAFriend || isMe
+		- sideClass = "col-sm-3"
+		- middleClass = "col-sm-6"
+	else
+		- sideClass = "col-sm-4"
+		- middleClass = "col-sm-8"
+	.col-xs-12.pad-right(class=sideClass)
 		if isAFriend || isMe
 			//- Photos/Videos
 			include ../includes/medias
 		else
 			//- Users
 			include ../includes/users.jade
-	.col-sm-8.col-xs-12.pad-left
+	.col-xs-12.pad-left(class=middleClass)
 		+alert(profileAlerts)
 		//- Profile
 		include ../includes/profile
 		if isAFriend || isMe
 			//- Publications
 			include ../includes/status
+			
+	if (isAFriend || isMe) && !profile.maskFriendList
+		.col-xs-12.pad-right(class=sideClass)
+			//- Friends
+			include ../includes/friends
+			include ../includes/asks-for-friend
 
 	+data('at', profile.hashedId)
 	+data('sharedAlbumId', profile.sharedAlbumId)

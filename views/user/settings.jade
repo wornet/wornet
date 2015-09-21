@@ -7,73 +7,93 @@ block body
 
 		.well.settings-edit
 			+form("/user/settings")
-				//- Identity
-				label
-					span
-						=userTexts.firstName
-					+formControl(name="name.first" value=user.firstName required)
-				label
-					span
-						=userTexts.lastName
-					+formControl(name="name.last" value=user.lastName required)
-				label
-					span
-						=userTexts.sex
-					select.form-control(autocomplete="off" value=user.sex required name="sex")
-						option(value="" selected=(user.sex=="default"))
-							=userTexts.chooseSex
-						option(value="man" selected=(user.sex=="man"))
-							=userTexts.man
-						option(value="woman" selected=(user.sex=="woman"))
-							=userTexts.woman	
-				label
-					span
-						=userTexts.birthDate
-					+formControl(type="date" name="birthDate" value=user.birthDate.toString('YYYY-MM-DD'))
-				label
-					span
-						=userTexts.confidentialityBirthDate
-					=s("Oui")
-					input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
-					=s("Non")
-					input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
-				hr.cb
-				label
-					span
-						=userTexts.email
-					+formControl(autocomplete="off" name="email" value=user.email pattern=pattern('email'))
-				label
-					span
-						=s("Changement de mot de passe")
-						br
-						small: i
-							=s("Si vide, pas de changement de mot de passe.")
-					+formControl("password")(autocomplete="off" name="password" placeholder=s("Entrez votre nouveau mot de passe"))
-				hr.cb
-				//- Privacy
-				label
-					span
-						=userTexts.privacy
-					select.form-control(autocomplete="off")
-						option(value="")
-							=userTexts.private
-				//- Notification
-					.opt-group
-						input(type="checkbox" name="newsletter" id="newsletter" checked=user.newsletter)
-						label(for="newsletter")
-							=s("S'abonner à la newsletter Oui ou Non Suivez les évènements et autres manifestations proposées par votre réseau social préféré !")
-					.opt-group
-						input(type="checkbox" name="noticeFriendAsk" id="noticeFriendAsk" checked=user.noticeFriendAsk)
-						label(for="noticeFriendAsk")
-							=s("M'avertir lors d'une demande d'ajout.")
-					.opt-group
-						input(type="checkbox" name="noticePublish" id="noticePublish" checked=user.noticePublish)
-						label(for="noticePublish")
-							=s("M'avertir lors de la publication d'un statut sur mon profil.")
-					.opt-group
-						input(type="checkbox" name="noticeMessage" id="noticeMessage" checked=user.noticeMessage)
-						label(for="noticeMessage")
-							=s("M'avertir lors de la réception d'un message privé.")
+				fieldset
+					h3
+						=userTexts.identityTitle
+					h6
+						=userTexts.identityHint
+				
+					//- Identity
+					label
+						span
+							=userTexts.firstName
+						+formControl(name="name.first" value=user.firstName required)
+					label
+						span
+							=userTexts.lastName
+						+formControl(name="name.last" value=user.lastName required)
+					label
+						span
+							=userTexts.sex
+						select.form-control(autocomplete="off" value=user.sex required name="sex")
+							option(value="" selected=(user.sex=="default"))
+								=userTexts.chooseSex
+							option(value="man" selected=(user.sex=="man"))
+								=userTexts.man
+							option(value="woman" selected=(user.sex=="woman"))
+								=userTexts.woman	
+					label
+						span
+							=userTexts.birthDate
+						+formControl(type="date" name="birthDate" value=user.birthDate.toString('YYYY-MM-DD'))
+					hr.cb
+					label
+						span
+							=userTexts.email
+						+formControl(autocomplete="off" name="email" value=user.email pattern=pattern('email'))
+					label
+						span
+							=s("Changement de mot de passe")
+							br
+							small: i
+								=s("Si vide, pas de changement de mot de passe.")
+						+formControl("password")(autocomplete="off" name="password" placeholder=s("Entrez votre nouveau mot de passe"))
+				fieldset
+					h3
+						=userTexts.confidentialityTitle
+					h6
+						=userTexts.confidentialityHint
+					//- Privacy
+					label
+						span
+							=userTexts.privacy
+						select.form-control(autocomplete="off")
+							option(value="")
+								=userTexts.private
+						span
+						span.account-confidentiality-hint
+							=userTexts.accountConfidentialityHint
+					label
+						span
+							=userTexts.confidentialityBirthDate
+						=s("Oui")
+						input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
+						=s("Non")
+						input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
+					label
+						span
+							=userTexts.confidentialityFriendList
+						=s("Oui")
+						input(type="radio" name="confidentialityFriendList" id="confidentialityFriendListPrive" value="on" checked=user.maskFriendList)
+						=s("Non")
+						input(type="radio" name="confidentialityFriendList" id="confidentialityFriendListPublic" value="off" checked=!user.maskFriendList)
+					//- Notification
+						.opt-group
+							input(type="checkbox" name="newsletter" id="newsletter" checked=user.newsletter)
+							label(for="newsletter")
+								=s("S'abonner à la newsletter Oui ou Non Suivez les évènements et autres manifestations proposées par votre réseau social préféré !")
+						.opt-group
+							input(type="checkbox" name="noticeFriendAsk" id="noticeFriendAsk" checked=user.noticeFriendAsk)
+							label(for="noticeFriendAsk")
+								=s("M'avertir lors d'une demande d'ajout.")
+						.opt-group
+							input(type="checkbox" name="noticePublish" id="noticePublish" checked=user.noticePublish)
+							label(for="noticePublish")
+								=s("M'avertir lors de la publication d'un statut sur mon profil.")
+						.opt-group
+							input(type="checkbox" name="noticeMessage" id="noticeMessage" checked=user.noticeMessage)
+							label(for="noticeMessage")
+								=s("M'avertir lors de la réception d'un message privé.")
 				.btn-group
 					input.btn.btn-primary(type="submit" value=s("Enregistrer"))
 				.btn-group

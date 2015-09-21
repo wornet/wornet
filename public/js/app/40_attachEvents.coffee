@@ -597,7 +597,9 @@ do ->
 						.replace /^https?:\/\/[^\/]+/g, ''
 					if href is '/user/logout'
 						removeSessionItems()
-					if navigator.standalone
+					if window.location.pathname is href
+						window.location.reload()
+					else if navigator.standalone
 						window.location = href
 						cancel e
 					else
