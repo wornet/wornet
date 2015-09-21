@@ -662,8 +662,12 @@ span.image-box i.glyphicon
 			margin 0
 		.settings ul a
 			color $nearlyBlack
-	img.big
-		max-width 100%
+	img
+		&.big
+			max-width 100%
+		&.prev
+		&.next
+			display none
 	.img-buttons
 		display block
 		margin auto

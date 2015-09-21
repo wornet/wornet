@@ -637,7 +637,7 @@ Controllers =
 			null
 
 		$scope.inFade = (action) ->
-			$children = $ '#media-viewer > * > *'
+			$children = $ '#media-viewer > * > * img.big'
 			$children.fadeOut 100, ->
 				action()
 				delay 20, ->
@@ -647,18 +647,34 @@ Controllers =
 			return
 
 		$scope.prev = ->
-			if prev = getPrev()
+			if $scope.mediaPrev and $scope.mediaPrev.src
 				$scope.inFade ->
-					$scope.loadMedia 'image', prev
+					$scope.mediaNext = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaPrev
+					refreshScope $scope
+					testSize()
+
+			delay 200, ->
+				if prev = getPrev()
+					$scope.loadMedia 'image', prev, "prev"
+				else
+					$scope.mediaPrev = null
 				return
-			return
 
 		$scope.next = ->
-			if next = getNext()
+			if $scope.mediaNext and $scope.mediaNext.src
 				$scope.inFade ->
-					$scope.loadMedia 'image', next
+					$scope.mediaPrev = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaNext
+					refreshScope $scope
+					testSize()
+
+			delay 200, ->
+				if next = getNext()
+					$scope.loadMedia 'image', next, "next"
+				else
+					$scope.mediaNext = null
 				return
-			return
 
 		deletableMedia = null
 		$scope.deleteMedia = ->
@@ -691,10 +707,40 @@ Controllers =
 					return
 			return
 
+		testSize = ->
+			$mediaViewer = $ '#media-viewer'
+			$img = $mediaViewer.find 'img.big'
+			if $img.length
+				$mediaViewer
+					.find 'img.big, a.next, a.prev'
+					.css 'max-height', Math.max(200, window.innerHeight - 200) + 'px'
+				w = $img.width()
+				h = $img.height()
+				if w * h
+					between = (min, max, number) ->
+						Math.max min, Math.min max, Math.round number
+					$mediaViewer.find('.img-buttons')
+						.css 'margin-top', -h
+						.width w
+					$mediaViewer.find('.img-buttons, .prev, .next').height h
+					$mediaViewer.find('.prev, .next')
+						.width Math.round w / 2
+						.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
+						.css 'font-size', between 16, 64, (Math.min w / 2, h / 2) - 10
+				else
+					delay 200, testSize
+			return
+
 		$scope.videoHref = ->
 			(($scope.loadedMedia || {}).href || '').replace '.youtube.com/', '.youtube-nocookie.com/'
 
-		$scope.loadMedia = (type, media, concernMe) ->
+		$scope.mediaNext = {}
+		$scope.mediaPrev = {}
+		# loadedAlbum = null
+		$scope.loadMedia = (type, media, concernMe, position = "middle") ->
+			if "string" is typeof concernMe
+				position = concernMe
+				concernMe = null
 			media = $.extend
 				concernMe: concernMe
 				first: true
@@ -709,34 +755,12 @@ Controllers =
 				type: type
 				statusId: media.statusId || null
 				mediaId: media._id || null
-			testSize = ->
-				$mediaViewer = $ '#media-viewer'
-				$img = $mediaViewer.find 'img.big'
-				if $img.length
-					$mediaViewer
-						.find 'img.big, a.next, a.prev'
-						.css 'max-height', Math.max(200, window.innerHeight - 200) + 'px'
-					w = $img.width()
-					h = $img.height()
-					if w * h
-						between = (min, max, number) ->
-							Math.max min, Math.min max, Math.round number
-						$mediaViewer.find('.img-buttons')
-							.css 'margin-top', -h
-							.width w
-						$mediaViewer.find('.img-buttons, .prev, .next').height h
-						$mediaViewer.find('.prev, .next')
-							.width Math.round w / 2
-							.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
-							.css 'font-size', between 16, 64, (Math.min w / 2, h / 2) - 10
-					else
-						delay 200, testSize
-				return
 			if id
 				$.extend media,
 					date: Date.fromId(id).toISOString()
 					id: id
-				Ajax.get '/user/photo/' + id, (data) ->
+
+				treatReturn = (media, data) ->
 					if data.user
 						if data.album and data.album.photos
 							photos = data.album.photos
@@ -752,21 +776,42 @@ Controllers =
 									media.first = false
 								if id isnt photos[photos.length - 1].id
 									media.last = false
-								delay 100, ->
-									if next = getNext()
-										img = new Image
-										img.onload = ->
-											if prev = getPrev()
-												(new Image).src = prev.src
-										img.src = next.src
+					$.extend media, data
 
-						$.extend media, data
+				Ajax.get '/user/photo/' + id, (data) ->
+					treatReturn media, data
+					if position is "middle"
+						delay 100, ->
+							if next = getNext()
+								Ajax.get '/user/photo/' + idFromUrl(next.src), (dataNext) ->
+									next.id = idFromUrl next.src
+									next.date = Date.fromId(next.id).toISOString()
+									next.type = "image"
+									treatReturn next, dataNext
+									$scope.mediaNext = next
+									refreshScope $scope
+									return
+							if prev = getPrev()
+								Ajax.get '/user/photo/' + idFromUrl(prev.src), (dataPrev) ->
+									prev.id = idFromUrl prev.src
+									prev.date = Date.fromId(prev.id).toISOString()
+									prev.type = "image"
+									treatReturn prev, dataPrev
+									$scope.mediaPrev = prev
+									refreshScope $scope
+									return
+
 						refreshScope $scope
 						delay 10, testSize
 					return
 			else
 				delay 10, testSize
-			$scope.loadedMedia = media
+			if position is "prev"
+				$scope.mediaPrev = media
+			else if position is "next"
+				$scope.mediaNext = media
+			else
+				$scope.loadedMedia = media
 			delay 1000, ->
 				$('#media-viewer iframe[data-ratio]').ratio()
 				return
