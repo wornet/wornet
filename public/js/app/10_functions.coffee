@@ -634,12 +634,14 @@ window.isMobile = ->
 
 videoHosts =
 	'//www.dailymotion.com/embed/video/$1': [
-		/^dai\.ly\/([a-z0-9_-]+)/i
-		/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
+		[/^dai\.ly\/([a-z0-9_-]+)/i, 1]
+		[/^dailymotion\.com\/video\/([a-z0-9_-]+)/i, 1]
 	]
 	'//www.youtube.com/embed/$1': [
-		/^youtu\.be\/([a-z0-9_-]+)/i
-		/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
+		[/^youtu\.be\/([a-z0-9_-]+)/i, 1]
+		[/^youtu\.be\/([a-z0-9_-]+)\?t=([0-9]+)/i, 2]
+		[/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i, 1]
+		[/^youtube\.com\/watch\?t=([0-9]+)(\&|\&amp;)v=([a-z0-9_-]+)/i, 3]
 	]
 
 richText = ($scope, text, transformToLinks = true, displayVideoLink, status = null) ->
@@ -666,9 +668,10 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 	video = do ->
 		for url, regexps of videoHosts
 			for regexp in regexps
-				match = test.match regexp
+				fieldToKeep = regexp[1]
+				match = test.match regexp[0]
 				if match and match.length > 1
-					return url.replace '$1', match[1]
+					return url.replace '$1', match[fieldToKeep]
 		null
 	s = textReplacements
 	if video

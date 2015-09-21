@@ -71,6 +71,9 @@ userSchema = BaseSchema.extend
 	maskBirthDate:
 		type: Boolean
 		default: false
+	maskFriendList:
+		type: Boolean
+		default: false
 	phone:
 		type: String
 		validate: [

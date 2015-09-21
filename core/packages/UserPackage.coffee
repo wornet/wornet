@@ -371,7 +371,7 @@ UserPackage =
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length
-								friends: if isMe then friendsThumb else []
+								friends: if isMe || !! isAFriend then friendsThumb else []
 								friendAsks: if isMe then friendAsks else {}
 								myfriendAskPending: myfriendAskPending
 								userTexts: userTexts()
@@ -419,6 +419,8 @@ UserPackage =
 						userModifications.birthDate = birthDate
 				when 'confidentialityBirthDate'
 					userModifications.maskBirthDate = val is 'on'
+				when 'confidentialityFriendList'
+					userModifications.maskFriendList = val is 'on'
 				when 'name.first'
 					unless userModifications.name
 						userModifications.name = req.user.name
