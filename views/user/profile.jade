@@ -5,10 +5,10 @@ block body
 	- var middleClass = ""
 	if isAFriend || isMe
 		- sideClass = "col-sm-3"
-		- middleClass = "col-sm-6"
+		- middleClass = "col-md-6"
 	else
 		- sideClass = "col-sm-4"
-		- middleClass = "col-sm-8"
+		- middleClass = "col-md-8"
 	.col-xs-12.pad-right(class=sideClass)
 		if isAFriend || isMe
 			//- Photos/Videos
