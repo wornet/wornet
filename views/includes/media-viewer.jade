@@ -11,6 +11,8 @@
 				| {{ loadedMedia.name }}
 	.modal-body(ng-switch="loadedMedia.type")
 		div(ng-switch-when="image")
+			img.prev(ng-src="{{ mediaPrev.src }}" alt="{{ mediaPrev.name }}")
+			img.next(ng-src="{{ mediaNext.src }}" alt="{{ mediaNext.name }}")
 			img.big(ng-src="{{ loadedMedia.src }}" alt="{{ loadedMedia.name }}")
 			span.img-buttons
 				a.prev(ng-click="prev()" ng-class="{ disabled: loadedMedia.first }")
