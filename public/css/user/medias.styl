@@ -110,17 +110,9 @@
 		margin 0
 		padding-top $mainPadding
 
-	iframe
 	img
-		size(90px)
-		float left
+		width 100%
 		margin 0 $smallPadding $smallPadding 0
-
-	iframe.preview
-		float none
-		size(480px, 270px)
-		@media (max-width: 564px)
-			size(240px, 135px)
 
 	img.video-preview
 		size(240px, 180px)
@@ -133,6 +125,26 @@
 			float right
 		&.album-name
 			font-size 16px
+
+.medias-uploaded
+	img
+		size(90px)
+		margin 0 $smallPadding $smallPadding 0
+
+.media-image
+	rel()
+a.nb-image
+	display block
+	size(60px, 60px)
+	abs()
+	right 0
+	bottom 0
+	margin-bottom $smallPadding
+	line-height 60px
+	border-radius(5px, 0, 0, 0)
+	text-align center
+	background-color $nearlyWhite
+	opacity(0.85)
 
 #all-albums
 	.preview img

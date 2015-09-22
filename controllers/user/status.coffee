@@ -73,8 +73,57 @@ module.exports = (router) ->
 				if err
 					res.serverError err
 				else if !status
-					res.serverError "You don't have the right to update this status"
+					res.serverError new PublicError s("Vous n'avez pas le droit de modifier ce statut")
 				else
 					res.json()
 		else
-			res.serverError new PublicError 'No status to update'
+			res.serverError new PublicError s('Pas de statut à modifier')
+
+	router.get '/:id', (req, res) ->
+		id = req.params.id
+		if id
+			Status.findOne
+				_id: id
+			, (err, status) ->
+				if err
+					res.serverError err
+				else
+					status = status.toObject()
+					usersToFind = [status.author]
+					if status.at is status.author
+						status.at = null
+					if status.at
+						usersToFind.push status.at
+					status.concernMe = [status.at, status.author].contains req.user.id, equals
+					status.isMine = equals status.author, req.user._id
+					User.find
+						_id: $in: usersToFind
+					, (err, users) ->
+						if err
+							res.serverError err
+						else
+							for user in users
+								if equals user._id, status.author
+									status.author = user.publicInformations()
+								else if equals user._id, status.at
+									status.at = user.publicInformations()
+							PlusW.find
+								status: id
+							, (err, result) ->
+								tabLike = []
+								tabLike[id] ||= {likedByMe: false, nbLike: 0}
+								for like in result
+									tabLike[id].nbLike++
+									if equals req.user.id, like.user
+										tabLike[id].likedByMe = true
+								status.likedByMe = tabLike[id].likedByMe
+								status.nbLike = tabLike[id].nbLike
+								status.nbImages = status.images.length
+								if status.images.length
+									for image in status.images
+										if image.src.indexOf "200x"
+											image.src =image.src.replace "200x", ""
+								res.render 'user/status',
+									status: status
+		else
+			res.serverError new PublicError s('Pas de statut à afficher')

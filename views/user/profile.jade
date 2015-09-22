@@ -3,20 +3,26 @@ extends ../layouts/user
 block body
 	- var sideClass = ""
 	- var middleClass = ""
+	- var largeSideClass = ""
+	- var largeMiddleClass = ""
 	if isAFriend || isMe
 		- sideClass = "col-sm-3"
 		- middleClass = "col-md-6"
+		- largeSideClass = "col-sm-offset-1"
+		- largeMiddleClass = "col-md-4"
 	else
 		- sideClass = "col-sm-4"
 		- middleClass = "col-md-8"
-	.col-xs-12.pad-right(class=sideClass)
+		- largeSideClass = ""
+		- largeMiddleClass = ""
+	.col-xs-12.pad-right(class=sideClass check-screen-width large-size=largeSideClass)
 		if isAFriend || isMe
 			//- Photos/Videos
 			include ../includes/medias
 		else
 			//- Users
 			include ../includes/users.jade
-	.col-xs-12.pad-left(class=middleClass)
+	.col-xs-12.pad-left(class=middleClass check-screen-width large-size=largeMiddleClass)
 		+alert(profileAlerts)
 		//- Profile
 		include ../includes/profile

@@ -1300,12 +1300,17 @@ Controllers =
 
 		updateCommentList = (data) ->
 			if data.commentList
-				for status in $scope.recentStatus
-					if data.commentList[status._id]
-						status.comments = data.commentList[status._id]
-						status.nbComment = data.commentList[status._id].length
-						refreshScope $scope
-						break
+				if !$scope.monoStatut
+					for status in $scope.recentStatus
+						if data.commentList[status._id]
+							status.comments = data.commentList[status._id]
+							status.nbComment = data.commentList[status._id].length
+							refreshScope $scope
+							break
+				else
+					$scope.statusToDisplay.comments = data.commentList[$scope.statusToDisplay._id]
+					$scope.statusToDisplay.nbComment = data.commentList[$scope.statusToDisplay._id].length
+					refreshScope $scope
 
 		$scope.sendComment = (status) ->
 			if status.newComment
@@ -1478,7 +1483,27 @@ Controllers =
 		refreshMediaAlbums()
 
 		initMedias()
-
+		$scope.monoStatut = false
+		$scope.setMonoStatut = (val, status) ->
+			$scope.monoStatut = val
+			$scope.statusToDisplay = status
+		delay 1, ->
+			if $scope.monoStatut
+				Ajax.get 'user/comment',
+					data:
+						statusIds: [$scope.statusToDisplay._id]
+					success: (data) ->
+						if data.commentList
+							[$scope.statusToDisplay].map (status) ->
+								if data.commentList[status._id]
+									status.comments = data.commentList[status._id]
+									status.nbComment = data.commentList[status._id].length
+								else
+									status.nbComment = 0
+								status
+							refreshScope $scope
+						return
+				return
 		return
 
 	Welcome: ($scope) ->

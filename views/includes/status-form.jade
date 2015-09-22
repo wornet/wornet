@@ -61,7 +61,7 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
 						input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
 						input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
-					.medias
+					.medias-uploaded
 						div(ng-if="medias.images.length > 0")
 							h3=s("Images")
 							//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")

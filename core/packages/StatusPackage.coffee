@@ -107,6 +107,11 @@ StatusPackage =
 													status.content = ''
 												status.likedByMe = tabLike[status._id].likedByMe
 												status.nbLike = tabLike[status._id].nbLike
+												status.nbImages = status.images.length
+												if status.images.length
+													status.images = [status.images[0]]
+													if status.images[0].src.indexOf "200x"
+														status.images[0].src = status.images[0].src.replace "200x", ""
 												recentStatusPublicData.push status
 											data.recentStatus = recentStatusPublicData
 											next()
