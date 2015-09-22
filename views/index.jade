@@ -1,10 +1,10 @@
 extends layouts/user
 
 block body
-	.col-sm-3.col-xs-12.pad-right
+	.col-sm-3.col-xs-12.pad-right(check-screen-width large-size="col-sm-offset-1")
 		//- Users
 		include includes/users.jade
-	.col-md-6.col-sm-12.pad-left
+	.col-md-6.col-sm-12.pad-left(check-screen-width medium-size="col-md-6" large-size="col-md-4")
 		+alert(profileAlerts)
 		//- Publications
 		include includes/status.jade

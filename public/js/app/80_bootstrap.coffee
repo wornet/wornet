@@ -199,6 +199,35 @@ Wornet = angular.module 'Wornet', [
 						lock = false
 		return
 
+.directive 'checkScreenWidth', ->
+	link: ($scope, $element, $attributes) ->
+		isLargeScreen = ->
+			if window.matchMedia
+				!! window.matchMedia("(min-width:1440px)").matches
+			else
+				window.innerWidth > 1440
+
+		buildClasses = (attr) ->
+			elementClasses = $element
+				.prop('class')
+				.split ' '
+				.filter (eltClass) ->
+					eltClass.replace(/[0-9]/, '') isnt attr.replace(/[0-9]/, '')
+			elementClasses.unshift attr
+			elementClasses.join ' '
+
+		if $attributes.largeSize and isLargeScreen()
+			$element.prop("class", buildClasses($attributes.largeSize))
+		else if $attributes.mediumSize and !isLargeScreen()
+			$element.prop("class", buildClasses($attributes.mediumSize))
+		return
+
+.directive 'resizeYoutubePlayer', ->
+	link: ($scope, $element, $attributes) ->
+		height = $element.innerWidth() * (270 / 480)
+		$element.css 'height', height + 'px'
+		return
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 
