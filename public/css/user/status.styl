@@ -16,11 +16,19 @@
 
 .status-author
 	a
-		font-size 18px
+		font-weight bold
 	img
 		float left
 		margin $smallPadding
 		size($thumbWidth, $thumbHeight)
+	.icon-arrow-right
+		background url(png("icon-arrow-right"))
+		background-size 16px
+		size(16px, 16px)
+		padding 0
+		margin 0
+		box-shadow none
+		cursor auto
 
 .status-block
 	padding $mainPadding $mainPadding 20px
@@ -139,9 +147,19 @@
 	.comment-form .btn
 		width 50%
 
-	.status-block .settings
-		width 80px
+	.status-block
+		rel()
+		.settings
+			width 200px
+			abs()
+			top $mainPadding
+			right $mainPadding
 
+	.comment-block
+		rel()
+		.settings
+			top $smallPadding
+			right $smallPadding
 
 @media (max-width: 767px)
 	.status-author

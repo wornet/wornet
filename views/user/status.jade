@@ -38,12 +38,16 @@ block body
 						| &nbsp; 
 						=s("Supprimer")
 			.status-author
-				img(ng-src="{{ statusToDisplay.author.thumb50 }}" data-user-thumb="{{ statusToDisplay.author.hashedId }}" data-thumb-size="50")
-				+link("/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}", "{{ statusToDisplay.author.name.full }}")(ng-if="statusToDisplay.author.hashedId")
-				a(ng-if="! statusToDisplay.author.hashedId") {{ statusToDisplay.author.name.full }}
-				span(ng-if="statusToDisplay.at")
+				.status-users-thumb
+					a(ng-href="/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}" ng-if="statusToDisplay.author.hashedId")
+						img(ng-src="{{ statusToDisplay.author.thumb50 }}" data-user-thumb="{{ statusToDisplay.author.hashedId }}" data-thumb-size="50")
+					a(ng-href="/user/profile/{{ statusToDisplay.at.hashedId }}/{{ statusToDisplay.at.name.full | urlencode }}" ng-if="statusToDisplay.at")
+						img(ng-src="{{ statusToDisplay.at.thumb50 }}" data-user-thumb="{{ statusToDisplay.at.hashedId }}" data-thumb-size="50")
+				div
+					+link("/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}", "{{ statusToDisplay.author.name.full }}")(ng-if="statusToDisplay.author.hashedId")
+					a(ng-if="! statusToDisplay.author.hashedId") {{ statusToDisplay.author.name.full }}
+				div(ng-if="statusToDisplay.at")
 					+glyph('chevron-right')
-					img(ng-src="{{ statusToDisplay.at.thumb50 }}" data-user-thumb="{{ statusToDisplay.at.hashedId }}" data-thumb-size="50")
 					+link("/user/profile/{{ statusToDisplay.at.hashedId }}/{{ statusToDisplay.at.name.full | urlencode }}", "{{ statusToDisplay.at.name.full }}")
 			.date(data-date="{{ statusToDisplay.date }}" ng-if="statusToDisplay.author.hashedId")
 				|&nbsp;

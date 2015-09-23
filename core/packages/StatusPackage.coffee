@@ -204,6 +204,11 @@ StatusPackage =
 
 						next = (usersToNotify) =>
 							place = status.at or status.author
+							status.nbImages = status.images.length
+							if status.images.length
+								status.images = [status.images[0]]
+								if status.images[0].src.indexOf "200x"
+									status.images[0].src = status.images[0].src.replace "200x", ""
 							@propagate status
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: status.author
 							NoticePackage.notify usersToNotify, null,
