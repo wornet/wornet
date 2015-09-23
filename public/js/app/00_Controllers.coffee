@@ -1403,13 +1403,18 @@ Controllers =
 			return
 
 		$scope.$on 'receiveComment', (e, comment) ->
-			for status in $scope.recentStatus
-				if comment.attachedStatus and status._id is comment.attachedStatus
-					comment.isMine = comment.author.hashedId is getData 'me'
-					statusAt = status.at || status.author
-					comment.onMyWall = statusAt.hashedId is getData 'me'
-					(status.comments ||= []).uniquePush '_id', comment
-					break
+			comment.isMine = comment.author.hashedId is getData 'me'
+			if !$scope.monoStatut
+				for status in $scope.recentStatus
+					if comment.attachedStatus and status._id is comment.attachedStatus
+						statusAt = status.at || status.author
+						comment.onMyWall = statusAt.hashedId is getData 'me'
+						(status.comments ||= []).uniquePush '_id', comment
+						break
+			else
+				statusAt = $scope.statusToDisplay.at || $scope.statusToDisplay.author
+				comment.onMyWall = statusAt.hashedId is getData 'me'
+				($scope.statusToDisplay.comments ||= []).uniquePush '_id', comment
 			refreshScope $scope
 			return
 
@@ -1486,6 +1491,7 @@ Controllers =
 		$scope.monoStatut = false
 		$scope.setMonoStatut = (val, status) ->
 			$scope.monoStatut = val
+			status.content = richText $scope, status.content, false, false
 			$scope.statusToDisplay = status
 		delay 1, ->
 			if $scope.monoStatut
