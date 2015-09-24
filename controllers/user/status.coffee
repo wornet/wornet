@@ -88,42 +88,45 @@ module.exports = (router) ->
 				if err
 					res.serverError err
 				else
-					status = status.toObject()
-					usersToFind = [status.author]
-					if status.at is status.author
-						status.at = null
-					if status.at
-						usersToFind.push status.at
-					status.concernMe = [status.at, status.author].contains req.user.id, equals
-					status.isMine = equals status.author, req.user._id
-					User.find
-						_id: $in: usersToFind
-					, (err, users) ->
-						if err
-							res.serverError err
-						else
-							for user in users
-								if equals user._id, status.author
-									status.author = user.publicInformations()
-								else if equals user._id, status.at
-									status.at = user.publicInformations()
-							PlusW.find
-								status: id
-							, (err, result) ->
-								tabLike = []
-								tabLike[id] ||= {likedByMe: false, nbLike: 0}
-								for like in result
-									tabLike[id].nbLike++
-									if equals req.user.id, like.user
-										tabLike[id].likedByMe = true
-								status.likedByMe = tabLike[id].likedByMe
-								status.nbLike = tabLike[id].nbLike
-								status.nbImages = status.images.length
-								if status.images.length
-									for image in status.images
-										if image.src.indexOf "200x"
-											image.src =image.src.replace "200x", ""
-								res.render 'user/status',
-									status: status
+					if StatusPackage.checkRightToSee(req, status)
+						status = status.toObject()
+						usersToFind = [status.author]
+						if status.at is status.author
+							status.at = null
+						if status.at
+							usersToFind.push status.at
+						status.concernMe = [status.at, status.author].contains req.user.id, equals
+						status.isMine = equals status.author, req.user._id
+						User.find
+							_id: $in: usersToFind
+						, (err, users) ->
+							if err
+								res.serverError err
+							else
+								for user in users
+									if equals user._id, status.author
+										status.author = user.publicInformations()
+									else if equals user._id, status.at
+										status.at = user.publicInformations()
+								PlusW.find
+									status: id
+								, (err, result) ->
+									tabLike = []
+									tabLike[id] ||= {likedByMe: false, nbLike: 0}
+									for like in result
+										tabLike[id].nbLike++
+										if equals req.user.id, like.user
+											tabLike[id].likedByMe = true
+									status.likedByMe = tabLike[id].likedByMe
+									status.nbLike = tabLike[id].nbLike
+									status.nbImages = status.images.length
+									if status.images.length
+										for image in status.images
+											if image.src.indexOf "200x"
+												image.src =image.src.replace "200x", ""
+									res.render 'user/status',
+										status: status
+					else
+						res.notFound()
 		else
 			res.serverError new PublicError s('Pas de statut à afficher')
