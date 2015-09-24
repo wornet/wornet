@@ -113,6 +113,7 @@ module.exports = (app, port) ->
 				"/components/angular/js/calendar-fr.js"
 				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js"
 				"//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"
+				"//connect.facebook.net/fr_FR/sdk.js"
 				script("app")
 			]
 		else
@@ -139,6 +140,7 @@ module.exports = (app, port) ->
 				"/components/angular/js/calendar-fr.min.js"
 				"/components/angular/js/calendar.min.js"
 				"/components/toastr/js/toastr.min.js"
+				"/components/facebook/js/sdk.js"
 			]
 		if options.trackers().piwik
 			js.push "/components/piwik/js/piwik.js"

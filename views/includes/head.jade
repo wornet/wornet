@@ -13,6 +13,7 @@ block meta
 	+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
 	+meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
 	+meta("_csrf", _csrf)
+	+meta("facebook-image", "https://www.wornet.fr/img/wornet-thumb200.png")(property="og:image")
 block css
 	each style in options.css().main
 		if typeof(style) === 'object'
