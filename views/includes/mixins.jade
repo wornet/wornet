@@ -9,7 +9,7 @@ mixin non-ie()
 	| <!--<![endif]-->
 
 mixin meta(name, content)
-	meta(name=name content=content)
+	meta(name=name content=content)&attributes(attributes)
 
 mixin link(href, name)
 	a.link&attributes(attributes)(href=href)

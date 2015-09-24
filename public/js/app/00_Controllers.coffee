@@ -498,6 +498,32 @@ Controllers =
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
 
+	Invite: ($scope) ->
+		s = textReplacements
+		FACEBOOK_APP_ID = "400859870103849"
+		FACEBOOK_POST_LINK = "https://www.wornet.fr"
+		FACEBOOK_POST_LIST = [
+			message: s("Salut les amis, je viens de rejoindre le réseau social éthique Wornet ! Rejoignez-moi sur www.wornet.fr :)")
+		,
+			message: s("Hello les amis, je me suis inscrit sur le réseau social éthique Wornet ! C'est plutôt sympathique rejoignez-moi sur www.wornet.fr :)")
+		,
+			message: s("Je viens de rejoindre le réseau social éthique Wornet (www.wornet.fr). Rejoignez-moi dessus :)")
+		]
+
+		FB.init
+			appId: FACEBOOK_APP_ID
+			xfbml: true
+			version: 'v2.4'
+
+		$scope.inviteFacebook = ->
+			infoDialog s("Invitation via Facebook"), s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
+				FB.login ->
+					# Note: The call will only work if you accept the permission request
+					post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
+					post.link = FACEBOOK_POST_LINK
+					FB.api '/me/feed', 'post', post
+				, scope: 'publish_actions'
+
 	LoginAndSignin: ($scope) ->
 		keepTipedModel $scope, '#login-signin', 'user'
 		saveUser $scope
