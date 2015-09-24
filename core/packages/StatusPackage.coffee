@@ -328,6 +328,12 @@ StatusPackage =
 					points: newPoints
 				, done
 
+	checkRightToSee: (req, status) ->
+		me = req.user.id
+		myFriendsId = req.user.friends.map (friend) ->
+			friend._id
+		(equals(status.author, me) or equals(status.at, me) or myFriendsId.contains status.at, equals)
+
 	DEFAULT_STATUS_ID: "100000000000000000000001"
 
 	defaultStatus: ->
