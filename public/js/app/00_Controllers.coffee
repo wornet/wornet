@@ -1199,6 +1199,8 @@ Controllers =
 									if data.commentList
 										$scope.recentStatus.map (status) ->
 											if data.commentList[status._id]
+												for comment in data.commentList[status._id]
+													comment.content = richText $scope, comment.content, true, false
 												status.comments = data.commentList[status._id]
 												status.nbComment = data.commentList[status._id].length
 											else
@@ -1329,6 +1331,8 @@ Controllers =
 				if !$scope.monoStatut
 					for status in $scope.recentStatus
 						if data.commentList[status._id]
+							for comment in data.commentList[status._id]
+								comment.content = richText $scope, comment.content, true, false
 							status.comments = data.commentList[status._id]
 							status.nbComment = data.commentList[status._id].length
 							refreshScope $scope
@@ -1342,7 +1346,6 @@ Controllers =
 			if status.newComment
 				comment = status.newComment
 				statusMedias = $.extend {}, $scope.medias
-				scanAllLinks $scope, comment.content || ''
 				commentMedias = $.extend {}, $scope.medias
 				$scope.medias = $.extend {}, statusMedias
 				Ajax.put '/user/comment/add',
@@ -1369,11 +1372,24 @@ Controllers =
 			return
 
 		$scope.updateComment = (comment) ->
+			contentToDisplay = richText $scope, comment.content, true, false
 			Ajax.post '/user/comment',
 				data:
 					comment: comment
 				success: updateCommentList
+			comment.content = contentToDisplay
+			comment.originalContent = comment.content
+			comment.edit = false
+			refreshScope $scope
 			return
+
+		$scope.toggleCommentState = (comment) ->
+			comment.edit = !comment.edit
+			comment.content = if comment.edit
+				unscanLink smiliesService.unfilter comment.content
+			else
+				comment.originalContent
+			refreshScope $scope
 
 		$scope.updateStatus = (status) ->
 			#We have to do this before post because it also put videos in status.videos
@@ -1430,6 +1446,7 @@ Controllers =
 
 		$scope.$on 'receiveComment', (e, comment) ->
 			comment.isMine = comment.author.hashedId is getData 'me'
+			comment.content = richText $scope, comment.content, true, false
 			if !$scope.monoStatut
 				for status in $scope.recentStatus
 					if comment.attachedStatus and status._id is comment.attachedStatus
@@ -1475,16 +1492,10 @@ Controllers =
 				return
 			return
 
-		unlink = (text) ->
-			(((' ' + text)
-				.replace /(<a\s)(.*?)(href=\")(.*?)(\">)(.*?)(<\/a>)/gi, (match, p1, p2, p3, p4, p5, p6, p7, offset, string) ->
-					p4 + ' '
-			).substr 1)
-
 		$scope.toggleStatusState = (status, edit) ->
 			status.edit = edit
 			status.content = if edit
-				unlink smiliesService.unfilter status.content
+				unscanLink smiliesService.unfilter status.content
 			else
 				status.originalContent
 			refreshScope $scope

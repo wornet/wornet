@@ -105,7 +105,7 @@
 							+glyph('cog')
 						ul.dropdown-menu(role="menu")
 							li(ng-if="comment.isMine")
-								a.ajax(non-block-click="comment.edit = true;" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
+								a.ajax(non-block-click="toggleCommentState(comment)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
 									+glyph('pencil')
 									| &nbsp; 
 									=s("Modifier")
@@ -119,11 +119,11 @@
 						+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
 					.date(data-date="{{ comment.date }}")
 						|&nbsp;
-					.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content | smilies")
+					.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content")
 					.comment-edit(ng-if="comment.edit")
-						+form()(ng-submit="comment.edit = false; updateComment(comment); comment.originalContent = comment.content;").cb
+						+form()(ng-submit="updateComment(comment)").cb
 							textarea.form-control(focus ng-model='comment.content' placeholder=s("Commentaire..."))
-							input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; comment.edit = false" value=s("Annuler"))
+							input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; toggleCommentState(comment)" value=s("Annuler"))
 							input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
 					.cb
 			.comment-form(ng-if="status.commentForm")
