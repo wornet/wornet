@@ -562,7 +562,7 @@ do ->
 				cancel e
 		]
 		[
-			click
+			click + " mousedown"
 			'.notifications ul a:not(".activities, .read-all-notifs"), .notifications-mobile ul a:not(".activities, .read-all-notifs"), #notification-list a'
 			($a, e) ->
 				href = $a.find('[data-href]').data 'href'
@@ -571,12 +571,16 @@ do ->
 					if id
 						setSessionItem 'readNotification', id
 					delay 1, ->
-						locationHref href
-						hash = href.replace /^[^#]+#/g, ''
-						if hash and hash isnt href
-							$block = $ '#' + hash + ', [data-id=' + hash + ']'
-							if exists $block
-								$document.scrollTop $block.offset().top - 68
+						#clic whith mouse wheel
+						if e.type is "mousedown" and e.which is 2
+							window.open href, '_blank'
+						else
+							locationHref href
+							hash = href.replace /^[^#]+#/g, ''
+							if hash and hash isnt href
+								$block = $ '#' + hash + ', [data-id=' + hash + ']'
+								if exists $block
+									$document.scrollTop $block.offset().top - 68
 				delay 2, refreshPill
 				if id
 					readNotification id
