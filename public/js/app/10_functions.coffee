@@ -737,5 +737,5 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 unscanLink = (text) ->
 	(((' ' + text)
 		.replace /<a\s.*?href=\"(.*?)\">.*?<\/a>/gi, (all, href) ->
-    		href + ' '
+			href + ' '
 	).substr 1)

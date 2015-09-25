@@ -12,4 +12,11 @@
 				span.input-group-btn
 					input(type="submit" value=s("Inviter")).btn.btn-primary
 
-	span.btn.invite-facebook(ng-click="inviteFacebook()")
+	if config.wornet.enableInvite.facebook
+		span.btn.invite-facebook(ng-click="inviteFacebook()")
+	if config.wornet.enableInvite.gmail
+		span.btn.invite-gmail(ng-click="")
+	if config.wornet.enableInvite.yahoo
+		span.btn.invite-yahoo(ng-click="")
+	if config.wornet.enableInvite.microsoft
+		span.btn.invite-microsoft(ng-click="")
