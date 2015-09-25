@@ -746,16 +746,31 @@ a.mobile-video
 .center-bloc
 	padding 0
 
-.invite-facebook
-	background url(png("fb"))
-	background-size 30px
-	size(30px, 30px)
-	padding 0
-	margin 0
-	cursor pointer
-	&:hover
+.invite-block
+	.invite-facebook
+	.invite-yahoo
+	.invite-gmail
+	.invite-microsoft
+		background-size 30px
+		size(30px, 30px)
+		padding 0
+		margin 0
+		cursor pointer
+		margin 0 $smallPadding
+		&:hover
+			box-shadow none
+
+	.invite-facebook
 		background url(png("fb"))
-		box-shadow none
+
+	.invite-gmail
+		background url(png("gmail"))
+
+	.invite-yahoo
+		background url(png("yahoo"))
+
+	.invite-microsoft
+		background url(png("microsoft"))
 
 
 
