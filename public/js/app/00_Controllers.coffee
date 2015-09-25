@@ -432,7 +432,7 @@ Controllers =
 
 		$scope.mask = (user) ->
 			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer l'intégralité de cette conversation ?"), (ok) ->
+			infoDialog s("Suppression de conversation"), s("Êtes-vous sûr de vouloir supprimer l'intégralité de cette conversation ?"), (ok) ->
 				if ok
 					Ajax.delete '/user/chat/',
 						data:

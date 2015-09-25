@@ -540,6 +540,10 @@ mp3 = (name) ->
 	"/resources/mp3/"+name+".mp3"
 
 infoDialog = (title, message, labelOk, labelKo, done) ->
+	keepScrollOnCallingModal = ->
+		if $(".modal:visible").length
+			delay 1, ->
+				$("body").addClass("modal-open")
 	if 'function' is typeof labelOk
 		done = labelOk
 		labelOk = "Oui"
@@ -553,11 +557,13 @@ infoDialog = (title, message, labelOk, labelKo, done) ->
 				label: labelKo,
 				className: "btn",
 				callback: ->
+					keepScrollOnCallingModal()
 					done false
 			main:
 				label: labelOk,
 				className: "btn-primary",
 				callback: ->
+					keepScrollOnCallingModal()
 					done true
 
 template = do ->
