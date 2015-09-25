@@ -122,7 +122,7 @@ module.exports = (router) ->
 									status.nbImages = status.images.length
 									if status.images.length
 										for image in status.images
-											if image.src.indexOf "200x" >= 0
+											if -1 isnt image.src.indexOf "200x"
 												image.src =image.src.replace "200x", ""
 									res.render 'user/status',
 										status: status
