@@ -138,6 +138,8 @@ module.exports = (app, port) ->
 			]
 		if options.trackers().piwik
 			js.push "/components/piwik/js/piwik.js"
+		if options.trackers().googleAnalytics
+			js.push "/components/google/js/analytics.js"
 		js
 
 	js: ->
