@@ -198,6 +198,15 @@
             "hoursBeforeRemoveNotification": 168
         },
 
+        "geo": {
+            "enabled": false,
+            "api": {
+                "enabled": true,
+                "cache": true,
+                "rounds": [5000, 10000, 20000, 50000, 100000, 150000]
+            }
+        },
+
         "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",
 
         "limits": {
