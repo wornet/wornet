@@ -86,7 +86,7 @@ ArrayList =
 		else
 			@findOne(keys, value) isnt null
 
-	find: (keys, value = null) ->
+	findMany: (keys, value = null) ->
 		keys = getKeys keys, value
 		list = []
 		@each ->
@@ -187,7 +187,14 @@ ArrayList =
 			@columns Object.keys(@).lastest count
 
 
-safeExtend Array.prototype, ArrayList
-safeExtend Object.prototype, ArrayList
+safeExtend Array::, ArrayList
+safeExtend Object::, ArrayList
+
+# Aliases
+# each
+# 	findMany: 'find'
+# , (alias, func) ->
+# 	Array::[alias] = Array::[func]
+# 	Object::[alias] = Object::[func]
 
 module.exports = ArrayList
