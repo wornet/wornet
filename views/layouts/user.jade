@@ -4,7 +4,7 @@ include ../includes/notifications
 
 mixin friends(classes, mobile)
 	if user
-		- var loggedFriends = user.friends.find({ present: true })
+		- var loggedFriends = user.friends.findMany({ present: true })
 		- classes += " " + (mobile?"loggedFriends-mobile":"loggedFriends nav right")
 		ul(class=classes): li
 			a.dropdown-toggle( data-toggle="dropdown")

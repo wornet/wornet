@@ -243,7 +243,7 @@ module.exports = (app, port) ->
 							if NoticePackage.isPresent userId
 								friend.present = true
 							friend
-						.find present: true
+						.findMany present: true
 				else
 					[]
 			# add a friend to the current user
