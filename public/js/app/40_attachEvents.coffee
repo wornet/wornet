@@ -575,6 +575,7 @@ do ->
 						if e.type is "mousedown" and e.which is 2
 							window.open href, '_blank'
 						else if e.which is 3
+							$a[0].href = href
 							cancel e
 						else
 							locationHref href
