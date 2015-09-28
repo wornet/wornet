@@ -516,13 +516,16 @@ Controllers =
 			version: 'v2.4'
 
 		$scope.inviteFacebook = ->
-			infoDialog s("Invitation via Facebook"), s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
-				FB.login ->
-					# Note: The call will only work if you accept the permission request
-					post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
-					post.link = FACEBOOK_POST_LINK
-					FB.api '/me/feed', 'post', post
-				, scope: 'publish_actions'
+			post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
+			infoDialog s("Inviter vos amis"), "<textarea id='facebookPostMessage'>" + post.message + "</textarea><br>" + s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
+				if ok
+					post.message = $('#facebookPostMessage').val()
+					FB.login ->
+						# Note: The call will only work if you accept the permission request
+						post.link = FACEBOOK_POST_LINK
+						FB.api '/me/feed', 'post', post
+					, scope: 'publish_actions'
+			return
 
 	LoginAndSignin: ($scope) ->
 		keepTipedModel $scope, '#login-signin', 'user'

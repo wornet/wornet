@@ -541,9 +541,10 @@ mp3 = (name) ->
 
 infoDialog = (title, message, labelOk, labelKo, done) ->
 	keepScrollOnCallingModal = ->
-		if $(".modal:visible").length
-			delay 1, ->
-				$("body").addClass("modal-open")
+		delay 300, ->
+			if $(".modal:visible").length
+				delay 1, ->
+					$("body").addClass("modal-open")
 	if 'function' is typeof labelOk
 		done = labelOk
 		labelOk = "Oui"
