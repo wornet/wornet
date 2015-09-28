@@ -574,6 +574,8 @@ do ->
 						#clic whith mouse wheel
 						if e.type is "mousedown" and e.which is 2
 							window.open href, '_blank'
+						else if e.which is 3
+							cancel e
 						else
 							locationHref href
 							hash = href.replace /^[^#]+#/g, ''
