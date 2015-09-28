@@ -60,7 +60,6 @@ block body
 						select.form-control(autocomplete="off")
 							option(value="")
 								=userTexts.private
-						span
 						span.account-confidentiality-hint
 							=userTexts.accountConfidentialityHint
 					label
@@ -70,6 +69,7 @@ block body
 						input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
 						=s("Non")
 						input(type="radio" name="confidentialityBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
+					br
 					label
 						span
 							=userTexts.confidentialityFriendList
@@ -94,13 +94,14 @@ block body
 							input(type="checkbox" name="noticeMessage" id="noticeMessage" checked=user.noticeMessage)
 							label(for="noticeMessage")
 								=s("M'avertir lors de la réception d'un message privé.")
+				
 				.btn-group
 					input.btn.btn-primary(type="submit" value=s("Enregistrer"))
 				.btn-group
 					a.btn.cancel(href="/")
 						=s("Retour à l'accueil")
 					| &nbsp; 
-				div.after-form
+				div.after-form.cb
 					a#delete-account(data-message=s("Êtes-vous sûr de vouloir supprimer définitivement votre compte, et tout son contenu (images, publications, et toutes les informations liées à votre compte) ?") + '<br><br>' + s("Veuillez entrer votre mot de passe :") data-title=s("Êtes-vous sûr de vouloir supprimer votre compte ?"))
 						=s("Supprimer définitivement mon compte")
 				.cb

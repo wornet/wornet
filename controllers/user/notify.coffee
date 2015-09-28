@@ -90,8 +90,17 @@ module.exports = (router) ->
 			if err
 				res.serverError err
 			else
-				notices = notices.map (notice) ->
-					notice = notice.toObject()
-					notice.date = Date.fromId notice._id
-					notice
-				res.json notices: notices
+				usersTofind = notices.column('launcher').unique()
+				userThumb = []
+				User.find
+					_id: $in: usersTofind
+				, (err, users) ->
+					warn err if err
+					for user in users
+						userThumb[user._id] = user.thumb50
+					notices = notices.map (notice) ->
+						notice = notice.toObject()
+						notice.content = notice.content.replace /\/img\/photo\/([0-9]+x)?([0-9a-z]+).*\.jpg/ig, userThumb[notice.launcher]
+						notice.date = Date.fromId notice._id
+						notice
+					res.json notices: notices
