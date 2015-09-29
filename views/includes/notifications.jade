@@ -42,7 +42,7 @@ mixin notifications(classes, mobile)
 					| &nbsp; 
 					.btn.ignore-friend
 						=s("Ignorer")
-				a(ng-switch-default href="/notification/{{ $index }}")
+				a(ng-switch-default)
 					span(ng-bind-html="trust(notification[1])")
 					|&nbsp;
 					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
@@ -54,7 +54,7 @@ mixin notifications(classes, mobile)
 				each notification, id in notifications.lastest(config.wornet.limits.notifications)
 					- var askingFriend = objectToUser(notification[1])
 					li(class=(notification.read ? 'read' : null) data-id=trim(notification[0], '"'))
-						a(href="/notification/" + trim(notification[0], '"') class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+						a(class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 							if askingFriend && askingFriend.hashedId
 								img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 								=" "
