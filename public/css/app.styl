@@ -622,6 +622,13 @@ span.image-box i.glyphicon
 	padding-top 15px
 
 #media-viewer
+	.modal-dialog
+		width 300px
+		height auto
+		max-width 70%
+		max-height 90%
+		transition(all, .1s)
+
 	.modal-body
 		text-align center
 	.modal-footer .info
@@ -903,6 +910,11 @@ a.mobile-video
 	.lastName
 		padding-left 0
 
+	#media-viewer
+		.modal-dialog
+			size(calc(100% - $bigPadding), 100%)
+			max-height 100%
+			max-width 100%
 
 @media (min-width: 768px)
 	.pad-right
