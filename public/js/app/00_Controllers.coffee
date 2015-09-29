@@ -678,10 +678,13 @@ Controllers =
 		$scope.prev = ->
 			if $scope.mediaPrev and $scope.mediaPrev.src
 				$scope.inFade ->
+					$('#media-viewer .img-buttons').hide()
 					$scope.mediaNext = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaPrev
 					refreshScope $scope
-					testSize()
+					resizeViewer()
+					delay 200, ->
+						testSize()
 
 			delay 200, ->
 				if prev = getPrev()
@@ -693,10 +696,13 @@ Controllers =
 		$scope.next = ->
 			if $scope.mediaNext and $scope.mediaNext.src
 				$scope.inFade ->
+					$('#media-viewer .img-buttons').hide()
 					$scope.mediaPrev = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaNext
 					refreshScope $scope
-					testSize()
+					resizeViewer()
+					delay 200, ->
+						testSize()
 
 			delay 200, ->
 				if next = getNext()
@@ -736,13 +742,27 @@ Controllers =
 					return
 			return
 
+		resizeViewer = ->
+			if window.isMobile()
+				return true
+			$mediaViewer = $ '#media-viewer'
+			$img = $mediaViewer.find 'img.big'
+			gap = 20
+
+			$rawImg = new Image
+			$rawImg.src = $img.attr 'src'
+
+			$mediaViewer.find('.modal-dialog')
+				.height $rawImg.height + gap * 2
+				.width $rawImg.width + gap * 2
+
 		testSize = ->
 			$mediaViewer = $ '#media-viewer'
 			$img = $mediaViewer.find 'img.big'
 			if $img.length
 				$mediaViewer
 					.find 'img.big, a.next, a.prev'
-					.css 'max-height', Math.max(200, window.innerHeight - 200) + 'px'
+					.css 'max-height', Math.max(180, window.innerHeight - 180) + 'px'
 				w = $img.width()
 				h = $img.height()
 				if w * h
@@ -751,6 +771,7 @@ Controllers =
 					$mediaViewer.find('.img-buttons')
 						.css 'margin-top', -h
 						.width w
+					$mediaViewer.find('.img-buttons').show()
 					$mediaViewer.find('.img-buttons, .prev, .next').height h
 					$mediaViewer.find('.prev, .next')
 						.width Math.round w / 2
@@ -831,10 +852,16 @@ Controllers =
 									return
 
 						refreshScope $scope
-						delay 10, testSize
+						delay 10, ->
+							resizeViewer()
+							delay 200, ->
+								testSize()
 					return
 			else
-				delay 10, testSize
+				delay 10, ->
+					resizeViewer()
+					delay 200, ->
+						testSize()
 			if position is "prev"
 				$scope.mediaPrev = media
 			else if position is "next"
