@@ -912,9 +912,19 @@ a.mobile-video
 
 	#media-viewer
 		.modal-dialog
-			size(calc(100% - $bigPadding), 100%)
+			height 100%
+			width calc(100% - 20px)
 			max-height 100%
 			max-width 100%
+			margin 0
+		.modal-header
+		.modal-footer
+			padding $smallPadding 15px
+		.modal-body
+			background-color $nearlyBlack
+		.settings
+			abs()
+			right $mainPadding
 
 @media (min-width: 768px)
 	.pad-right

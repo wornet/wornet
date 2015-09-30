@@ -743,21 +743,32 @@ Controllers =
 			return
 
 		resizeViewer = ->
-			if window.isMobile()
-				return true
 			$mediaViewer = $ '#media-viewer'
 			$img = $mediaViewer.find 'img.big'
 			gap = 20
 
-			$rawImg = new Image
-			$rawImg.src = $img.attr 'src'
+			if window.isMobile()
+				newHeight = window.innerHeight
+				newWidth = window.innerWidth
+			else
+				$rawImg = new Image
+				$rawImg.src = $img.attr 'src'
 
-			newHeight = Math.max(180, $rawImg.height + gap * 2)
-			newWidth = Math.max(180, $rawImg.width + gap * 2)
+				newHeight = Math.max(180, $rawImg.height + gap * 2)
+				newWidth = Math.max(180, $rawImg.width + gap * 2)
 
 			$mediaViewer.find('.modal-dialog')
 				.height newHeight
 				.width newWidth
+
+			if window.isMobile()
+				headerHeight = $mediaViewer.find('.modal-header').outerHeight()
+				footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
+				bodyHeight = newHeight - (footerHeight + headerHeight) - 32 # 2 * padding 15px + 2 * border 1px
+				$mediaViewer.find('.modal-body')
+					.height bodyHeight
+				imgMargin = (bodyHeight - $img.height()) / 2
+				$img.css 'margin-top', imgMargin
 
 		testSize = ->
 			$mediaViewer = $ '#media-viewer'
