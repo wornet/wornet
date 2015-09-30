@@ -764,7 +764,7 @@ Controllers =
 			if window.isMobile()
 				headerHeight = $mediaViewer.find('.modal-header').outerHeight()
 				footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
-				bodyHeight = newHeight - (footerHeight + headerHeight) - 32 # 2 * padding 15px + 2 * border 1px
+				bodyHeight = newHeight - (footerHeight + headerHeight) - 2 # 2 * border 1px
 				$mediaViewer.find('.modal-body')
 					.height bodyHeight
 				imgMargin = (bodyHeight - $img.height()) / 2
