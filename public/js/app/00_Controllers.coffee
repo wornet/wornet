@@ -752,9 +752,12 @@ Controllers =
 			$rawImg = new Image
 			$rawImg.src = $img.attr 'src'
 
+			newHeight = Math.max(180, $rawImg.height + gap * 2)
+			newWidth = Math.max(180, $rawImg.width + gap * 2)
+
 			$mediaViewer.find('.modal-dialog')
-				.height $rawImg.height + gap * 2
-				.width $rawImg.width + gap * 2
+				.height newHeight
+				.width newWidth
 
 		testSize = ->
 			$mediaViewer = $ '#media-viewer'
