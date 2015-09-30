@@ -25,6 +25,8 @@ StatusPackage =
 					_next()
 		unless data.chat
 			updatedAt *= 1
+			# to prevent duplicate the last message from which the updatedAt is extracted
+			updatedAt += 1000
 			where = if updatedAt
 				_objectId = Math.floor(updatedAt / 1000).toString(16) + '0000000000000000'
 				if /^[0-9a-fA-F]{24}$/.test _objectId
