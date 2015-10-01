@@ -13,12 +13,16 @@ module.exports = (router) ->
 
 	godOnly = only [
 		'kylekatarnls@gmail.com'
+		'jeremy.bayle87@hotmail.fr'
+		'jeremy.bayle@wornet.fr'
 	]
 
 	adminOnly = only [
 		'manuel.costes@gmail.com'
 		'bastien.miclo@gmail.com'
 		'kylekatarnls@gmail.com'
+		'jeremy.bayle87@hotmail.fr'
+		'jeremy.bayle@wornet.fr'
 	]
 
 	if config.env.development
@@ -162,8 +166,11 @@ module.exports = (router) ->
 		Photo.find()
 		.limit 100
 
+	usersTreated = []
 	godOnly '/album/profile', (info) ->
-		User.find photoAlbumId: null
+		User.find
+			photoAlbumId: null
+			_id: $nin: usersTreated
 		.limit 100
 		.exec (err, users) ->
 			if err
@@ -171,6 +178,7 @@ module.exports = (router) ->
 			else if users.length
 				treatments = {}
 				each users, ->
+					usersTreated.push @id
 					treatments[@id] = (done) =>
 						Album.find
 							user: @_id
