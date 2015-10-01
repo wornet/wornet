@@ -727,6 +727,7 @@ module.exports = (router) ->
 					res.notFound()
 
 	router.get '/search/:query', (req, res) ->
+		res.setTimeLimit 0
 		regexp = req.params.query.toSearchRegExp()
 		friends = req.session.friends.filter (user) ->
 			regexp.test user.fullName
