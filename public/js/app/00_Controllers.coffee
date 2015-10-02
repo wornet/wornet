@@ -675,41 +675,50 @@ Controllers =
 				return
 			return
 
+		lockPrevNext = false
 		$scope.prev = ->
-			if $scope.mediaPrev and $scope.mediaPrev.src
-				$scope.inFade ->
-					$('#media-viewer .img-buttons').hide()
-					$scope.mediaNext = $scope.loadedMedia
-					$scope.loadedMedia = $scope.mediaPrev
-					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
+			if !lockPrevNext
+				lockPrevNext = true
+				delay 500, ->
+					lockPrevNext = false
+				if $scope.mediaPrev and $scope.mediaPrev.src
+					$scope.inFade ->
+						$('#media-viewer .img-buttons').hide()
+						$scope.mediaNext = $scope.loadedMedia
+						$scope.loadedMedia = $scope.mediaPrev
+						refreshScope $scope
+						resizeViewer()
+						delay 200, ->
+							testSize()
 
-			delay 200, ->
-				if prev = getPrev()
-					$scope.loadMedia 'image', prev, "prev"
-				else
-					$scope.mediaPrev = null
-				return
+				delay 200, ->
+					if prev = getPrev()
+						$scope.loadMedia 'image', prev, "prev"
+					else
+						$scope.mediaPrev = null
+					return
 
 		$scope.next = ->
-			if $scope.mediaNext and $scope.mediaNext.src
-				$scope.inFade ->
-					$('#media-viewer .img-buttons').hide()
-					$scope.mediaPrev = $scope.loadedMedia
-					$scope.loadedMedia = $scope.mediaNext
-					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
+			if !lockPrevNext
+				lockPrevNext = true
+				delay 500, ->
+					lockPrevNext = false
+				if $scope.mediaNext and $scope.mediaNext.src
+					$scope.inFade ->
+						$('#media-viewer .img-buttons').hide()
+						$scope.mediaPrev = $scope.loadedMedia
+						$scope.loadedMedia = $scope.mediaNext
+						refreshScope $scope
+						resizeViewer()
+						delay 200, ->
+							testSize()
 
-			delay 200, ->
-				if next = getNext()
-					$scope.loadMedia 'image', next, "next"
-				else
-					$scope.mediaNext = null
-				return
+				delay 200, ->
+					if next = getNext()
+						$scope.loadMedia 'image', next, "next"
+					else
+						$scope.mediaNext = null
+					return
 
 		deletableMedia = null
 		$scope.deleteMedia = ->
