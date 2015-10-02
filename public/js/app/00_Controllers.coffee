@@ -1282,15 +1282,18 @@ Controllers =
 		$scope.delete = (status, $event) ->
 			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
 				if ok
-					$($event.target)
-						.parents('ul.dropdown-menu:first').trigger 'click'
-						.parents('.status-block:first').slideUp ->
-							$(@).remove()
-							return
+					if !$scope.monoStatut
+						$($event.target)
+							.parents('ul.dropdown-menu:first').trigger 'click'
+							.parents('.status-block:first').slideUp ->
+								$(@).remove()
+								return
 					$('.points').trigger 'updatePoints', [status, false]
 					Ajax.delete '/user/status/' + status._id, ->
 						if status.images and status.images.length
 							delay 600, refreshMediaAlbums
+						if $scope.monoStatut
+							locationHref '/'
 						return
 				return
 			return
