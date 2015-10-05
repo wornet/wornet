@@ -155,6 +155,8 @@ userSchema = BaseSchema.extend
 	sharedAlbumId:
 		type: ObjectId
 		ref: 'AlbumSchema'
+	lastLeave:
+		type: Date
 ,
 	toObject:
 		virtuals: false
