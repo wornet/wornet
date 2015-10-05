@@ -675,21 +675,16 @@ Controllers =
 				return
 			return
 
-		lockPrevNext = false
 		$scope.prev = ->
-			if !lockPrevNext
-				lockPrevNext = true
-				delay 500, ->
-					lockPrevNext = false
-				if $scope.mediaPrev and $scope.mediaPrev.src
-					$scope.inFade ->
-						$('#media-viewer .img-buttons').hide()
-						$scope.mediaNext = $scope.loadedMedia
-						$scope.loadedMedia = $scope.mediaPrev
-						refreshScope $scope
-						resizeViewer()
-						delay 200, ->
-							testSize()
+			if $scope.mediaPrev and $scope.mediaPrev.src and $scope.mediaPrev.album
+				$scope.inFade ->
+					$('#media-viewer .img-buttons').hide()
+					$scope.mediaNext = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaPrev
+					refreshScope $scope
+					resizeViewer()
+					delay 200, ->
+						testSize()
 
 				delay 200, ->
 					if prev = getPrev()
@@ -699,19 +694,15 @@ Controllers =
 					return
 
 		$scope.next = ->
-			if !lockPrevNext
-				lockPrevNext = true
-				delay 500, ->
-					lockPrevNext = false
-				if $scope.mediaNext and $scope.mediaNext.src
-					$scope.inFade ->
-						$('#media-viewer .img-buttons').hide()
-						$scope.mediaPrev = $scope.loadedMedia
-						$scope.loadedMedia = $scope.mediaNext
-						refreshScope $scope
-						resizeViewer()
-						delay 200, ->
-							testSize()
+			if $scope.mediaNext and $scope.mediaNext.src and $scope.mediaNext.album
+				$scope.inFade ->
+					$('#media-viewer .img-buttons').hide()
+					$scope.mediaPrev = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaNext
+					refreshScope $scope
+					resizeViewer()
+					delay 200, ->
+						testSize()
 
 				delay 200, ->
 					if next = getNext()
