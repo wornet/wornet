@@ -13,6 +13,8 @@ NoticePackage =
 	notificationsToSend: {}
 	# Notifications disapear after some time if they are not received
 	timeouts: {}
+	# User who have leave the application
+	userWhoHasLeft: []
 
 	# Is a user (identified by id) waiting for notifications (and so present)
 	isPresent: (userId) ->
@@ -21,7 +23,7 @@ NoticePackage =
 	# Are users (identifed by ids array) present
 	arePresents: (userIds) ->
 		userIds.filter (id) ->
-			@isPrsent id
+			@isPresent id
 
 	# Execute the callback only if the data is for everyone
 	# or if sender is a best friend of the receiver
@@ -154,6 +156,17 @@ NoticePackage =
 						@unwatch()
 				delete @responsesToNotify[userId]
 
+			# is this remove is a real leave of a user?
+			delay (config.wornet.timeout / 2).seconds, =>
+				if !@isPresent userId
+					@userWhoHasLeft.push userId
+					User.update
+						_id: userId
+					,
+						lastLeave: new Date()
+					, (err, res) ->
+						warn err if err
+
 	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
@@ -164,6 +177,15 @@ NoticePackage =
 			responsesToNotify = @responsesToNotify
 			unless responsesToNotify[userId]?
 				responsesToNotify[userId] = {}
+				if @userWhoHasLeft.contains userId
+					delay (config.wornet.timeout / 2).seconds, =>
+						delete @userWhoHasLeft[userId]
+						User.update
+							_id: userId
+						,
+							lastLeave: null
+						, (err, res) ->
+							warn err if err
 			length = responsesToNotify[userId].getLength()
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs

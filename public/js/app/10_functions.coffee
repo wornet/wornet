@@ -303,7 +303,7 @@ saveChats = (chats) ->
 do =>
 
 	minimized = 1
-	close = 2
+	opened = 2
 
 	key = (chat) ->
 		k = ''
@@ -314,14 +314,30 @@ do =>
 		k
 
 	@saveChatState = (chat) ->
-		setLocalItem key(chat),
-			if chat.minimized then minimized else 0 |
-			if chat.open then 0 else close
+		state = 0
+		if chat.minimized
+			state += minimized
+		if chat.open
+			state += opened
+		setLocalItem key(chat), state
 
 	@loadChatState = (chat) ->
-		opts = getLocalItem(key chat) | 0
-		chat.minimized = !! (opts & minimized)
-		chat.open = ! (opts & close)
+		state = getLocalItem(key chat)
+		switch state
+			when "0"
+				chat.minimized = chat.open = false
+			when "1"
+				chat.minimized = true
+				chat.open = false
+			when "2"
+				chat.minimized = false
+				chat.open = true
+			when "3"
+				chat.minimized = true
+				chat.open = true
+		for message in chat.messages
+			if message.new
+				chat.open = true
 
 # Get chat messages and states from local session
 getChats = ->
