@@ -10,7 +10,7 @@ mixin friends(classes, mobile)
 			a.dropdown-toggle( data-toggle="dropdown")
 				span
 					if mobile
-						+half('user')
+						+glyph('group')
 						span.pill.mobile-pill
 							=loggedFriends.length
 					else
@@ -28,7 +28,7 @@ mixin friends(classes, mobile)
 							span.user-name
 								=friend.name.full
 							| &nbsp; 
-							+half('comment')
+							+half('comments')
 				else
 					li: a: span.no-logged-friend
 						=s("Aucun ami connecté pour le moment.")
@@ -74,12 +74,12 @@ block nav
 			.mainLinks.col-sm-6
 				ul
 					li.left: a(href="/")
-						+half("home")
+						+glyph("newspaper")
 						| &nbsp; 
 						=s("Accueil")
 						
 					li.left: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
-						+half("envelope")
+						+glyph("conversation")
 						| &nbsp; 
 						=s("Messagerie")
 			.mainLinks.col-sm-6
@@ -104,10 +104,10 @@ block nav
 	.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		.nav-icon.col-xs-2.col-xs-offset-1
 			a(href="/")
-				+half("home")
+				+glyph("newspaper")
 		.nav-icon.col-xs-2
 			a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
-				+half("envelope")
+				+glyph("conversation")
 		.nav-icon.col-xs-2
 			+notifications('', true)
 		.nav-icon.col-xs-2
