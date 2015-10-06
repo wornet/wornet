@@ -905,6 +905,7 @@ Controllers =
 							return
 			return
 
+		$scope.isMobile = window.isMobile()
 
 		window.loadMedia = (type, media, concernMe) ->
 			$scope.loadMedia type, media, concernMe
