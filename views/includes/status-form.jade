@@ -43,10 +43,10 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 			.col-sm-6.col-xs-12.fit
 				h4.glued.big-line
 					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
-						+glyph('folder-open')
+						+half('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
 					span(ng-if="! currentAlbum._id")
-						+glyph('folder-open')
+						+half('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
 			.col-sm-6.col-xs-12.fit
 				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
@@ -67,14 +67,14 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 							//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
 							span.image-box(ng-repeat="image in medias.images")
 								img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-								+glyph('remove-sign')(ng-click="removeMedia(image)")
+								+half('remove-sign')(ng-click="removeMedia(image)")
 			.col-sm-6.col-xs-12.fit
 				+form()(ng-submit="addMedia(link)")
 					.input-group
 						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))
 						.input-group-btn
 							button(type="submit" tabindex="114").btn.btn-primary
-								+glyph('plus')
+								+half('plus')
 				.medias
 					div(ng-if="medias.videos.length > 0")
 						h3=s("Vidéos")

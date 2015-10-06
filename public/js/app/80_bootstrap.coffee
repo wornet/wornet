@@ -86,13 +86,13 @@ Wornet = angular.module 'Wornet', [
 					unless enableSmilies
 						enableSmilies = true
 						$rootScope.$broadcast 'enableSmilies', true
-					'<i class="' + className + '">' + code + '</i>'
+					'<span class="' + className + '">' + code + '</span>'
 			text
 		unfilter: (text, safe = false) ->
 			for className, codes of smilies
 				pattern = ''
 				for code in codes
-					pattern += '<i class="' + className + '">' + regExpEscape(code) + '</i>|'
+					pattern += '<span class="' + className + '">' + regExpEscape(code) + '</span>|'
 				pattern = pattern.substr 0, pattern.length - 1
 				regExp = new RegExp pattern, 'g'
 				text = text.replace regExp, (code) ->

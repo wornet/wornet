@@ -16,9 +16,9 @@
 			img.big(ng-src="{{ loadedMedia.src }}" alt="{{ loadedMedia.name }}")
 			span.img-buttons
 				a.prev(ng-click="prev()" ng-class="{ disabled: loadedMedia.first }")
-					+glyph('circle-arrow-left')
+					+half('circle-arrow-left')
 				a.next(ng-click="next()" ng-class="{ disabled: loadedMedia.last }")
-					+glyph('circle-arrow-right')
+					+half('circle-arrow-right')
 		iframe(ng-switch-when="video" ng-src="{{ videoHref() }}" frameborder="0" allowfullscreen data-ratio="1.7778")
 		div(ng-switch-default)=s("Format de média inconnu")
 	.modal-footer
@@ -31,13 +31,13 @@
 			|&nbsp;
 		.large-dropdown.settings(ng-if="loadedMedia.concernMe")
 			a.dropdown-toggle(data-toggle="dropdown")
-				+glyph('cog')
+				+half('cog')
 			ul.dropdown-menu(role="menu")
 				li: a(ng-click="setAsProfilePhoto()")
-					+glyph('wrench')
+					+half('wrench')
 					| &nbsp;
 					=s("Définir comme photo de profil")
 				li: a(ng-click="deleteMedia()")
-					+glyph('trash')
+					+half('trash')
 					| &nbsp;
 					=s("Supprimer ce média")

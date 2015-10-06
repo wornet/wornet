@@ -66,6 +66,10 @@
 					height $headerHeight
 					padding 0 15px
 
+					.halflings
+						line-height $headerHeight
+						top 0
+
 	.container-fluid
 		padding 0
 
@@ -110,7 +114,7 @@
 		margin-right 0
 	.navbar-form label
 		display block
-	.glyphicon
+	.halflings
 		color $lightOrange
 	.dropdown-menu
 	.open > a
@@ -129,7 +133,7 @@
 			background lighten($hoverGray, 10%)
 	.date
 		color white
-		.glyphicon
+		.halflings
 			color white
 
 	.dropdown-menu a
@@ -176,8 +180,11 @@
 		line-height 30px
 		padding 5px 30px
 
-		.glyphicon-ok-circle
+		.halflings-ok-circle
 			color $nearlyBlack
+		.halflings
+			line-height 30px
+			top 0
 
 .suggests
 #underbar .suggests
@@ -216,7 +223,7 @@
 				text-align center
 				padding-top 15px
 
-				.glyphicon
+				.halflings
 					margin-left 0
 
 			.user-name
@@ -243,7 +250,7 @@
 		float left
 		margin 0
 		size($notificationThumbWidth, $notificationThumbHeight)
-	.glyphicon
+	.halflings
 		color #35AC19
 
 .loggedFriends-list
@@ -285,7 +292,7 @@
 		.form-control
 			width 100%
 
-		.glyphicon
+		.halflings
 			top 5px
 			margin-left -28px
 
@@ -324,7 +331,7 @@
 		margin 0
 
 		.search
-			.glyphicon
+			.halflings
 				margin 0 6px -999px
 				top -23px
 				float right
@@ -387,12 +394,12 @@
 		size(50px, 50px)
 
 	.mobile-device
-		.glyphicon
+		.halflings
 			line-height $headerHeight
 			font-size 25px
 
 		.notification-list
-			.glyphicon
+			.halflings
 				font-size $mobileNavDropdownGlyphSize
 				line-height $mobileNavDropdownGlyphSize
 
@@ -405,7 +412,7 @@
 				height 30px
 				span
 					line-height 25px
-				.glyphicon
+				.halflings
 					font-size $mobileNavDropdownGlyphSize
 					line-height $mobileNavDropdownGlyphSize
 
@@ -432,5 +439,5 @@
 
 	.notifications-list-mobile
 	.loggedFriends-mobile .loggedFriends-list
-		.glyphicon
+		.halflings
 			font-size 14px
