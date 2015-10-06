@@ -1308,11 +1308,12 @@ Controllers =
 
 		$scope.sharedAlbumDefaultName = s("Publications d'amis")
 		temporarySharedAlbumId = null
+		at = getData 'at'
+		$scope.onMe = !at or at is getData 'me'
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
-			at = getData 'at'
-			if !at or at is getData 'me'
+			if $scope.onMe
 				$scope.media.step = null
 			else
 				sharedAlbumId = getData('sharedAlbumId') || temporarySharedAlbumId
