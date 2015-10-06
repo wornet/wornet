@@ -29,12 +29,13 @@
 			| &nbsp; | &nbsp; 
 		.date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
 			|&nbsp;
-		.large-dropdown.settings(ng-if="loadedMedia.concernMe")
+		
+		.large-dropdown.settings(ng-if="loadedMedia.concernMe" ng-class="{ dropup: isMobile }")
 			a.dropdown-toggle(data-toggle="dropdown")
 				+half('cog')
 			ul.dropdown-menu(role="menu")
 				li: a(ng-click="setAsProfilePhoto()")
-					+half('wrench')
+					+half('glyph-wrench')
 					| &nbsp;
 					=s("Définir comme photo de profil")
 				li: a(ng-click="deleteMedia()")
