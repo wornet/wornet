@@ -49,9 +49,9 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 						+half('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
 			.col-sm-6.col-xs-12.fit
-				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
+				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111" ng-if="onMe")
 					=s("Sélectionner un autre album")
-			.col-sm-6.col-xs-12.fit
+			.col-sm-6.col-xs-12.fit.cb
 				iframe(name="status-upload")
 				+form("/user/photo", "FILE").status-images(target="status-upload")
 					.upload-container
