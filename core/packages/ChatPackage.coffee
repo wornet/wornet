@@ -63,10 +63,7 @@ ChatPackage =
 															message.invalid = true
 													else
 														addUser 'from', message.author
-														if req.user.lastLeave and req.user.lastLeave < Date.fromId message.id
-															message.new = true
-														else
-															message.new = false
+														message.new = req.user.lastLeave and req.user.lastLeave < Date.fromId message.id
 													delete message.author
 													message
 												.filter (message) ->
