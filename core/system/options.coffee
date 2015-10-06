@@ -71,6 +71,10 @@ module.exports = (app, port) ->
 			[
 				"/components/bootstrap/css/bootstrap.min.css"
 				"/components/bootstrap/css/bootstrap-theme.min.css"
+				"/components/bootstrap/css/glyphicons.css"
+				"/components/bootstrap/css/glyphicons-filetypes.css"
+				"/components/bootstrap/css/glyphicons-halflings.css"
+				"/components/bootstrap/css/glyphicons-social.css"
 				"/components/jquery/css/jquery-ui.css"
 				"/components/jquery/css/fullcalendar.css"
 				"/components/toastr/css/toastr.min.css"

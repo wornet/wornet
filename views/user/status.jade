@@ -10,31 +10,31 @@ block body
 			- init += "statusToDisplay.originalContent = statusToDisplay.content;"
 			.aside.settings.continue(ng-init=init ng-if="statusToDisplay.author.hashedId")
 				a.dropdown-toggle(data-toggle="dropdown")
-					+glyph('cog')
+					+half('cog')
 				ul.dropdown-menu(role="menu")
 					li(ng-if="statusToDisplay.concernMe && statusToDisplay.isMine")
 						a.ajax(ng-click="toggleStatusState(statusToDisplay, true)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce contenu"))
-							+glyph('pencil')
+							+half('pencil')
 							| &nbsp; 
 							=s("Modifier")
 					li(ng-if="statusToDisplay.concernMe")
 						a.ajax(ng-click="delete(statusToDisplay, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
-							+glyph('trash')
+							+half('trash')
 							| &nbsp; 
 							=s("Supprimer")
 					li(ng-if="! statusToDisplay.reported")
 						a.ajax(href="/report/{{ statusToDisplay._id }}" ng-click="report(statusToDisplay, $event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
-							+glyph('exclamation-sign')
+							+half('exclamation-sign')
 							| &nbsp; 
 							=s("Signaler")
 				.alert.alert-success(ng-if="statusToDisplay.reported")
 					=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
 			.aside.continue.settings(ng-if="! statusToDisplay.author.hashedId")
 				a.dropdown-toggle(data-toggle="dropdown")
-					+glyph('cog')
+					+half('cog')
 				ul.dropdown-menu(role="menu")
 					li: a.ajax(ng-click="delete(statusToDisplay, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
-						+glyph('trash')
+						+half('trash')
 						| &nbsp; 
 						=s("Supprimer")
 			.status-author
@@ -47,7 +47,7 @@ block body
 					+link("/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}", "{{ statusToDisplay.author.name.full }}")(ng-if="statusToDisplay.author.hashedId")
 					a(ng-if="! statusToDisplay.author.hashedId") {{ statusToDisplay.author.name.full }}
 				div(ng-if="statusToDisplay.at")
-					+glyph('chevron-right')
+					+half('chevron-right')
 					+link("/user/profile/{{ statusToDisplay.at.hashedId }}/{{ statusToDisplay.at.name.full | urlencode }}", "{{ statusToDisplay.at.name.full }}")
 			.date(data-date="{{ statusToDisplay.date }}" ng-if="statusToDisplay.author.hashedId")
 				|&nbsp;
@@ -64,7 +64,7 @@ block body
 				div(ng-if="statusToDisplay.images.length > 0")
 					//- h3(ng-if="statusToDisplay.album")
 					//- 	a.album-name(href="/user/album/{{ statusToDisplay.album }}")
-					//- 		+glyph('folder-open')
+					//- 		+half('folder-open')
 					//- 		|&nbsp; {{ statusToDisplay.albumName }}
 					//- h3(ng-if="! statusToDisplay.album")
 					//- 	=s("Images")
@@ -79,7 +79,7 @@ block body
 							=s("Plus")
 						a.mobile-video(ng-if="! displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
 							img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
-							+glyph('play')
+							+half('play')
 				div(ng-if="statusToDisplay.links.length > 0")
 					h3=s("Liens")
 					a(ng-repeat="link in statusToDisplay.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
@@ -104,16 +104,16 @@ block body
 							- init += "comment.originalContent = comment.content;"
 							.aside.settings.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
 								a.dropdown-toggle(data-toggle="dropdown")
-									+glyph('cog')
+									+half('cog')
 								ul.dropdown-menu(role="menu")
 									li(ng-if="comment.isMine")
 										a.ajax(non-block-click="comment.edit = true;" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
-											+glyph('pencil')
+											+half('pencil')
 											| &nbsp; 
 											=s("Modifier")
 									li(ng-if="comment.isMine || comment.onMyWall")
 										a.ajax(ng-click="deleteComment(comment)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce commentaire"))
-											+glyph('trash')
+											+half('trash')
 											| &nbsp; 
 											=s("Supprimer")
 							.comment-author

@@ -33,7 +33,16 @@ mixin csrf()
 	input(type="hidden" name="_csrf" value=_csrf)
 
 mixin glyph(type)
-	i&attributes(attributes)(class="glyphicon glyphicon-" + type)
+	span&attributes(attributes)(class="glyphicons glyphicons-" + type)
+
+mixin half(type)
+	span&attributes(attributes)(class="halflings halflings-" + type)
+
+mixin social(type)
+	span&attributes(attributes)(class="social social-" + type)
+	
+mixin filetype(type)
+	span&attributes(attributes)(class="filetypes filetypes-" + type)
 
 mixin alert(data)
 	if data && typeof(data) === 'object'
