@@ -25,14 +25,15 @@ describe "Signin", ->
 				expect(url w).toBe '/'
 				shouldExists '.tooltip:hidden'
 				shouldNotExists '.tooltip:visible'
-				$form = w.$ '#signin'
-				$form.find('input[name="email"]').set('invalid').focus().click()
+				$form = w.$ '#login-signin'
+				$form.find('input[name="email"]').set('invalid@wornet.fr').focus().click()
 				existsNow = w.exists '.tooltip:visible'
 				shouldExists '.tooltip:visible'
-				$tester.form $form, fulfill, reject
+				$form.find('.sign-in').click()
+				$tester.page fulfill, reject
 
 			.then (fulfill, reject) ->
-				expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid'
+				expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid@wornet.fr'
 				shouldExists 'input[name="birthDate"]:visible'
 				$tester.src signinUrl, fulfill, reject
 
@@ -89,13 +90,26 @@ describe "Signin", ->
 				.form fulfill, reject
 
 			.then (fulfill, reject) ->
+				expect(url w).toBe signinUrl
+				$tester.complete
+					email: 'unit-test@selfbuild.fr'
+					password: 'azer8Ty'
+					passwordCheck: 'azer8Ty'
+					'name.first': 'Bob'
+					'name.last': 'Dylan'
+					sex: "man"
+					birthDate: '1990-01-07'
+					legals: true
+				.form fulfill, reject
+
+			.then (fulfill, reject) ->
 				expect(url w).toBe '/user/welcome'
 				shouldNotExists '.alert-danger'
 				shouldExists 'a[href~="/user/profile"]'
 				$tester.link 'a[href~="/user/profile"]', fulfill, reject
 
 			.then (fulfill, reject) ->
-				shouldExists '.dropdown-toggle:icontains("Bob Dylan")'
+				shouldExists '.dropdown-toggle:icontains("Bob")'
 				shouldExists 'h3:icontains("Bob Dylan")'
 				shouldExists '#shutter:hidden'
 				click 'li.open-shutter a'
@@ -118,8 +132,7 @@ describe "Signin", ->
 
 			.then ->
 				expect(url w).toBe '/'
-				shouldExists '#login'
-				shouldExists '#signin'
+				shouldExists '#login-signin'
 				done()
 
 			.catch (error) ->
