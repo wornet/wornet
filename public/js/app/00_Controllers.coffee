@@ -272,6 +272,7 @@ Controllers =
 				modified = true
 			if message
 				if currentChat.messages and currentChat.messages.length > 0
+					alreadyInChat = false
 					for chatMessage in currentChat.messages by -1
 						if chatMessage.from and (user = chatMessage.from).hashedId is message.from.hashedId and user.thumb50 isnt message.from.thumb50
 							$img = $('img[data-user-thumb="' + user.hashedId + '"]:first').thumbSrc(message.from.thumb50.replace('50x', ''))
@@ -290,10 +291,13 @@ Controllers =
 												for size in getCachedData 'thumbSizes'
 													aUser['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
 							break
+						if chatMessage.date and message.date and Math.floor(chatMessage.date.getTime() / 1000) is Math.floor(message.date.getTime() / 1000) and chatMessage.content is message.content
+							alreadyInChat = true
 				if message.from.hashedId is me
 					delete message.from
-				currentChat.messages.push message
-				modified = true
+				if !alreadyInChat
+					currentChat.messages.push message
+					modified = true
 			if modified
 				saveChatState currentChat
 				saveChats chats
