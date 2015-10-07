@@ -12,4 +12,4 @@ describe "Not found page", ->
 
 		expect(w.exists 'h1').toBe true, 'h1 must exist'
 		expect(w.exists '.well').toBe true, '.well must exist'
-		expect(w.exists '#navbar').toBe true, '#navbar must exist'
+		expect(w.exists '#wornet-navbar').toBe true, '#wornet-navbar must exist'

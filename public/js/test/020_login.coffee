@@ -20,17 +20,17 @@ describe "Login", ->
 		it "should fail", (done) ->
 
 			expect(url w).toBe '/'
-			shouldExists '#login'
-			$form = w.$ '#login'
+			shouldExists '#login-signin'
+			$form = w.$ '#login-signin'
 			fail = ->
 				shouldExists '.alert-danger'
-				shouldExists '#login'
+				shouldExists '#login-signin'
 				shouldNotExists '#search'
 				done()
-			$tester.complete '#login',
+			$tester.complete '#login-signin',
 				email: 'unit-test@selfbuild.fr'
 				password: 'azer8Ty'
-			.form '#login', ->
+			.form '#login-signin', ->
 				expect('Page loading').toBe 'ko'
 				done()
 			, fail
@@ -41,16 +41,16 @@ describe "Login", ->
 		it "should succeed", (done) ->
 
 			expect(url w).toBe '/'
-			shouldExists '#login'
+			shouldExists '#login-signin'
 			success = ->
 				shouldNotExists '.alert-danger'
-				shouldNotExists '#login'
+				shouldNotExists '#login-signin'
 				shouldExists '#search'
 				done()
-			$tester.complete '#login',
+			$tester.complete '#login-signin',
 				email: 'unit-test-login@selfbuild.fr'
 				password: 'azer8Ty'
-			.form '#login', success, ->
+			.form '#login-signin', success, ->
 				expect('Page loading').toBe 'ok'
 				done()
 			w.$document.ajaxComplete (event, xhr) ->

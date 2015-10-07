@@ -17,13 +17,17 @@ do ->
 		it "should adapt header with device width", (done) ->
 
 			$tester.width 700
-			shouldExists '.navbar-toggle.collapsed:visible', ".navbar-toggle.collapsed:visible must exist in 700px-width"
-			shouldNotExists '.navbar-toggle.collapsed:hidden', ".navbar-toggle.collapsed:hidden must not exist in 700px-width"
+			shouldExists '.wornet-navbar.mobile-device:visible', ".wornet-navbar.mobile-device:visible must exist in 700px-width"
+			shouldNotExists '.wornet-navbar.mobile-device:hidden', ".wornet-navbar.mobile-device:visible must not exist in 700px-width"
+			shouldNotExists '.wornet-navbar.standard-device:visible', ".wornet-navbar.standard-device:visible must not exist in 700px-width"
+			shouldExists '.wornet-navbar.standard-device:hidden', ".wornet-navbar.mobile-device:visible must exist in 700px-width"
 			shouldNotExists '.open-shutter:visible', '[role="menu"]:visible must not exist in 700px-width'
 			shouldExists '.open-shutter:hidden', '[role="menu"]:hidden must exist in 700px-width'
 			$tester.width 800
-			shouldNotExists '.navbar-toggle.collapsed:visible', ".navbar-toggle.collapsed:visible must not exist in 800px-width"
-			shouldExists '.navbar-toggle.collapsed:hidden', ".navbar-toggle.collapsed:hidden must exist in 800px-width"
+			shouldNotExists '.wornet-navbar.mobile-device:visible', ".navbar-toggle.collapsed:visible must not exist in 800px-width"
+			shouldExists '.wornet-navbar.mobile-device:hidden', ".navbar-toggle.collapsed:visible must exist in 800px-width"
+			shouldExists '.wornet-navbar.standard-device:visible', ".navbar-toggle.collapsed:visible must exist in 800px-width"
+			shouldNotExists '.wornet-navbar.standard-device:hidden', ".navbar-toggle.collapsed:visible must not exist in 800px-width"
 			shouldExists '.open-shutter:visible', '[role="menu"]:visible must exist in 800px-width'
 			shouldNotExists '.open-shutter:hidden', '[role="menu"]:hidden must not exist in 800px-width'
 			done()
@@ -33,4 +37,3 @@ do ->
 		it "need a Status controller", ->
 
 			shouldExists '[ng-controller="StatusCtrl"]', 'StatusCtrl must exist'
-
