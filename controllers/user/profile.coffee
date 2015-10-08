@@ -41,8 +41,17 @@ module.exports = (router) ->
 			options = safe: true
 			Photo.findOneAndUpdate where, values, options, (err, photo) ->
 				if ! err and photo
-					PhotoPackage.forget req, photo.id
-					syncUserPhotos userModifications, photo
+					Album.findOne
+						_id: photo.album
+					, (err, album) ->
+						if !err and album
+							UserAlbums.touchAlbum req.user, album._id, (err, result) ->
+								if err
+									warn err
+							album.refreshPreview done
+					done = ->
+						PhotoPackage.forget req, photo.id
+						syncUserPhotos userModifications, photo
 				else
 					req.flash 'profileErrors', s("La photo a expirée, veuillez la ré-envoyer.")
 					delete userModifications.photoId
@@ -56,7 +65,8 @@ module.exports = (router) ->
 		if photoId
 			end = (photo) ->
 				PhotoPackage.forget req, photo.id
-				updateUser req, syncUserPhotos({}, photo), (err) ->
+				data = album: photo.album
+				updateUser req, syncUserPhotos(data, photo), (err) ->
 					if err
 						res.serverError err
 					else
@@ -64,10 +74,13 @@ module.exports = (router) ->
 
 			parallel
 				album: (done) ->
-					Album.findOne
+					data =
 						user: req.user._id
-						name: photoDefaultName()
-					, (err, album) ->
+					if req.user.photoAlbumId
+						data._id = req.user.photoAlbumId
+					else
+						data.name = photoDefaultName()
+					Album.findOne data, (err, album) ->
 						if !err and album
 							done null, album
 						else
@@ -98,6 +111,9 @@ module.exports = (router) ->
 									if err
 										res.serverError err
 									else
+										album.refreshPreview (err) ->
+											if err
+												warn err
 										end photo
 				, (err) ->
 					res.serverError err

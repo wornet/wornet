@@ -66,6 +66,11 @@
 					height $headerHeight
 					padding 0 15px
 
+					.halflings
+					.glyphicons
+						line-height $headerHeight
+						top 0
+
 	.container-fluid
 		padding 0
 
@@ -110,7 +115,7 @@
 		margin-right 0
 	.navbar-form label
 		display block
-	.glyphicon
+	.halflings
 		color $lightOrange
 	.dropdown-menu
 	.open > a
@@ -129,7 +134,7 @@
 			background lighten($hoverGray, 10%)
 	.date
 		color white
-		.glyphicon
+		.halflings
 			color white
 
 	.dropdown-menu a
@@ -141,11 +146,22 @@
 	.loggedFriends-list a
 		padding-right $bigPadding * 2
 
+	.divider
+		margin 0
+
+	.notification-list
+		padding 0
+
 	.notification-list a
-		padding-right $bigPadding * 2
+		padding-right $bigPadding * 2 + $smallPadding
 		height $notificationThumbHeight + $mainPadding
 		&.friend-ask
 			height $notificationThumbHeight + $bigPadding
+		&.read-all-notifs
+		&.activities
+			float right
+			height $notificationThumbHeight - $mainPadding
+			padding 3px 40px
 		.thumb
 			float left
 		span
@@ -165,8 +181,11 @@
 		line-height 30px
 		padding 5px 30px
 
-		.glyphicon-ok-circle
+		.halflings-ok-circle
 			color $nearlyBlack
+		.halflings
+			line-height 30px
+			top 0
 
 .suggests
 #underbar .suggests
@@ -201,11 +220,11 @@
 				&:hover
 					background $lightGray
 
-			a.chat-with
+			a.suggest-action
 				text-align center
 				padding-top 15px
 
-				.glyphicon
+				.halflings
 					margin-left 0
 
 			.user-name
@@ -232,17 +251,32 @@
 		float left
 		margin 0
 		size($notificationThumbWidth, $notificationThumbHeight)
-	.glyphicon
+	.halflings
 		color #35AC19
 
 .loggedFriends-list
 .notification-list
 	border-radius(0 0 2px 2px)
 
+.notification-list
+.notification-list-mobile
+	overflow-y auto
+	overflow-x hidden
+
+.notification-list
+	max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
+
+.notification-list-mobile
+	max-height ((36px + 3px) * $numberOfNoticeBeforeScrollBar) + ((20px) * 2) + $mainPadding
+	@media (max-width: 321px)
+		max-height (36px * $iphone4NumberOfNoticeBeforeScrollBar) + 20px + $mainPadding
+
 .loggedFriends-list
 	left 0
 	li a
 		line-height 35px
+		.halflings
+			line-height 35px
 
 @media (min-width: 768px)
 	.mobile-device
@@ -261,9 +295,10 @@
 		.form-control
 			width 100%
 
-		.glyphicon
-			top 5px
+		.halflings
+			top 7px
 			margin-left -28px
+			line-height 22px
 
 // @media (min-width: 768px) and (orientation: portrait)
 // 	.wornet-navbar
@@ -300,10 +335,11 @@
 		margin 0
 
 		.search
-			.glyphicon
+			.halflings
 				margin 0 6px -999px
-				top -23px
+				top -25px
 				float right
+				line-height 22px
 
 	.wornet-navbar
 		.mobile-device
@@ -319,6 +355,11 @@
 					background-color $orange
 					&.read
 						background-color $darkOrange
+					&.activities-list
+					&.read-all
+						a
+							height 20px
+							float right
 			span
 				white-space pre-line
 				font-size $mobileNotificationTextSize
@@ -349,6 +390,10 @@
 				display block
 				height $headerHeight
 
+				.glyphicons
+					line-height $headerHeight
+					font-size 25px
+
 			.user
 				width 50%
 
@@ -358,17 +403,17 @@
 		size(50px, 50px)
 
 	.mobile-device
-		.glyphicon
+		.halflings
 			line-height $headerHeight
 			font-size 25px
 
 		.notification-list
-			.glyphicon
+			.halflings
 				font-size $mobileNavDropdownGlyphSize
 				line-height $mobileNavDropdownGlyphSize
 
 			.thumb
-				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
+				size($mobileNotificationThumbHeight, $mobileNotificationThumbWidth)
 				margin 0 5px 0 -5px
 		.loggedFriends-list
 			a
@@ -376,9 +421,8 @@
 				height 30px
 				span
 					line-height 25px
-				.glyphicon
+				.halflings
 					font-size $mobileNavDropdownGlyphSize
-					line-height $mobileNavDropdownGlyphSize
 
 			.thumb
 				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
@@ -397,7 +441,11 @@
 		list-style none
 		margin-right 15px
 
+	.loggedFriends-mobile .pill.mobile-pill
+		background-color $green
+		color $nearlyWhite
+
 	.notifications-list-mobile
 	.loggedFriends-mobile .loggedFriends-list
-		.glyphicon
+		.halflings
 			font-size 14px

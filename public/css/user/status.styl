@@ -8,14 +8,27 @@
 		input
 			float right
 			margin-left -65px
+	.album-select
+		margin $mainPadding 0
+
+		label
+			padding 0
 
 .status-author
 	a
-		font-size 18px
+		font-weight bold
 	img
 		float left
 		margin $smallPadding
 		size($thumbWidth, $thumbHeight)
+	.icon-arrow-right
+		background url(png("icon-arrow-right"))
+		background-size 16px
+		size(16px, 16px)
+		padding 0
+		margin 0
+		box-shadow none
+		cursor auto
 
 .status-block
 	padding $mainPadding $mainPadding 20px
@@ -26,7 +39,7 @@
 
 	.date
 		font-size $dateSize
-	.settings .glyphicon-cog
+	.settings .halflings-cog
 		color $mediumGray
 
 		&:hover
@@ -38,6 +51,9 @@
 
 	a
 		color $linkColor
+
+.status-content-edit
+	margin-bottom $bigPadding * 2
 
 .status-actions
 	float right
@@ -68,6 +84,7 @@
 
 	.like-zone
 		color $darkGray
+		cursor pointer
 
 	.btn
 		box-shadow none
@@ -130,9 +147,21 @@
 	.comment-form .btn
 		width 50%
 
-	.status-block .settings
-		width 80px
+	.status-block
+		rel()
+		.settings
+			width 20px
+			abs()
+			top $mainPadding
+			right $mainPadding
+			ul
+				margin-left -150px
 
+	.comment-block
+		rel()
+		.settings
+			top $smallPadding
+			right $smallPadding
 
 @media (max-width: 767px)
 	.status-author

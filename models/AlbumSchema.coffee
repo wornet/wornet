@@ -12,6 +12,8 @@ albumSchema = OwnedSchema.extend
 		type: Array
 	lastEmpty:
 		type: Date
+	lastAdd:
+		type: Date
 
 albumSchema.methods.refreshPreview = (save = true, done) ->
 	if 'function' is typeof save
@@ -25,7 +27,7 @@ albumSchema.methods.refreshPreview = (save = true, done) ->
 		album: album._id
 		status: 'published'
 	.sort _id: 'desc'
-	.limit 4
+	.limit 10
 	.exec (err, photos) ->
 		if err
 			done err

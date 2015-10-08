@@ -28,19 +28,110 @@ UserPackage =
 		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
 
 	getAlbums: (userIds, done) ->
+		if 'function' is typeof limit
+			done = limit
+			limit = 0
 		Album.find
 			user: $in: userIds
-		.sort _id: 'asc'
+		.sort lastAdd: 'desc'
 		.exec (err, albums) ->
 			if err
 				done err
 			else
 				result = {}
+				albumIds = []
+				tabAlbum = {}
 				for id in userIds
 					result[id] = []
 				for album in albums
 					result[album.user].push album
 				done null, result
+
+	isMeOrAFriend: (req, hashedId) ->
+		if req.user.hashedId is hashedId
+			true
+		else
+			friendsHashedIds = req.user.friends.map (friend) ->
+				friend.hashedId
+			friendsHashedIds.contains hashedId
+
+	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
+		if @isMeOrAFriend req, hashedId
+			idUser = cesarRight hashedId
+			UserAlbums.findOne
+				user: idUser
+			, (err, userAlbums) ->
+				if err
+					warn err
+				else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
+					done null, {}, 0
+				else
+					theLastFour = userAlbums.lastFour
+
+					Album.find
+						user: idUser
+					.sort lastAdd: 'desc'
+					.exec (err, allAlbums) ->
+						albumIdsList = allAlbums.column '_id'
+						Photo.aggregate [
+							$match:
+								status: "published"
+								album: $in: albumIdsList
+						,
+							$group:
+								_id: "$album"
+								count: $sum: 1
+						], (err, allData) ->
+							if err
+								warn err
+							else
+								# all non empty albums
+								allData = allData.filter (data) ->
+									data.count isnt 0
+								nbAlbumsNotEmpty = allData.length
+
+								tabAlbum = {}
+								photoIds = []
+								if !all
+									albums = allAlbums.filter (album) ->
+										theLastFour.contains album._id
+									# to keep the order
+									for id in theLastFour
+										for album in albums
+											if strval(id) is strval(album._id)
+												for data in allData
+													if equals data._id, album._id
+														albumObj = album.toObject()
+														albumObj.preview = []
+														albumObj.nbPhotos = data.count
+														photoIds = photoIds.concat album.preview
+														tabAlbum[album.id] = albumObj
+								else
+									for album in allAlbums
+										for data in allData
+											if equals data._id, album._id
+												albumObj = album.toObject()
+												albumObj.preview = []
+												albumObj.nbPhotos = data.count
+												photoIds = photoIds.concat album.preview
+												tabAlbum[album.id] = albumObj
+
+								Photo.find
+									_id: $in: photoIds
+									status: "published"
+								, (err, photos) ->
+									if err
+										warn err
+									else
+										for photo in photos
+											photoPath = photo.photo
+											photo = photo.toObject()
+											photo.src = photoPath
+											tabAlbum[photo.album].preview.push photo
+										done null, tabAlbum, nbAlbumsNotEmpty
+		else
+			res.serverError new PublicError s('Vous ne pouvez pas voir ces médias.')
+
 
 	search: ->
 		for arg in arguments
@@ -267,6 +358,11 @@ UserPackage =
 					else
 						friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
 						end = (isAFriend) ->
+							myfriendAskPending = false
+							if !isAFriend and !empty friendAsks
+								for id, friendAsk of friendAsks
+									if friendAsk.hashedId is req.user.hashedId
+										myfriendAskPending = true
 							res.render template,
 								isMe: isMe
 								askedForFriend: askedForFriend
@@ -275,8 +371,9 @@ UserPackage =
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length
-								friends: if isMe then friendsThumb else []
+								friends: if isMe || !! isAFriend then friendsThumb else []
 								friendAsks: if isMe then friendAsks else {}
+								myfriendAskPending: myfriendAskPending
 								userTexts: userTexts()
 								users: users
 						if isAFriend is null
@@ -322,6 +419,8 @@ UserPackage =
 						userModifications.birthDate = birthDate
 				when 'confidentialityBirthDate'
 					userModifications.maskBirthDate = val is 'on'
+				when 'confidentialityFriendList'
+					userModifications.maskFriendList = val is 'on'
 				when 'name.first'
 					unless userModifications.name
 						userModifications.name = req.user.name
@@ -343,5 +442,28 @@ UserPackage =
 				when 'city', 'birthCity', 'job', 'jobPlace', 'biography', 'sex'
 					userModifications[key] = val
 		userModifications
+
+	setAsProfilePhoto: (req, res, photo, done) ->
+		if photo
+			Photo.findOneAndUpdate
+				_id: photo._id
+			,
+				status: "published"
+			, (err, photoBase) ->
+				if err
+					warn err
+				else
+					updateUser req, photoId: photo._id, ->
+						Album.findOne
+							_id: photoBase.album
+						, (err, album) ->
+							if !err and album
+								UserAlbums.touchAlbum req.user, album._id, (err, result) ->
+									if err
+										warn err
+								album.refreshPreview done
+
+		else
+			warn new Error s("Aucune ou plusieurs Photos envoyées à setAsProfilePhoto")
 
 module.exports = UserPackage

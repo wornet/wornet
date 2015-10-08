@@ -1,6 +1,9 @@
 .well.friends-block
 	h3
-		=strtoupper(s("Mes amis")) + " "
+		if isMe
+			=strtoupper(s("Mes amis")) + " "
+		else if isAFriend
+			=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
 		span.numberOfFriends
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 		+data('numberOfFriends', numberOfFriends)

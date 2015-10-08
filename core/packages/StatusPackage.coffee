@@ -25,8 +25,14 @@ StatusPackage =
 					_next()
 		unless data.chat
 			updatedAt *= 1
+			# to prevent duplicate the last message from which the updatedAt is extracted
+			updatedAt += 1000
 			where = if updatedAt
-				_id: $gt: new ObjectId(Math.floor(updatedAt / 1000).toString(16) + '0000000000000000').path
+				_objectId = Math.floor(updatedAt / 1000).toString(16) + '0000000000000000'
+				if /^[0-9a-fA-F]{24}$/.test _objectId
+					_id: $gt: new ObjectId(_objectId).path
+				else
+					{}
 			else
 				{}
 			ChatPackage.where req, where, (err, chat) ->
@@ -39,10 +45,16 @@ StatusPackage =
 			connectedPeople = friends.column 'id'
 			connectedPeopleAndMe = connectedPeople.with req.user.id
 			where = @where id, connectedPeopleAndMe, onProfile
+			limit = config.wornet.limits.statusPageCount
+			if req.data.offset
+				limit = config.wornet.limits.scrollStatusPageCount
+				_objectId = req.data.offset
+				if /^[0-9a-fA-F]{24}$/.test _objectId
+					where._id = $lt: new ObjectId(_objectId).path
 			if connectedPeopleAndMe.contains id
 				Status.find where
 					.skip 0
-					.limit 100
+					.limit limit
 					.sort date: 'desc'
 					.select '_id date author at content status images videos links album albumName pointsValue nbLike'
 					.exec (err, recentStatus) ->
@@ -97,6 +109,11 @@ StatusPackage =
 													status.content = ''
 												status.likedByMe = tabLike[status._id].likedByMe
 												status.nbLike = tabLike[status._id].nbLike
+												status.nbImages = status.images.length
+												if status.images.length
+													status.images = [status.images[0]]
+													if -1 isnt status.images[0].src.indexOf "200x"
+														status.images[0].src = status.images[0].src.replace "200x", ""
 												recentStatusPublicData.push status
 											data.recentStatus = recentStatusPublicData
 											next()
@@ -146,12 +163,16 @@ StatusPackage =
 												originalStatus.albumName = albums[0].name
 												originalStatus.save()
 											count = albums.length
-											albums.each ->
-												@refreshPreview (err) ->
-													if err
-														warn err
-													unless --count
-														done status
+											albums.each (key, album) ->
+												req.getUserById album.user, (err, user) =>
+													UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
+														if err
+															warn err
+													@refreshPreview (err) ->
+														if err
+															warn err
+														unless --count
+															done status
 										else
 											done status
 								else
@@ -185,6 +206,11 @@ StatusPackage =
 
 						next = (usersToNotify) =>
 							place = status.at or status.author
+							status.nbImages = status.images.length
+							if status.images.length
+								status.images = [status.images[0]]
+								if -1 isnt status.images[0].src.indexOf "200x"
+									status.images[0].src = status.images[0].src.replace "200x", ""
 							@propagate status
 							img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: status.author
 							NoticePackage.notify usersToNotify, null,
@@ -230,6 +256,7 @@ StatusPackage =
 		place = status.at or status.author
 		place = place.hashedId or place
 		status.nbLike = 0
+		status.nbComment = 0
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
@@ -240,8 +267,8 @@ StatusPackage =
 		if medias.images and medias.images.length > 0
 			points = 2 # status with photo
 		if medias.videos and medias.videos.length > 0
-			points = 3 if points = 1 # status with video but without photo
-			points = 4 if points = 2 # status with video and photo
+			points = 3 if points is 1 # status with video but without photo
+			points = 4 if points is 2 # status with video and photo
 
 		pointsToAdd = points * nbOfFriends
 
@@ -302,6 +329,12 @@ StatusPackage =
 				User.updateById id,
 					points: newPoints
 				, done
+
+	checkRightToSee: (req, status) ->
+		me = req.user.id
+		myFriendsId = req.user.friends.map (friend) ->
+			friend._id
+		(equals(status.author, me) or equals(status.at, me) or myFriendsId.contains status.at, equals)
 
 	DEFAULT_STATUS_ID: "100000000000000000000001"
 

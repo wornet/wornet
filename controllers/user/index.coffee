@@ -296,6 +296,35 @@ module.exports = (router) ->
 				err: err
 				albums: albums[req.user.id]
 
+	router.get '/albums/medias/:hashedId', (req, res) ->
+		# hashedId is me or at (of a friend)
+		hashedId = req.params.hashedId
+		User.findById cesarRight(req.params.hashedId), (err, user) ->
+			UserPackage.getAlbumsForMedias req, hashedId, false, (err, albums, nbAlbums) ->
+				res.json
+					err: err
+					albums: albums
+					nbAlbums: nbAlbums
+					user: user.publicInformations()
+
+	router.get '/albums/:hashedId', (req, res) ->
+		User.findById cesarRight(req.params.hashedId), (err, user) ->
+			if user and ! err
+				res.render 'user/album-list',
+					profile: user
+					isMe: req.user.hashedId is req.params.hashedId
+			else
+				res.notFound()
+
+	router.get '/albums/all/:hashedId', (req, res) ->
+		# hashedId is me or at (of a friend)
+		hashedId = req.params.hashedId
+		UserPackage.getAlbumsForMedias req, hashedId, true, (err, albums, nbAlbums) ->
+			res.json
+				err: err
+				albums: albums
+				nbAlbums: nbAlbums
+
 	# Display images in an album
 	router.get '/album/:id', (req, res) ->
 		end = (model) ->
@@ -354,9 +383,21 @@ module.exports = (router) ->
 			res.serverError new PublicError s("Ce nom est reservé.")
 		else
 			# Create a new album
-			album = extend user: req.user._id, req.body.album
+			at = req.body.at
+			album = extend user: if at
+				cesarRight at
+			else
+				req.user._id
+			, req.body.album
 			album.lastEmpty = new Date
 			Album.create album, (err, album) ->
+				if at
+					User.update
+						_id: album.user
+					,
+						sharedAlbumId: album._id
+					, (err, user) ->
+						warn err if err
 				album.user = cesarLeft album.user
 				res.json
 					err: err
@@ -386,8 +427,16 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 						else
-							req.flash 'profileSuccess', s("Album supprimé")
-							res.json goingTo: '/'
+							done = ->
+								UserAlbums.removeAlbum req.user, id, (err) ->
+									req.flash 'profileSuccess', s("Album supprimé")
+									res.json goingTo: '/user/profile'
+							if strval(req.user.photoAlbumId) is strval(id)
+								updateUser req, photoAlbumId: null, done
+							else if strval(req.user.sharedAlbumId) is strval(id)
+								updateUser req, sharedAlbumId: null, done
+							else
+								done()
 
 		Photo.findById req.user.photoId, (err, photo) ->
 			warn err, req if err
@@ -406,30 +455,42 @@ module.exports = (router) ->
 			set.name = req.data.name.content
 		else
 			res.serverError new PublicError s("Le titre de l'album est obligatoire.")
-		if req.data.description and req.data.description.content
-			set.description = req.data.description.content
 
-		if set.getLength() isnt 0
-			parallel [(done) ->
-				Status.update
-					album: id
-				,
-					albumName: set.name
-				,
-					multi: true
-				, done
-			, (done) ->
-				Album.update
-					_id: id
-					user: req.user.id
-				,
-					set
-				, done
-			], ->
-				res.json()
-			, (err) ->
+		if req.data.name and req.data.name.content is photoDefaultName()
+			res.serverError new PublicError s("Ce nom est reservé.")
+		else
+			if req.data.description and req.data.description.content
+				set.description = req.data.description.content
+
+			if set.getLength() isnt 0
+				parallel [(done) ->
+					Status.update
+						album: id
+					,
+						albumName: set.name
+					,
+						multi: true
+					, done
+				, (done) ->
+					Album.update
+						_id: id
+						user: req.user.id
+					,
+						set
+					, done
+				], ->
+					res.json()
+				, (err) ->
+					res.serverError err
+
+	router.get '/album/one/:id', (req, res) ->
+		Album.findOne
+			_id: req.params.id
+		, (err, album) ->
+			if err
 				res.serverError err
-
+			else
+				res.json album: album
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video
@@ -486,11 +547,15 @@ module.exports = (router) ->
 		images = req.files.photo || []
 		unless images instanceof Array
 			images = [images]
-		done = (data) ->
+		done = (data, photo) ->
 			model.images.push data
 			if model.images.length is images.length
 				model.images.reverse()
-				res.render templateFolder + '/upload-photo', model
+				if req.body.mediaFlag and req.body.mediaFlag is "O" and photo
+					UserPackage.setAsProfilePhoto req, res, photo, ->
+						res.render templateFolder + '/upload-photo', model
+				else
+					res.render templateFolder + '/upload-photo', model
 		lastestAlbum = null
 		if images.length > 0
 			images.each ->
@@ -514,7 +579,7 @@ module.exports = (router) ->
 								warn err, req
 							else
 								data.src = photo.thumb200
-							done data
+							done data, photo
 					if album is "new"
 						if lastestAlbum
 							album = lastestAlbum
@@ -537,12 +602,14 @@ module.exports = (router) ->
 			res.render templateFolder + '/upload-photo', model
 
 	router.delete '/photo', (req, res) ->
+		photoId = req.user.photoId
 		userModifications =
 			photoId: null
 			thumb: null
 		for size in config.wornet.thumbSizes
 			userModifications['thumb' + size] = null
 		updateUser req, photoId: null, (err) ->
+			PhotoPackage.delete photoId, 'published'
 			res.json err: err
 
 	router.delete '/media', (req, res) ->
@@ -662,6 +729,7 @@ module.exports = (router) ->
 	searchesByIp = {}
 
 	router.get '/search/:query', (req, res) ->
+		res.setTimeLimit 0
 		ip = req.connection.remoteAddress
 		if searchesByIp[ip]
 			searchesByIp[ip][0].publicJson()

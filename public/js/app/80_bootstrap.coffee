@@ -75,18 +75,32 @@ Wornet = angular.module 'Wornet', [
 		love: ["*_*"]
 		cry: [":'("]
 		heart: ["<3", "&lt;3"]
-	filter: (text, safe = false) ->
-		unless safe
-			text = safeHtml text
-		for className, codes of smilies
-			pattern = codes.map(regExpEscape).join '|'
-			regExp = new RegExp pattern, 'g'
-			text = text.replace regExp, (code) ->
-				unless enableSmilies
-					enableSmilies = true
-					$rootScope.$broadcast 'enableSmilies', true
-				'<i class="' + className + '">' + code + '</i>'
-		text
+	window.smiliesService =
+		filter: (text, safe = false) ->
+			unless safe
+				text = safeHtml text
+			for className, codes of smilies
+				pattern = codes.map(regExpEscape).join '|'
+				regExp = new RegExp pattern, 'g'
+				text = text.replace regExp, (code) ->
+					unless enableSmilies
+						enableSmilies = true
+						$rootScope.$broadcast 'enableSmilies', true
+					'<span class="' + className + '">' + code + '</span>'
+			text
+		unfilter: (text, safe = false) ->
+			for className, codes of smilies
+				pattern = ''
+				for code in codes
+					pattern += '<span class="' + className + '">' + regExpEscape(code) + '</span>|'
+				pattern = pattern.substr 0, pattern.length - 1
+				regExp = new RegExp pattern, 'g'
+				text = text.replace regExp, (code) ->
+					unless enableSmilies
+						enableSmilies = true
+						$rootScope.$broadcast 'enableSmilies', true
+					codes[0]
+			text
 ]
 
 #Angular Wornet directives
@@ -146,6 +160,74 @@ Wornet = angular.module 'Wornet', [
 		return
 ]
 
+.directive 'scrollDetect', ->
+	link: ($scope, $element, $attributes) ->
+		getOffset = ->
+			$scope.$eval $attributes.offset
+		callback = $scope.$eval $attributes.callback
+		gap = $scope.$eval $attributes.gap
+		$scrollable = if $attributes.scrollable
+			$ $attributes.scrollable
+		else
+			$document
+		lock = false
+		$scrollable.scroll ->
+			scrollTopMax = $scrollable[0].scrollHeight
+			if !$attributes.scrollable
+				scrollTopMax = document.body.scrollHeight - document.body.offsetHeight
+			else
+				scrollTopMax -= $scrollable[0].offsetHeight
+
+			if $scrollable.scrollTop() > (scrollTopMax - gap) and offset = getOffset()
+				data = {}
+				if offset
+					data.offset = offset
+				if $attributes.additionnalData
+					$additionnalData = $scope.$eval $attributes.additionnalData
+					data = $.extend data, $additionnalData
+				if ! lock and $scope.$eval $attributes.verifyToLoad
+					lock = true
+					url = $scope.$eval $attributes.url
+					$element.addClass 'loading'
+					Ajax.post url,
+						data: data
+						success: (data) ->
+							$element.removeClass 'loading'
+							callback data
+							return
+					.always ->
+						lock = false
+		return
+
+.directive 'checkScreenWidth', ->
+	link: ($scope, $element, $attributes) ->
+		isLargeScreen = ->
+			if window.matchMedia
+				!! window.matchMedia("(min-width:1440px)").matches
+			else
+				window.innerWidth > 1440
+
+		buildClasses = (attr) ->
+			elementClasses = $element
+				.prop('class')
+				.split ' '
+				.filter (eltClass) ->
+					eltClass.replace(/[0-9]/, '') isnt attr.replace(/[0-9]/, '')
+			elementClasses.unshift attr
+			elementClasses.join ' '
+
+		if $attributes.largeSize and isLargeScreen()
+			$element.prop("class", buildClasses($attributes.largeSize))
+		else if $attributes.mediumSize and !isLargeScreen()
+			$element.prop("class", buildClasses($attributes.mediumSize))
+		return
+
+.directive 'resizeYoutubePlayer', ->
+	link: ($scope, $element, $attributes) ->
+		height = $element.innerWidth() * (270 / 480)
+		$element.css 'height', height + 'px'
+		return
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 
@@ -162,7 +244,7 @@ ControllersByService =
 	chatService: 'Profile'
 	smiliesService: 'Status'
 	statusService: 'Status'
-	$sce: 'Notifications'
+	$sce: 'Notifications NotificationList'
 	$http: 'Event'
 
 # Load controllers

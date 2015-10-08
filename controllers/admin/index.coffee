@@ -14,12 +14,16 @@ module.exports = (router) ->
 
 	godOnly = only [
 		'kylekatarnls@gmail.com'
+		'jeremy.bayle87@hotmail.fr'
+		'jeremy.bayle@wornet.fr'
 	]
 
 	adminOnly = only [
 		'manuel.costes@gmail.com'
 		'bastien.miclo@gmail.com'
 		'kylekatarnls@gmail.com'
+		'jeremy.bayle87@hotmail.fr'
+		'jeremy.bayle@wornet.fr'
 	]
 
 	if config.env.development
@@ -167,8 +171,11 @@ module.exports = (router) ->
 		Photo.find()
 		.limit 100
 
+	usersTreated = []
 	godOnly '/album/profile', (info) ->
-		User.find photoAlbumId: null
+		User.find
+			photoAlbumId: null
+			_id: $nin: usersTreated
 		.limit 100
 		.exec (err, users) ->
 			if err
@@ -176,16 +183,97 @@ module.exports = (router) ->
 			else if users.length
 				treatments = {}
 				each users, ->
+					usersTreated.push @id
 					treatments[@id] = (done) =>
 						Album.find
 							user: @_id
 							name: photoDefaultName()
-						, (err, album) =>
+						, (err, albumList) =>
 							if err
 								done err
 							else
-								@photoAlbumId = album.id
-								@save done
+								if albumList.length > 0
+									# In case of many "Photos de profil" albums
+									if albumList.length > 1
+										if @photoId
+											Photo.findOne
+												_id: @photoId
+											, (err, photo) =>
+												if err
+													done err
+												else
+													albumId = photo.album
+									else
+										albumId = albumList[0]._id
+										albumList[0].refreshPreview (err) ->
+											if err
+												warn err
+
+									@photoAlbumId = albumId
+									@save()
+
+									lastFour = []
+									limit = if albumId
+										lastFour.push albumId
+										3
+									else
+										4
+
+									Album.find
+										user: @_id
+										name: $ne: photoDefaultName()
+									.sort(lastAdd:'desc')
+									.exec (err, albums) =>
+										if err
+											warn err
+										else
+											albumIds = albums.map (obj) ->
+												obj._id
+											Photo.aggregate [
+												$match:
+													status: "published"
+													album: $in: albumIds
+											,
+												$group:
+													_id: "$album"
+													count: $sum: 1
+											], (err, allData) =>
+												if err
+													warn err
+												else
+													tabData = {}
+													for data in allData
+														tabData[data._id] = data.count
+													for album in albums
+														if tabData[album._id] > 0
+															lastFour.push album._id
+															album.refreshPreview (err) ->
+																if err
+																	warn err
+													lastFour = lastFour.slice 0, 4
+													UserAlbums.findOne
+														user: @_id
+													, (err, userAlbum) =>
+														if !userAlbum or err
+															UserAlbums.create
+																user: @_id
+																lastFour: lastFour
+															, (err, newUserAlbum) =>
+																if err
+																	warn err
+																else
+																	done()
+														else
+															userAlbum.update
+																lastFour: lastFour
+															, (err, newUserAlbum) =>
+																if err
+																	warn err
+																else
+																	done()
+
+								else
+									done()
 				parallel treatments, ->
 					info users.length + " utilisateurs mis à jour"
 				, info

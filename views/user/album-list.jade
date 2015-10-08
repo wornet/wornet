@@ -1,0 +1,33 @@
+extends ../layouts/user
+
+block body
+	.col-xs-12: .well.loading
+		+data('at', profile.hashedId)
+		- var init = "isMe = " + isMe + ";"
+		- init += "profileFirstName = " + JSON.stringify(profile.firstName) + ";"
+		- init += "profileHashedId = " + JSON.stringify(profile.hashedId) + ";"
+		- init += "profileFullName = " + JSON.stringify(profile.fullName) + ";"
+		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init).medias-block
+			h3(ng-class="{ myMedias: isMe }")
+				if isMe
+					=s("Mes medias").toUpperCase() + ' '
+					span.album-number(ng-bind-html="nbAlbum()")
+				else
+					a(href="/user/profile/{{ profileHashedId }}/{{ profileFullName }}")
+						=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
+					span.album-number(ng-bind-html="nbAlbum()")
+			hr
+			div(ng-if="nbNonEmptyAlbums === 0")
+				h6(ng-if="!isMe")
+					=s("Votre ami n'a pas encore partagé de photos.")
+				h6(ng-if="isMe")
+					=s("Aucun média publié.")
+			.album(ng-repeat="album in albums")
+				span.album-name
+					| > &nbsp;
+				span.album-name(ng-bind-html="album.name")
+				| &nbsp;
+				a.album-name(href="/user/album/{{ album._id }}" ng-bind-html="nbPhotos(album)")
+				.preview
+					img(ng-repeat="photo in album.preview" ng-src="/img/photo/90x{{ photo._id }}.jpg" data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', photo)")
+			.cb

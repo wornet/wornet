@@ -272,6 +272,7 @@ Controllers =
 				modified = true
 			if message
 				if currentChat.messages and currentChat.messages.length > 0
+					alreadyInChat = false
 					for chatMessage in currentChat.messages by -1
 						if chatMessage.from and (user = chatMessage.from).hashedId is message.from.hashedId and user.thumb50 isnt message.from.thumb50
 							$img = $('img[data-user-thumb="' + user.hashedId + '"]:first').thumbSrc(message.from.thumb50.replace('50x', ''))
@@ -290,14 +291,21 @@ Controllers =
 												for size in getCachedData 'thumbSizes'
 													aUser['thumb' + size] = src.replace '/photo/', '/photo/' + size + 'x'
 							break
+						if chatMessage.date and message.date and Math.floor(chatMessage.date.getTime() / 1000) is Math.floor(message.date.getTime() / 1000) and chatMessage.content is message.content
+							alreadyInChat = true
 				if message.from.hashedId is me
 					delete message.from
-				currentChat.messages.push message
-				modified = true
+				if !alreadyInChat
+					currentChat.messages.push message
+					modified = true
 			if modified
 				saveChatState currentChat
 				saveChats chats
 			refreshScope $scope
+			if !message
+				delay 1, ->
+					$('.chat[data-chat-id="' + id + '"] textarea:first').focus()
+
 			return
 
 		$scope.$on 'all', (e, messages = []) ->
@@ -384,12 +392,13 @@ Controllers =
 
 		$scope.send = (message, id) ->
 			if message.content and message.content.length
+				content = richText $scope, message.content, true
 				chatData =
 					date: new Date
-					content: message.content
+					content: content
 				postData =
 					action: 'message'
-					content: message.content
+					content: content
 				chats[id].messages.push chatData
 				notify id, postData, ->
 					chatData.ok = true
@@ -420,13 +429,14 @@ Controllers =
 
 	ChatList: ($scope) ->
 
-		$scope.chatWith = (user) ->
+		$scope.chatWith = (user, $event) ->
 			chatService.chatWith [objectResolve user]
+			$($event.target).parents('.modal-content').find('button[data-dismiss]:first').trigger 'click'
 			return
 
 		$scope.mask = (user) ->
 			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer l'intégralité de cette conversation ?"), (ok) ->
+			infoDialog s("Suppression de conversation"), s("Êtes-vous sûr de vouloir supprimer l'intégralité de cette conversation ?"), (ok) ->
 				if ok
 					Ajax.delete '/user/chat/',
 						data:
@@ -448,14 +458,33 @@ Controllers =
 
 		return
 
-	Event: ($scope, $http) ->
-		isMobile = ->
-			if window.matchMedia
-				!! window.matchMedia("(max-width:767px)").matches
+	Contact: ($scope) ->
+		$scope.contact = {}
+		s = textReplacements
+		$scope.send = ->
+			if $scope.contact.motif and $scope.contact.message
+				$('#contact-error').hide()
+				$('#contact-error').html ''
+				Ajax.put '/contact',
+					data:
+						motif: $scope.contact.motif
+						message: $scope.contact.message
+					success: ->
+						toastr.success s("Votre message a bien été envoyé. Merci !"), s "C'est fait"
+						$('#contact [data-dismiss="modal"]:first').click()
+						$scope.contact = {}
+
 			else
-				window.innerWidth < 768
+				$('#contact-error').html s('Le motif et le message sont obligatoires')
+				$('#contact-error').show()
+			return
+
+		return
+
+	Event: ($scope, $http) ->
+
 		loadTemplate = ->
-			$scope.template = template (if isMobile()
+			$scope.template = template (if window.isMobile()
 				'/mobile'
 			else
 				''
@@ -472,6 +501,35 @@ Controllers =
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
+
+	Invite: ($scope) ->
+		s = textReplacements
+		FACEBOOK_APP_ID = "400859870103849"
+		FACEBOOK_POST_LINK = "https://www.wornet.fr"
+		FACEBOOK_POST_LIST = [
+			message: s("Salut les amis, je viens de rejoindre le réseau social éthique Wornet ! Rejoignez-moi sur www.wornet.fr :)")
+		,
+			message: s("Hello les amis, je me suis inscrit sur le réseau social éthique Wornet ! C'est plutôt sympathique rejoignez-moi sur www.wornet.fr :)")
+		,
+			message: s("Je viens de rejoindre le réseau social éthique Wornet (www.wornet.fr). Rejoignez-moi dessus :)")
+		]
+
+		FB.init
+			appId: FACEBOOK_APP_ID
+			xfbml: true
+			version: 'v2.4'
+
+		$scope.inviteFacebook = ->
+			post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
+			infoDialog s("Inviter vos amis"), "<textarea id='facebookPostMessage'>" + post.message + "</textarea><br>" + s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
+				if ok
+					post.message = $('#facebookPostMessage').val()
+					FB.login ->
+						# Note: The call will only work if you accept the permission request
+						post.link = FACEBOOK_POST_LINK
+						FB.api '/me/feed', 'post', post
+					, scope: 'publish_actions'
+			return
 
 	LoginAndSignin: ($scope) ->
 		keepTipedModel $scope, '#login-signin', 'user'
@@ -524,21 +582,63 @@ Controllers =
 		window.setMediaAlbums = (albums) ->
 			$scope.albums = albums
 			refreshScope $scope
+			$('#add-profile-photo')[if checkProfileAlbum() then 'show' else 'hide']()
 			return
 
 		window.refreshMediaAlbums = ->
-			getAlbumsFromServer (err, albums) ->
+			getAlbumsFromServer (err, albums, nbAlbums, user) ->
+				$scope.nbNonEmptyAlbums = nbAlbums || 0
+				$scope.mediaUser = user
 				unless err
 					setMediaAlbums albums
 				return
 			return
 
-		getAlbums (err, albums) ->
-			unless err
-				setMediaAlbums albums
+		if $('#all-albums').length
+			at = getCachedData 'at'
+			if !at
+				at = getCachedData 'me'
+			Ajax.get '/user/albums/all/' + at, (data) ->
+				$scope.nbNonEmptyAlbums = data.nbAlbums || 0
+				albums = removeDeprecatedAlbums data.albums
+				unless data.err
+					setMediaAlbums albums
+				return
+		else
+			getAlbums (err, albums, nbAlbums, user) ->
+				$scope.nbNonEmptyAlbums = nbAlbums || 0
+				$scope.mediaUser = user
+				unless err
+					setMediaAlbums albums
+				return
+
+		$scope.nbAlbum = ->
+			if $scope.albums
+				s = textReplacements
+				s('({nbAlbum} album)|({nbAlbum} albums)', nbAlbum: $scope.nbNonEmptyAlbums, $scope.nbNonEmptyAlbums).toUpperCase()
+
+		$scope.nbPhotos = (album) ->
+			if album
+				s = textReplacements
+				s('({nbPhoto} photo)|({nbPhoto} photos)', {nbPhoto: album.nbPhotos}, album.nbPhotos)
+
+		$scope.loadMedia = (type, media) ->
+			loadMedia type, media
 			return
 
+		checkProfileAlbum = () ->
+			if $scope.mediaUser and $scope.mediaUser.photoAlbumId and $scope.albums
+				albumIds = $scope.albums.map (obj) ->
+					obj._id
+				if $scope.mediaUser.photoAlbumId in albumIds
+					false
+				else
+					true
+			else
+				true
+
 		return
+
 
 	MediaViewer: ($scope) ->
 
@@ -570,7 +670,7 @@ Controllers =
 			null
 
 		$scope.inFade = (action) ->
-			$children = $ '#media-viewer > * > *'
+			$children = $ '#media-viewer > * > * img.big'
 			$children.fadeOut 100, ->
 				action()
 				delay 20, ->
@@ -580,18 +680,40 @@ Controllers =
 			return
 
 		$scope.prev = ->
-			if prev = getPrev()
+			if $scope.mediaPrev and $scope.mediaPrev.src and $scope.mediaPrev.album
 				$scope.inFade ->
-					$scope.loadMedia 'image', prev
-				return
-			return
+					$('#media-viewer .img-buttons').hide()
+					$scope.mediaNext = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaPrev
+					refreshScope $scope
+					resizeViewer()
+					delay 200, ->
+						testSize()
+
+				delay 200, ->
+					if prev = getPrev()
+						$scope.loadMedia 'image', prev, "prev"
+					else
+						$scope.mediaPrev = null
+					return
 
 		$scope.next = ->
-			if next = getNext()
+			if $scope.mediaNext and $scope.mediaNext.src and $scope.mediaNext.album
 				$scope.inFade ->
-					$scope.loadMedia 'image', next
-				return
-			return
+					$('#media-viewer .img-buttons').hide()
+					$scope.mediaPrev = $scope.loadedMedia
+					$scope.loadedMedia = $scope.mediaNext
+					refreshScope $scope
+					resizeViewer()
+					delay 200, ->
+						testSize()
+
+				delay 200, ->
+					if next = getNext()
+						$scope.loadMedia 'image', next, "next"
+					else
+						$scope.mediaNext = null
+					return
 
 		deletableMedia = null
 		$scope.deleteMedia = ->
@@ -614,7 +736,7 @@ Controllers =
 							success: ->
 								deletableMedia = null
 								if media.mediaId
-									delay 600, refreshMediaAlbums
+									delay 600, window.refreshMediaAlbums
 								else
 									location.reload()
 								hideLoader()
@@ -624,10 +746,69 @@ Controllers =
 					return
 			return
 
+		resizeViewer = ->
+			$mediaViewer = $ '#media-viewer'
+			$img = $mediaViewer.find 'img.big'
+			gap = 20
+
+			if window.isMobile()
+				newHeight = window.innerHeight
+				newWidth = window.innerWidth
+			else
+				$rawImg = new Image
+				$rawImg.src = $img.attr 'src'
+
+				newHeight = Math.max(180, $rawImg.height + gap * 2)
+				newWidth = Math.max(180, $rawImg.width + gap * 2)
+
+			$mediaViewer.find('.modal-dialog')
+				.height newHeight
+				.width newWidth
+
+			if window.isMobile()
+				headerHeight = $mediaViewer.find('.modal-header').outerHeight()
+				footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
+				bodyHeight = newHeight - (footerHeight + headerHeight) - 2 # 2 * border 1px
+				$mediaViewer.find('.modal-body')
+					.height bodyHeight
+				imgMargin = (bodyHeight - $img.height()) / 2
+				$img.css 'margin-top', imgMargin
+
+		testSize = ->
+			$mediaViewer = $ '#media-viewer'
+			$img = $mediaViewer.find 'img.big'
+			if $img.length
+				$mediaViewer
+					.find 'img.big, a.next, a.prev'
+					.css 'max-height', Math.max(180, window.innerHeight - 180) + 'px'
+				w = $img.width()
+				h = $img.height()
+				if w * h
+					between = (min, max, number) ->
+						Math.max min, Math.min max, Math.round number
+					$mediaViewer.find('.img-buttons')
+						.css 'margin-top', -h
+						.width w
+					$mediaViewer.find('.img-buttons').show()
+					$mediaViewer.find('.img-buttons, .prev, .next').height h
+					$mediaViewer.find('.prev, .next')
+						.width Math.round w / 2
+						.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
+						.css 'font-size', between 16, 64, (Math.min w / 2, h / 2) - 10
+				else
+					delay 200, testSize
+			return
+
 		$scope.videoHref = ->
 			(($scope.loadedMedia || {}).href || '').replace '.youtube.com/', '.youtube-nocookie.com/'
 
-		$scope.loadMedia = (type, media, concernMe) ->
+		$scope.mediaNext = {}
+		$scope.mediaPrev = {}
+		# loadedAlbum = null
+		$scope.loadMedia = (type, media, concernMe, position = "middle") ->
+			if "string" is typeof concernMe
+				position = concernMe
+				concernMe = null
 			media = $.extend
 				concernMe: concernMe
 				first: true
@@ -642,34 +823,12 @@ Controllers =
 				type: type
 				statusId: media.statusId || null
 				mediaId: media._id || null
-			testSize = ->
-				$mediaViewer = $ '#media-viewer'
-				$img = $mediaViewer.find 'img.big'
-				if $img.length
-					$mediaViewer
-						.find 'img.big, a.next, a.prev'
-						.css 'max-height', Math.max(200, window.innerHeight - 200) + 'px'
-					w = $img.width()
-					h = $img.height()
-					if w * h
-						between = (min, max, number) ->
-							Math.max min, Math.min max, Math.round number
-						$mediaViewer.find('.img-buttons')
-							.css 'margin-top', -h
-							.width w
-						$mediaViewer.find('.img-buttons, .prev, .next').height h
-						$mediaViewer.find('.prev, .next')
-							.width Math.round w / 2
-							.css 'line-height', (h + between 0, 20, h / 2 - 48) + 'px'
-							.css 'font-size', between 16, 64, (Math.min w / 2, h / 2) - 10
-					else
-						delay 200, testSize
-				return
 			if id
 				$.extend media,
 					date: Date.fromId(id).toISOString()
 					id: id
-				Ajax.get '/user/photo/' + id, (data) ->
+
+				treatReturn = (media, data) ->
 					if data.user
 						if data.album and data.album.photos
 							photos = data.album.photos
@@ -685,21 +844,48 @@ Controllers =
 									media.first = false
 								if id isnt photos[photos.length - 1].id
 									media.last = false
-								delay 100, ->
-									if next = getNext()
-										img = new Image
-										img.onload = ->
-											if prev = getPrev()
-												(new Image).src = prev.src
-										img.src = next.src
+					$.extend media, data
 
-						$.extend media, data
+				Ajax.get '/user/photo/' + id, (data) ->
+					treatReturn media, data
+					if position is "middle"
+						delay 100, ->
+							if next = getNext()
+								Ajax.get '/user/photo/' + idFromUrl(next.src), (dataNext) ->
+									next.id = idFromUrl next.src
+									next.date = Date.fromId(next.id).toISOString()
+									next.type = "image"
+									treatReturn next, dataNext
+									$scope.mediaNext = next
+									refreshScope $scope
+									return
+							if prev = getPrev()
+								Ajax.get '/user/photo/' + idFromUrl(prev.src), (dataPrev) ->
+									prev.id = idFromUrl prev.src
+									prev.date = Date.fromId(prev.id).toISOString()
+									prev.type = "image"
+									treatReturn prev, dataPrev
+									$scope.mediaPrev = prev
+									refreshScope $scope
+									return
+
 						refreshScope $scope
-						delay 10, testSize
+						delay 10, ->
+							resizeViewer()
+							delay 200, ->
+								testSize()
 					return
 			else
-				delay 10, testSize
-			$scope.loadedMedia = media
+				delay 10, ->
+					resizeViewer()
+					delay 200, ->
+						testSize()
+			if position is "prev"
+				$scope.mediaPrev = media
+			else if position is "next"
+				$scope.mediaNext = media
+			else
+				$scope.loadedMedia = media
 			delay 1000, ->
 				$('#media-viewer iframe[data-ratio]').ratio()
 				return
@@ -711,7 +897,7 @@ Controllers =
 
 		$scope.setAsProfilePhoto = ->
 			s = textReplacements
-			infoDialog s("Changement de ta photo de profil"), s("Cette photo remplacera l'actuelle photo de profil !"), (ok) ->
+			infoDialog s("Changement de ta photo de profil"), s("Cette photo remplacera l'actuelle photo de profil !"), "Confirmer", "Annuler", (ok) ->
 				if ok
 					$('#media-viewer [data-dismiss]:first').click()
 					Ajax.post '/user/profile/photo',
@@ -719,9 +905,11 @@ Controllers =
 						success: (res) ->
 							if $('#profile-photo') and res and res.src
 								$('#profile-photo img').thumbSrc res.src
+							window.refreshMediaAlbums()
 							return
 			return
 
+		$scope.isMobile = window.isMobile()
 
 		window.loadMedia = (type, media, concernMe) ->
 			$scope.loadMedia type, media, concernMe
@@ -749,6 +937,7 @@ Controllers =
 
 		$scope.$on 'receiveNotification', (e, notification) ->
 			id = notification.id || notification[0]
+			$('.no-notice').parent().hide()
 			unless $scope.notifications[id] or id in ids
 				$scope.notifications[id] = notification
 				refreshScope $scope
@@ -762,6 +951,77 @@ Controllers =
 			delay 1, refreshPill
 			return
 
+		$scope.readAll = ->
+			liUnread = $('.notification-list, .notification-list-mobile').find('li').not('.read, .activities-list, .read-all, .divider')
+			if liUnread.length
+				Ajax.post '/user/notify/read/all',
+					data: {}
+					success: ->
+						return
+
+				liUnread.addClass('read')
+				refreshPill()
+
+			return
+		return
+
+	NotificationList: ($scope, $sce) ->
+		$scope.notificationList = []
+		lastNoticeLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/notify/list/' + $scope.getNoticeOffset()
+
+		$scope.noticeRemaining = ->
+			($scope.notificationList || []).length > 0 and lastNoticeLoadedCount > 0 and lastNoticeLoadedCount <= getCachedData 'noticePageCount'
+
+		$scope.getNoticeOffset = ->
+			notificationList = $scope.notificationList || []
+			if notificationList.length
+				notificationList[notificationList.length - 1]._id
+			else
+				0
+
+		$scope.setRecentNotice = (data) ->
+			lastNoticeLoadedCount = data.notices.length
+			for notice in data.notices
+				notice.content = $sce.trustAsHtml notice.content
+			$scope.notificationList = $scope.notificationList.concat data.notices
+			refreshScope $scope
+			return
+
+		Ajax.post '/user/notify/list/' + $scope.getNoticeOffset(),
+			data: {}
+			success: (data) ->
+				$scope.setRecentNotice data
+		return
+
+	PlusWList: ($scope) ->
+		$scope.likers = {}
+		window.plusWListScope = $scope
+		$scope.lastlikersLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/plusW/list'
+
+		$scope.likersRemaining = ->
+			($scope.likers || []).length > 0 and $scope.lastlikersLoadedCount > 0 and $scope.lastlikersLoadedCount <= getCachedData 'likersPageCount'
+
+		$scope.getlikersOffset = ->
+			likersList = $scope.likers || []
+			if likersList.length
+				likersList[likersList.length - 1].plusWId
+			else
+				null
+
+		$scope.loadlikersList = (chunk) ->
+			$scope.lastlikersLoadedCount = chunk.likers.length
+			for liker in chunk.likers
+				$scope.likers.push liker
+			refreshScope $scope
+
+		$scope.getAdditionnalData = ->
+			status: $scope.status
 		return
 
 	Profile: ($scope, chatService) ->
@@ -769,19 +1029,24 @@ Controllers =
 			chatService.chatWith [objectResolve user]
 			return
 
-		$scope.deleteFriend = (id) ->
-			Ajax.delete '/user/friend',
-				data: id: id
-				success: ->
-					location.reload()
+		$scope.deleteFriend = (id, fullName) ->
+			s = textReplacements
+			infoDialog s("Confirmation"), s("Êtes-vous sûr de vouloir supprimer {fullName} de votre liste d'amis ?", fullName: fullName), (ok) ->
+				if ok
+					Ajax.delete '/user/friend',
+						data: id: id
+						success: ->
+							location.reload()
 			return
 
 		$scope.deletePhoto = ($event) ->
-			Ajax.delete '/user/photo'
+			Ajax.delete '/user/photo', ->
+				window.refreshMediaAlbums()
 			$ $event.target
 				.parents '[ng-controller]:first'
 				.find '.upload-thumb'
 				.prop 'src', '/img/default-photo.jpg'
+			return
 
 		loadNewIFrames()
 		$scope.supportAudio = typeof Audio is "function" and (new Audio).canPlayType and (new Audio).canPlayType('audio/mp3').replace(/no/, '')
@@ -886,8 +1151,8 @@ Controllers =
 
 		return
 
-	Status: ($scope, smiliesService, statusService) ->
-
+	Status: ($scope, smiliesService, statusService, paginate) ->
+		s = textReplacements
 		initMedias = ->
 			$scope.medias =
 				links: []
@@ -922,62 +1187,18 @@ Controllers =
 					serverError()
 					hideLoader()
 
+		lastStatusLoadedCount = null
 
-		scanLink = (href, sendMedia = true) ->
-			https = href.substr(0, 5) is 'https'
-			href = href.replace /^(https?)?:?\/\//, ''
-			test = href.replace /^www\./, ''
-			video = do ->
-				for url, regexps of videoHosts
-					for regexp in regexps
-						match = test.match regexp
-						if match and match.length > 1
-							return url.replace '$1', match[1]
-				null
-			s = textReplacements
-			if video
-				if sendMedia
-					$scope.medias.videos.push
-						href: video
-					Ajax.put '/user/video/add', video: url: video
-					return
-				else
-					# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
-					''
-			else
-				if sendMedia
-					$scope.medias.links.push
-						href: href
-						https: https
-					Ajax.put '/user/link/add', link:
-						name: href
-						url: href
-						https: https
-					return
-				else
-					'<a href=' + JSON.stringify('http://' + href) + '>' + href + '</a>'
-
-		scanAllLinks = (text, transformToLinks = false) ->
-			((' ' + text)
-				.replace /(\s)www\./g, '$1http://www.'
-				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
-					if transformToLinks
-						space + scanLink link, false
-					else
-						scanLink link
-						all
-			).substr 1
-
-		richText = (text) ->
-			scanAllLinks smiliesService.filter(text), true
-
-		setRecentStatus = (data) ->
+		$scope.loadStatusList = setRecentStatus = (data, toPush = true) ->
 			has = (key) ->
 				data[key] and typeof data[key] is 'object' and data[key].length
 			if has 'chat'
 				chatService.all data.chat
 			if has 'recentStatus'
-				$scope.recentStatus = data.recentStatus.map (status) ->
+				$scope.recentStatus ||= []
+				recentStatusIds = $scope.recentStatus.map (status) ->
+					status._id
+				chunk = data.recentStatus.map (status) ->
 					status.images
 						.map (image) ->
 							if location.protocol is 'https:' and image.src.indexOf('http:') is 0
@@ -998,13 +1219,26 @@ Controllers =
 						$.each status[key], ->
 							@statusId = status._id
 							@concernMe = status.concernMe
-					status.content = richText status.content
+					status.content = richText $scope, status.content
+					status.isMine = isMe(status.author.hashedId)
+					status.nbComment = 0
 					status.nbLike ||= 0
 					status
+				for status in chunk
+					index = recentStatusIds.indexOf status._id
+					if ~index
+						if $scope.recentStatus[index].nbComment
+							status.nbComment = $scope.recentStatus[index].nbComment
+						$scope.recentStatus[index] = status
+					else
+						if toPush
+							$scope.recentStatus.push status
+						else
+							$scope.recentStatus.uniqueUnshift status
+				lastStatusLoadedCount = chunk.length
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
 					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
-
 					if statusIds.length
 						delay 1, ->
 							Ajax.bigGet 'user/comment',
@@ -1014,7 +1248,12 @@ Controllers =
 									if data.commentList
 										$scope.recentStatus.map (status) ->
 											if data.commentList[status._id]
+												for comment in data.commentList[status._id]
+													comment.content = richText $scope, comment.content, true, false
 												status.comments = data.commentList[status._id]
+												status.nbComment = data.commentList[status._id].length
+											else
+												status.nbComment = 0
 											status
 										refreshScope $scope
 									return
@@ -1027,44 +1266,39 @@ Controllers =
 						cursor[0].scrollIntoView()
 						cursor.remove()
 						return
+			else
+				lastStatusLoadedCount = 0
 			return
-
-		videoHosts =
-			'//www.dailymotion.com/embed/video/$1': [
-				/^dai\.ly\/([a-z0-9_-]+)/i
-				/^dailymotion\.com\/video\/([a-z0-9_-]+)/i
-			]
-			'//www.youtube.com/embed/$1': [
-				/^youtu\.be\/([a-z0-9_-]+)/i
-				/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i
-			]
 
 		###
 		@override window.refreshMediaAlbums
 		###
 		refreshMediaAlbums = ->
-			getAlbumsFromServer (err, albums) ->
-				unless err
+			Ajax.get 'user/albums', (data) ->
+				err = data.err || null
+				if data.albums
+					albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 					$scope.albums = albums
 					refreshScope $scope
-					if window.setMediaAlbums
-						setMediaAlbums albums
-				return
+					if window.refreshMediaAlbums
+						window.refreshMediaAlbums()
 			return
 
 		$scope.delete = (status, $event) ->
-			s = textReplacements
-			bootbox.confirm s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
+			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce statut et son contenu ?"), (ok) ->
 				if ok
-					$($event.target)
-						.parents('ul.dropdown-menu:first').trigger 'click'
-						.parents('.status-block:first').slideUp ->
-							$(@).remove()
-							return
+					if !$scope.monoStatut
+						$($event.target)
+							.parents('ul.dropdown-menu:first').trigger 'click'
+							.parents('.status-block:first').slideUp ->
+								$(@).remove()
+								return
 					$('.points').trigger 'updatePoints', [status, false]
 					Ajax.delete '/user/status/' + status._id, ->
 						if status.images and status.images.length
 							delay 600, refreshMediaAlbums
+						if $scope.monoStatut
+							locationHref '/'
 						return
 				return
 			return
@@ -1076,10 +1310,24 @@ Controllers =
 			Ajax.get '/report/' + status._id
 			return
 
+		$scope.sharedAlbumDefaultName = s("Publications d'amis")
+		temporarySharedAlbumId = null
+		at = getData 'at'
+		$scope.onMe = !at or at is getData 'me'
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
-			$scope.media.step = null
+			if $scope.onMe
+				$scope.media.step = null
+			else
+				sharedAlbumId = getData('sharedAlbumId') || temporarySharedAlbumId
+				if sharedAlbumId
+					Ajax.get 'user/album/one/' + sharedAlbumId, (data) ->
+						$scope.selectAlbum data.album
+						refreshScope $scope
+				else
+					$scope.createAlbum {name: $scope.sharedAlbumDefaultName, description: ''}, at
+				$scope.media.step = "add"
 			return
 
 		$scope.selectAlbum = (album) ->
@@ -1089,13 +1337,16 @@ Controllers =
 			loadNewIFrames()
 			return
 
-		$scope.createAlbum = (album) ->
+		$scope.createAlbum = (album, at) ->
 			removeSessionItem albumKey()
 			Ajax.put '/user/album/add',
 				data:
 					album: album
+					at: at
+				success: (data) ->
+					if at
+						temporarySharedAlbumId = data.album._id
 			$scope.selectAlbum album
-			$scope.albums.push $scope.currentAlbum
 			album =
 				name: ''
 				description: ''
@@ -1106,14 +1357,13 @@ Controllers =
 			match = href.match /src="([^"]+)"/g
 			if match and match.length > 1
 				href = match[1]
-			scanLink href
+			scanLink $scope, href
 			link.href = ''
 
 			return
 
 		$scope.send = (status) ->
-			scanAllLinks status.content || ''
-
+			scanAllLinks $scope, status.content || ''
 			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
 				data:
 					status: status
@@ -1121,8 +1371,9 @@ Controllers =
 					medias: $scope.medias || null
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
-					setRecentStatus data
-					refreshMediaAlbums()
+					setRecentStatus data, false
+					if window.refreshMediaAlbums
+						window.refreshMediaAlbums()
 			status.content = ""
 			initMedias()
 
@@ -1130,17 +1381,24 @@ Controllers =
 
 		updateCommentList = (data) ->
 			if data.commentList
-				for status in $scope.recentStatus
-					if data.commentList[status._id]
-						status.comments = data.commentList[status._id]
-						refreshScope $scope
-						break
+				if !$scope.monoStatut
+					for status in $scope.recentStatus
+						if data.commentList[status._id]
+							for comment in data.commentList[status._id]
+								comment.content = richText $scope, comment.content, true, false
+							status.comments = data.commentList[status._id]
+							status.nbComment = data.commentList[status._id].length
+							refreshScope $scope
+							break
+				else
+					$scope.statusToDisplay.comments = data.commentList[$scope.statusToDisplay._id]
+					$scope.statusToDisplay.nbComment = data.commentList[$scope.statusToDisplay._id].length
+					refreshScope $scope
 
 		$scope.sendComment = (status) ->
 			if status.newComment
 				comment = status.newComment
 				statusMedias = $.extend {}, $scope.medias
-				scanAllLinks comment.content || ''
 				commentMedias = $.extend {}, $scope.medias
 				$scope.medias = $.extend {}, statusMedias
 				Ajax.put '/user/comment/add',
@@ -1154,20 +1412,46 @@ Controllers =
 			return
 
 		$scope.deleteComment = (comment) ->
-			Ajax.delete '/user/comment',
-				data:
-					comment: comment
+			infoDialog s("Suppression"), s("Êtes-vous sûr de vouloir supprimer ce commentaire ?"), (ok) ->
+				if ok
+					Ajax.delete '/user/comment',
+						data:
+							comment: comment
 
-			$('.comment-block[data-data="' + comment._id + '"]').slideUp ->
-				$(@).remove()
+					$('.comment-block[data-data="' + comment._id + '"]').slideUp ->
+						$(@).remove()
+						return
 				return
 			return
 
 		$scope.updateComment = (comment) ->
+			contentToDisplay = richText $scope, comment.content, true, false
 			Ajax.post '/user/comment',
 				data:
 					comment: comment
 				success: updateCommentList
+			comment.content = contentToDisplay
+			comment.originalContent = comment.content
+			comment.edit = false
+			refreshScope $scope
+			return
+
+		$scope.toggleCommentState = (comment) ->
+			comment.edit = !comment.edit
+			comment.content = if comment.edit
+				unscanLink smiliesService.unfilter comment.content
+			else
+				comment.originalContent
+			refreshScope $scope
+
+		$scope.updateStatus = (status) ->
+			#We have to do this before post because it also put videos in status.videos
+			contentToDisplay = richText $scope, status.content, false, false, status
+			Ajax.post '/user/status',
+				data:
+					status: status
+			status.content = contentToDisplay
+			refreshScope $scope
 			return
 
 		$scope.loadMedia = (type, media) ->
@@ -1198,26 +1482,35 @@ Controllers =
 
 
 		$scope.nbLikeText = (status) ->
-			s = textReplacements
 			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
+
+		$scope.nbCommentText = (status) ->
+			s("{nbComm} commentaire|{nbComm} commentaires", { nbComm: status.nbComment }, status.nbComment)
 
 		at = getCachedData 'at'
 
 		$scope.$on 'receiveStatus', (e, status) ->
+			status.content = richText $scope, status.content
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
-				refreshMediaAlbums()
+				window.refreshMediaAlbums()
 			return
 
 		$scope.$on 'receiveComment', (e, comment) ->
-			for status in $scope.recentStatus
-				if comment.attachedStatus and status._id is comment.attachedStatus
-					comment.isMine = comment.author.hashedId is getData 'me'
-					statusAt = status.at || status.author
-					comment.onMyWall = statusAt.hashedId is getData 'me'
-					(status.comments ||= []).uniquePush '_id', comment
-					break
+			comment.isMine = comment.author.hashedId is getData 'me'
+			comment.content = richText $scope, comment.content, true, false
+			if !$scope.monoStatut
+				for status in $scope.recentStatus
+					if comment.attachedStatus and status._id is comment.attachedStatus
+						statusAt = status.at || status.author
+						comment.onMyWall = statusAt.hashedId is getData 'me'
+						(status.comments ||= []).uniquePush '_id', comment
+						break
+			else
+				statusAt = $scope.statusToDisplay.at || $scope.statusToDisplay.author
+				comment.onMyWall = statusAt.hashedId is getData 'me'
+				($scope.statusToDisplay.comments ||= []).uniquePush '_id', comment
 			refreshScope $scope
 			return
 
@@ -1231,16 +1524,82 @@ Controllers =
 		else
 			'and/chat' + getLastestUpdateChatId()
 
-		Ajax.get '/user/status/' + select + (if at then '/' + at else ''), setRecentStatus
+		$scope.getLoadUrl = ->
+			'/user/status/' + select + (if at then '/' + at else '')
 
-		getAlbums (err, albums) ->
-			unless err
-				$scope.albums = albums
-				refreshScope $scope
+		$scope.statusRemaining = ->
+			($scope.recentStatus || []).length > 0 and lastStatusLoadedCount > 0 and lastStatusLoadedCount <= getCachedData 'statusPageCount'
+
+		$scope.getStatusOffset = ->
+			statusList = $scope.recentStatus || []
+			if statusList.length
+				statusList[statusList.length - 1]._id
+			else
+				null
+
+		$scope.toggleCommentBlock = (status) ->
+			delay 1, ->
+				status.commentForm = !status.commentForm
+				status.commentList = !status.commentList
+				refreshScope statusScope
+				return
 			return
 
-		initMedias()
+		$scope.toggleStatusState = (status, edit) ->
+			status.edit = edit
+			status.content = if edit
+				unscanLink smiliesService.unfilter status.content
+			else
+				status.originalContent
+			refreshScope $scope
+			return
 
+		lock = false
+		$scope.displaylikerList = (status) ->
+			if !window.isMobile() and !lock and status.nbLike
+				lock = true
+				Ajax.post '/user/plusW/list',
+					data: status: status
+					success: (data) ->
+						window.plusWListScope.lastlikersLoadedCount = data.likers.length
+						window.plusWListScope.likers = data.likers
+						window.plusWListScope.status = status
+						refreshScope window.plusWListScope
+						$('#liker-list').modal 'show'
+						lock = false
+						return
+			return
+
+		Ajax.post $scope.getLoadUrl(),
+			data: {}
+			success: (data) ->
+				setRecentStatus data
+
+		refreshMediaAlbums()
+
+		initMedias()
+		$scope.monoStatut = false
+		$scope.setMonoStatut = (val, status) ->
+			$scope.monoStatut = val
+			status.content = richText $scope, status.content, false, false
+			$scope.statusToDisplay = status
+		delay 1, ->
+			if $scope.monoStatut
+				Ajax.get 'user/comment',
+					data:
+						statusIds: [$scope.statusToDisplay._id]
+					success: (data) ->
+						if data.commentList
+							[$scope.statusToDisplay].map (status) ->
+								if data.commentList[status._id]
+									status.comments = data.commentList[status._id]
+									status.nbComment = data.commentList[status._id].length
+								else
+									status.nbComment = 0
+								status
+							refreshScope $scope
+						return
+				return
 		return
 
 	Welcome: ($scope) ->

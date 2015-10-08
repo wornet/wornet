@@ -14,6 +14,10 @@ mixin notifications(classes, mobile)
 				span.pill
 					=notificationsCount
 		ul.dropdown-menu.notification-list.left(role='menu' ng-controller="NotificationsCtrl" class=(mobile?"notification-list-mobile":""))
+			li.read-all
+				a.read-all-notifs(ng-click="readAll()")
+					=s("Tout marquer comme lu")
+			li.divider.cb
 			li(ng-repeat="notification in notifications | lastest:" + config.wornet.limits.notifications ng-switch="notification[3]" data-id="{{ notification[0] }}")
 				a(ng-switch-when="friendAccepted" href="{{ notification[2] }}" class="friend-accepted")
 					span(ng-bind-html="trust(notification[1])")
@@ -38,7 +42,7 @@ mixin notifications(classes, mobile)
 					| &nbsp; 
 					.btn.ignore-friend
 						=s("Ignorer")
-				a(ng-switch-default href="/notification/{{ $index }}")
+				a(ng-switch-default)
 					span(ng-bind-html="trust(notification[1])")
 					|&nbsp;
 					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
@@ -50,7 +54,7 @@ mixin notifications(classes, mobile)
 				each notification, id in notifications.lastest(config.wornet.limits.notifications)
 					- var askingFriend = objectToUser(notification[1])
 					li(class=(notification.read ? 'read' : null) data-id=trim(notification[0], '"'))
-						a(href="/notification/" + trim(notification[0], '"') class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
+						a(class=(askingFriend ? 'friend-ask' : null) data-id=(askingFriend ? notification[2] : null))
 							if askingFriend && askingFriend.hashedId
 								img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 								=" "
@@ -76,3 +80,10 @@ mixin notifications(classes, mobile)
 								.notification-date: i.date(data-date=trim(notification[0], '"'))
 									|&nbsp;
 								| &nbsp;
+				li.divider.cb
+				li.activities-list
+					a.activities(href="/user/notify/list/all")
+						=s("Mon journal d'activité")
+			else
+				li.read: a: span.no-notice
+					=s("Vous n'avez aucune notification pour le moment.")

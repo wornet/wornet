@@ -216,7 +216,7 @@ notificationPrint = (elt) ->
 
 refreshPillOfList = (elt) ->
 	$ul = $ elt
-	count = $ul.find('ul li').not('.read').length
+	count = $ul.find('ul li').not('.read, .activities-list, .read-all, .divider').length
 	$ul.find('.pill').css('visibility', 'visible').text count
 	return
 
@@ -259,7 +259,7 @@ keepScroll = (sel) ->
 	$(sel).each ->
 		$this = $ @
 		elt = $this[0]
-		unless typeof(elt.scrollHeight) isnt 'undefined' and ($this.scrollTop() is elt.scrollHeight - $this.height() or $this.is(':hidden'))
+		unless typeof(elt.scrollHeight) isnt 'undefined' and (($this.scrollTop() > elt.scrollHeight - $this.height() - 5) or $this.is(':hidden'))
 			excludeElements.push elt
 		return
 	delay 1, ->
@@ -303,7 +303,7 @@ saveChats = (chats) ->
 do =>
 
 	minimized = 1
-	close = 2
+	opened = 2
 
 	key = (chat) ->
 		k = ''
@@ -314,14 +314,30 @@ do =>
 		k
 
 	@saveChatState = (chat) ->
-		setLocalItem key(chat),
-			if chat.minimized then minimized else 0 |
-			if chat.open then 0 else close
+		state = 0
+		if chat.minimized
+			state += minimized
+		if chat.open
+			state += opened
+		setLocalItem key(chat), state
 
 	@loadChatState = (chat) ->
-		opts = getLocalItem(key chat) | 0
-		chat.minimized = !! (opts & minimized)
-		chat.open = ! (opts & close)
+		state = getLocalItem(key chat)
+		switch state
+			when "0"
+				chat.minimized = chat.open = false
+			when "1"
+				chat.minimized = true
+				chat.open = false
+			when "2"
+				chat.minimized = false
+				chat.open = true
+			when "3"
+				chat.minimized = true
+				chat.open = true
+		for message in chat.messages
+			if message.new
+				chat.open = true
 
 # Get chat messages and states from local session
 getChats = ->
@@ -367,15 +383,18 @@ getAlbumsFromServer = (done) ->
 		window.getAlbumsFromServer.waitingCallbacks = [done]
 		at = (getCachedData 'at') || ''
 		key = albumKey()
-		if at
-			at = '/with/' + at
-		Ajax.get '/user/albums' + at, (data) ->
+		if !at
+			at = (getCachedData 'me') || ''
+		Ajax.get 'user/albums/medias/' + at, (data) ->
 			err = data.err || null
 			if data.albums
 				albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
 				setSessionValue key, albums
 			for done in window.getAlbumsFromServer.waitingCallbacks
-				done err, albums
+				if data.nbAlbums and data.user
+					done err, albums, data.nbAlbums, data.user
+				else
+					done err, albums
 			window.getAlbumsFromServer.waitingCallbacks = false
 			return
 		.error ->
@@ -406,12 +425,11 @@ removeDeprecatedAlbums = (albums) ->
 	sixDaysEarlier = today.subDays 6
 	results = []
 	if albums
-		for album in albums
+		for id, album of albums
 			if !album.lastEmpty or (album.lastEmpty and (new Date(album.lastEmpty) > sixDaysEarlier or album.preview.length isnt 0))
-				results.push album
+				if typeof(album) isnt "function"
+					results.push album
 	results
-
-refreshMediaAlbums = getAlbumsFromServer
 
 # Refresh logged friends menu
 loggedFriends = (friends) ->
@@ -422,10 +440,15 @@ loggedFriends = (friends) ->
 		$.each friends, ->
 			if ids.indexOf(@hashedId) is -1
 				ids.push @hashedId
-				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; <span class="user-name">' + safeHtml(@name.full) + '&nbsp; </span><span class="glyphicon glyphicon-comment"></span></a></li>'
+				ul += '<li><a><img src="' + safeHtml(@thumb50) + '" alt="' + safeHtml(@name.full) + '" class="thumb">&nbsp; <span class="user-name">' + safeHtml(@name.full) + '&nbsp; </span><span class="halflings halflings-comments"></span></a></li>'
 			return
 
 		$ul.find('span.pill').text ids.length
+
+		if ul is ''
+			s = textReplacements
+			ul = '<li><a><span class="no-logged-friend">' + s('Aucun ami connecté pour le moment.') + '</span></a></li>'
+
 		$dropdown = $ul.find '.dropdown-menu'
 		if ! $ul.hasClass 'loggedFriends-mobile'
 			$dropdown.find('li:not(.select-chat-sound, .divider)').remove()
@@ -532,22 +555,33 @@ readNotification = (id) ->
 mp3 = (name) ->
 	"/resources/mp3/"+name+".mp3"
 
-infoDialog = (title, message, done) ->
+infoDialog = (title, message, labelOk, labelKo, done) ->
+	keepScrollOnCallingModal = ->
+		delay 300, ->
+			if $(".modal:visible").length
+				delay 1, ->
+					$("body").addClass("modal-open")
+	if 'function' is typeof labelOk
+		done = labelOk
+		labelOk = "Oui"
+		labelKo = "Non"
 	s = textReplacements
 	bootbox.dialog
-		message: '<i class="glyphicon glyphicon-info-sign" />&nbsp;' + message,
+		message: message,
 		title: title,
 		buttons:
-			main:
-				label: "Confirmer",
-				className: "btn-primary",
-				callback: ->
-					done true
 			cancel:
-				label: "Annuler",
+				label: labelKo,
 				className: "btn",
 				callback: ->
+					keepScrollOnCallingModal()
 					done false
+			main:
+				label: labelOk,
+				className: "btn-primary",
+				callback: ->
+					keepScrollOnCallingModal()
+					done true
 
 template = do ->
 	version = $('link[href*="/app.css?"], link[href*="/all.css?"]').prop('href').split('?')[1]
@@ -615,3 +649,114 @@ getLastestUpdateChatId = ->
 		'/' + lastestDate.getTime()
 	else
 		'/0'
+
+window.isMe = (hashedId) ->
+	hashedId is getCachedData('me')
+
+window.isMobile = ->
+	if window.matchMedia
+		!! window.matchMedia("(max-width:767px)").matches
+	else
+		window.innerWidth < 768
+
+videoHosts =
+	'//www.dailymotion.com/embed/video/$1': [
+		[/^dai\.ly\/([a-z0-9_-]+)/i, 1]
+		[/^dailymotion\.com\/video\/([a-z0-9_-]+)/i, 1]
+	]
+	'//www.youtube.com/embed/$1': [
+		[/^youtu\.be\/([a-z0-9_-]+)/i, 1]
+		[/^youtu\.be\/([a-z0-9_-]+)\?t=([0-9]+)/i, 2]
+		[/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i, 1]
+		[/^youtube\.com\/watch\?t=([0-9]+)(\&|\&amp;)v=([a-z0-9_-]+)/i, 3]
+	]
+
+richText = ($scope, text, transformToLinks = true, displayVideoLink, status = null) ->
+	scanAllLinks $scope, smiliesService.filter(text), transformToLinks, displayVideoLink, status
+
+scanAllLinks = ($scope, text, transformToLinks = false, displayVideoLink, status) ->
+	((' ' + text)
+		.replace /(\s)www\./g, '$1http://www.'
+		.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+			if transformToLinks
+				space + scanLink $scope, link, false, displayVideoLink
+			else
+				ret = scanLink $scope, link, true, false, status
+				if status
+					space + ret
+				else
+					all
+	).substr 1
+
+scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = null) ->
+	https = href.substr(0, 5) is 'https'
+	href = href.replace /^(https?)?:?\/\//, ''
+	test = href.replace /^www\./, ''
+	video = do ->
+		for url, regexps of videoHosts
+			for regexp in regexps
+				fieldToKeep = regexp[1]
+				match = test.match regexp[0]
+				if match and match.length > 1
+					return url.replace '$1', match[fieldToKeep]
+		null
+	s = textReplacements
+	if video
+		if sendMedia
+			if status
+				status.videos.push
+					href: video
+					concernMe: true
+					statusId: status._id
+				refreshScope $scope
+				return ''
+			else
+				$scope.medias.videos.push
+					href: video
+			Ajax.put '/user/video/add', video: url: video
+			return
+		else
+			# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
+			if displayVideoLink
+				hrefToDisplay = if href.length > 34
+					href.substr(0, 34) + '...'
+				else
+					href
+				'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+			else
+				''
+	else
+		if sendMedia
+			if status
+				status.links = status.links.filter (link) ->
+					link.href isnt href
+				status.links.push
+					href: href
+					https: https
+				refreshScope $scope
+				hrefToDisplay = if href.length > 34
+					href.substr(0, 34) + '...'
+				else
+					href
+				return '<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+			else
+				$scope.medias.links.push
+					href: href
+					https: https
+			Ajax.put '/user/link/add', link:
+				name: href
+				url: href
+				https: https
+			return
+		else
+			hrefToDisplay = if href.length > 34
+				href.substr(0, 34) + '...'
+			else
+				href
+			'<a target="_blank" href=' + JSON.stringify('http://' + href) + '>' + hrefToDisplay + '</a>'
+
+unscanLink = (text) ->
+	(((' ' + text)
+		.replace /<a\s.*?href=\"(.*?)\">.*?<\/a>/gi, (all, href) ->
+			href + ' '
+	).substr 1)

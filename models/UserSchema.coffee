@@ -32,6 +32,10 @@ userSchema = BaseSchema.extend
 		required: true
 	photoId:
 		type: ObjectId
+		ref: 'PhotoSchema'
+	photoAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
 	token:
 		type: String
 		default: ->
@@ -65,6 +69,9 @@ userSchema = BaseSchema.extend
 		]
 		required: true
 	maskBirthDate:
+		type: Boolean
+		default: false
+	maskFriendList:
 		type: Boolean
 		default: false
 	phone:
@@ -145,6 +152,11 @@ userSchema = BaseSchema.extend
 	chatSound:
 		type: Number
 		default: 1
+	sharedAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
+	lastLeave:
+		type: Date
 ,
 	toObject:
 		virtuals: false
@@ -186,15 +198,15 @@ getFullName = ->
 for key in ['name.full', 'fullName']
 	userSchema.virtual(key)
 		.get getFullName
-		.set (name) ->
-			unless name is 'Anonyme'
-				if name?
-					split = name.split ' '
-				else
-					split = [null, null]
-				@name.first = split[0]
-				@name.last = split[1]
-			return
+		# .set (name) ->
+		# 	unless name is 'Anonyme'
+		# 		if name?
+		# 			split = name.split ' '
+		# 		else
+		# 			split = [null, null]
+		# 		@name.first = split[0]
+		# 		@name.last = split[1]
+		# 	return
 
 userSchema.virtual('firstName').get ->
 	@name.first
@@ -246,7 +258,14 @@ extend userSchema.methods,
 		preRegistration.contains @email
 
 	publicInformations: (thumbSizes = null) ->
-		values = ['hashedId', 'present']
+		values = [
+			'hashedId'
+			'present'
+			'chatSound'
+			'sex'
+			'photoAlbumId'
+			'sharedAlbumId'
+		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]
 		else unless thumbSizes instanceof Array
@@ -257,8 +276,6 @@ extend userSchema.methods,
 		informations.name = @name.toObject()
 		informations.name.full = @name.full
 		informations.points = @points || 0
-		informations.chatSound = @chatSound
-		informations.sex = @sex
 		informations
 
 	sha1Fallback: (plainText) ->
@@ -358,9 +375,13 @@ extend userSchema.methods,
 								exists: exists
 					if friend
 						exists = equals askedTo, friend.askedFrom
-						unless exists
+						if !exists and friend.status isnt "refused"
 							err = new PublicError s("Une demande est déjà en attente.")
-						next()
+							next()
+						else
+							friend.status = 'waiting'
+							friend.save next
+
 						# if config.wornet.lockFriendAsk.contains friend.status
 						# 	err = new PublicError s("Une demande est déjà en attente.")
 						# 	next()

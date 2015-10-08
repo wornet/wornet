@@ -1,12 +1,13 @@
 extends layouts/user
 
 block body
-	.col-sm-4.col-xs-12.pad-right
-		//- Invite
-		include includes/invite.jade
+	.col-sm-3.col-xs-12(check-screen-width large-size="col-sm-offset-1")
 		//- Users
 		include includes/users.jade
-	.col-sm-8.col-xs-12.pad-left
+	.col-md-6.col-sm-12.center-bloc(check-screen-width medium-size="col-md-6" large-size="col-md-4")
 		+alert(profileAlerts)
 		//- Publications
 		include includes/status.jade
+	.col-sm-3.col-xs-12
+		//- Invite
+		include includes/invite.jade

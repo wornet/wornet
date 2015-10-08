@@ -12,15 +12,15 @@
 				ng-bind-html="emptyChatListMessage | smilies"
 			)
 			.user-chat(ng-repeat='userchat in chatList' data-id='{{ userchat.otherUser.hashedId }}')
-				a.col-sm-11.col-xs-10.chat-with(ng-click="chatWith(userchat.otherUser)")
+				a.col-sm-11.col-xs-10(ng-click="chatWith(userchat.otherUser, $event)")
 					img(ng-src="{{ userchat.otherUser.thumb50 }}" alt="{{ userchat.otherUser.name.full }}" data-id="{{ userchat.otherUser.hashedId }}" title="{{ user.name.full }}").thumb
 					b.user-name
 						| {{ userchat.otherUser.name.full }}
 					.last-message
-						.content(ng-bind-html="userchat.lastMessage.content | smilies")
+						.content(ng-bind-html="userchat.lastMessage.content")
 						.date(data-date="{{ userchat.lastMessage.date }}")
 							|&nbsp;
 				a.col-sm-1.col-xs-2.delete-chat(ng-click="mask(userchat.otherUser)")
-					+glyph('trash')
+					+half('trash')
 				.cb
 				hr

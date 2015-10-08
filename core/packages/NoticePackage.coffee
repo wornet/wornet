@@ -13,6 +13,8 @@ NoticePackage =
 	notificationsToSend: {}
 	# Notifications disapear after some time if they are not received
 	timeouts: {}
+	# User who have leave the application
+	userWhoHasLeft: []
 
 	# Is a user (identified by id) waiting for notifications (and so present)
 	isPresent: (userId) ->
@@ -21,7 +23,7 @@ NoticePackage =
 	# Are users (identifed by ids array) present
 	arePresents: (userIds) ->
 		userIds.filter (id) ->
-			@isPrsent id
+			@isPresent id
 
 	# Execute the callback only if the data is for everyone
 	# or if sender is a best friend of the receiver
@@ -76,7 +78,12 @@ NoticePackage =
 	notify: (userIds, err, groupData, appendOtherUsers = false, tabToIgnore) ->
 		self = @
 		# stack = (new Error()).stack
-		Notice.remove createdAt: $lt: (new Date).subMonths 6
+		aMonthAgo = (new Date).subMonths config.wornet.limits.monthsBeforeRemoveNotice
+		id = Math.floor(aMonthAgo.getTime() / 1000).toString(16) + "0000000000000000"
+		Notice.remove
+			_id: $lt: id
+		, (err, count) ->
+			warn err if err
 		userIds.each ->
 			userId = strval @
 			if /^[0-9a-f]+$/ig.test userId
@@ -149,6 +156,17 @@ NoticePackage =
 						@unwatch()
 				delete @responsesToNotify[userId]
 
+			# is this remove is a real leave of a user?
+			delay (config.wornet.timeout / 2).seconds, =>
+				if !@isPresent userId
+					@userWhoHasLeft.push userId
+					User.update
+						_id: userId
+					,
+						lastLeave: new Date()
+					, (err, res) ->
+						warn err if err
+
 	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
 		if @notificationsToSend[userId]
@@ -159,6 +177,15 @@ NoticePackage =
 			responsesToNotify = @responsesToNotify
 			unless responsesToNotify[userId]?
 				responsesToNotify[userId] = {}
+				if @userWhoHasLeft.contains userId
+					delay (config.wornet.timeout / 2).seconds, =>
+						delete @userWhoHasLeft[userId]
+						User.update
+							_id: userId
+						,
+							lastLeave: null
+						, (err, res) ->
+							warn err if err
 			length = responsesToNotify[userId].getLength()
 			for id, val of responsesToNotify[userId]
 				if length-- <= config.wornet.limits.maxTabs
@@ -190,6 +217,31 @@ NoticePackage =
 							loggedFriends: req.getLoggedFriends()
 						self.remove userId, id
 						delete self.timeouts[waiter.timeoutKey]
+
+	readNotice: (req, id, all, done) ->
+		if !all and !id
+			done new PublicError s("L'id ne peut être vide si on ne traite pas toutes les notifications")
+		where = user: req.user.id
+		.with if !all
+		    _id: id
+
+		Notice.update where,
+			status: readOrUnread.read
+		,
+			multi: true
+		, (err, notice) ->
+			if err
+				done err
+			else if notice
+				req.session.notifications = req.session.notifications
+					.filter (notification) ->
+						notification and notification.length
+					.map (notification) ->
+						if all or notification[0] is id
+							notification.read = true
+				done()
+			else
+				done new PublicError s("Notification non trouvée.")
 
 
 module.exports = NoticePackage
