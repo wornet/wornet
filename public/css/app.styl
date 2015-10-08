@@ -57,6 +57,15 @@ body
 		&.bg3
 			cover('background-image/big/3')
 
+		&.bg4
+			cover('background-image/big/4')
+
+		&.bg5
+			cover('background-image/big/5')
+
+		&.bg6
+			cover('background-image/big/6')
+
 
 .well
 	padding $mainPadding
@@ -103,7 +112,7 @@ hr
 
 .block
 	display block
-	.glyphicon
+	.halflings
 		top 3px
 
 iframe
@@ -128,12 +137,17 @@ iframe
 		opacity(0)
 		height 0
 
+.loading
+	min-height 36px
+
 .loading *
 	visibility hidden
 
 .loading.loading-big-height
 	max-height 300px
 
+.status-loading
+	rel(-$smallPadding)
 
 #wrap
 	min-height 100%
@@ -247,7 +261,7 @@ select.form-control
 	height $fieldLineHeight + 2 * $fieldVPadding + 2
 
 .btn
-	.glyphicon
+	.halflings
 		margin 1px 7px -1px 0
 		&:last-child
 			margin-right 0
@@ -384,8 +398,8 @@ label
 			text-align right
 			font-size 18px
 			// border-left $shutterBorderWidth solid $darkOrange
-			.glyphicon
-				top 2px
+			.halflings
+				line-height 30px
 
 	.inner-shutter
 		height 100%
@@ -437,35 +451,6 @@ h2
 	line-height 28px
 
 
-.album
-	background $ultraLightOrange
-	// border-radius(4px)
-	padding 0 $smallPadding $smallPadding 0
-	transition(.2s all)
-	margin 0 $mainPadding $mainPadding 0
-	cursor pointer
-	float left
-
-	&:hover
-		background $lightOrange
-
-	h4
-		font-weight bold
-		font-size 15px
-		margin 0 0 $smallPadding
-
-	.description
-		margin 2px 0 0
-
-	.preview
-		size(2 * (50 + $smallPadding), 2 * (50 + $smallPadding))
-		padding 0
-		img
-			display block
-			float left
-			margin $smallPadding 0 0 $smallPadding
-			size($thumbWidth, $thumbHeight)
-
 .description
 	font-size 11px
 
@@ -477,7 +462,7 @@ h2
 	textarea
 		margin 0
 
-.settings .glyphicon-cog
+.settings .halflings-cog
 	color $mediumGray
 
 	&:hover
@@ -551,31 +536,8 @@ input.glued
 fieldset.tab .btn
 	margin-bottom 0
 
-.medias
-	h3
-		clear left
-		margin 0
-		padding-top $mainPadding
 
-	iframe
-	img
-		size(90px)
-		float left
-		margin 0 $smallPadding $smallPadding 0
-
-	iframe.preview
-		float none
-		size(480px, 270px)
-		@media (max-width: 564px)
-			size($mobilePlayerWidth, $mobilePlayerHeight)
-
-	img.video-preview
-		size($mobilePlayerWidth, $mobilePosterHeight)
-
-	a:not(.album-name)
-		display block
-
-span.image-box i.glyphicon
+span.image-box span.halflings
 	float left
 	margin 2px 2px 0 -26px
 	color rgba(255,255,255,.6)
@@ -611,7 +573,7 @@ span.image-box i.glyphicon
 		&:hover
 			background lighten($orange, 20%)
 
-		.glyphicon
+		.halflings
 			margin-top 23px
 			margin-left 0
 			color $nearlyWhite
@@ -669,6 +631,13 @@ span.image-box i.glyphicon
 	padding-top 15px
 
 #media-viewer
+	.modal-dialog
+		width 300px
+		height auto
+		max-width 70%
+		max-height 90%
+		transition(all, .1s)
+
 	.modal-body
 		text-align center
 	.modal-footer .info
@@ -686,8 +655,12 @@ span.image-box i.glyphicon
 			margin 0
 		.settings ul a
 			color $nearlyBlack
-	img.big
-		max-width 100%
+	img
+		&.big
+			max-width 100%
+		&.prev
+		&.next
+			display none
 	.img-buttons
 		display block
 		margin auto
@@ -759,11 +732,67 @@ a.mobile-video
 	rel()
 	img.video-preview
 		rel(($mobilePlayerHeight - $mobilePosterHeight) / 2)
-	.glyphicon
+	.halflings
 		opacity(.7)
 		abs(($mobilePlayerHeight - $playConfigSize) / 2, ($mobilePlayerWidth - $playConfigSize) / 2)
 		color white
 		font-size $playConfigSize
+
+#notification-list
+	a
+		color $linkColor
+	.notice
+		margin $mainPadding
+
+#contact-error
+	display none
+
+#liker-list
+	.liker
+		.user-points
+			font-size 10px
+		a
+			color $linkColor
+		.user-name
+			display inline
+	.modal-body
+		max-height (($thumbHeight + ($smallPadding * 2)) * $numberOfLikerDisplayed) + $bigPadding
+		overflow auto
+
+.center-bloc
+	padding 0
+
+.invite-block
+	.invite-facebook
+	.invite-yahoo
+	.invite-gmail
+	.invite-microsoft
+		background-size 30px
+		size(30px, 30px)
+		padding 0
+		margin 0
+		cursor pointer
+		margin 0 $smallPadding
+		&:hover
+			box-shadow none
+
+	.invite-facebook
+		background url(png("fb"))
+
+	.invite-gmail
+		background url(png("gmail"))
+
+	.invite-yahoo
+		background url(png("yahoo"))
+
+	.invite-microsoft
+		background url(png("microsoft"))
+
+#facebookPostMessage
+	width 100%
+
+.modal .modal-header h4
+	color $orange
 
 // Imports.
 @import "includes/tooltip"
@@ -773,6 +802,8 @@ a.mobile-video
 @import "user/status"
 @import "user/comment"
 @import "user/chat"
+@import "user/medias"
+@import "user/settings"
 @import "agenda"
 
 @media (max-width: 414px)
@@ -803,6 +834,14 @@ a.mobile-video
 	footer
 		margin-top 90px
 
+// tablets in portrait
+@media (max-width: 991px) and (orientation: portrait)
+	.medias-block
+	.friends-block
+	.invite-block
+	#they-use-wornet
+		display none
+
 // Media Queries.
 @media (max-width: 767px)
 	.xs-margin-up
@@ -818,9 +857,21 @@ a.mobile-video
 		&.bg3
 			cover('background-image/small/3')
 
+		&.bg4
+			cover('background-image/small/4')
+
+		&.bg5
+			cover('background-image/small/5')
+
+		&.bg6
+			cover('background-image/small/6')
+
 	// #shutter
 	// li.open-shutter
 	#they-use-wornet
+	.invite-block
+	.friends-block
+	.medias-block
 		display none
 
 	// #wrap
@@ -877,6 +928,25 @@ a.mobile-video
 	.lastName
 		padding-left 0
 
+	#media-viewer
+		.modal-dialog
+			height 100%
+			width calc(100% - 20px)
+			max-height 100%
+			max-width 100%
+			margin 0
+		.modal-header
+		.modal-footer
+			padding $smallPadding 15px
+		.modal-body
+			background-color $nearlyBlack
+			padding 0
+		.settings
+			width 20px
+			abs()
+			right $mainPadding
+			ul
+				margin-left -230px
 
 @media (min-width: 768px)
 	.pad-right
@@ -894,20 +964,9 @@ a.mobile-video
 
 
 @media (max-width: 991px)
-
 	footer
 		// Tailles du pied de page.
 		size(100%, $mobileFooterHeight)
-
-	.album
-		h4
-			font-size 13px
-
-		.preview
-			size(2 * (30 + $smallPadding))
-
-			img
-				size(30px)
 
 @media (max-width: 1024px)
 	.wornet-navbar .dropdown-menu>li>a

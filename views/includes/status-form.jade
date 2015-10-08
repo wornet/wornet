@@ -32,10 +32,10 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 				.col-xs-12.col-sm-6.col-sm-offset-3
 					input(type="submit" tabindex="103" value=s("Créer")).btn.btn-primary.col-xs-12
 		div(ng-switch-when="select-album")
-			.album(ng-repeat="album in albums" ng-click="selectAlbum(album)")
-				h4 {{ album.name }}
-				.preview
-					img(ng-repeat="id in album.preview" ng-src="/img/photo/50x{{ id }}.jpg")
+			.album-select.col-xs-12
+				label.col-xs-12.col-sm-4.col-sm-offset-1
+					=s('Selectionner un album : ')
+				select.col-xs-12.col-sm-6(ng-options="album as album.name for album in albums" ng-model="item" ng-change="selectAlbum(item)")
 			.cb.col-xs-12.col-sm-6.col-sm-offset-3
 				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
 					=s("Créer un album")
@@ -43,15 +43,15 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 			.col-sm-6.col-xs-12.fit
 				h4.glued.big-line
 					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
-						+glyph('folder-open')
+						+half('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
 					span(ng-if="! currentAlbum._id")
-						+glyph('folder-open')
+						+half('folder-open')
 						|&nbsp; {{ currentAlbum.name }}
 			.col-sm-6.col-xs-12.fit
-				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111")
+				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111" ng-if="onMe")
 					=s("Sélectionner un autre album")
-			.col-sm-6.col-xs-12.fit
+			.col-sm-6.col-xs-12.fit.cb
 				iframe(name="status-upload")
 				+form("/user/photo", "FILE").status-images(target="status-upload")
 					.upload-container
@@ -61,20 +61,20 @@ fieldset.tab.status-medias-form(ng-show="status.containsMedias")
 							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
 						input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
 						input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
-					.medias
+					.medias-uploaded
 						div(ng-if="medias.images.length > 0")
 							h3=s("Images")
 							//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
 							span.image-box(ng-repeat="image in medias.images")
 								img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-								+glyph('remove-sign')(ng-click="removeMedia(image)")
+								+half('remove-sign')(ng-click="removeMedia(image)")
 			.col-sm-6.col-xs-12.fit
 				+form()(ng-submit="addMedia(link)")
 					.input-group
 						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))
 						.input-group-btn
 							button(type="submit" tabindex="114").btn.btn-primary
-								+glyph('plus')
+								+half('plus')
 				.medias
 					div(ng-if="medias.videos.length > 0")
 						h3=s("Vidéos")

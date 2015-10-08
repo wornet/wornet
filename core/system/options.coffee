@@ -62,6 +62,7 @@ module.exports = (app, port) ->
 				"//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"
 				"//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"
 				"//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.0.2/fullcalendar.css"
+				"//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
 				style("app")
 				['ios-app', style('ios-app')]
 			]
@@ -70,8 +71,13 @@ module.exports = (app, port) ->
 			[
 				"/components/bootstrap/css/bootstrap.min.css"
 				"/components/bootstrap/css/bootstrap-theme.min.css"
+				"/components/bootstrap/css/glyphicons.css"
+				"/components/bootstrap/css/glyphicons-filetypes.css"
+				"/components/bootstrap/css/glyphicons-halflings.css"
+				"/components/bootstrap/css/glyphicons-social.css"
 				"/components/jquery/css/jquery-ui.css"
 				"/components/jquery/css/fullcalendar.css"
+				"/components/toastr/css/toastr.min.css"
 				style("app")
 				['ios-app', style('ios-app')]
 			]
@@ -110,6 +116,8 @@ module.exports = (app, port) ->
 				#"//arshaw.com/js/fullcalendar-1.5.3/fullcalendar/gcal.js"
 				"/components/angular/js/calendar-fr.js"
 				"//rawgit.com/angular-ui/ui-calendar/master/src/calendar.js"
+				"//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"
+				"//connect.facebook.net/fr_FR/sdk.js"
 				script("app")
 			]
 		else
@@ -135,6 +143,8 @@ module.exports = (app, port) ->
 				#"/components/jquery/js/fullcalendar-gcal.js"
 				"/components/angular/js/calendar-fr.min.js"
 				"/components/angular/js/calendar.min.js"
+				"/components/toastr/js/toastr.min.js"
+				"/components/facebook/js/sdk.js"
 			]
 		if options.trackers().piwik
 			js.push "/components/piwik/js/piwik.js"

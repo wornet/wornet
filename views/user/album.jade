@@ -1,7 +1,7 @@
 extends ../layouts/user
 
 block body
-	.col-xs-12: .well.loading(ng-controller="AlbumCtrl")
+	.col-xs-12: .well.loading.album-block(ng-controller="AlbumCtrl")
 		+data('at', cesarLeft(strval(album.user)))
 		if album.isMine
 			.aside
@@ -15,28 +15,28 @@ block body
 					=s("Supprimer cet album")
 				.large-dropdown.settings
 					a.dropdown-toggle(data-toggle="dropdown")
-						+glyph('cog')
+						+half('cog')
 					ul.dropdown-menu(role="menu")
-						if !isPhotoDefaultName(album.name)
+						if user.photoAlbumId ? album.id !== user.photoAlbumId : ! isPhotoDefaultName(album.name)
 							li
 								a.ajax(non-block-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
-									+glyph('pencil')
+									+half('pencil')
 									| &nbsp; 
 									=s("Modifier le titre de l'album")
 							li
 								if album.description
 									a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
-										+glyph('pencil')
+										+half('pencil')
 										| &nbsp; 
 										=s("Modifier la description")
 								else
 									a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
-										+glyph('plus')
+										+half('plus')
 										| &nbsp; 
 										=s("Ajouter une description")
 						li
 							a(data-delete data-clear-storage="albums" data-message=message data-toggle="tooltip" data-placement="top" title=s("Supprimer cet album"))
-								+glyph('trash')
+								+half('trash')
 								| &nbsp; 
 								=s("Supprimer cet album")
 		- var init = "album.id=" + JSON.stringify(album.id) + "; "

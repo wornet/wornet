@@ -11,21 +11,21 @@ block body
 				.app
 					.aside.settings.continue
 						a.dropdown-toggle(data-toggle="dropdown")
-							+glyph('cog')
+							+half('cog')
 						ul.dropdown-menu(role="menu")
 							li: a.ajax(ng-click="delete('" + app.publicKey + "', $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer cette application"))
-								+glyph('trash')
+								+half('trash')
 								| &nbsp; 
 								=s("Supprimer")
 							li: a.ajax(ng-click='edit(' + JSON.stringify(app.publicInformations()) + ')' data-toggle="tooltip" data-placement="top" title=s("Modifier cette application"))
-								+glyph('edit')
+								+half('edit')
 								| &nbsp; 
 								=s("Modifier")
 					h4
 						a.ajax(ng-click="open('" + app.publicKey + "')" ng-if="! opened('" + app.publicKey + "')")
-							+glyph('plus')
+							+half('plus')
 						a.ajax(ng-click="close('" + app.publicKey + "')" ng-if="opened('" + app.publicKey + "')")
-							+glyph('minus')
+							+half('minus')
 						| &nbsp; 
 						+link(app.launchUrl, app.name)
 					div(ng-if="opened('" + app.publicKey + "')")

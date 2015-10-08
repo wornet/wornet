@@ -49,21 +49,62 @@ module.exports = (router) ->
 
 	router.get '/read/:notification', (req, res) ->
 		id = req.params.notification
-		Notice.update
-			_id: id
-			user: req.user.id
-		,
-			status: readOrUnread.read
-		, (err, notice) ->
+		NoticePackage.readNotice req, id, false, (err, result) ->
 			if err
 				res.serverError err
-			else if notice
-				req.session.notifications = req.session.notifications
-					.filter (notification) ->
-						notification and notification.length
-					.map (notification) ->
-						if notification[0] is id
-							notification.read = true
-				res.json()
 			else
-				res.notFound()
+				res.json()
+
+	router.post '/read/all', (req, res) ->
+		NoticePackage.readNotice req, null, true, (err, result) ->
+			if err
+				res.serverError err
+			else
+				res.json()
+
+	router.get '/list/all', (req, res) ->
+		req.user.getFriends (err, friends, friendAsks) ->
+			if err
+				res.serverError err
+			else
+				friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
+				isMe = true
+				res.render 'user/notification-list',
+					isMe: isMe
+					numberOfFriends: friends.length
+					friends: if isMe then friendsThumb else []
+					friendAsks: if isMe then friendAsks else {}
+
+	router.post '/list/:id', (req, res) ->
+		where = user: req.user._id
+		.with if req.params.id
+			_objectId = req.params.id
+			if /^[0-9a-fA-F]{24}$/.test _objectId
+				_id: $lt: new ObjectId(_objectId).path
+
+		limit = if req.param.id
+			config.wornet.limits.scrollNoticePageCount
+		else
+			config.wornet.limits.noticePageCount
+
+		Notice.find where
+		.sort _id: 'desc'
+		.limit limit
+		.exec (err, notices) ->
+			if err
+				res.serverError err
+			else
+				usersTofind = notices.column('launcher').unique()
+				userThumb = []
+				User.find
+					_id: $in: usersTofind
+				, (err, users) ->
+					warn err if err
+					for user in users
+						userThumb[user._id] = user.thumb50
+					notices = notices.map (notice) ->
+						notice = notice.toObject()
+						notice.content = notice.content.replace /\/img\/photo\/([0-9]+x)?([0-9a-z]+).*\.jpg/ig, userThumb[notice.launcher]
+						notice.date = Date.fromId notice._id
+						notice
+					res.json notices: notices

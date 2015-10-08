@@ -10,7 +10,7 @@ mixin friends(classes, mobile)
 			a.dropdown-toggle( data-toggle="dropdown")
 				span
 					if mobile
-						+glyph('user')
+						+glyph('group')
 						span.pill.mobile-pill
 							=loggedFriends.length
 					else
@@ -28,27 +28,30 @@ mixin friends(classes, mobile)
 							span.user-name
 								=friend.name.full
 							| &nbsp; 
-							+glyph('comment')
+							+half('comments')
+				else
+					li: a: span.no-logged-friend
+						=s("Aucun ami connecté pour le moment.")
 				if !mobile
 					li.divider(ng-if="supportAudio" role="separator")
 					li.select-chat-sound(ng-if="supportAudio")
 						a(ng-click="selectChatSound($event, 0)")
 							span(ng-if="selectedSound == 0")
-								+glyph('ok-circle')
+								+half('ok-circle')
 								| &nbsp;
-							+glyph('volume-off')
+							+half('volume-off')
 							| &nbsp;
 						a(ng-click="selectChatSound($event, 1)")
 							span(ng-if="selectedSound == 1")
-								+glyph('ok-circle')
+								+half('ok-circle')
 								| &nbsp;
-							+glyph('play')
+							+half('play')
 							=s("1")
 						a(ng-click="selectChatSound($event, 2)")
 							span(ng-if="selectedSound == 2")
-								+glyph('ok-circle')
+								+half('ok-circle')
 								| &nbsp;
-							+glyph('play')
+							+half('play')
 							=s("2")
 					
 					
@@ -71,12 +74,12 @@ block nav
 			.mainLinks.col-sm-6
 				ul
 					li.left: a(href="/")
-						+glyph("home")
+						+glyph("newspaper")
 						| &nbsp; 
 						=s("Accueil")
 						
 					li.left: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
-						+glyph("envelope")
+						+glyph("conversation")
 						| &nbsp; 
 						=s("Messagerie")
 			.mainLinks.col-sm-6
@@ -84,10 +87,10 @@ block nav
 					|&nbsp;
 				ul.col-sm-6
 					li.right.open-shutter: a
-						+glyph("list")
+						+half("list")
 					li.right.btn-group
 						a.dropdown-toggle( data-toggle="dropdown")
-							=user.fullName
+							=user.name.first
 							|&nbsp;
 							span.caret
 						ul.dropdown-menu.user.right(role='menu')
@@ -101,10 +104,10 @@ block nav
 	.wornet-navbar.wornet-navbar-fixed-top.mobile-device.loading(role='navigation' class=(user && user.openedShutter ? 'opened-shutter' : null)): .container-fluid
 		.nav-icon.col-xs-2.col-xs-offset-1
 			a(href="/")
-				+glyph("home")
+				+glyph("newspaper")
 		.nav-icon.col-xs-2
 			a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
-				+glyph("envelope")
+				+glyph("conversation")
 		.nav-icon.col-xs-2
 			+notifications('', true)
 		.nav-icon.col-xs-2
@@ -131,19 +134,19 @@ block nav
 						ng-change="change(query)"
 						placeholder=s("Recherchez vos amis")
 						)#search
-					+glyph('search')
+					+half('search')
 				.suggests
 					ul(dpr): li(ng-repeat="user in query.users")
-						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
+						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend, 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							.user-name
 								| {{ user.name.full }}
 							.user-points
 								| {{ user.points }}
 								=' '+s("points")
-						a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
-							+glyph('comment')
-						a.col-xs-3.chat-with(
+						a.col-xs-3.suggest-action(ng-click="chatWith(user)" ng-if="user.isAFriend")
+							+half('comment')
+						a.col-xs-3.suggest-action(
 							ng-if="canBeAddedAsAFriend(user)"
 							ng-click="askForFriend(user)"
 							href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
@@ -152,7 +155,15 @@ block nav
 							data-param0=s("Demande envoyée à {{ user.name.full }}")
 							data-ask-for-friend="{{ user.hashedId }}"
 						)
-							+glyph('plus')
+							+half('plus')
+						a.col-xs-3.suggest-action(
+							ng-if="user.askedForFriend"
+							data-target=".errors"
+							data-click="success"
+							data-param0=s("Demande annulée")
+							data-remove-friend-ask="{{ user.hashedId }}"
+						)
+							+half('remove')
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding
@@ -173,12 +184,12 @@ block nav
 	//- 		#mainLinks.collapse.navbar-collapse
 	//- 			ul.nav.navbar-nav.navbar-left.col-sm-6
 	//- 				li: a(href="/")
-	//- 					+glyph("home")
+	//- 					+half("home")
 	//- 					| &nbsp; 
 	//- 					=s("Accueil")
 	//- 				//- li: a(href="/" data-click-alert!=s("Le regroupement des fils de conversation arrivera dans les prochains mois. Vous pouvez néanmoins d'ores et déjà échanger avec vos amis en ouvrant un chat privé directement depuis la barre de recherche, la fonction &quot;amis connectés&quot; ou le profil de votre ami."))
 	//- 				li: a.open-chat-list(data-toggle="modal" data-target="#selector-chat-list") 
-	//- 					+glyph("envelope")
+	//- 					+half("envelope")
 	//- 					| &nbsp; 
 	//- 					=s("Messagerie")
 	//- 				li.mobile: +notifications()
@@ -187,7 +198,7 @@ block nav
 	//- 				li.btn-group
 	//- 					a.dropdown-toggle(data-toggle="dropdown")
 	//- 						span.mobile
-	//- 							+glyph('user')
+	//- 							+half('user')
 	//- 							| &nbsp; 
 	//- 						=user.fullName
 	//- 						|&nbsp;
@@ -201,7 +212,7 @@ block nav
 	//- 						li: a(href="/user/logout")
 	//- 								=s("Déconnexion")
 	//- 				li.open-shutter: a()
-	//- 					+glyph("list")
+	//- 					+half("list")
 	//- 					span.mobile
 	//- 						| &nbsp; 
 	//- 						=s("Options")
@@ -216,7 +227,7 @@ block nav
 	//- 					ng-change="change(query)"
 	//- 					placeholder=s("Recherchez vos amis")
 	//- 					)#search
-	//- 				+glyph('search')
+	//- 				+half('search')
 	//- 			.suggests
 	//- 				ul: li(ng-repeat="user in query.users")
 	//- 					a.col-xs-9(href="/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}")
@@ -227,7 +238,7 @@ block nav
 	//- 							| {{ user.points }}
 	//- 							=' '+s("points")
 	//- 					a.col-xs-3.chat-with(ng-click="chatWith(user)" ng-if="user.isAFriend")
-	//- 						+glyph('comment')
+	//- 						+half('comment')
 	//- 					a.col-xs-3.chat-with(
 	//- 						ng-if="! user.isAFriend && ! user.askedForFriend"
 	//- 						href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
@@ -236,7 +247,7 @@ block nav
 	//- 						data-param0=s("Demande envoyée à {{ user.name.full }}")
 	//- 						data-ask-for-friend="{{ user.hashedId }}"
 	//- 					)
-	//- 						+glyph('plus')
+	//- 						+half('plus')
 	//- 					span.col-xs-3.chat-with(ng-if="user.isAFriend && ! user.askedForFriend")
 	//- 		+friends('desktop navbar-nav navbar-right')
 	//- else
@@ -246,5 +257,6 @@ block footer
 	include ../includes/chat
 	include ../includes/media-viewer
 	include ../includes/chat-list
+	include ../includes/liker-list
 
 block cookie-banner-under

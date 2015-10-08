@@ -67,7 +67,7 @@ do ->
 		else if ax < 4 and ay < 4 and $.now() - touch <= 200
 			$(touchTarget)
 				.trigger 'tap'
-				.trigger if 0 is (e.type + '').indexOf 'touch'
+				.trigger if e.type is 'touchstart'
 					'touchtap'
 				else
 					'mousetap'
@@ -254,7 +254,7 @@ do ->
 		]
 		[
 			'error'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e, error) ->
 				$form.find('input[type="submit"]').prop 'disabled', false
 				$loader = $form.find '.loader'
@@ -263,7 +263,7 @@ do ->
 		]
 		[
 			'upload'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e, body) ->
 				$form.find('input[type="submit"]').prop 'disabled', false
 				$img = $form.find 'img.upload-thumb'
@@ -297,13 +297,16 @@ do ->
 								statusScope.albums = albums
 								setSessionValue albumKey(), albums
 								refreshScope statusScope
-							getAlbumsFromServer ->
+							getAlbumsFromServer (err, albums, nbAlbums, user) ->
+								$('#add-profile-photo').hide()
+								setMediaAlbums albums
 								refreshScope statusScope
 								return
 						$img.fadeOut 'fast', ->
 							$loader = $form.find '.loader'
 							$loader.fadeOut 'fast', $loader.remove
 							$img.thumbSrc(newSource).fadeIn 'fast'
+
 							return
 					else
 						$form.trigger 'error', [$newImg.text()]
@@ -311,7 +314,7 @@ do ->
 		]
 		[
 			'submit'
-			'#profile-photo'
+			'#profile-photo, #profile-photo-media'
 			($form, e) ->
 				$form.find('input[type="submit"]').prop 'disabled', true
 				$img = $form.find 'img.upload-thumb'
@@ -321,6 +324,11 @@ do ->
 					prevent e
 					file = $form.find('input[type="file"]')[0].files[0]
 					formData.append 'photo', file
+
+					mediaFlag = $form.find('input[name="mediaFlag"]:first')
+					if mediaFlag
+						formData.append 'mediaFlag', mediaFlag.val()
+
 					formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
 					xhr.open 'POST', $form.prop('action'), true
@@ -489,9 +497,23 @@ do ->
 								if ok and ! $('[data-id="' + id + '"]').parents('.friend-ask').find('.accept-friend').eq(0).click().length
 									# To fix: id is a user hashed id and not the friend id as expected from the friend controller
 									Ajax.post '/user/friend/accept', data: id: id
-				if $btn.is '.destroyable'
-					$btn.fadeOut ->
-						$btn.remove()
+						else
+							$('.remove-friend-ask').show()
+							$('.add-friend-ask').hide()
+							$btn.hide()
+				prevent e
+		]
+		[
+			click
+			'[data-remove-friend-ask], [ng-attr-data-remove-friend-ask]'
+			($btn, e) ->
+				id = $btn.data 'remove-friend-ask'
+				Ajax.delete '/user/friend/pending',
+					data: userId: id
+					success: (data) ->
+						$('.remove-friend-ask').hide()
+						$('.add-friend-ask').show()
+						$btn.hide()
 				prevent e
 		]
 		[
@@ -540,8 +562,8 @@ do ->
 				cancel e
 		]
 		[
-			click
-			'.notifications ul a, .notifications-mobile ul a'
+			click + " mousedown"
+			'.notifications ul a:not(".activities, .read-all-notifs"), .notifications-mobile ul a:not(".activities, .read-all-notifs"), #notification-list a'
 			($a, e) ->
 				href = $a.find('[data-href]').data 'href'
 				id = $a.parents('li:first').attr 'data-id'
@@ -549,12 +571,20 @@ do ->
 					if id
 						setSessionItem 'readNotification', id
 					delay 1, ->
-						locationHref href
-						hash = href.replace /^[^#]+#/g, ''
-						if hash and hash isnt href
-							$block = $ '#' + hash + ', [data-id=' + hash + ']'
-							if exists $block
-								$document.scrollTop $block.offset().top - 68
+						#clic whith mouse wheel
+						if e.type is "mousedown" and e.which is 2
+							window.open href, '_blank'
+						else if e.which is 3
+							$a.find('[data-href]').attr('data-href', href)
+							$a[0].href = href
+							cancel e
+						else
+							locationHref href
+							hash = href.replace /^[^#]+#/g, ''
+							if hash and hash isnt href
+								$block = $ '#' + hash + ', [data-id=' + hash + ']'
+								if exists $block
+									$document.scrollTop $block.offset().top - 68
 				delay 2, refreshPill
 				if id
 					readNotification id
@@ -575,7 +605,9 @@ do ->
 						.replace /^https?:\/\/[^\/]+/g, ''
 					if href is '/user/logout'
 						removeSessionItems()
-					if navigator.standalone
+					if window.location.pathname is href
+						window.location.reload()
+					else if navigator.standalone
 						window.location = href
 						cancel e
 					else
@@ -620,7 +652,7 @@ do ->
 		]
 		[
 			click
-			'.footer a:not(.legals)'
+			'.footer a:not(.legals, .contact)'
 			($a, e) ->
 				window.open $a.attr 'href'
 				cancel e

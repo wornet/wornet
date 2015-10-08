@@ -20,7 +20,7 @@
 				.progress-radial: .overlay
 					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
 					.btn
-						+glyph('edit')
+						+half('edit')
 						span.long
 							=s("Changer de photo")
 						span.short
@@ -30,7 +30,7 @@
 		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
 			=s("Modifier mon profil")
 			| &nbsp;
-			+glyph('edit')
+			+half('edit')
 		.profile-edit(class=(edit ? null : "hidden"))
 			+form("/user/profile/edit")
 				input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
@@ -70,15 +70,15 @@
 			a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
 				=s("Discuter")
 				| &nbsp;
-				+glyph('comment')
-			a.block(ng-click="deleteFriend('" + profile.hashedId + "')")
+				+half('comments')
+			a.block(ng-click="deleteFriend('" + profile.hashedId + "', '" + profile.fullName + "')")
 				=s("Retirer des amis")
 				| &nbsp;
-				+glyph('minus')
+				+half('minus')
 	.profile-edit(class=(edit ? "hidden" : null))
 		h3.important
 			if (isAFriend || isMe) && profile.preRegistered()
-				+glyph('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
+				+half('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
 				|&nbsp;
 			=strtoupper(profile.fullName)
 			if ! isMe && user && ! askedForFriend
@@ -95,18 +95,28 @@
 							data-click="success"
 							data-param0='{{ isABestFriend ? ' + isBest + ' : ' + isNormal + ' }}'
 						)
-							+glyph("star{{ isABestFriend ? '' : '-empty' }}")
+							+half("star{{ isABestFriend ? '' : '-empty' }}")
 				else
 					br
-					a.add-friend.destroyable.inline-button.btn.btn-primary(
+					a.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
 						href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 						data-target=".profileError"
 						data-click="success"
 						data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
 						data-ask-for-friend=profile.hashedId
+						style="display:" + (myfriendAskPending?"none":"inline-block")
 					)
-						+glyph('user')
+						+half('user')
 						=' '+strtoupper(s("Ajouter à la liste d'amis"))
+					a.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
+						data-target=".profileError"
+						data-click="success"
+						data-param0=s("Demande annulée")
+						data-remove-friend-ask=profile.hashedId
+						style="display:" + (!myfriendAskPending?"none":"inline-block")
+					)
+						+half('remove')
+						=' '+strtoupper(s("Annuler la demande"))
 		if isAFriend || isMe
 			if ! profile.birthDate || profile.maskBirthDate
 				if profile.birthCity
@@ -140,7 +150,7 @@
 				if profile.city
 					.col-xs-12.col-sm-6
 						p
-							+glyph('home')
+							+half('home')
 							if profile.city.toLowerCase().substr(0, 3) === 'le '
 								=s("Habite au {city}", { city: profile.city.substr(3) })
 							else
@@ -148,13 +158,13 @@
 				if profile.maritalStatus
 					.col-xs-12.col-sm-6
 						p
-							+glyph('user')
+							+half('user')
 							=colon(userTexts.maritalStatus)
 							=userTexts[profile.maritalStatus]
 				if profile.job
 					.col-xs-12.col-sm-6
 						p
-							+glyph('briefcase')
+							+half('glyph-briefcase')
 							if profile.jobPlace
 								=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
 							else
@@ -162,21 +172,22 @@
 				else if profile.jobPlace
 					.col-xs-12.col-sm-6
 						p
-							+glyph('briefcase')
+							+half('glyph-briefcase')
 							=s("Travail à {place}", { place: profile.jobPlace })
 				
 				if profile.loveInterest
 					.col-xs-12.col-sm-6
 						p
-							+glyph('heart')
+							+half('heart')
 							=userTexts.loveInterest
 							| 
 							=userTexts[profile.loveInterest]
-			if profile.biography
-				h5
-					=userTexts.biography
-				p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
-					=profile.biography	
+				if profile.biography
+					.col-sm-12
+						h5
+							=userTexts.biography
+						p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
+							=profile.biography
 			if user.sex == "default" && isMe
 				.col-xs-12.alert.alert-info.missing-sex: span
 					=s("Vous n'avez pas renseigné votre sexe, vous pouvez le faire ")	

@@ -9,6 +9,7 @@ module.exports = (app) ->
 
 	templates = []
 	markdowns = []
+	dateTimeAtStart = null
 	fs.realpath __dirname + '/../../../views/templates', (err, dir) ->
 		unless err
 			glob dir + '/**', (err, _templates) ->
@@ -29,8 +30,21 @@ module.exports = (app) ->
 									if ! err and stat.isFile()
 										markdowns.push path.substring dir.length, path.length - 3
 
+	if !dateTimeAtStart
+		dateTimeAtStart = do ->
+			today = new Date()
+			today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate() + '_' + today.getHours() + '-' + today.getMinutes() + '-' + today.getSeconds()
+	fs.exists __dirname + '/../../../routeLog/', (exists) ->
+		unless exists
+			fs.mkdir __dirname + '/../../../routeLog/'
+
 	# Before each request
 	app.use (req, res, done) ->
+
+		if config.wornet.logRoutes
+			fileName =  dateTimeAtStart + '-routes.log'
+			fs.appendFile  __dirname + '/../../../routeLog/' + fileName, '\n' + req.url, (err) ->
+				return
 
 		req.urlWithoutParams = req.url.replace /\?.*$/g, ''
 		req.response = res

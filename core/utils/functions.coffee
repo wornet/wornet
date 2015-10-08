@@ -989,8 +989,15 @@ module.exports =
 				if createErr
 					done createErr, createdAlbum, photo
 				else
-					if createdAlbum
-						createdAlbum.refreshPreview (err) ->
+					Album.findOneAndUpdate
+						_id: albumId
+					,
+						lastAdd: new Date()
+					, (err, album) ->
+						if err
+							warn err
+					if !notProfilePhoto and !req.user.photoAlbumId
+						updateUser req, photoAlbumId: albumId, (err, user) ->
 							if err
 								warn err
 					id = photo.id
@@ -1036,10 +1043,15 @@ module.exports =
 		if notProfilePhoto
 			next()
 		else
-			defaultName = photoDefaultName()
-			albumProperties =
-				user: req.user.id
-				name: defaultName
+			if req.user and req.user.photoAlbumId
+				albumProperties =
+					user: req.user.id
+					_id: req.user.photoAlbumId
+			else
+				defaultName = photoDefaultName()
+				albumProperties =
+					user: req.user.id
+					name: defaultName
 			Album.findOne albumProperties, (err, album) ->
 				if album
 					albumId = album.id
@@ -1256,13 +1268,13 @@ module.exports =
 	###
 	data: (name, value) ->
 		try
-			name = name.replace(/(\\|")/g, '\\$1')
-			value = JSON.stringify(value).replace(/(\\|")/g, '\\$1')
-			jd 'div(data-data, data-name="' + name + '", data-value="' + value + '")'
+			if name and value
+				name = name.replace(/(\\|")/g, '\\$1')
+				value = JSON.stringify(value).replace(/(\\|")/g, '\\$1')
+				jd 'div(data-data, data-name="' + name + '", data-value="' + value + '")'
 		catch e
 			console.error e
 			console.trace()
-			"Error (see conole)"
 
 	###
 	Append a variable to a response to use it in the view
@@ -1424,3 +1436,6 @@ module.exports =
 	###
 	quoteString: (str) ->
 		'"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+
+	getBrowserInformations: (req) ->
+		ua = global.uaparser req.headers['user-agent']

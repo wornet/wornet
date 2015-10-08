@@ -76,10 +76,11 @@ $.fn.extend
 			return
 	# Update the src attribute of a thumb and all other thumbs with the same id
 	thumbSrc: (src) ->
+		excepted = "#upload-thumb-media"
 		userThumb = @data 'user-thumb'
 		if userThumb
 			src = src.replace /\/photo\/[0-9]+x/g, '/photo/'
-			$('img[data-user-thumb="' + userThumb + '"]').each ->
+			$('img[data-user-thumb="' + userThumb + '"]:not(' + excepted + ')').each ->
 				$img = $ @
 				thumbSize = $img.data 'thumb-size'
 				$img.prop 'src',

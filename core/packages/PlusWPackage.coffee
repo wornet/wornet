@@ -62,7 +62,11 @@ PlusWPackage =
 			else
 				end err
 
-	checkRights: (req, res, status, liking, done) ->
+	checkRights: (req, res, status, liking, onlySeeing = false, done) ->
+		if 'function' is typeof onlySeeing
+			done = onlySeeing
+			onlySeeing = false
+
 		idStatus = status._id
 		#already liked or disliked?
 		next = ->
@@ -74,7 +78,10 @@ PlusWPackage =
 
 		#if the status is mine or on my wall
 		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId))
-			next()
+			if onlySeeing
+				done null, true
+			else
+				next()
 		else
 			req.getFriends (err, friends, friendAsks) ->
 				friendsList = friends.column('_id')
@@ -92,7 +99,10 @@ PlusWPackage =
 					else if !countStatut
 						done new PublicError s("Vous n'avez accès à ce statut"), false
 					else
-						next()
+						if onlySeeing
+							done null, true
+						else
+							next()
 
 	notify: (usersToNotify, status, liker) ->
 
@@ -123,5 +133,42 @@ PlusWPackage =
 					action: 'notice'
 					author: liker
 					notice: notice
+
+
+	get: (req, res, status, done) ->
+		@checkRights req, res, status, false, true, (err, ok) ->
+			if !err and ok
+				offset = req.data.offset
+				where = status: status._id
+				.with if offset
+				    _id: $gt: new ObjectId(offset).path
+				PlusW.find where
+					.limit config.wornet.limits.likersPageCount
+					.sort createdAt: 'desc'
+					.exec (err, plusWs) ->
+						if err
+							done err
+						else if !plusWs or !plusWs.length
+							done null, []
+						else
+							likersId = plusWs.map (plusW) ->
+								plusW.user
+							User.find
+								_id: $in: likersId
+							, (err, users) ->
+								if err
+									done err
+								else if !users or !users.length
+									done null, []
+								else
+									users = users.map (user) ->
+										user.publicInformations()
+									for user in users
+										for plusW in plusWs
+											if strval(plusW.user) is strval(cesarRight(user.hashedId))
+												user.plusWId = plusW._id
+									done null, users
+			else
+				done err
 
 module.exports = PlusWPackage

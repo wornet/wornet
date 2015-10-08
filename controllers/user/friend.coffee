@@ -88,6 +88,27 @@ module.exports = (router) ->
 						if err
 							res.serverError err
 
+	router.delete '/pending', (req, res) ->
+		if req.body.userId
+			him = cesarRight req.body.userId
+			me = req.user.id
+			Friend.remove
+				$or: [
+					askedFrom: me
+					askedTo: him
+				,
+					askedFrom: him
+					askedTo: me
+				]
+				status: 'waiting'
+			, (err, count) ->
+				if err
+					res.serverError err
+				else
+					res.json()
+		else
+			res.json()
+
 	# Without AJAX
 	router.get '/:id/:name', (req, res) ->
 		# When user ask some other user for friend

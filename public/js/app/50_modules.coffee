@@ -11,6 +11,7 @@ do (window, navigator, s = textReplacements) ->
 	# Display a loading animation when page is loading
 	window.onbeforeunload = (event) ->
 		window._e = event
+		$(window).scrollTop(0);
 		# $.xhrPool.isWaiting() or
 		somethingWaiting = do ->
 			allEmpty = true

@@ -82,16 +82,14 @@ PhotoPackage =
 
 	delete: (photoId, status = 'uploaded') ->
 		photoId = strval photoId
-		Photo.findOne
+		Photo.remove
 			_id: photoId
 			status: status
-		, (err, photo) ->
-			if !err and photo
-				photo.remove (err) ->
-					if err
-						throw err
-					else
-						delete photos[photoId]
+		, (err, count) ->
+			if err
+				throw err
+			else
+				delete photos[photoId]
 
 	deleteImages: (images) ->
 		self = @

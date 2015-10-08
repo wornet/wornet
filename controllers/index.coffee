@@ -91,6 +91,31 @@ module.exports = (router) ->
 							if err
 								warn err, req
 
+	router.put '/contact', (req, res) ->
+		res.json()
+		delay 1, ->
+			motif = req.data.motif
+			message = req.data.message
+			if motif and message
+				emails = config.wornet.contact.emails[motif]
+				subject = s("[{type}] Mail de contact de Wornet", type: req.data.motif)
+
+				userInfos = getBrowserInformations req
+
+				message = jdMail 'contact',
+					motif: motif,
+					message: message,
+					email: req.user.email,
+					browserName: userInfos.browser.name,
+					browserVersion: userInfos.browser.version,
+					osName: userInfos.os.name,
+					osVersion: userInfos.os.version,
+					cpu: userInfos.cpu.architecture,
+					deviceName: userInfos.device.model,
+					deviceVendor: userInfos.device.vendor,
+					deviceType: userInfos.device.type
+
+				MailPackage.send emails, subject, message
 
 	# Report a non-appropriated content
 	router.get '/report/:status', (req, res) ->

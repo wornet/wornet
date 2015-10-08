@@ -18,7 +18,7 @@ module.exports = ->
 	woman: s("Femme")
 	birthDate: s("Date de naissance")
 	confidentialityBirthDate: s("Masquer votre date de naissance")
-	email: s("Adresse e-mail")
+	email: s("Adresse électronique")
 	password: s("Mot de passe")
 	city: s("Ville actuelle")
 	birthCity: s("Ville de naissance")
@@ -32,3 +32,10 @@ module.exports = ->
 
 	privacy: s("Confidentialité de votre compte")
 	private: s("Privé")
+
+	identityTitle: s("Identité")
+	identityHint: s("Changez les paramètres de base de votre compte.")
+	confidentialityTitle: s("Confidentialité")
+	confidentialityHint: s("Changez vos paramètres de confidentialité de votre compte.")
+	accountConfidentialityHint: s("Vos visiteurs ne voient pas les informations que vous avez publiées sauf votre prénom/nom et vos photos de profil. Seuls vos amis peuvent les voir.")
+	confidentialityFriendList: s("Masquer votre liste d'amis")

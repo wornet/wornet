@@ -1,7 +1,7 @@
 - var mainTitle = s("Wornet")
 - var upperTitle = jd('a.banner(href="/"): img(src=' + JSON.stringify(png('wornet')) + ' alt=' + JSON.stringify(strtoupper(mainTitle)) + ' width="171" height="45")')
 block params
-	- var bodyClasses = 'openingTemplate bg' + Math.floor(Math.random() * 3 + 1)
+	- var bodyClasses = 'openingTemplate bg' + Math.floor(Math.random() * 6 + 1)
 include ../includes/mixins
 
 if isXHR

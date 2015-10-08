@@ -1,8 +1,8 @@
 #chat(ng-controller="ChatCtrl" class=(config.wornet.chat.multiline ? 'multiline' : null))
-	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{ minimized: chat.minimized }")
+	.chat(ng-repeat="(chatId, chat) in chats" ng-show="chat.open" ng-class="{ minimized: chat.minimized }" data-chat-id="{{ chatId }}")
 		h4(ng-click="minimize(chat)")
 			a.close(ng-click="close(chat); $event.stopPropagation();")
-				+glyph('remove-sign')
+				+half('remove-sign')
 			span.users(ng-repeat="(index, user) in chat.users" data-hashed-id="{{ user.hashedId }}")
 				if index > 0
 					=", "
@@ -15,10 +15,10 @@
 		.messages(ng-show="!chat.minimized")
 			.message(ng-repeat="message in chat.messages")
 				span.ok(ng-show="message.ok")
-					+glyph('ok')
+					+half('ok')
 				a(href="/user/profile/{{ message.from.hashedId }}/{{ message.from.name.full }}" ng-show="message.from && message.from.thumb50 && message.from.name")
 					img.received(ng-src="{{ message.from.thumb50 }}" data-user-thumb="{{ message.from.hashedId }}" data-thumb-size="50")
-				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content | smilies")
+				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content")
 				.date(data-date="{{ message.date }}" data-date-delay="180" class="{{ message.from ? 'date-left' : 'date-right' }}")
 					|&nbsp;
 		+form()(ng-submit="send(message, chatId)" ng-show="!chat.minimized")
