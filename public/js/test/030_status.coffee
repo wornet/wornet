@@ -37,3 +37,17 @@ do ->
 		it "need a Status controller", ->
 
 			shouldExists '[ng-controller="StatusCtrl"]', 'StatusCtrl must exist'
+
+	describe "Status post", ->
+
+		it "simple status", ->
+
+			shouldExists '.status-form form', '.status-form form should exist'
+			shouldExists '.status-form form .publish', '.status-form form .publish should exist'
+			shouldExists '.status-form form .publish input', '.status-form form .publish input should exist'
+			$form = w.$ '.status-form form'
+			$form.find('textarea').set('Bonjour, ceci est un test unitaire').focus().click()
+			$form.find('.publish input').click()
+			delay 5000, ->
+				$status = w.$ '.status-block:first'
+				expect($status.find('.status-content:last').html()).toBe "Bonjour, ceci est un test unitaire"
