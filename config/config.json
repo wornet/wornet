@@ -205,6 +205,10 @@
             }
         },
 
+        "crashlog": {
+            "enabled" : true
+        },
+
         "db": {
             "host": "127.0.0.1",
             "basename": "wornet"
