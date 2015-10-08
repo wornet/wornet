@@ -13,6 +13,9 @@ StatusPackage =
 				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
 
+				res.getRecentFinished = true
+				res.endGetRecent = time()
+				res.outputStatusList = data
 				if res.endAt
 					warn JSON.stringify(res.endAt, true, 2) + JSON.stringify data, true, 2
 				else
