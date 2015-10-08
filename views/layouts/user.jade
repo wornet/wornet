@@ -145,7 +145,7 @@ block nav
 								| {{ user.points }}
 								=' '+s("points")
 						a.col-xs-3.suggest-action(ng-click="chatWith(user)" ng-if="user.isAFriend")
-							+half('comment')
+							+half('comments')
 						a.col-xs-3.suggest-action(
 							ng-if="canBeAddedAsAFriend(user)"
 							ng-click="askForFriend(user)"
