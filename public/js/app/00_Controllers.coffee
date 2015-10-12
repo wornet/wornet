@@ -491,7 +491,7 @@ Controllers =
 			) + '/event'
 			refreshScope $scope
 
-		$http.get('/event/123')
+		$http.get('move/event/123')
 			.then (data) ->
 				$scope.event = data.data.event
 				refreshScope $scope
@@ -919,6 +919,16 @@ Controllers =
 			return
 
 		return
+
+	MoveSearch: ($scope) ->
+
+		$scope.popularTags = ['Rencontre', 'Soirées', 'Boite', 'Course']
+
+		$scope.createTag = (tag) ->
+			$('#tag-list').tagit 'createTag', tag
+
+		$('#tag-list').tagit
+			caseSensitive: false
 
 	Notifications: ($scope, notificationsService, $sce) ->
 		$scope.notifications = {}

@@ -1,0 +1,36 @@
+extends layout
+
+block body
+	.well.move
+		.move-search-banner(ng-controller="MoveSearchCtrl")
+			h1
+				=s('Bougez avec Wornet').toUpperCase()
+			h3
+				=s("Le principe est simple : chacun propose des sorties qui l'intéressent en fonction de ses hobbies et ses projets.")
+			input.btn.create-event(type="button" value=s('Créer un événement'))
+			.search-bloc
+				.search-title
+					=s('Recherchez vos événements')
+				.search-form
+					+form()
+					.col-sm-6
+						label
+							=s("Insérez vos tags : ")
+						ul#tag-list
+						label
+							=s("Tags les plus utilisés : ")
+						ul.tagit.popularTags
+							li.tagit-choice.ui-widget-content.ui-state-default.ui-corner-all.tagit-choice-editable(ng-repeat="tag in popularTags")
+								span.tagit-label(ng-bind-html="tag" ng-click="createTag(tag)")
+					.col-sm-3
+						input(placeholder=s("Ville"))
+						input(placeholder=s("France (par défaut)"))
+						select
+							option(value="")
+								=s('Distance')
+							each distance in config.wornet.geo.distances
+								option(value=distance)
+									=distance + s(' km')
+					.col-sm-3
+						input(placeholder=s("Date"))
+					input.btn.send-search(value=s('Rechercher'))

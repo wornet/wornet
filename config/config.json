@@ -215,7 +215,7 @@
         "errorsToIssue": 10,
 
         "events": {
-            "enabled": false
+            "enabled": true
         },
 
         "friends": {
@@ -223,12 +223,13 @@
         },
 
         "geo": {
-            "enabled": false,
+            "enabled": true,
             "api": {
                 "enabled": true,
                 "cache": true,
                 "rounds": [5000, 10000, 20000, 50000, 100000, 150000]
-            }
+            },
+            "distances": [5,10,15,25,50,100,150]
         },
 
         "hexSecret": "34ee5df51841de4f94109ff38ed4610afb50c14b92fd8e2a74a1672183632105",

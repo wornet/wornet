@@ -78,6 +78,7 @@ module.exports = (app, port) ->
 				"/components/jquery/css/jquery-ui.css"
 				"/components/jquery/css/fullcalendar.css"
 				"/components/toastr/css/toastr.min.css"
+				"/components/tag-it/css/jquery.tagit.css"
 				style("app")
 				['ios-app', style('ios-app')]
 			]
@@ -145,6 +146,7 @@ module.exports = (app, port) ->
 				"/components/angular/js/calendar.min.js"
 				"/components/toastr/js/toastr.min.js"
 				"/components/facebook/js/sdk.js"
+				"/components/tag-it/js/tag-it.min.js"
 			]
 		if options.trackers().piwik
 			js.push "/components/piwik/js/piwik.js"
