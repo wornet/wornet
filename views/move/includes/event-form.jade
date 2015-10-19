@@ -1,0 +1,107 @@
+#modal-event-form.modal.fade(role="dialog" aria-hidden="true" ng-controller="EventFormCtrl" )
+	.modal-dialog.modal-lg: .modal-content
+		.modal-header
+			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+			h4.modal-title
+				=s("Créer un événement : étape ") + "{{ etape }}"
+		.modal-body.event-form
+			h4
+				=s("Informations générales")
+			+form().col-sm-12
+				.col-sm-6
+					label
+						=s('Cet événement est...')
+				.col-sm-6
+					select.form-control(required)
+						option(value="")
+							=s('Séléctionner')
+						option(value="public")
+							=s('Public')
+						option(value="private")
+							=s('Privé')
+				.col-sm-6
+					label
+						=s('Vous êtes...')
+				.col-sm-6
+					select.form-control(required)
+						option(value="")
+							=s('Séléctionner')
+						option(value="person")
+							=s('Un particulier')
+						option(value="startup")
+							=s('Une start-up')
+						option(value="association")
+							=s('Une association')
+						option(value="business")
+							=s('Une entreprise / société')
+				.col-sm-6
+					label
+						=s("Nom de l'entité ? ")
+				.col-sm-6
+					+formControl()(placeholder=s("Ex : Les restos du coeur") required)
+				.col-sm-12
+					span
+						=s("Attention, l'usurpation d'identité est puni par la loi.")
+				.col-sm-6
+					label
+						=s("Titre de l'événement : ")
+				.col-sm-6
+					+formControl()(placeholder=s("Ex : Geek Faëries 2016") required)
+				.col-sm-6
+					label
+						=s("Date de début : ")
+				.col-sm-6
+					+formControl()(required)
+				.col-sm-6
+					label
+						=s("Heure de début : ")
+				.col-sm-6
+					+formControl()(required)
+				.col-sm-6
+					label
+						=s("Date de fin : (facultatif)")
+				.col-sm-6
+					+formControl()
+				.col-sm-6
+					label
+						=s("Heure de fin : (facultatif)")
+				.col-sm-6
+					+formControl()
+				.col-sm-6
+					label
+						=s("Pays : ")
+				.col-sm-6
+					+formControl()(placeholder=s("France (par défaut)") required)
+				.col-sm-6
+					label
+						=s("Adresse : ")
+				.col-sm-6
+					+formControl()(placeholder=s("Ex : 8 place Denis Dusoubs") required)
+				.col-sm-6
+					label
+						=s("Ville : ")
+				.col-sm-6
+					+formControl()(placeholder=s("Ex : Limoges") required)
+				.col-sm-12
+					label
+						=s("Description : ")
+				.col-sm-12
+					+formControl("textarea")(placeholder=s("Qu'est-ce que les Geek Faëries ? Indications complémentaires ?") required)
+				.col-sm-6
+					label
+						=s("Nombre maximum de participants : ")
+				.col-sm-6
+					+formControl()(placeholder=s("Si vide, pas de limitation") required)
+				.col-sm-6
+					label
+						=s("Mode d'acceptation : ")
+				.col-sm-6
+					select.form-control(required)
+						option(value="auto" selected)
+							=s("Acceptation automatique")
+						option(value="manu")
+							=s("Acceptation manuelle")		
+				.event-form-actions
+					input.btn.btn-primary(type="submit" value=s("Suivant"))
+					input.btn(type="button" value=s("Annuler"))
+		.cb

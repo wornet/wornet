@@ -2,3 +2,19 @@ if user
 	include ../layouts/user
 else
 	include ../layouts/simple
+
+
+block footer
+	include includes/event-form
+	footer.footer-move
+		.col-sm-6.col-sm-offset-3
+			span
+				!=s("{copytag} {mainTitle} {year}", { copytag: "&#169;", mainTitle: mainTitle,  year: Date.year() }) + " | "
+				a(href="http://blog.wornet.fr/")
+					=s("Blog") + " | "
+				a(data-toggle="modal" data-target="#legals")
+					=s("Mentions légales")
+			br
+			span
+				=s('WORNET, 38 rue François Chénieux, 87000 Limoges')
+				

@@ -498,6 +498,10 @@ Controllers =
 
 		onResize loadTemplate
 
+	EventForm: ($scope) ->
+		$scope.etape = 1
+		return
+
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
@@ -922,7 +926,7 @@ Controllers =
 
 	MoveSearch: ($scope) ->
 
-		$scope.popularTags = ['Rencontre', 'Soirées', 'Boite', 'Course']
+		$scope.popularTags = ['Rencontre', 'Soirées', 'Boite', 'Course', 'Bar', 'Jeune', 'Festival', 'Musique', 'Métal', 'Rock']
 
 		$scope.createTag = (tag) ->
 			$('#tag-list').tagit 'createTag', tag
