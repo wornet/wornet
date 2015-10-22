@@ -49,10 +49,12 @@ moveEventSchema = BaseSchema.extend
 			'manual'
 			'auto'
 		]
+		default: 'auto'
 		required: true
 	allowFriendInvite:
 		type: Boolean
 		required: true
+		default: false
 	tags: [
 		type: String
 	]
