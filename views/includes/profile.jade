@@ -145,6 +145,7 @@
 					if !profile.points
 						- profile.points=0
 					span.points
+						=s('ceci est un test.')
 						!=s("{points} point|{points} points", { points: jd('b ' + profile.points) }, profile.points)
 			.about-user
 				if profile.city
