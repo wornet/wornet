@@ -7,18 +7,9 @@ NoticePackage =
 	LIMIT_EXEEDED: 3
 	TIMEOUT: 4
 
-	# Pending requests until receive a new notification
-	responsesToNotify: {}
-	# Pending notifications until users recipient ask for receive it
-	notificationsToSend: {}
-	# Notifications disapear after some time if they are not received
-	timeouts: {}
-	# User who have leave the application
-	userWhoHasLeft: []
-
 	# Is a user (identified by id) waiting for notifications (and so present)
 	isPresent: (userId) ->
-		@responsesToNotify[userId]?
+		sharedData.responsesToNotify[userId]?
 
 	# Are users (identifed by ids array) present
 	arePresents: (userIds) ->
@@ -61,9 +52,9 @@ NoticePackage =
 		Waiter.respond place, err, data
 
 	clearTimeout: (key) ->
-		if @timeouts[key]
-			clearTimeout @timeouts[key]
-			delete @timeouts[key]
+		if sharedData.timeouts[key]
+			clearTimeout sharedData.timeouts[key]
+			delete sharedData.timeouts[key]
 
 	respond: (callback, err, data, tabToIgnore) ->
 		if callback instanceof Waiter
@@ -142,24 +133,24 @@ NoticePackage =
 
 	# Delete a notification if id is specified or all the notifications to a user if not
 	remove: (userId, id = null) ->
-		if @responsesToNotify[userId]?
+		if sharedData.responsesToNotify[userId]?
 			if id isnt null
-				if @responsesToNotify[userId][id]?
-					if @responsesToNotify[userId][id] instanceof Waiter
-						@responsesToNotify[userId][id].unwatch()
-					delete @responsesToNotify[userId][id]
-					if empty @responsesToNotify[userId]
-						delete @responsesToNotify[userId]
+				if sharedData.responsesToNotify[userId][id]?
+					if sharedData.responsesToNotify[userId][id] instanceof Waiter
+						sharedData.responsesToNotify[userId][id].unwatch()
+					delete sharedData.responsesToNotify[userId][id]
+					if empty sharedData.responsesToNotify[userId]
+						delete sharedData.responsesToNotify[userId]
 			else
-				each @responsesToNotify[userId], ->
+				each sharedData.responsesToNotify[userId], ->
 					if @ instanceof Waiter
 						@unwatch()
-				delete @responsesToNotify[userId]
+				delete sharedData.responsesToNotify[userId]
 
 			# is this remove is a real leave of a user?
 			delay (config.wornet.timeout / 2).seconds, =>
 				if !@isPresent userId
-					@userWhoHasLeft.push userId
+					sharedData.userWhoHasLeft.push userId
 					User.update
 						_id: userId
 					,
@@ -169,17 +160,17 @@ NoticePackage =
 
 	# Register an action to do when a user receive a notification
 	waitForNotification: (userId, callback) ->
-		if @notificationsToSend[userId]
-			@respond callback, null, @notificationsToSend[userId].values()
-			delete @notificationsToSend[userId]
+		if sharedData.notificationsToSend[userId]
+			@respond callback, null, sharedData.notificationsToSend[userId].values()
+			delete sharedData.notificationsToSend[userId]
 			id = false
 		else
-			responsesToNotify = @responsesToNotify
+			responsesToNotify = sharedData.responsesToNotify
 			unless responsesToNotify[userId]?
 				responsesToNotify[userId] = {}
-				if @userWhoHasLeft.contains userId
+				if sharedData.userWhoHasLeft.contains userId
 					delay (config.wornet.timeout / 2).seconds, =>
-						delete @userWhoHasLeft[userId]
+						delete sharedData.userWhoHasLeft[userId]
 						User.update
 							_id: userId
 						,
@@ -201,7 +192,7 @@ NoticePackage =
 	waitForJson: (userId, req, res, watchPlace = null) ->
 		res.setTimeLimit 0
 		self = @
-		responsesToNotify = @responsesToNotify
+		responsesToNotify = sharedData.responsesToNotify
 		req.session.save (err) ->
 			if err
 				throw err
@@ -210,13 +201,13 @@ NoticePackage =
 			id = self.waitForNotification userId, waiter
 			if id
 				waiter.timeoutKey = userId + '-' + id
-				self.timeouts[waiter.timeoutKey] = delay config.wornet.timeout.seconds, ->
+				sharedData.timeouts[waiter.timeoutKey] = delay config.wornet.timeout.seconds, ->
 					req.session.reload (err) ->
 						res.json
-							notifyStatus: self.TIMEOUT
+							notifyStatus: sharedData.TIMEOUT
 							loggedFriends: req.getLoggedFriends()
 						self.remove userId, id
-						delete self.timeouts[waiter.timeoutKey]
+						delete sharedData.timeouts[waiter.timeoutKey]
 
 	readNotice: (req, id, all, done) ->
 		if !all and !id

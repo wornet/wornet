@@ -30,6 +30,20 @@ do ->
 		MemcachedStore: require('connect-memcached') session
 		RedisStore: require('connect-redis') session
 
+	initSharedValues = ->
+		ipc_shared = require 'ipc-shared'
+		global.sharedData = {}
+		# Pending requests until receive a new notification
+		sharedData.responsesToNotify = {}
+		# Pending notifications until users recipient ask for receive it
+		sharedData.notificationsToSend = {}
+		# Notifications disapear after some time if they are not received
+		sharedData.timeouts = {}
+		# User who have leave the application
+		sharedData.userWhoHasLeft = []
+
+	initSharedValues()
+
 	# Config load
 	global.config = require(coreDir + 'global/start/config') app.settings.env, process.env.PORT
 	port = config.port
