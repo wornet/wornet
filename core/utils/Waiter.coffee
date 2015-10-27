@@ -1,7 +1,5 @@
 'use strict'
 
-watchedPlaces = {}
-
 class Waiter
 	userId: null
 	watchPlaces: null
@@ -90,21 +88,21 @@ class Waiter
 							res.json data
 
 Waiter.respond = (place, err, notifications = []) ->
-	if watchedPlaces[place]
-		each watchedPlaces[place], ->
+	if sharedData.watchedPlaces[place]
+		each sharedData.watchedPlaces[place], ->
 			@respond err, notifications
-		delete watchedPlaces[place]
+		delete sharedData.watchedPlaces[place]
 
 Waiter.watchPlace = (place, waiter) ->
 	place += ''
-	(watchedPlaces[place] ||= []).push waiter
+	(sharedData.watchedPlaces[place] ||= []).push waiter
 
 Waiter.unwatchPlace = (place, waiter) ->
 	place += ''
-	if watchedPlaces[place] and watchedPlaces[place].length
-		watchedPlaces[place] = watchedPlaces[place].filter (w) ->
+	if sharedData.watchedPlaces[place] and sharedData.watchedPlaces[place].length
+		sharedData.watchedPlaces[place] = sharedData.watchedPlaces[place].filter (w) ->
 			w isnt waiter
-		unless watchedPlaces[place].length
-			delete watchedPlaces[place]
+		unless sharedData.watchedPlaces[place].length
+			delete sharedData.watchedPlaces[place]
 
 module.exports = Waiter

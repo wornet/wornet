@@ -87,25 +87,25 @@ NoticePackage =
 							otherUserIds = userIds.filter (id) ->
 								id isnt userId
 						done = ->
-							if self.responsesToNotify[userId]?
-								each self.responsesToNotify[userId], (id) ->
+							if sharedData.responsesToNotify[userId]?
+								each sharedData.responsesToNotify[userId], (id) ->
 									key = userId + '-' + id
 									self.clearTimeout key
 									if self.respond @, err, data, tabToIgnore
-										delete self.responsesToNotify[userId][id]
-								unless count self.responsesToNotify[userId]
-									delete self.responsesToNotify[userId]
+										delete sharedData.responsesToNotify[userId][id]
+								unless count sharedData.responsesToNotify[userId]
+									delete sharedData.responsesToNotify[userId]
 							else
-								unless self.notificationsToSend[userId]
-									self.notificationsToSend[userId] = {}
+								unless sharedData.notificationsToSend[userId]
+									sharedData.notificationsToSend[userId] = {}
 								id = uniqueId()
-								self.notificationsToSend[userId][id] = [err, data]
+								sharedData.notificationsToSend[userId][id] = [err, data]
 								delay 5.seconds, ->
-									if self.responsesToNotify[userId] and self.notificationsToSend[userId] and self.notificationsToSend[userId][id]
-										if self.responsesToNotify[userId].getLength() > 0
-											delete self.notificationsToSend[userId][id]
+									if sharedData.responsesToNotify[userId] and sharedData.notificationsToSend[userId] and sharedData.notificationsToSend[userId][id]
+										if sharedData.responsesToNotify[userId].getLength() > 0
+											delete sharedData.notificationsToSend[userId][id]
 										else
-											delete self.notificationsToSend[userId]
+											delete sharedData.notificationsToSend[userId]
 									true
 							true
 						if appendOtherUsers and otherUserIds.length

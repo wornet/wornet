@@ -41,6 +41,8 @@ do ->
 		sharedData.timeouts = {}
 		# User who have leave the application
 		sharedData.userWhoHasLeft = []
+		# Value used by Waiter
+		sharedData.watchedPlaces = {}
 
 	initSharedValues()
 
