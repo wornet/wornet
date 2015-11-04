@@ -51,6 +51,7 @@
 		"nodemon": "^1.2.0",
 		"passport": "^0.2.0",
 		"phantomjs": "~1.9.16",
+		"redis": "^2.3.0",
 		"requirejs": "^2.1.11",
 		"stitch": "^0.3.3",
 		"stylus": "^0.47.1",

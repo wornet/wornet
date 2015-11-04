@@ -306,6 +306,10 @@
 
         "redirectToDefaultHost": "wornet.fr",
 
+        "redis": {
+            "defaultChannel": "dataSharingChannel"
+        },
+
         "remember": {
             "key": "r",
             "off": "-",
