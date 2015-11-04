@@ -19,6 +19,14 @@ module.exports = (defer, start) ->
 	redisStore = new RedisStore
 	global.redis = redisStore.client
 
+	redisOnly = require 'redis'
+	global.redisClientEmitter = redisOnly.createClient()
+	global.redisClientReciever = redisOnly.createClient()
+
+	redisClientReciever.subscribe config.wornet.redis.defaultChannel
+
+	RedisListener()
+
 	session = require 'express-session'
 
 	app.use session
