@@ -32,10 +32,8 @@ module.exports = ->
 									true
 					when "respondWaiter"
 						place = messageObj.message.place
+						err = messageObj.message.err
 						notifications = messageObj.message.notifications
-						if watchedPlaces[place]
-							each watchedPlaces[place], ->
-								@respond err, notifications
-							delete watchedPlaces[place]
+						Waiter.respond place, err, notifications, true
 			else
 				warn new serverError("missformed message")
