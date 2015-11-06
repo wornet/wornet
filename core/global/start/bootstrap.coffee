@@ -50,5 +50,7 @@ do ->
 			warn err, false
 			if global.GitlabPackage
 				GitlabPackage.issue err
-			else
-				throw err
+
+			server.close()
+			delay 1.seconds, ->
+				process.exit 1
