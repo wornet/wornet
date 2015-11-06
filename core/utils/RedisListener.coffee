@@ -10,6 +10,8 @@ module.exports = ->
 						if messageObj.message.userId
 							userId = messageObj.message.userId
 							err = messageObj.message.err
+							tabToIgnore = messageObj.message.tabToIgnore
+							data = messageObj.message.data
 							if NoticePackage.responsesToNotify[userId]
 								each NoticePackage.responsesToNotify[userId], (id) ->
 									key = userId + '-' + id
