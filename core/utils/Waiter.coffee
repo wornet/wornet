@@ -94,16 +94,15 @@ Waiter.respond = (place, err, notifications = [], alreadyEmit = false) ->
 		each watchedPlaces[place], ->
 			@respond err, notifications
 		delete watchedPlaces[place]
-	else
-		if !alreadyEmit
-			redisClientEmitter.publish config.wornet.redis.defaultChannel,
-				JSON.stringify(
-					type: "respondWaiter",
-					message:
-						place: place,
-						err: err,
-						notifications: notifications,
-				)
+	if !alreadyEmit
+		redisClientEmitter.publish config.wornet.redis.defaultChannel,
+			JSON.stringify(
+				type: "respondWaiter",
+				message:
+					place: place,
+					err: err,
+					notifications: notifications,
+			)
 
 Waiter.watchPlace = (place, waiter) ->
 	place += ''
