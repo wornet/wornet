@@ -1,0 +1,24 @@
+{
+	"apps" :
+		[
+		  {
+			"exec_mode"          : "cluster_mode",
+			"instances"          : 0,
+			"name"               : "wornetpreprod",
+			"cwd"				 : "/home/wornet/preprod/",
+			"script"             : "index.coffee",
+			"post_update"        : ["echo App has been updated, running npm install...",
+									"npm install",
+									"echo App is being restarted now"]
+		  },
+		  {
+			"exec_mode"          : "fork_mode",
+			"name"               : "wornet-tasks",
+			"cwd"				 : "/home/wornet/wornet-tasks/",
+			"script"             : "index.coffee",
+			"post_update"        : ["echo App has been updated, running npm install...",
+									"npm install",
+									"echo App is being restarted now"]
+		  }
+		]
+}
