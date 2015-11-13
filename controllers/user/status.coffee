@@ -57,37 +57,7 @@ module.exports = (router) ->
 			StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status, req.params.updatedAt
 
 	router.put '/add/:updatedAt', (req, res) ->
-		start = time()
-		res.getRecentFinished = false
-		actionLongue = (start, data) ->
-			fin = time()
-			if fin - start > 2000
-				email = config.wornet.contact.emails.bugs
-				subject = s("Post de statut anormalement long")
-				message = " Voici les information recueillies:\n\n Date et Heure de début: " + date(start) +
-							"\n\n Date et Heure de fin: " + date(fin) +
-							"\n\n Durée création statut (en ms): " + (fin - start - 1000)
-				if data.getRecentFinished
-					message += "\n\n Durée getRecentStatusForRequest (en ms): " + (data.endGetRecent - start)
-
-				message += "\n\n User: " + data.user +
-							"\n\n Statut d'entrée: " + JSON.stringify(data.inputStatus, true, "\t") +
-							"\n\n Statut de sortie: " + JSON.stringify(data.outputStatus, true, "\t") +
-							"\n\n getRecentStatusForRequest Terminé ? " + data.getRecentFinished
-				if data.getRecentFinished
-					message += "\n\n Données getRecentStatusForRequest: " + JSON.stringify(data.outputStatusList, true, "\t")
-				MailPackage.send email, subject, message
-
 		StatusPackage.put req, res, (status) ->
-			if config.wornet.crashlog.enabled
-				delay 1000, ->
-					actionLongue start,
-						user: req.user
-						inputStatus: req.data.status
-						outputStatus: status
-						getRecentFinished: res.getRecentFinished
-						endGetRecent: res.endGetRecent
-						outputStatusList: res.outputStatusList
 			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status, req.params.updatedAt
 
 	router.post '/', (req, res) ->
