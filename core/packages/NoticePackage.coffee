@@ -104,6 +104,7 @@ NoticePackage =
 										err: err,
 										data: data,
 										tabToIgnore: tabToIgnore
+										noticeId: uniqueId()
 								)
 							true
 						if appendOtherUsers and otherUserIds.length
