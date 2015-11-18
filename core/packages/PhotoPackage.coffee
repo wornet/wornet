@@ -22,6 +22,7 @@ deleteCookie = (req, photoId) ->
 PhotoPackage =
 
 	photos: {}
+	photosForCookieChecking: {}
 
 	urlToId: (url) ->
 		regExp = /\/img\/photo\/([0-9]+x)?([a-f0-9]{5,})(\/[^\/]+)?\.jpg(\?[A-Za-z0-9]*)?$/ig
@@ -41,8 +42,8 @@ PhotoPackage =
 
 	allowedToSee: (req, photoId) ->
 		photoId = strval photoId
-		if @photos[photoId]
-			req.getHeader('cookie').indexOf(prefix + photoId + '=' + photos[photoId]) isnt -1
+		if @photosForCookieChecking[photoId]
+			req.getHeader('cookie').indexOf(prefix + photoId + '=' + @photosForCookieChecking[photoId]) isnt -1
 		else
 			true
 
@@ -105,7 +106,7 @@ PhotoPackage =
 		setCookie req, photoId, token
 		photoId = strval photoId
 		unless @photos[photoId]
-			@photos[photoId] = token
+			@photos[photoId] = @photosForCookieChecking[photoId] = token
 			redisClientEmitter.publish config.wornet.redis.defaultChannel,
 				JSON.stringify(
 					type: "addPhoto",
