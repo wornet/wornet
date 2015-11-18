@@ -152,6 +152,7 @@ StatusPackage =
 					status.images.each ->
 						photoId = PhotoPackage.urlToId @src
 						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
+							warn err if err
 							if photo and ! albums.contains photo.album, equals
 								albums.push photo.album
 							unless --count

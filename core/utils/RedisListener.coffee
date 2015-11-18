@@ -47,5 +47,9 @@ module.exports = ->
 							else
 								delete NoticePackage.notificationsToSend[userId]
 						true
+					when "addPhoto"
+						PhotoPackage.photos[messageObj.message.photoId] = messageObj.message.token
+					when "deletePhoto"
+						PhotoPackage.delete messageObj.message.photoId
 			else
 				warn new serverError("missformed message")
