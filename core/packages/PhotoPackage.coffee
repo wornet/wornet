@@ -1,6 +1,6 @@
 'use strict'
 
-photos = {}
+
 albumRefreshes = {}
 
 prefix = 'p:'
@@ -21,6 +21,8 @@ deleteCookie = (req, photoId) ->
 
 PhotoPackage =
 
+	photos: {}
+
 	urlToId: (url) ->
 		regExp = /\/img\/photo\/([0-9]+x)?([a-f0-9]{5,})(\/[^\/]+)?\.jpg(\?[A-Za-z0-9]*)?$/ig
 		match = url.match regExp
@@ -35,11 +37,11 @@ PhotoPackage =
 	restrictedAndAllowedToSee: (req, photoId) ->
 		token = req.cookie prefix + photoId
 		photoId = strval photoId
-		photos[photoId] and photos[photoId] is token
+		@photos[photoId] and @photos[photoId] is token
 
 	allowedToSee: (req, photoId) ->
 		photoId = strval photoId
-		if photos[photoId]
+		if @photos[photoId]
 			req.getHeader('cookie').indexOf(prefix + photoId + '=' + photos[photoId]) isnt -1
 		else
 			true
@@ -47,7 +49,7 @@ PhotoPackage =
 	forget: (req, photoId) ->
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
-			delete photos[photoId]
+			delete @photos[photoId]
 			deleteCookie req, photoId
 
 	publish: (req, photoId, statusId, done) ->
@@ -89,7 +91,7 @@ PhotoPackage =
 			if err
 				throw err
 			else
-				delete photos[photoId]
+				delete @hotos[photoId]
 
 	deleteImages: (images) ->
 		self = @
@@ -102,12 +104,25 @@ PhotoPackage =
 		token = generateSalt 32
 		setCookie req, photoId, token
 		photoId = strval photoId
-		unless photos[photoId]
-			photos[photoId] = token
+		unless @photos[photoId]
+			@photos[photoId] = token
+			redisClientEmitter.publish config.wornet.redis.defaultChannel,
+				JSON.stringify(
+					type: "addPhoto",
+					message:
+						photoId: photoId,
+						token: token
+				)
 		self = @
 		delay config.wornet.upload.ttl.seconds, ->
-			if photos[photoId] and photos[photoId] is token
+			if @photos[photoId] and @photos[photoId] is token
 				self.delete photoId
+				redisClientEmitter.publish config.wornet.redis.defaultChannel,
+					JSON.stringify(
+						type: "deletePhoto",
+						message:
+							photoId: photoId
+					)
 
 	refreshAlbum: (albumId) ->
 		if albumRefreshes[albumId]
