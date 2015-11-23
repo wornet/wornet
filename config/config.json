@@ -219,7 +219,7 @@
         "errorsToIssue": 10,
 
         "move": {
-            "enabled": true
+            "enabled": false
         },
 
         "friends": {
