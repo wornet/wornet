@@ -1451,6 +1451,7 @@ Controllers =
 				data:
 					status: status
 			status.content = contentToDisplay
+			$('.status-block[data-id="' + status._id + '"] .medias').removeClass('edit-status')
 			refreshScope $scope
 			return
 
@@ -1546,6 +1547,7 @@ Controllers =
 			return
 
 		$scope.toggleStatusState = (status, edit) ->
+			$('.status-block[data-id="' + status._id + '"] .medias')[if edit then 'addClass' else 'removeClass']('edit-status')
 			status.edit = edit
 			status.content = if edit
 				unscanLink smiliesService.unfilter status.content
