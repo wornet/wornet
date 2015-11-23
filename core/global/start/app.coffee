@@ -19,6 +19,14 @@ module.exports = (defer, start) ->
 	redisStore = new RedisStore
 	global.redis = redisStore.client
 
+	redisOnly = require 'redis'
+	global.redisClientEmitter = redisOnly.createClient()
+	global.redisClientReciever = redisOnly.createClient()
+
+	redisClientReciever.subscribe config.wornet.redis.defaultChannel
+
+	RedisListener()
+
 	session = require 'express-session'
 
 	app.use session
@@ -50,7 +58,7 @@ module.exports = (defer, start) ->
 
 	listen = (port) ->
 
-		app.listen port, (err) ->
+		global.server = app.listen port, (err) ->
 			if err
 				throw err
 			else

@@ -13,9 +13,6 @@ StatusPackage =
 				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
 					data.recentStatus.push @defaultStatus()
 
-				res.getRecentFinished = true
-				res.endGetRecent = time()
-				res.outputStatusList = data
 				if res.endAt
 					warn JSON.stringify(res.endAt, true, 2) + JSON.stringify data, true, 2
 				else
@@ -155,6 +152,7 @@ StatusPackage =
 					status.images.each ->
 						photoId = PhotoPackage.urlToId @src
 						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
+							warn err if err
 							if photo and ! albums.contains photo.album, equals
 								albums.push photo.album
 							unless --count

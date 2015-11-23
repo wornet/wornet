@@ -87,26 +87,16 @@ NoticePackage =
 							otherUserIds = userIds.filter (id) ->
 								id isnt userId
 						done = ->
-							if sharedData.responsesToNotify[userId]?
-								each sharedData.responsesToNotify[userId], (id) ->
-									key = userId + '-' + id
-									self.clearTimeout key
-									if self.respond @, err, data, tabToIgnore
-										delete sharedData.responsesToNotify[userId][id]
-								unless count sharedData.responsesToNotify[userId]
-									delete sharedData.responsesToNotify[userId]
-							else
-								unless sharedData.notificationsToSend[userId]
-									sharedData.notificationsToSend[userId] = {}
-								id = uniqueId()
-								sharedData.notificationsToSend[userId][id] = [err, data]
-								delay 5.seconds, ->
-									if sharedData.responsesToNotify[userId] and sharedData.notificationsToSend[userId] and sharedData.notificationsToSend[userId][id]
-										if sharedData.responsesToNotify[userId].getLength() > 0
-											delete sharedData.notificationsToSend[userId][id]
-										else
-											delete sharedData.notificationsToSend[userId]
-									true
+							redisClientEmitter.publish config.wornet.redis.defaultChannel,
+								JSON.stringify(
+									type: "hasWaiter",
+									message:
+										userId: userId,
+										err: err,
+										data: data,
+										tabToIgnore: tabToIgnore
+										noticeId: uniqueId()
+								)
 							true
 						if appendOtherUsers and otherUserIds.length
 							User.find _id: $in: otherUserIds, (err, users) ->

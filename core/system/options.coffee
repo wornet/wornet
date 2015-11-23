@@ -602,9 +602,10 @@ module.exports = (app, port) ->
 		# Initialize packages
 		MailPackage.init()
 
+		# This is only execute on wornet-tasks node. It's only this node that execute tasks, not the cluster
 		# Start tasks
-		glob __dirname + '/../tasks/*.coffee', (er, files) ->
-			files.map require
+		# glob __dirname + '/../tasks/*.coffee', (er, files) ->
+		# 	files.map require
 
 		# Prettify or minify the HTML output as configured
 		app.locals.pretty = true if config.wornet.prettyHtml
