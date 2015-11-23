@@ -87,11 +87,20 @@ class Waiter
 								throw err
 							res.json data
 
-Waiter.respond = (place, err, notifications = []) ->
-	if sharedData.watchedPlaces[place]
-		each sharedData.watchedPlaces[place], ->
+Waiter.respond = (place, err, notifications = [], alreadyEmit = false) ->
+	if watchedPlaces[place]
+		each watchedPlaces[place], ->
 			@respond err, notifications
-		delete sharedData.watchedPlaces[place]
+		delete watchedPlaces[place]
+	if !alreadyEmit
+		redisClientEmitter.publish config.wornet.redis.defaultChannel,
+			JSON.stringify(
+				type: "respondWaiter",
+				message:
+					place: place,
+					err: err,
+					notifications: notifications,
+			)
 
 Waiter.watchPlace = (place, waiter) ->
 	place += ''
