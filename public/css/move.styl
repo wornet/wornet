@@ -1,0 +1,157 @@
+.well.move
+	padding 0
+
+.move-search-banner
+	cover('background-image/small/2')
+	height 500px
+	background-size 100% 600px
+	rel()
+
+	h1
+	h3
+		color $nearlyWhite
+		text-align center
+		margin-top 0
+		padding-top 50px
+	h1
+		font-weight bold
+
+	.create-event
+		margin-left calc(50% - 250px / 2)
+		font-size 18px
+		background-color $littleLightOrange
+		size(250px, 60px)
+		margin-top 50px
+		&:hover
+			box-shadow none
+			color $nearlyWhite
+			background-color $hoverLittleLightOrange
+
+	.search-title
+	.search-form
+		margin-left calc(50% - 800px / 2)
+
+	.search-title
+		background-color $littleLightOrange
+		width 200px
+		text-align center
+		color $nearlyWhite
+		padding $smallPadding
+
+	.search-bloc
+		abs()
+		bottom -125px
+		left calc(50% - 800px /2)
+		.search-form
+			width 800px
+			height 250px
+			background-color $nearlyBlack
+			label
+				color $nearlyWhite
+
+			label
+			input
+			select
+				margin $mainPadding $smallPadding
+
+			textarea
+				width 100%
+			.send-search
+				background-color $green
+				abs()
+				bottom $mainPadding
+				right $mainPadding
+				&:hover
+					box-shadow none
+					color $nearlyWhite
+					background-color $hoverGreen
+
+			.distance
+				width calc(100% - 25px)
+
+			.popularTags li
+				cursor pointer
+
+			.location-bloc
+			.date-bloc
+				padding 0
+				.city
+				.search-date
+					width calc(100% - 50px)
+
+				.search-date
+					min-width 160px
+				.glyphicons-calendar
+				.search-date
+					float left
+
+			.glyphicons
+				font-size 22px
+				color $nearlyWhite
+				line-height 37px
+
+			.tag-bloc
+				.ui-state-default .ui-icon
+					background-image url(png("../components/tag-it/css/images/ui-icons_888888_256x240"))
+
+.themes
+	margin-top 300px
+	margin-bottom 55px
+	.themes-title
+		text-align center
+		h1
+		h3
+			color $darkGray
+	.sport
+	.music
+	.startup
+	.association
+		rel()
+		background-size 400px 300px
+		size(400px, 300px)
+		margin $bigPadding
+		text-align center
+		span
+			font-size 30px
+			font-weight bold
+			color $nearlyWhite
+			line-height 300px
+
+	.sport
+	.startup
+		margin-left calc(50% - 420px)
+
+	.sport
+		background-image url(png('bouger/sport'))
+	.music
+		background-image url(png('bouger/musique'))
+	.startup
+		background-image url(png('bouger/startup'))
+	.association
+		background-image url(png('bouger/association'))
+	.theme-overlay
+		abs()
+		top 0
+		left 0
+		background-color rgba($nearlyBlack,0.3)
+		size(100%)
+
+.footer-move
+	position fixed
+	bottom 0
+	background-color $nearlyBlack
+	height 55px
+	text-align center
+	padding-top $mainPadding
+	span
+	a
+		color $nearlyWhite
+
+#modal-event-form
+	.event-form
+		form
+			float none
+	.event-form-actions
+		input
+			float right
+			margin $mainPadding $smallPadding
