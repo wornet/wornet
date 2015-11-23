@@ -214,7 +214,7 @@
 
         "errorsToIssue": 10,
 
-        "events": {
+        "move": {
             "enabled": true
         },
 

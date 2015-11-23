@@ -82,10 +82,11 @@ block nav
 						+glyph("conversation")
 						| &nbsp; 
 						=s("Messagerie")
-					li.left: a(href="/move/search")
-						+glyph("person-running")
-						| &nbsp; 
-						=s("Bouger")
+					if config.wornet.move.enabled
+						li.left: a(href="/move/search")
+							+glyph("person-running")
+							| &nbsp; 
+							=s("Bouger")
 			.mainLinks.col-sm-6
 				.col-sm-6
 					|&nbsp;

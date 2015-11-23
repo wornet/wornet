@@ -1,6 +1,6 @@
 'use strict'
 
-if config.wornet.events.enabled
+if config.wornet.move.enabled
 
 	module.exports = (router) ->
 
