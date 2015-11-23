@@ -1,15 +1,18 @@
 'use strict'
 
-if config.wornet.events.enabled
+if config.wornet.move.enabled
 
 	module.exports = (router) ->
 
-		pm = new PagesManager router, 'event'
+		pm = new PagesManager router, 'move'
 
-		pm.page '', (req) ->
+		pm.page '/event', (req) ->
 			user: req.user
 
-		router.get '/:id', (req, res) ->
+		pm.page '/search', (req) ->
+			user: req.user
+
+		router.get '/event/:id', (req, res) ->
 
 			res.json
 				event:

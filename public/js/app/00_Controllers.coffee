@@ -491,12 +491,16 @@ Controllers =
 			) + '/event'
 			refreshScope $scope
 
-		$http.get('/event/123')
+		$http.get('move/event/123')
 			.then (data) ->
 				$scope.event = data.data.event
 				refreshScope $scope
 
 		onResize loadTemplate
+
+	EventForm: ($scope) ->
+		$scope.etape = 1
+		return
 
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
@@ -919,6 +923,16 @@ Controllers =
 			return
 
 		return
+
+	MoveSearch: ($scope) ->
+
+		$scope.popularTags = ['Rencontre', 'Soirées', 'Boite', 'Course', 'Bar', 'Jeune', 'Festival', 'Musique', 'Métal', 'Rock']
+
+		$scope.createTag = (tag) ->
+			$('#tag-list').tagit 'createTag', tag
+
+		$('#tag-list').tagit
+			caseSensitive: false
 
 	Notifications: ($scope, notificationsService, $sce) ->
 		$scope.notifications = {}
