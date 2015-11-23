@@ -1,5 +1,7 @@
 'use strict'
 
+watchedPlaces = {}
+
 class Waiter
 	userId: null
 	watchPlaces: null
@@ -104,14 +106,14 @@ Waiter.respond = (place, err, notifications = [], alreadyEmit = false) ->
 
 Waiter.watchPlace = (place, waiter) ->
 	place += ''
-	(sharedData.watchedPlaces[place] ||= []).push waiter
+	(watchedPlaces[place] ||= []).push waiter
 
 Waiter.unwatchPlace = (place, waiter) ->
 	place += ''
-	if sharedData.watchedPlaces[place] and sharedData.watchedPlaces[place].length
-		sharedData.watchedPlaces[place] = sharedData.watchedPlaces[place].filter (w) ->
+	if watchedPlaces[place] and watchedPlaces[place].length
+		watchedPlaces[place] = watchedPlaces[place].filter (w) ->
 			w isnt waiter
-		unless sharedData.watchedPlaces[place].length
-			delete sharedData.watchedPlaces[place]
+		unless watchedPlaces[place].length
+			delete watchedPlaces[place]
 
 module.exports = Waiter
