@@ -52,6 +52,7 @@ do ->
 				GitlabPackage.issue err
 
 			if !config.env.development
-				server.close()
+				if global.server
+					global.server.close()
 				delay 1.seconds, ->
 					process.exit 1
