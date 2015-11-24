@@ -57,24 +57,38 @@ module.exports = (defer, start) ->
 				require file
 
 	listen = (port) ->
+		unless port is 8002
+			global.server = app.listen port, (err) ->
+				if err
+					throw err
+				else
+					console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
+		else
+			caFiles = ['crossRootCA.cer', 'IntermediateCA.cer', 'SymantecClass3SecureServerCA-G4.txt', 'VeriSignClass3PublicPrimaryCertificationAuthority-G5.txt']
+			ca = []
+			options =
+				key: fs.readFileSync '/etc/ssl/private/key.pem'
+				ca: ca
+				cert: fs.readFileSync '/etc/ssl/private/certificate.cer'
 
-		global.server = app.listen port, (err) ->
-			if err
-				throw err
-			else
-				console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
-
+			global.server = httpsServer.createServer(options, app).listen port, (err) ->
+				if err
+					throw err
+				else
+					console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
 	# Handle errors and print in the console
 	if config.port is 443
-
+		global.httpsServer = require 'https'
 		app.all '*', (req, res, next) ->
 			if req.secure
 				next()
 			else
 				res.redirect 'https://' + req.hostname + req.url
 
-		listen 80
-		listen 443
+		#for http requests
+		listen 8001
+		#for https requests
+		listen 8002
 	else
 		listen config.port
