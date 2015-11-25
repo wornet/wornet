@@ -66,6 +66,10 @@ module.exports = (defer, start) ->
 		else
 			caFiles = ['crossRootCA.cer', 'IntermediateCA.cer', 'SymantecClass3SecureServerCA-G4.txt', 'VeriSignClass3PublicPrimaryCertificationAuthority-G5.txt']
 			ca = []
+
+			caFiles.forEach (file) ->
+				ca.push fs.readFileSync '/etc/ssl/private/' + file, 'utf8'
+
 			options =
 				key: fs.readFileSync '/etc/ssl/private/key.pem'
 				ca: ca
