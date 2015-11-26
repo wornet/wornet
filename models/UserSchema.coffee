@@ -157,6 +157,19 @@ userSchema = BaseSchema.extend
 		ref: 'AlbumSchema'
 	lastLeave:
 		type: Date
+	accountConfidentiality:
+		type: String
+		enum: [
+			'private'
+			'public'
+		]
+		required: true
+		default: 'private'
+	allowFriendPostOnMe:
+		type: Boolean
+		default: true
+	uniqueURLID:
+		type: String
 ,
 	toObject:
 		virtuals: false
@@ -265,6 +278,7 @@ extend userSchema.methods,
 			'sex'
 			'photoAlbumId'
 			'sharedAlbumId'
+			'accountConfidentiality'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]

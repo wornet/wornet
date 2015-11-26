@@ -798,6 +798,24 @@ do ->
 					chatListScope.chatList = chat.chatList
 					refreshScope chatListScope
 		]
+		[
+			'change'
+			'#account-confidentiality'
+			($select, e) ->
+				privateFields = ['.account-confidentiality-hint-private' ]
+				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer']
+				if $select.val() is "private"
+					for field in privateFields
+						$(field).removeClass("hidden")
+					for field in publicFields
+						$(field).addClass("hidden")
+				else
+					for field in privateFields
+						$(field).addClass("hidden")
+					for field in publicFields
+						$(field).removeClass("hidden")
+
+		]
 	], ->
 		params = @
 		if @[0] is 'load'

@@ -1144,6 +1144,42 @@ Controllers =
 
 		return
 
+	Settings: ($scope) ->
+
+		s = textReplacements
+		urlPattern = "https://www.wornet.fr/"
+		$scope.generateURLVisu = ->
+			$('#urlVisual').html urlPattern + $('#uniqueURLID').val()
+			return
+
+		validFormat = (id) ->
+			/^[a-zA-Z0-9_.]*$/.test id
+
+		$scope.checkURLID = ->
+			urlId = $('#uniqueURLID').val()
+			if urlId and validFormat urlId
+				Ajax.get '/user/checkURLID/' + urlId, (data) ->
+					if data.err and data.err is "same"
+						$('#urlIdDisponibility').html s("C'est vous !")
+						$('#urlIdDisponibility').removeClass "red"
+						$('#urlIdDisponibility').addClass "green"
+					else if data.isAvailable
+						$('#urlIdDisponibility').html s("Disponible !")
+						$('#urlIdDisponibility').removeClass "red"
+						$('#urlIdDisponibility').addClass "green"
+					else
+						$('#urlIdDisponibility').html s("Non disponible !")
+						$('#urlIdDisponibility').removeClass "green"
+						$('#urlIdDisponibility').addClass "red"
+			else
+				$('#urlIdDisponibility').html s("Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
+				$('#urlIdDisponibility').removeClass "green"
+				$('#urlIdDisponibility').addClass "red"
+			return
+
+		$scope.generateURLVisu()
+		return
+
 	SigninSecondStep: ($scope) ->
 		user = getSessionValue 'user'
 		if user

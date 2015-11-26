@@ -1439,3 +1439,18 @@ module.exports =
 
 	getBrowserInformations: (req) ->
 		ua = global.uaparser req.headers['user-agent']
+
+
+	###
+	Convert accentuated string into normal string
+	@param string accentuated string
+
+	@return string non accentuated string
+	###
+
+	replaceAccent: (text) ->
+		TabSpec = {"à":"a","á":"a","â":"a","ã":"a","ä":"a","å":"a","ò":"o","ó":"o","ô":"o","õ":"o","ö":"o","ø":"o","è":"e","é":"e","ê":"e","ë":"e","ç":"c","ì":"i","í":"i","î":"i","ï":"i","ù":"u","ú":"u","û":"u","ü":"u","ÿ":"y","ñ":"n","-":" ","_":" "}
+		reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_-]/gi
+		text.replace( reg, ->
+			TabSpec[arguments[0].toLowerCase()]
+		).toLowerCase()
