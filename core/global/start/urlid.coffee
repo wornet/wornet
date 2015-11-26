@@ -6,7 +6,6 @@ app.onready ->
 		if !inc
 			inc = 0
 		userToModify = users[inc]
-		#console.log ['userToModify', userToModify]
 		if !userToModify
 			return
 		regexToCheck =  new RegExp replaceAccent (userToModify.name.first + '\.' + userToModify.name.last + '.*').toLowerCase()
