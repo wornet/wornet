@@ -417,10 +417,8 @@ UserPackage =
 					birthDate = inputDate val
 					if birthDate.isValid()
 						userModifications.birthDate = birthDate
-				when 'confidentialityBirthDate'
-					userModifications.maskBirthDate = val is 'on'
-				when 'confidentialityFriendList'
-					userModifications.maskFriendList = val is 'on'
+				when 'maskBirthDate', 'maskFriendList', 'allowFriendPostOnMe'
+					userModifications[key] = val is 'on'
 				when 'name.first'
 					unless userModifications.name
 						userModifications.name = req.user.name
@@ -432,7 +430,7 @@ UserPackage =
 				when 'photoId'
 					if PhotoPackage.allowedToSee req, val
 						userModifications.photoId = val
-				when 'maritalStatus', 'loveInterest'
+				when 'maritalStatus', 'loveInterest', 'accountConfidentiality'
 					unless User.schema.path(key).enumValues.contains val
 						val = null
 					userModifications[key] = val

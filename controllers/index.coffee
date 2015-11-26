@@ -3,9 +3,9 @@
 module.exports = (router) ->
 
 	pm = new PagesManager router
-		.page '/newsroom'
-		.page '/jobs'
-		.page '/legals'
+		#.page '/newsroom'
+		#.page '/jobs'
+		.page '/static/legals'
 
 
 	# Temporary fix of /undefined request
@@ -132,6 +132,21 @@ module.exports = (router) ->
 						throw err
 					else
 						console['log'] info
+
+	router.get '/:urlId', (req, res) ->
+		urlId = req.params.urlId
+		if urlId and /^[a-zA-Z0-9_.]*$/.test urlId
+			User.findOne
+				uniqueURLID: urlId
+			, (err, user) ->
+				warn err if err
+				if user
+					res.locals.friendAsked = req.flash 'friendAsked'
+					UserPackage.renderProfile req, res, user.hashedId
+				else
+					res.notFound()
+		else
+			res.notFound()
 
 	alias =
 		'user/login': ''

@@ -235,6 +235,25 @@ module.exports = (router) ->
 		for setting in ['newsletter', 'noticeFriendAsk', 'noticePublish', 'noticeMessage']
 			userModifications[setting] = !! req.body[setting]
 		###
+
+		if userModifications['accountConfidentiality'] is "public"
+			publicDataError = false
+			newUrlId = replaceAccent req.body.uniqueURLID
+			unless newUrlId is req.user.uniqueURLID
+				if /^[a-zA-Z0-9_.]*$/.test newUrlId
+					User.count
+						uniqueURLID: newUrlId
+					, (err, count) ->
+						warn err if err
+						if count is 0
+							userModifications["uniqueURLID"] = newUrlId
+						else
+							publicDataError = true
+							req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")
+				else
+					publicDataError = true
+					req.flash 'settingsErrors', s("Personnalisation URL: Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
+
 		updateUser req, userModifications, (err) ->
 			err = humanError err
 			save = ->
@@ -247,15 +266,17 @@ module.exports = (router) ->
 					save()
 					res.json()
 			else
-				if err
+				if err or publicDataError
 					if err instanceof PublicError
 						req.flash 'settingsErrors', err.toString()
-					else
+					else if err
 						switch err.code
 							when 11000
 								req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
 							else
 								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+					else
+						req.flash 'settingsErrors', s("Erreur d'enregistrement.")
 				else
 					save()
 					req.flash 'settingsSuccess', s("Modifications enregistrées.")
@@ -818,3 +839,15 @@ module.exports = (router) ->
 					res.json()
 		else
 			res.serverError new PublicError s("Vous n'avez choisi aucun son.")
+
+	router.get '/checkURLID/:id', (req, res) ->
+		id = req.params.id
+		if id
+			if id is req.user.uniqueURLID
+				res.json err: "same"
+			else
+				User.count
+					uniqueURLID: id
+				, (err, count) ->
+					warn err if err
+					res.json isAvailable: (if count then false else true)
