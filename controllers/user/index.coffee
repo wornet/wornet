@@ -236,7 +236,7 @@ module.exports = (router) ->
 			userModifications[setting] = !! req.body[setting]
 		###
 
-		if userModifications['accountConfidentiality'] is "public"
+		if userModifications.accountConfidentiality is "public"
 			publicDataError = false
 			newUrlId = replaceAccent req.body.uniqueURLID
 			unless newUrlId is req.user.uniqueURLID
@@ -246,7 +246,7 @@ module.exports = (router) ->
 					, (err, count) ->
 						warn err if err
 						if count is 0
-							userModifications["uniqueURLID"] = newUrlId
+							userModifications.uniqueURLID = newUrlId
 						else
 							publicDataError = true
 							req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")

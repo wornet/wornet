@@ -135,18 +135,15 @@ module.exports = (router) ->
 
 	router.get '/:urlId', (req, res) ->
 		urlId = req.params.urlId
-		if urlId and /^[a-zA-Z0-9_.]*$/.test urlId
-			User.findOne
-				uniqueURLID: urlId
-			, (err, user) ->
-				warn err if err
-				if user
+		if urlId and /^[a-zA-Z0-9_.]*$/.test(urlId)
+			isAPublicAccount req, urlId, false, (publicAccount, hashedId, user) ->
+				if publicAccount or (user and user.accountConfidentiality is "private" and req.user)
 					res.locals.friendAsked = req.flash 'friendAsked'
-					UserPackage.renderProfile req, res, user.hashedId
+					UserPackage.renderProfile req, res, hashedId
 				else
-					res.notFound()
+					res.redirect '/'
 		else
-			res.notFound()
+			res.redirect '/'
 
 	alias =
 		'user/login': ''

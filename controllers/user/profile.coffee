@@ -119,3 +119,32 @@ module.exports = (router) ->
 					res.serverError err
 		else
 			res.serverError new PublicError s('Aucune photo selectionnée.')
+
+	router.put "/follow", (req, res) ->
+		userId = req.data.id
+		if userId
+			isAPublicAccount req, userId, true, (isAPublicAccount) ->
+				if isAPublicAccount and req.user
+					Follow.create
+						follower: req.user.id
+						followed: cesarRight userId
+					, (err, follow) ->
+						warn err if err
+						res.json()
+				else
+					res.serverError new PublicError s('Seuls les comptes publics peuvent être suivis.')
+		else
+			res.serverError new PublicError s('Personne à suivre.')
+
+
+	router.delete "/follow", (req, res) ->
+		userId = req.data.id
+		if userId
+			Follow.remove
+				follower: req.user.id
+				followed: cesarRight userId
+			, (err, follow) ->
+				warn err if err
+				res.json()
+		else
+			res.serverError new PublicError s('Personne à unfollow.')

@@ -1454,3 +1454,48 @@ module.exports =
 		text.replace( reg, ->
 			TabSpec[arguments[0].toLowerCase()]
 		).toLowerCase()
+
+	###
+	check if the specified account is public
+	@param req
+	@param id urlId or hashedId
+	@param boolean specify if id is an hashedId or ulrId
+
+	@return Boolean
+	@return hashedId
+	@return user
+	###
+	isAPublicAccount: (req, id, isHashedId, done) ->
+		if !req.session.publicAccountByUrlId
+			req.session.publicAccountByUrlId = {}
+		if !req.session.publicAccountByHashedId
+			req.session.publicAccountByHashedId = {}
+
+		if req.session[if isHashedId then "publicAccountByHashedId" else "publicAccountByUrlId"][id]
+			done true, if isHashedId then id else req.session.publicAccountByUrlId[id]
+		else
+			where = if isHashedId
+				_id: cesarRight id
+			else
+				uniqueURLID: id
+			User.findOne where, (err, user) ->
+				warn err if err
+				if user
+					if user.accountConfidentiality is "public"
+						req.session.publicAccountByHashedId[user.hashedId] = user.uniqueURLID
+						req.session.publicAccountByUrlId[user.uniqueURLID] = user.hashedId
+						req.session.save (err) ->
+							warn err if err
+							req.session.reload (err) ->
+								warn err if err
+						done true, user.hashedId
+					else
+						delete req.session.publicAccountByHashedId[user.hashedId]
+						delete req.session.publicAccountByUrlId[user.uniqueURLID]
+						req.session.save (err) ->
+							warn err if err
+							req.session.reload (err) ->
+								warn err if err
+						done false, user.hashedId, user
+				else
+					done false, null, null
