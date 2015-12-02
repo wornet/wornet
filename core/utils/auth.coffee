@@ -146,6 +146,11 @@ exports.isAuthenticated = (req, res, next) ->
 					"/user/signin"
 				]
 
+				publicAccountList = [
+					/\/user\/albums\/medias\/([0-9a-z].*)/
+					/\/user\/status\/and\/chat\/[0-9a-z].*\/([0-9a-z].*)/
+				]
+
 				admin = [
 					"/admin"
 				]
@@ -163,6 +168,14 @@ exports.isAuthenticated = (req, res, next) ->
 				route = req.url
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
+
+				isARouteForPublicAccount = false
+				for regexp in publicAccountList
+					if regexp.test route
+						route.replace regexp, (all, hashedId) ->
+							if req.session.publicAccountByHashedId and req.session.publicAccountByHashedId[hashedId]
+								isARouteForPublicAccount = true
+
 				# If the URL is in the access restricted list
 				if inList route, admin
 					if role is 'admin'
@@ -171,6 +184,8 @@ exports.isAuthenticated = (req, res, next) ->
 					else
 						model = url: route
 						res.unautorized model
+				else if isARouteForPublicAccount
+					next()
 				else if inList(route, auth) and ! inList(route, whitelist)
 					# If any user are connected
 					if req.user

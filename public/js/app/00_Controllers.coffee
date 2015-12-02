@@ -1085,6 +1085,26 @@ Controllers =
 					return
 			return
 
+		$scope.follow = (id, follow = true) ->
+			if id
+				$('.follow').prop 'disabled', true
+				$('.unfollow').prop 'disabled', true
+				Ajax[if follow then "put" else "delete"] "user/profile/follow",
+					data: id: id
+					success: (res) ->
+						$scope.followed = follow
+						refreshScope $scope
+						$('.follow').prop 'disabled', false
+						$('.unfollow').prop 'disabled', false
+						if follow
+							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) + 1
+						else
+							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) - 1 
+						return
+
+		$scope.unfollow = (id) ->
+			$scope.follow id, false
+
 		return
 
 	Search: ($scope) ->

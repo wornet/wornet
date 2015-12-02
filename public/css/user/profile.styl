@@ -6,6 +6,24 @@ $photoHeight = 200px
 $photoRadius = false
 $progressRadialWidth = 4px
 
+.profile
+	float left
+	width 100%
+	.profile-confidentiality
+		text-align center
+		margin $bigPadding
+
+	.profile-banner
+		border-top 1px solid $gray
+		padding-top $mainPadding
+		p
+			text-align center
+			margin 0
+			font-size 12px
+
+		.right-separator
+			border-right 1px solid $lightGray
+
 .profile a:not(.add-friend)
 	color $linkColor
 
@@ -53,6 +71,13 @@ $progressRadialWidth = 4px
 		margin-left $photoWidth + $mainPadding
 	.missing-sex
 		margin $mainPadding 0 0 0
+	.profile-btn
+		width 50%
+		&.add-friend
+			padding 4px 12px
+		&.follow
+		&.unfollow
+			margin-bottom $mainPadding
 	.add-friend
 		padding-left $bigPadding + $mainPadding
 		.halflings
@@ -73,7 +98,7 @@ $progressRadialWidth = 4px
 .photo-options
 	float left
 	margin 0 $mainPadding 0 0
-
+	max-width $photoWidth
 	.btn
 		margin $smallPadding 0 0
 		width 100%

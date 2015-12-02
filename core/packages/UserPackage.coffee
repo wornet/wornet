@@ -48,89 +48,93 @@ UserPackage =
 				done null, result
 
 	isMeOrAFriend: (req, hashedId) ->
-		if req.user.hashedId is hashedId
-			true
+		if req.user
+			if req.user.hashedId is hashedId
+				true
+			else
+				friendsHashedIds = req.user.friends.map (friend) ->
+					friend.hashedId
+				friendsHashedIds.contains hashedId
 		else
-			friendsHashedIds = req.user.friends.map (friend) ->
-				friend.hashedId
-			friendsHashedIds.contains hashedId
+			false
 
 	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
-		if @isMeOrAFriend req, hashedId
-			idUser = cesarRight hashedId
-			UserAlbums.findOne
-				user: idUser
-			, (err, userAlbums) ->
-				if err
-					warn err
-				else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
-					done null, {}, 0
-				else
-					theLastFour = userAlbums.lastFour
+		isAPublicAccount req, hashedId, true, (publicAccount) =>
+			if @isMeOrAFriend(req, hashedId) or publicAccount
+				idUser = cesarRight hashedId
+				UserAlbums.findOne
+					user: idUser
+				, (err, userAlbums) ->
+					if err
+						warn err
+					else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
+						done null, {}, 0
+					else
+						theLastFour = userAlbums.lastFour
 
-					Album.find
-						user: idUser
-					.sort lastAdd: 'desc'
-					.exec (err, allAlbums) ->
-						albumIdsList = allAlbums.column '_id'
-						Photo.aggregate [
-							$match:
-								status: "published"
-								album: $in: albumIdsList
-						,
-							$group:
-								_id: "$album"
-								count: $sum: 1
-						], (err, allData) ->
-							if err
-								warn err
-							else
-								# all non empty albums
-								allData = allData.filter (data) ->
-									data.count isnt 0
-								nbAlbumsNotEmpty = allData.length
-
-								tabAlbum = {}
-								photoIds = []
-								if !all
-									albums = allAlbums.filter (album) ->
-										theLastFour.contains album._id
-									# to keep the order
-									for id in theLastFour
-										for album in albums
-											if strval(id) is strval(album._id)
-												for data in allData
-													if equals data._id, album._id
-														albumObj = album.toObject()
-														albumObj.preview = []
-														albumObj.nbPhotos = data.count
-														photoIds = photoIds.concat album.preview
-														tabAlbum[album.id] = albumObj
-								else
-									for album in allAlbums
-										for data in allData
-											if equals data._id, album._id
-												albumObj = album.toObject()
-												albumObj.preview = []
-												albumObj.nbPhotos = data.count
-												photoIds = photoIds.concat album.preview
-												tabAlbum[album.id] = albumObj
-
-								Photo.find
-									_id: $in: photoIds
+						Album.find
+							user: idUser
+						.sort lastAdd: 'desc'
+						.exec (err, allAlbums) ->
+							albumIdsList = allAlbums.column '_id'
+							Photo.aggregate [
+								$match:
 									status: "published"
-								, (err, photos) ->
-									if err
-										warn err
+									album: $in: albumIdsList
+							,
+								$group:
+									_id: "$album"
+									count: $sum: 1
+							], (err, allData) ->
+								if err
+									warn err
+								else
+									# all non empty albums
+									allData = allData.filter (data) ->
+										data.count isnt 0
+									nbAlbumsNotEmpty = allData.length
+
+									tabAlbum = {}
+									photoIds = []
+									if !all
+										albums = allAlbums.filter (album) ->
+											theLastFour.contains album._id
+										# to keep the order
+										for id in theLastFour
+											for album in albums
+												if strval(id) is strval(album._id)
+													for data in allData
+														if equals data._id, album._id
+															albumObj = album.toObject()
+															albumObj.preview = []
+															albumObj.nbPhotos = data.count
+															photoIds = photoIds.concat album.preview
+															tabAlbum[album.id] = albumObj
 									else
-										for photo in photos
-											photoPath = photo.photo
-											photo = photo.toObject()
-											photo.src = photoPath
-											tabAlbum[photo.album].preview.push photo
-										done null, tabAlbum, nbAlbumsNotEmpty
-		else
-			res.serverError new PublicError s('Vous ne pouvez pas voir ces médias.')
+										for album in allAlbums
+											for data in allData
+												if equals data._id, album._id
+													albumObj = album.toObject()
+													albumObj.preview = []
+													albumObj.nbPhotos = data.count
+													photoIds = photoIds.concat album.preview
+													tabAlbum[album.id] = albumObj
+
+									Photo.find
+										_id: $in: photoIds
+										status: "published"
+									, (err, photos) ->
+										if err
+											warn err
+										else
+											for photo in photos
+												photoPath = photo.photo
+												photo = photo.toObject()
+												photo.src = photoPath
+												tabAlbum[photo.album].preview.push photo
+											done null, tabAlbum, nbAlbumsNotEmpty
+			else
+				done new PublicError s('Vous ne pouvez pas voir ces médias.')
 
 
 	search: ->
@@ -343,15 +347,22 @@ UserPackage =
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
 		me = req.user || req.session.user
-		unless me
-			warn "me is not defined"
-		isMe = me and equals id, me.id
+		isAPublicAccount = false
+		if !me
+			isMe = false
+		else
+			isMe = me and equals id, me.id
 		self = @
 		@randomUsers (users) ->
 			users = users.filter (user) ->
-				! equals user._id, me._id
-			done = (profile, isAFriend) ->
+				if me
+					! equals user._id, me._id
+				else
+					true
+
+			done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, nbFollowing = 0) ->
 				profile = objectToUser profile
+				isAPublicAccount = profile.accountConfidentiality is "public"
 				profile.getFriends (err, friends, friendAsks) ->
 					if err
 						res.serverError err
@@ -361,17 +372,21 @@ UserPackage =
 							myfriendAskPending = false
 							if !isAFriend and !empty friendAsks
 								for id, friendAsk of friendAsks
-									if friendAsk.hashedId is req.user.hashedId
+									if req.user && friendAsk.hashedId is req.user.hashedId
 										myfriendAskPending = true
 							res.render template,
 								isMe: isMe
 								askedForFriend: askedForFriend
 								isAFriend: !! isAFriend
-								isABestFriend: me.isABestFriend profile.hashedId
+								isABestFriend: me && me.isABestFriend profile.hashedId
+								isAPublicAccount: isAPublicAccount
 								profile: profile
 								profileAlerts: req.getAlerts 'profile'
 								numberOfFriends: friends.length
-								friends: if isMe || !! isAFriend then friendsThumb else []
+								numberOfFollowers: nbFollowers
+								amIAFollower: !! amIAFollower
+								numberOfFollowing: nbFollowing
+								friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
 								friendAsks: if isMe then friendAsks else {}
 								myfriendAskPending: myfriendAskPending
 								userTexts: userTexts()
@@ -396,16 +411,38 @@ UserPackage =
 			if isMe
 				done me, false
 			else
-				req.getFriends (err, friends, friendAsks) ->
-					isAFriend = if friends and friends.getLength() > 0
-						friends.has id: id
+				User.findById id, (err, user) ->
+					if err
+						res.notFound()
 					else
-						null
-					User.findById id, (err, user) ->
-						if err
-							res.notFound()
+						isAPublicAccount = user.accountConfidentiality is "public"
+						if isAPublicAccount and !req.user
+							done user, false
 						else
-							done user, isAFriend
+							req.getFriends (err, friends, friendAsks) ->
+								isAFriend = if friends and friends.getLength() > 0
+									friends.has id: id
+								else
+									null
+
+								if isAPublicAccount
+									Follow.count
+										followed: id
+									, (err, nbFollowers) ->
+										warn err if err
+										Follow.count
+											followed: id
+											follower: me
+										, (err, amIAFollower) ->
+											warn err if err
+											Follow.count
+												follower: id
+											, (err, nbFollowing)->
+												warn err if err
+												done user, isAFriend, nbFollowers, amIAFollower, nbFollowing
+
+								else
+									done user, isAFriend
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
