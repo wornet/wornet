@@ -9,6 +9,14 @@ mixin statusForm(tabindex)
 			ng-model="status.content"
 			placeholder=s("Quoi de neuf ?")
 		)
+		.alert.alert-info.status-confidentiality
+			if isAPublicAccount
+				=s("Visible par : tout le monde")
+			else
+				if isMe
+					=s("Visible par : vos amis")
+				else
+					=s("Visible par : votre ami {fullname} et ses amis", {fullname: profile.fullName})
 		.input-group-btn.publish
 			input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Publier")).btn.btn-primary
 
