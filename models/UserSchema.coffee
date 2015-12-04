@@ -170,6 +170,9 @@ userSchema = BaseSchema.extend
 		default: true
 	uniqueURLID:
 		type: String
+	photoUploadAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
 ,
 	toObject:
 		virtuals: false

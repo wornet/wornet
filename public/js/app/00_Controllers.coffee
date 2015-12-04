@@ -1099,7 +1099,7 @@ Controllers =
 						if follow
 							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) + 1
 						else
-							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) - 1 
+							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) - 1
 						return
 
 		$scope.unfollow = (id) ->
@@ -1348,6 +1348,11 @@ Controllers =
 				err = data.err || null
 				if data.albums
 					albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
+					albums.sort (a, b) ->
+						if a._id is getData 'photoUploadAlbumId'
+							-1
+						else
+							1
 					$scope.albums = albums
 					refreshScope $scope
 					if window.refreshMediaAlbums
@@ -1384,27 +1389,34 @@ Controllers =
 		temporarySharedAlbumId = null
 		at = getData 'at'
 		$scope.onMe = !at or at is getData 'me'
+		$scope.photoUploadAlbumId = getData 'photoUploadAlbumId'
+
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
-			if $scope.onMe
-				$scope.media.step = null
-			else
+			if !$scope.onMe
 				sharedAlbumId = getData('sharedAlbumId') || temporarySharedAlbumId
 				if sharedAlbumId
 					Ajax.get 'user/album/one/' + sharedAlbumId, (data) ->
-						$scope.selectAlbum data.album
+						$scope.selectAlbum data.album._id
 						refreshScope $scope
 				else
 					$scope.createAlbum {name: $scope.sharedAlbumDefaultName, description: ''}, at
-				$scope.media.step = "add"
+					$scope.selectAlbum $('#album-select').val()
+			else
+				$scope.selectAlbum $('#album-select').val()
 			return
 
-		$scope.selectAlbum = (album) ->
-			$scope.currentAlbum = $.extend {}, album
-			initMedias()
-			$scope.media.step = 'add'
-			loadNewIFrames()
+
+		$scope.selectAlbum = (albumId) ->
+			$scope.status.newAlbum = if albumId is "new"
+				true
+			else
+				false
+			$scope.currentAlbum = $.extend {}, _id: albumId
+			$scope.status.lastSelectedAlbum = _id: albumId
+			# initMedias()
+			# loadNewIFrames()
 			return
 
 		$scope.createAlbum = (album, at) ->
@@ -1434,20 +1446,34 @@ Controllers =
 
 		$scope.send = (status) ->
 			scanAllLinks $scope, status.content || ''
-			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
-				data:
-					status: status
-					at: at
-					medias: $scope.medias || null
+			data = data:
+				status: status
+				at: at
+				medias: $scope.medias || null
+			if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
+				$.extend data.data,
+					album:
+						name: $("#album-name").val()
+						description: $("#album-description").val()
+			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
 				success: (data) ->
 					$('.points').trigger 'updatePoints', [data.newStatus, true]
 					setRecentStatus data, false
 					if window.refreshMediaAlbums
 						window.refreshMediaAlbums()
-			status.content = ""
-			initMedias()
+			resetStatus()
 
 			return
+
+		resetStatus = ->
+			$scope.status.content = ""
+			$scope.status.containsMedias = false
+			$scope.status.newAlbum = false
+			$("#album-name").val("")
+			$("#album-description").val("")
+			initMedias()
+			refreshScope $scope
+
 
 		updateCommentList = (data) ->
 			if data.commentList
@@ -1588,6 +1614,7 @@ Controllers =
 		window.statusScope = $scope
 
 		$scope.status = containsMedias: false
+		$scope.status.newAlbum = false
 		$scope.media = step: null
 
 		select = if getSessionItem 'chats'
@@ -1672,6 +1699,11 @@ Controllers =
 							refreshScope $scope
 						return
 				return
+			else
+				if $ '.album-select select option'
+					$('.album-select select option').each (id, elem) ->
+						if elem.value.indexOf('undefined') >= 0
+							$(elem).remove()
 		return
 
 	Welcome: ($scope) ->

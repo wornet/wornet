@@ -384,7 +384,7 @@ do ->
 			'.status-images'
 			($form, e) ->
 				enable = (enabled = true) ->
-					$form.find('input[type="submit"]').prop 'disabled', ! enabled
+					$('.publish input').prop 'disabled', ! enabled
 				enable false
 				$container = $form.find '.upload-container'
 				$container.data 'save-html', $container.html()
@@ -398,6 +398,7 @@ do ->
 					$.each $form.find('input[type="file"]')[0].files, (index) ->
 						formData.append 'photo', @
 						return
+
 					formData.append 'album', $scope.currentAlbum._id || "new"
 					formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
@@ -412,7 +413,10 @@ do ->
 						if e.lengthComputable
 							percent = Math.round(e.loaded * 100 / e.total) + '%'
 							$progress.css width: percent
-							$label.text percent
+							$label
+								.css "font-size": "30px"
+								.css "margin-top": "20px"
+								.text percent
 						return
 
 					xhr.onerror = ->

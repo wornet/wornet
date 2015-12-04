@@ -149,36 +149,48 @@ StatusPackage =
 			else
 				albums = []
 				count = status.images.length
+				lastSelectedAlbum = req.data.status.lastSelectedAlbum
+				dataAlbum = req.data.album
 				if count
-					status.images.each ->
-						photoId = PhotoPackage.urlToId @src
-						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
-							warn err if err
-							if photo and ! albums.contains photo.album, equals
-								albums.push photo.album
-							unless --count
-								if albums.length
-									Album.find _id: $in: albums, (err, albums) ->
-										if albums and albums.length
-											if originalStatus
-												originalStatus.album = albums[0]._id
-												originalStatus.albumName = albums[0].name
-												originalStatus.save()
-											count = albums.length
-											albums.each (key, album) ->
-												req.getUserById album.user, (err, user) =>
-													UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
-														if err
-															warn err
-													@refreshPreview (err) ->
-														if err
-															warn err
-														unless --count
-															done status
-										else
-											done status
-								else
-									done status
+					next = (album) ->
+						status.images.each ->
+							photoId = PhotoPackage.urlToId @src
+							PhotoPackage.publish req, photoId, status._id, album, (err, photo) ->
+								warn err if err
+								if photo and ! albums.contains photo.album, equals
+									albums.push photo.album
+								unless --count
+									if albums.length
+										Album.find _id: $in: albums, (err, albums) ->
+											if albums and albums.length
+												if originalStatus
+													originalStatus.album = albums[0]._id
+													originalStatus.albumName = albums[0].name
+													originalStatus.save()
+												count = albums.length
+												albums.each (key, album) ->
+													req.getUserById album.user, (err, user) =>
+														UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
+															if err
+																warn err
+														@refreshPreview (err) ->
+															if err
+																warn err
+															unless --count
+																done status
+											else
+												done status
+									else
+										done status
+					if lastSelectedAlbum._id is "new" and dataAlbum and dataAlbum.name
+						Album.create
+							name: dataAlbum.name
+							description: dataAlbum.description
+							user: req.user._id
+						, (err, album) ->
+							next album
+					else
+						next lastSelectedAlbum
 				else
 					done status
 
