@@ -6,7 +6,7 @@
 			span.users(ng-repeat="(index, user) in chat.users" data-hashed-id="{{ user.hashedId }}")
 				if index > 0
 					=", "
-				+link("/user/profile/{{ user.hashedId }}/{{ user.name.full | urlencode }}", "{{ user.name.full }}")(ng-click="$event.stopPropagation()")
+				+link("/{{ user.uniqueURLID }}", "{{ user.name.full }}")(ng-click="$event.stopPropagation()")
 				| &nbsp;
 				span(ng-if="chat.newMessages")
 					=s('(')
@@ -16,7 +16,7 @@
 			.message(ng-repeat="message in chat.messages")
 				span.ok(ng-show="message.ok")
 					+half('ok')
-				a(href="/user/profile/{{ message.from.hashedId }}/{{ message.from.name.full }}" ng-show="message.from && message.from.thumb50 && message.from.name")
+				a(href="/{{ message.from.uniqueURLID }}" ng-show="message.from && message.from.thumb50 && message.from.name")
 					img.received(ng-src="{{ message.from.thumb50 }}" data-user-thumb="{{ message.from.hashedId }}" data-thumb-size="50")
 				.content.word-wrap(class="{{ message.from ? 'received' : 'sent' }}" ng-bind-html="message.content")
 				.date(data-date="{{ message.date }}" data-date-delay="180" class="{{ message.from ? 'date-left' : 'date-right' }}")

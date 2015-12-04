@@ -23,7 +23,7 @@
 		div(ng-switch-default)=s("Format de média inconnu")
 	.modal-footer
 		span.info(ng-if="loadedMedia.user")
-			a(href="/user/profile/{{ loadedMedia.user.hashedId }}/{{ loadedMedia.user.name.full | urlencode }}")
+			a(href="/{{ loadedMedia.user.uniqueURLID }}")
 				img.thumb(ng-src="{{ loadedMedia.user.thumb50 }}" alt="{{ loadedMedia.user.name.full }}")
 				| &nbsp; {{ loadedMedia.user.name.full }}
 			| &nbsp; | &nbsp; 

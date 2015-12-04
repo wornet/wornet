@@ -451,7 +451,7 @@ module.exports = (router) ->
 							done = ->
 								UserAlbums.removeAlbum req.user, id, (err) ->
 									req.flash 'profileSuccess', s("Album supprimé")
-									res.json goingTo: '/user/profile'
+									res.json goingTo: '/' + req.user.uniqueURLID
 							if strval(req.user.photoAlbumId) is strval(id)
 								updateUser req, photoAlbumId: null, done
 							else if strval(req.user.sharedAlbumId) is strval(id)
@@ -743,7 +743,7 @@ module.exports = (router) ->
 			else
 				if users.length
 					user = users[0]
-					res.redirect '/user/profile/' + user.hashedId + '/' + encodeURIComponent user.name.full
+					res.redirect '/' + user.uniqueURLID
 				else
 					res.notFound()
 

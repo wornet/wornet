@@ -5,15 +5,14 @@ block body
 		+data('at', profile.hashedId)
 		- var init = "isMe = " + isMe + ";"
 		- init += "profileFirstName = " + JSON.stringify(profile.firstName) + ";"
-		- init += "profileHashedId = " + JSON.stringify(profile.hashedId) + ";"
-		- init += "profileFullName = " + JSON.stringify(profile.fullName) + ";"
+		- init += "profileURLId = " + JSON.stringify(profile.uniqueURLID) + ";"
 		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init).medias-block
 			h3(ng-class="{ myMedias: isMe }")
 				if isMe
 					=s("Mes medias").toUpperCase() + ' '
 					span.album-number(ng-bind-html="nbAlbum()")
 				else
-					a(href="/user/profile/{{ profileHashedId }}/{{ profileFullName }}")
+					a(href="/{{ profileURLId }}")
 						=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
 					span.album-number(ng-bind-html="nbAlbum()")
 			hr

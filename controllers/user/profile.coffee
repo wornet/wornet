@@ -11,11 +11,21 @@ syncUserPhotos = (userModifications, photo) ->
 module.exports = (router) ->
 
 	router.get '', (req, res) ->
-		UserPackage.renderProfile req, res
+		res.redirect '/' + req.user.uniqueURLID
+		# UserPackage.renderProfile req, res
 
 	router.get '/:id/:name', (req, res) ->
-		res.locals.friendAsked = req.flash 'friendAsked'
-		UserPackage.renderProfile req, res, req.params.id
+		if req.session.publicAccountByHashedId[req.params.id]
+			res.redirect '/' + req.session.publicAccountByHashedId[req.params.id]
+		else
+			User.findOne
+				_id: cesarRight req.params.id
+			, (err, user) ->
+				req.session.publicAccountByHashedId[req.params.id] = user.uniqueURLID
+				req.session.save()
+				res.redirect '/' + user.uniqueURLID
+		# res.locals.friendAsked = req.flash 'friendAsked'
+		# UserPackage.renderProfile req, res, req.params.id
 
 	router.post '/edit', (req, res) ->
 		# When user edit his profile
@@ -24,7 +34,7 @@ module.exports = (router) ->
 			updateUser req, userModifications, (err) ->
 				if err
 					req.flash 'profileErrors', err
-				res.redirect '/user/profile'
+				res.redirect '/' + req.user.uniqueURLID
 			###
 			User.findById req.user.id, (err, user) ->
 				if user

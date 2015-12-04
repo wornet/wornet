@@ -233,8 +233,8 @@ StatusPackage =
 								forBestFriends: at is null
 								notice: [
 									img +
-									jd 'span(data-href="/user/profile/' +
-									place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + status._id + '") ' +
+									jd 'span(data-href="/' +
+									place.uniqueURLID + '#' + status._id + '") ' +
 									if at is null
 										s("{username} a publié un statut.", username: req.user.fullName)
 									else

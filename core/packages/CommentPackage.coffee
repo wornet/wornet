@@ -53,8 +53,8 @@ CommentPackage =
 		generateNotice = (text) ->
 			[
 				img +
-				jd 'span(data-href="/user/profile/' +
-				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+				jd 'span(data-href="/' +
+				statusPlace.uniqueURLID + '#' + status._id + '") ' +
 					text
 			]
 		commentatorsFriends = commentator.friends.column 'hashedId'

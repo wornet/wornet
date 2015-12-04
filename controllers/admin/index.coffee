@@ -33,7 +33,7 @@ module.exports = (router) ->
 			id = cesarRight req.params.hashedId
 			User.findById id, (err, user) ->
 				auth.auth req, res, user
-				res.redirect '/user/profile'
+				res.redirect '/' + user.uniqueURLID
 
 		# http links to https
 		adminOnly '/users', (info) ->

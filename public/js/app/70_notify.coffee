@@ -62,7 +62,7 @@ waitForNotify = ->
 							deleteFriendAsk id
 							unless exists '#asks-for-friend .friend-ask[data-id="' + id + '"]'
 								$('#asks-for-friend').append('<div class="alert alert-success friend-ask" data-id="' + id + '">' +
-									'<a href="/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name) + '">' +
+									'<a href="/' + friend.uniqueURLID + '">' +
 										'<img class="thumb" src="' + friend.thumb50 + '" alt="' + safeHtml(name) + '" data-id="' + friend.hashedId + '">' +
 									'</a>' +
 									'<div class="shift">' +
@@ -84,7 +84,7 @@ waitForNotify = ->
 							friend = notification.user
 							id = notification.id
 							name = friend.name.full
-							href = '/user/profile/' + friend.hashedId + '/' + encodeURIComponent(name)
+							href = '/' + friend.uniqueURLID
 							$friends = $ '#friends'
 							if exists $friends
 								idAttr = 'data-id="' + friend.hashedId + '"'
