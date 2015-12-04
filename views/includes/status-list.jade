@@ -33,17 +33,17 @@
 				=s("Supprimer")
 	.status-author
 		.status-users-thumb
-			a(ng-href="/user/profile/{{ status.author.hashedId }}/{{ status.author.name.full | urlencode }}" ng-if="status.author.hashedId")
+			a(ng-href="/{{ status.author.uniqueURLID }}" ng-if="status.author.hashedId")
 				img(ng-src="{{ status.author.thumb50 }}" data-user-thumb="{{ status.author.hashedId }}" data-thumb-size="50")
-			a(ng-href="/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}" ng-if="status.at")
+			a(ng-href="/{{ status.at.uniqueURLID }}" ng-if="status.at")
 				img(ng-src="{{ status.at.thumb50 }}" data-user-thumb="{{ status.at.hashedId }}" data-thumb-size="50")
 		div
-			+link("/user/profile/{{ status.author.hashedId }}/{{ status.author.name.full | urlencode }}", "{{ status.author.name.full }}")(ng-if="status.author.hashedId")
+			+link("/{{ status.author.uniqueURLID }}", "{{ status.author.name.full }}")(ng-if="status.author.hashedId")
 			a(ng-if="! status.author.hashedId") {{ status.author.name.full }}
 		div(ng-if="status.at")
 			//- +half('chevron-right')
 			span.btn.icon-arrow-right
-			+link("/user/profile/{{ status.at.hashedId }}/{{ status.at.name.full | urlencode }}", "{{ status.at.name.full }}")
+			+link("/{{ status.at.uniqueURLID }}", "{{ status.at.name.full }}")
 	.date(data-date="{{ status.date }}" ng-if="status.author.hashedId")
 		|&nbsp;
 	.status-content
@@ -116,7 +116,7 @@
 									=s("Supprimer")
 					.comment-author
 						img(ng-src="{{ comment.author.thumb50 }}" data-user-thumb="{{ comment.author.hashedId }}" data-thumb-size="50")
-						+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
+						+link("/{{ comment.author.uniqueURLID }}", "{{ comment.author.name.full }}")
 					.date(data-date="{{ comment.date }}")
 						|&nbsp;
 					.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content")

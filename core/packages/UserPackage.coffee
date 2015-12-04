@@ -313,12 +313,12 @@ UserPackage =
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
-									sendNotice me, friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+									sendNotice me, friend.askedFrom, '<span data-href="/' + me.uniqueURLID + '">' +
 										img + " " + s("{username} a accepté votre demande !", dataWithUser) +
 										'</span>'
 									dataWithUser = username: jd 'span.username ' + user.fullName
 									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
-									sendNotice user, friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+									sendNotice user, friend.askedTo, '<span data-href="/' + user.uniqueURLID + '">' +
 										img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
 										'</span>'
 									end()

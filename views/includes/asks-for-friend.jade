@@ -2,7 +2,7 @@
 	each friend, id in friendAsks
 		if friend.askedTo
 			.alert.alert-success.friend-ask(data-id=id)
-				a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.name.full))
+				a(href="/" + friend.uniqueURLID)
 					img(src=friend.thumb50 alt=friend.name.full data-id=friend.hashedId).thumb
 				- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
 				.shift

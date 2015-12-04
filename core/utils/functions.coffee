@@ -299,8 +299,8 @@ module.exports =
 			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
 				done img +
-				jd 'span(data-href="/user/profile/' +
-				place.hashedId + '/' + encodeURIComponent(place.name.full) + (if attachedStatus then '#' + attachedStatus._id else '') + '") ' +
+				jd 'span(data-href="/' +
+				place.uniqueURLID + (if attachedStatus then '#' + attachedStatus._id else '') + '") ' +
 					text
 
 			if notice.user and notice.place and notice.launcher

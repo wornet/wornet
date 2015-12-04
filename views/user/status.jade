@@ -39,16 +39,16 @@ block body
 						=s("Supprimer")
 			.status-author
 				.status-users-thumb
-					a(ng-href="/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}" ng-if="statusToDisplay.author.hashedId")
+					a(ng-href="/{{ statusToDisplay.author.uniqueURLID }}" ng-if="statusToDisplay.author.hashedId")
 						img(ng-src="{{ statusToDisplay.author.thumb50 }}" data-user-thumb="{{ statusToDisplay.author.hashedId }}" data-thumb-size="50")
-					a(ng-href="/user/profile/{{ statusToDisplay.at.hashedId }}/{{ statusToDisplay.at.name.full | urlencode }}" ng-if="statusToDisplay.at")
+					a(ng-href="/{{ statusToDisplay.at.uniqueURLID }}" ng-if="statusToDisplay.at")
 						img(ng-src="{{ statusToDisplay.at.thumb50 }}" data-user-thumb="{{ statusToDisplay.at.hashedId }}" data-thumb-size="50")
 				div
-					+link("/user/profile/{{ statusToDisplay.author.hashedId }}/{{ statusToDisplay.author.name.full | urlencode }}", "{{ statusToDisplay.author.name.full }}")(ng-if="statusToDisplay.author.hashedId")
+					+link("/{{ statusToDisplay.author.uniqueURLID }}", "{{ statusToDisplay.author.name.full }}")(ng-if="statusToDisplay.author.hashedId")
 					a(ng-if="! statusToDisplay.author.hashedId") {{ statusToDisplay.author.name.full }}
 				div(ng-if="statusToDisplay.at")
 					+half('chevron-right')
-					+link("/user/profile/{{ statusToDisplay.at.hashedId }}/{{ statusToDisplay.at.name.full | urlencode }}", "{{ statusToDisplay.at.name.full }}")
+					+link("/{{ statusToDisplay.at.uniqueURLID }}", "{{ statusToDisplay.at.name.full }}")
 			.date(data-date="{{ statusToDisplay.date }}" ng-if="statusToDisplay.author.hashedId")
 				|&nbsp;
 			.status-content
@@ -118,7 +118,7 @@ block body
 											=s("Supprimer")
 							.comment-author
 								img(ng-src="{{ comment.author.thumb50 }}" data-user-thumb="{{ comment.author.hashedId }}" data-thumb-size="50")
-								+link("/user/profile/{{ comment.author.hashedId }}/{{ comment.author.name.full | urlencode }}", "{{ comment.author.name.full }}")
+								+link("/{{ comment.author.uniqueURLID }}", "{{ comment.author.name.full }}")
 							.date(data-date="{{ comment.date }}")
 								|&nbsp;
 							.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content | smilies")

@@ -8,8 +8,8 @@ birthDaysTask =
 				action: 'notice'
 				notice: [
 					img +
-					jd 'span(data-href="/user/profile/' +
-					@hashedId + '/' + encodeURIComponent(@fullName) + '") ' +
+					jd 'span(data-href="/' +
+					@uniqueURLID + '") ' +
 					s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: @fullName)
 				, 'birthday', @_id, null, @_id]
 

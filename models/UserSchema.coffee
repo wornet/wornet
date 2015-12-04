@@ -281,7 +281,9 @@ extend userSchema.methods,
 			'sex'
 			'photoAlbumId'
 			'sharedAlbumId'
+			'photoUploadAlbumId'
 			'accountConfidentiality'
+			'uniqueURLID'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]
