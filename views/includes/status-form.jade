@@ -1,105 +1,132 @@
 
-mixin statusForm(tabindex)
+//- mixin statusForm(tabindex)
+	
+
+//- ul.nav.nav-tabs(role="tablist")
+//- 	li(ng-click="status.containsMedias = false" ng-class="{ active: ! status.containsMedias }")
+//- 		a
+//- 			=s("Publier un statut")
+//- 	li(ng-click="containsMedias(status)" ng-class="{ active: status.containsMedias }")
+//- 		a
+//- 			=s("Publier une image")
+fieldset.status-form
+	h3=strtoupper(s("Publier un statut"))
 	- tabindex = tabindex || 90
-	+form()(ng-submit="send(status)")
-		block
+	+form()#status-form
 		+formControl("textarea").do-not-loose.counter(
 			maxlength=config.wornet.limits.displayStatusLength
 			tabindex=strval(tabindex+1)
 			ng-model="status.content"
 			placeholder=s("Quoi de neuf ?")
 		)
-		.alert.alert-info.status-confidentiality
-			if isAPublicAccount
-				=s("Visible par : tout le monde")
-			else
-				if isMe
-					=s("Visible par : vos amis")
-				else
-					=s("Visible par : votre ami {fullname} et ses amis", {fullname: profile.fullName})
-		.input-group-btn.publish
-			input&attributes(attributes)(type="submit" tabindex=strval(tabindex+2) value=s("Publier")).btn.btn-primary
-
-ul.nav.nav-tabs(role="tablist")
-	li(ng-click="status.containsMedias = false" ng-class="{ active: ! status.containsMedias }")
-		a
-			=s("Publier un statut")
-	li(ng-click="containsMedias(status)" ng-class="{ active: status.containsMedias }")
-		a
-			=s("Publier une image")
-fieldset.tab.status-form(ng-show="! status.containsMedias")
-	//- h3=strtoupper(s("Publier un statut"))
-	+statusForm()(autofocus)
-fieldset.tab.status-medias-form(ng-show="status.containsMedias")
-	//- h3=strtoupper(s("Publier un média"))
-	div(ng-switch="media.step")
-		div(ng-switch-when="create-album")
+		
+	.status-medias-form(ng-show="status.containsMedias")
+		iframe(name="status-upload")
+		+form("/user/photo", "FILE").status-images(target="status-upload")
+			.medias-uploaded(ng-if="medias.images.length > 0")
+					//- h3=s("Images")
+					//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
+				span.image-box(ng-repeat="image in medias.images")
+					img(ng-src="{{ image.src }}" alt="{{ image.name }}")
+					+half('remove-sign')(ng-click="removeMedia(image)")
+				.upload-container
+					.upload-label
+						=s("+")
+					input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
+					input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
+		.album-select.col-xs-12(ng-if="onMe")
+			select#album-select.col-xs-12.col-sm-6(ng-change="selectAlbum(item)" ng-model="item")
+				option(value="new")
+					=s("Créer un album")
+				option(ng-repeat="album in albums" ng-value="album._id" ng-selected='album._id == photoUploadAlbumId' ng-bind-html="album.name")
+		div(ng-show="status.newAlbum")
 			+form()(ng-submit="createAlbum(album)")
 				+formControl().do-not-loose.counter(focus required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
-				textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
-				.col-xs-12.col-sm-6.col-sm-offset-3
-					input(type="submit" tabindex="103" value=s("Créer")).btn.btn-primary.col-xs-12
-		div(ng-switch-when="select-album")
-			.album-select.col-xs-12
-				label.col-xs-12.col-sm-4.col-sm-offset-1
-					=s('Selectionner un album : ')
-				select.col-xs-12.col-sm-6(ng-options="album as album.name for album in albums" ng-model="item" ng-change="selectAlbum(item)")
-			.cb.col-xs-12.col-sm-6.col-sm-offset-3
-				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
-					=s("Créer un album")
-		div.add-media(ng-switch-when="add")
-			.col-sm-6.col-xs-12.fit
-				h4.glued.big-line
-					a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
-						+half('folder-open')
-						|&nbsp; {{ currentAlbum.name }}
-					span(ng-if="! currentAlbum._id")
-						+half('folder-open')
-						|&nbsp; {{ currentAlbum.name }}
-			.col-sm-6.col-xs-12.fit
-				a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111" ng-if="onMe")
-					=s("Sélectionner un autre album")
-			.col-sm-6.col-xs-12.fit.cb
-				iframe(name="status-upload")
-				+form("/user/photo", "FILE").status-images(target="status-upload")
-					.upload-container
-						.upload-label
-							=s("Ajouter des images")
-							br
-							small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
-						input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
-						input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
-					.medias-uploaded
-						div(ng-if="medias.images.length > 0")
-							h3=s("Images")
-							//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
-							span.image-box(ng-repeat="image in medias.images")
-								img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-								+half('remove-sign')(ng-click="removeMedia(image)")
-			.col-sm-6.col-xs-12.fit
-				+form()(ng-submit="addMedia(link)")
-					.input-group
-						+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))
-						.input-group-btn
-							button(type="submit" tabindex="114").btn.btn-primary
-								+half('plus')
-				.medias
-					div(ng-if="medias.videos.length > 0")
-						h3=s("Vidéos")
-						iframe(ng-repeat="video in medias.videos" ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
-					div(ng-if="medias.links.length > 0")
-						h3=s("Liens")
-						a(ng-repeat="link in medias.links" tagret="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
-				.cb
-			.col-xs-12.fit
-				+statusForm(114)(ng-disabled="medias.length == 0")
-					input(type="hidden" ng-model="medias" name="medias")
-				
-		div(ng-switch-default)
-			.col-sm-6.col-xs-12.fit
-				a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121")
-					=s("Créer un album")
-			.col-sm-6.col-xs-12.xs-margin-up.fit
-				a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")
-					=s("Utiliser un album existant")
+				textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" id="album-description" placeholder=s("Description (facultatif)"))
+	.cb
+	a.btn.add-medias(ng-click="containsMedias(status)")
+		+glyph("camera")
+	.alert.alert-info.status-confidentiality
+		if isAPublicAccount
+			=s("Visible par : tout le monde")
+		else
+			if isMe
+				=s("Visible par : vos amis")
+			else
+				=s("Visible par : votre ami {fullname} et ses amis", {fullname: profile.fullName})
+	.publish
+		input(autofocus type="button" tabindex=strval(tabindex+2) value=s("Publier") ng-click="send(status)").btn.btn-primary
+
+		
+	//- h3=strtoupper(s("Publier un média"))
+	//- div(ng-switch="media.step")
+	//- 	div(ng-switch-when="create-album")
+	//- 		+form()(ng-submit="createAlbum(album)")
+	//- 			+formControl().do-not-loose.counter(focus required tabindex="101" ng-model="album.name" name="name" id="album-name" maxlength=config.wornet.limits.albumNameLength placeholder=s("Nom de l'album"))
+	//- 			textarea.form-control.do-not-loose(rows="3" tabindex="102" ng-model="album.description" placeholder=s("Description (facultatif)"))
+	//- 			.col-xs-12.col-sm-6.col-sm-offset-3
+	//- 				input(type="submit" tabindex="103" value=s("Créer")).btn.btn-primary.col-xs-12
+	//- 	div(ng-switch-when="select-album")
+	//- 		.album-select.col-xs-12
+	//- 			label.col-xs-12.col-sm-4.col-sm-offset-1
+	//- 				=s('Selectionner un album : ')
+	//- 			select.col-xs-12.col-sm-6(ng-options="album as album.name for album in albums" ng-model="item" ng-change="selectAlbum(item)")
+	//- 		.cb.col-xs-12.col-sm-6.col-sm-offset-3
+	//- 			a.btn.bar(ng-click="media.step = 'create-album'" tabindex="104")
+	//- 				=s("Créer un album")
+	//- 	div.add-media(ng-switch-when="add")
+	//- 		.col-sm-6.col-xs-12.fit
+	//- 			h4.glued.big-line
+	//- 				a(href="/user/album/{{ currentAlbum._id }}" ng-if="currentAlbum._id")
+	//- 					+half('folder-open')
+	//- 					|&nbsp; {{ currentAlbum.name }}
+	//- 				span(ng-if="! currentAlbum._id")
+	//- 					+half('folder-open')
+	//- 					|&nbsp; {{ currentAlbum.name }}
+	//- 		.col-sm-6.col-xs-12.fit
+	//- 			a.glued.btn.bar(ng-click="media.step = 'select-album'" tabindex="111" ng-if="onMe")
+	//- 				=s("Sélectionner un autre album")
+	//- 		.col-sm-6.col-xs-12.fit.cb
+	//- 			iframe(name="status-upload")
+	//- 			+form("/user/photo", "FILE").status-images(target="status-upload")
+	//- 				.upload-container
+	//- 					.upload-label
+	//- 						=s("Ajouter des images")
+	//- 						br
+	//- 						small=s("Glissez les images ici ou cliquez pour ouvrir une fenêtre d'import")
+	//- 					input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")
+	//- 					input.upload(type="file" accept="image/*" name="photo" multiple="multiple" tabindex="112")
+	//- 				.medias-uploaded
+	//- 					div(ng-if="medias.images.length > 0")
+	//- 						h3=s("Images")
+	//- 						//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
+	//- 						span.image-box(ng-repeat="image in medias.images")
+	//- 							img(ng-src="{{ image.src }}" alt="{{ image.name }}")
+	//- 							+half('remove-sign')(ng-click="removeMedia(image)")
+	//- 		.col-sm-6.col-xs-12.fit
+	//- 			+form()(ng-submit="addMedia(link)")
+	//- 				.input-group
+	//- 					+formControl(ng-model="link.href" tabindex="113" placeholder=s("Ajouter des vidéos, liens…"))
+	//- 					.input-group-btn
+	//- 						button(type="submit" tabindex="114").btn.btn-primary
+	//- 							+half('plus')
+	//- 			.medias
+	//- 				div(ng-if="medias.videos.length > 0")
+	//- 					h3=s("Vidéos")
+	//- 					iframe(ng-repeat="video in medias.videos" ng-src="{{ video.href }}" frameborder="0" allowfullscreen)
+	//- 				div(ng-if="medias.links.length > 0")
+	//- 					h3=s("Liens")
+	//- 					a(ng-repeat="link in medias.links" tagret="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href }}
+	//- 			.cb
+	//- 		.col-xs-12.fit
+	//- 			+statusForm(114)(ng-disabled="medias.length == 0")
+	//- 				input(type="hidden" ng-model="medias" name="medias")
+	//- 			
+	//- 	div(ng-switch-default)
+	//- 		.col-sm-6.col-xs-12.fit
+	//- 			a.btn.bar(ng-click="media.step = 'create-album'" tabindex="121")
+	//- 				=s("Créer un album")
+	//- 		.col-sm-6.col-xs-12.xs-margin-up.fit
+	//- 			a.btn.bar(ng-click="media.step = 'select-album'" tabindex="122" ng-disabled="albums.length == 0")
+	//- 				=s("Utiliser un album existant")
 	.cb

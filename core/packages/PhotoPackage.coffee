@@ -53,12 +53,17 @@ PhotoPackage =
 			delete @photos[photoId]
 			deleteCookie req, photoId
 
-	publish: (req, photoId, statusId, done) ->
+	publish: (req, photoId, statusId, lastSelectedAlbum = null, done) ->
+		if "function" is typeof lastSelectedAlbum
+			done = lastSelectedAlbum
+			lastSelectedAlbum = null
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
-			values =
+			values = {
 				status: 'published'
 				$push: statusList: statusId
+				}.with if lastSelectedAlbum
+					album: lastSelectedAlbum._id
 			options =
 				safe: true
 			Photo.findByIdAndUpdate photoId, values, options, done
