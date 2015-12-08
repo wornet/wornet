@@ -1445,23 +1445,24 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			scanAllLinks $scope, status.content || ''
-			data = data:
-				status: status
-				at: at
-				medias: $scope.medias || null
-			if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
-				$.extend data.data,
-					album:
-						name: $("#album-name").val()
-						description: $("#album-description").val()
-			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
-				success: (data) ->
-					$('.points').trigger 'updatePoints', [data.newStatus, true]
-					setRecentStatus data, false
-					if window.refreshMediaAlbums
-						window.refreshMediaAlbums()
-			resetStatus()
+			if status.content
+				scanAllLinks $scope, status.content || ''
+				data = data:
+					status: status
+					at: at
+					medias: $scope.medias || null
+				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
+					$.extend data.data,
+						album:
+							name: $("#album-name").val()
+							description: $("#album-description").val()
+				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
+					success: (data) ->
+						$('.points').trigger 'updatePoints', [data.newStatus, true]
+						setRecentStatus data, false
+						if window.refreshMediaAlbums
+							window.refreshMediaAlbums()
+				resetStatus()
 
 			return
 
