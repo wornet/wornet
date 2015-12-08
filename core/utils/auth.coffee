@@ -173,8 +173,9 @@ exports.isAuthenticated = (req, res, next) ->
 				for regexp in publicAccountList
 					if regexp.test route
 						route.replace regexp, (all, hashedId) ->
-							if req.session.publicAccountByHashedId and req.session.publicAccountByHashedId[hashedId]
-								isARouteForPublicAccount = true
+							cache "publicAccountByHashedId", (publicAccountByHashedId)->
+								if publicAccountByHashedId and publicAccountByHashedId[hashedId]
+									isARouteForPublicAccount = true
 
 				# If the URL is in the access restricted list
 				if inList route, admin

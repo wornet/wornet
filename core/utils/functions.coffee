@@ -57,8 +57,8 @@ module.exports =
 	@param function to pass the result
 	###
 	memGet: (key, done) ->
-		mem.get key, (err, result) ->
-			if !err and result is false
+		redis.get key, (err, result) ->
+			if !err and result is null
 				err = 'not found'
 			else
 				try
@@ -69,53 +69,63 @@ module.exports =
 			done err, result
 	###
 	Set a cached mixed value
-	@param string key for cached value in memcached store engine
-	@param int time to keep the value in cache before calculate it again (seconds)
+	@param string key for cached value in redis store engine
 	@param mixed value
-	@param function to pass the result
 	###
-	memSet: (key, value, lifetime, done) ->
+	memSet: (key, value) ->
 		try
 			value = JSON.stringify value
-			mem.set key, value, lifetime, done
+			redis.set key, value
 		catch e
 			done 'json: ' + e
+
+	###
+	Delete a cached mixed value
+	@param String key for cached value
+	###
+	memDel: (key) ->
+		try
+			redis.del key
+		catch e
+			warn e
 	###
 	Cache a value
 	@param string key for cached value in memcached store engine
-	@param int time to keep the value in cache before calculate it again (seconds)
 	@param function to execute to calculate value when it's not in cache
+	@param boolean for delete value
 	@param function to pass the result
 	###
-	cache: (key, lifetime, calculate, done) ->
+	cache: (key, calculate, toDelete, done) ->
 		if typeof(key) is 'function'
-			done = lifetime
+			done = toDelete
+			toDelete = calculate
 			calculate = key
 			key = codeId()
-			lifetime = 0
-		else if typeof(lifetime) is 'function'
+		else if typeof(calculate) is 'function' and typeof(toDelete) is 'function' and done is undefined
+			done = toDelete
+			toDelete = false
+		else if typeof(calculate) is 'function' and toDelete is undefined and done is undefined
 			done = calculate
-			calculate = lifetime
-			lifetime = 0
-		else
-			lifetime = if lifetime instanceof Date
-				Math.round((time() - time(lifetime)) / 1000)
-			else
-				intval lifetime
-		if lifetime < 1
-			lifetime = config.wornet.cache.defaultLifetime
+			calculate = null
+		else if typeof(calculate) is 'boolean'
+			done = toDelete
+			toDelete = calculate
+			calculate = null
+		if toDelete is undefined
+			toDelete = false
 		if config.wornet.cache.enabled
 			memGet key, (err, result) ->
-				if err or result is false
-					calculate (value) ->
-						if value is false
+				if result and toDelete
+					memDel key
+					done()
+				else if calculate
+					calculate result, (value) ->
+						if value is null
 							console.warn "[memcached] cannot store a false value"
 							console.trace()
-						done value, false
-						memSet key, value, lifetime, (err) ->
-							if err
-								console.warn "[memcached] " + err
-								console.trace()
+						done value, null
+						if value isnt null and result isnt value
+							memSet key, value
 				else
 					done result, true
 				null
@@ -1466,36 +1476,41 @@ module.exports =
 	@return user
 	###
 	isAPublicAccount: (req, id, isHashedId, done) ->
-		if !req.session.publicAccountByUrlId
-			req.session.publicAccountByUrlId = {}
-		if !req.session.publicAccountByHashedId
-			req.session.publicAccountByHashedId = {}
-
-		if req.session[if isHashedId then "publicAccountByHashedId" else "publicAccountByUrlId"][id]
-			done true, if isHashedId then id else req.session.publicAccountByUrlId[id]
-		else
-			where = if isHashedId
-				_id: cesarRight id
+		cache 'publicAccountByHashedId', (publicAccountByHashedId) ->
+			if !publicAccountByHashedId
+				modifiedPublicAccountByHashedId = {}
 			else
-				uniqueURLID: id
-			User.findOne where, (err, user) ->
-				warn err if err
-				if user
-					if user.accountConfidentiality is "public"
-						req.session.publicAccountByHashedId[user.hashedId] = user.uniqueURLID
-						req.session.publicAccountByUrlId[user.uniqueURLID] = user.hashedId
-						req.session.save (err) ->
-							warn err if err
-							req.session.reload (err) ->
-								warn err if err
-						done true, user.hashedId
-					else
-						delete req.session.publicAccountByHashedId[user.hashedId]
-						delete req.session.publicAccountByUrlId[user.uniqueURLID]
-						req.session.save (err) ->
-							warn err if err
-							req.session.reload (err) ->
-								warn err if err
-						done false, user.hashedId, user
+				modifiedPublicAccountByHashedId = publicAccountByHashedId.copy()
+			cache 'publicAccountByUrlId', (publicAccountByUrlId) ->
+				if !publicAccountByUrlId
+					modifiedPublicAccountByUrlId = {}
 				else
-					done false, null, null
+					modifiedPublicAccountByUrlId = publicAccountByUrlId.copy()
+				if [if isHashedId then "publicAccountByHashedId" else "publicAccountByUrlId"][id]
+					done true, if isHashedId then id else publicAccountByUrlId[id]
+				else
+					where = if isHashedId
+						_id: cesarRight id
+					else
+						uniqueURLID: id
+					User.findOne where, (err, user) ->
+						warn err if err
+						if user
+							end = (isAPublicAccount, hashedId, user) ->
+								cache 'publicAccountByHashedId', (publicAccountByHashedId, cacheDone) ->
+									cacheDone modifiedPublicAccountByHashedId
+								, ->
+									cache 'publicAccountByUrlId', (publicAccountByUrlId, cacheDone) ->
+										cacheDone modifiedPublicAccountByUrlId
+									, ->
+										done isAPublicAccount, hashedId, user
+							if user.accountConfidentiality is "public"
+								modifiedPublicAccountByHashedId[user.hashedId] = user.uniqueURLID
+								modifiedPublicAccountByUrlId[user.uniqueURLID] = user.hashedId
+								end true, user.hashedId
+							else
+								delete modifiedPublicAccountByHashedId[user.hashedId]
+								delete modifiedPublicAccountByUrlId[user.uniqueURLID]
+								end false, user.hashedId, user
+						else
+							done false, null, null

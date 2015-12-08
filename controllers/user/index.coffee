@@ -83,55 +83,61 @@ module.exports = (router) ->
 				req.flash 'signinErrors', UserErrors.MISSING_SEX
 				res.redirect signinUrl
 			else
-				# A full name must contains a space but is not needed at the first step
-				User.create
-					name:
-						first: req.body['name.first']
-						last: req.body['name.last']
-					registerDate: new Date
-					email: req.body.email
-					password: req.body.password
-					sex: req.body.sex
-					birthDate: inputDate req.body.birthDate
-				, (saveErr, user) ->
-					if saveErr
-						switch (saveErr.code || 0)
-							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
-							else
-								err = saveErr.err || strval(saveErr)
-								valErr = 'ValidationError:'
-								if err.indexOf(valErr) is 0
-									err = s("Erreur de validation :") + err.substr(valErr.length)
-									errors =
-										'invalid first name': s("prénom invalide")
-										'invalid last name': s("nom invalide")
-										'invalid birth date': s("date de naissance invalide")
-										'invalid phone number': s("numéro de téléphone invalide")
-										'invalid e-mail address': s("adresse e-mail invalide")
-									for code, message of errors
-										err = err.replace code, message
-								req.flash 'signinErrors', err
-						res.redirect signinUrl
-					else
-						# if "Se souvenir de moi" est coché
-						if req.body.remember?
-							auth.remember res, user._id
-						# Put user in session
-						auth.auth req, res, user, ->
-							res.redirect if user then '/user/welcome' else signinUrl
-							unless user.role is 'confirmed'
-								confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-								confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-								message = jdMail 'welcome',
-									email: email
-									url: confirmUrl
-								MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
-						emailUnsubscribed email, (err, unsub) ->
-							if unsub
-								Counter.findOne name: 'resubscribe', (err, counter) ->
-									if counter
-										counter.inc()
+				regexToCheck =  new RegExp replaceAccent (req.body['name.first'] + '\.' + req.body['name.last'] + '.*').toLowerCase()
+				User.count
+					uniqueURLID: regexToCheck
+				, (err, count) ->
+					warn err if err
+					# A full name must contains a space but is not needed at the first step
+					User.create
+						name:
+							first: req.body['name.first']
+							last: req.body['name.last']
+						registerDate: new Date
+						email: req.body.email
+						password: req.body.password
+						sex: req.body.sex
+						birthDate: inputDate req.body.birthDate
+						uniqueURLID: replaceAccent (req.body['name.first'] + '.' + req.body['name.last'] + '.' + count).toLowerCase()
+					, (saveErr, user) ->
+						if saveErr
+							switch (saveErr.code || 0)
+								when Errors.DUPLICATE_KEY
+									req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+								else
+									err = saveErr.err || strval(saveErr)
+									valErr = 'ValidationError:'
+									if err.indexOf(valErr) is 0
+										err = s("Erreur de validation :") + err.substr(valErr.length)
+										errors =
+											'invalid first name': s("prénom invalide")
+											'invalid last name': s("nom invalide")
+											'invalid birth date': s("date de naissance invalide")
+											'invalid phone number': s("numéro de téléphone invalide")
+											'invalid e-mail address': s("adresse e-mail invalide")
+										for code, message of errors
+											err = err.replace code, message
+									req.flash 'signinErrors', err
+							res.redirect signinUrl
+						else
+							# if "Se souvenir de moi" est coché
+							if req.body.remember?
+								auth.remember res, user._id
+							# Put user in session
+							auth.auth req, res, user, ->
+								res.redirect if user then '/user/welcome' else signinUrl
+								unless user.role is 'confirmed'
+									confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+									confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+									message = jdMail 'welcome',
+										email: email
+										url: confirmUrl
+									MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
+							emailUnsubscribed email, (err, unsub) ->
+								if unsub
+									Counter.findOne name: 'resubscribe', (err, counter) ->
+										if counter
+											counter.inc()
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
@@ -256,31 +262,41 @@ module.exports = (router) ->
 
 		updateUser req, userModifications, (err) ->
 			err = humanError err
-			save = ->
-				if userModifications.password
-					delete userModifications.password
-			if req.xhr
-				if err
-					res.serverError err
-				else
-					save()
-					res.json()
-			else
-				if err or publicDataError
-					if err instanceof PublicError
-						req.flash 'settingsErrors', err.toString()
-					else if err
-						switch err.code
-							when 11000
-								req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
-							else
-								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+			cache "publicAccountByHashedId", (publicAccountByHashedId, done) ->
+				if !publicAccountByHashedId
+					publicAccountByHashedId = {}
+				oldUrlId = publicAccountByHashedId[req.user.hashedId]
+				delete publicAccountByUrlId[oldUrlId]
+				publicAccountByUrlId[newUrlId] = req.user.hashedId
+				publicAccountByHashedId[req.user.hashedId] = newUrlId
+				done publicAccountByHashedId
+			, (publicAccountByHashedId) ->
+
+				save = ->
+					if userModifications.password
+						delete userModifications.password
+				if req.xhr
+					if err
+						res.serverError err
 					else
-						req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+						save()
+						res.json()
 				else
-					save()
-					req.flash 'settingsSuccess', s("Modifications enregistrées.")
-				res.redirect '/user/settings'
+					if err or publicDataError
+						if err instanceof PublicError
+							req.flash 'settingsErrors', err.toString()
+						else if err
+							switch err.code
+								when 11000
+									req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
+								else
+									req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+						else
+							req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+					else
+						save()
+						req.flash 'settingsSuccess', s("Modifications enregistrées.")
+					res.redirect '/user/settings'
 
 	toggleShutter = (req, res, opened) ->
 		updateUser req, openedShutter: opened, (err) ->
