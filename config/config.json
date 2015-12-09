@@ -263,7 +263,8 @@
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10,
-            "monthsBeforeRemoveNotice": 1
+            "monthsBeforeRemoveNotice": 1,
+            "urlId": 20
         },
 
         "lockFriendAsk": [
