@@ -91,47 +91,35 @@ module.exports =
 	###
 	Cache a value
 	@param string key for cached value in memcached store engine
-	@param function to execute to calculate value when it's not in cache
+	@param newValue for key
 	@param boolean for delete value
 	@param function to pass the result
 	###
-	cache: (key, calculate, toDelete, done) ->
-		if typeof(key) is 'function'
-			done = toDelete
-			toDelete = calculate
-			calculate = key
-			key = codeId()
-		else if typeof(calculate) is 'function' and typeof(toDelete) is 'function' and done is undefined
-			done = toDelete
+	cache: (key, newValue, toDelete, done) ->
+		if typeof(newValue) is 'function' and done is undefined
+			done = newValue
+			newValue = null
 			toDelete = false
-		else if typeof(calculate) is 'function' and toDelete is undefined and done is undefined
-			done = calculate
-			calculate = null
-		else if typeof(calculate) is 'boolean'
+		else if typeof(newValue) is 'boolean' and typeof(toDelete) is 'function' and done is undefined
 			done = toDelete
-			toDelete = calculate
-			calculate = null
-		if toDelete is undefined
-			toDelete = false
+			toDelete = newValue
+			newValue = null
+
 		if config.wornet.cache.enabled
 			memGet key, (err, result) ->
 				if result and toDelete
 					memDel key
 					done()
-				else if calculate
-					calculate result, (value) ->
-						if value is null
-							console.warn "[memcached] cannot store a false value"
-							console.trace()
-						done value, null
-						if value isnt null and result isnt value
-							memSet key, value
+				else if newValue isnt null and newValue isnt undefined
+						if done
+							done newValue, null
+						if result isnt newValue
+							memSet key, newValue
 				else
 					done result, true
 				null
 		else
-			calculate (value) ->
-				done value, false
+			done newValue, false
 		null
 	###
 	Unlink file and handle errors
@@ -1497,13 +1485,9 @@ module.exports =
 						warn err if err
 						if user
 							end = (isAPublicAccount, hashedId, user) ->
-								cache 'publicAccountByHashedId', (publicAccountByHashedId, cacheDone) ->
-									cacheDone modifiedPublicAccountByHashedId
-								, ->
-									cache 'publicAccountByUrlId', (publicAccountByUrlId, cacheDone) ->
-										cacheDone modifiedPublicAccountByUrlId
-									, ->
-										done isAPublicAccount, hashedId, user
+								cache 'publicAccountByHashedId', modifiedPublicAccountByHashedId
+								cache 'publicAccountByUrlId', modifiedPublicAccountByUrlId
+								done isAPublicAccount, hashedId, user
 							if user.accountConfidentiality is "public"
 								modifiedPublicAccountByHashedId[user.hashedId] = user.uniqueURLID
 								modifiedPublicAccountByUrlId[user.uniqueURLID] = user.hashedId
