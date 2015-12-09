@@ -8,19 +8,23 @@ app.onready ->
 		userToModify = users[inc]
 		if !userToModify
 			return
-		regexToCheck =  new RegExp replaceAccent (userToModify.name.first + '\.' + userToModify.name.last + '.*').toLowerCase()
+		regexToCheck =  new RegExp replaceAccent ( '^' + userToModify.name.first + '\.' + userToModify.name.last).toLowerCase()
 		User.count
 			uniqueURLID: regexToCheck
 		, (err, count) ->
 			warn err if err
+			urlId = if count
+				replaceAccent (userToModify.name.first + '.' + userToModify.name.last + '.' + count).toLowerCase()
+			else
+				replaceAccent (userToModify.name.first + '.' + userToModify.name.last).toLowerCase()
 			User.update
 				_id: userToModify._id
 			,
-				uniqueURLID: replaceAccent (userToModify.name.first + '.' + userToModify.name.last + '.' + count).toLowerCase()
+				uniqueURLID: urlId
 			, (err, newUser) ->
 				warn err if err
 				console['log'] "user : " + userToModify._id + " Nom : " + userToModify.name.full
-				console['log'] "uniqueURLID attribué : " + replaceAccent (userToModify.name.first + '.' + userToModify.name.last + '.' + count).toLowerCase()
+				console['log'] "uniqueURLID attribué : " + urlId
 				attributeId users, inc + 1
 
 	User.find
