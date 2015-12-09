@@ -392,7 +392,7 @@ Controllers =
 
 		$scope.send = (message, id) ->
 			if message.content and message.content.length
-				content = richText $scope, message.content, true
+				content = richText $scope, message.content, true, true
 				chatData =
 					date: new Date
 					content: content

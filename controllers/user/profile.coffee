@@ -22,11 +22,11 @@ module.exports = (router) ->
 				User.findOne
 					_id: cesarRight req.params.id
 				, (err, user) ->
-					cache 'publicAccountByHashedId', (publicAccountByHashedId, done) ->
-						publicAccountByHashedId[req.params.id] = user.uniqueURLID
-						done publicAccountByHashedId
-					, ->
-						res.redirect '/' + user.uniqueURLID
+					publicAccountByHashedId[req.params.id] = user.uniqueURLID
+					publicAccountByUrlId[user.uniqueURLID] = req.params.id
+					cache 'publicAccountByHashedId', publicAccountByHashedId
+					cache 'publicAccountByUrlId', publicAccountByUrlId
+					res.redirect '/' + user.uniqueURLID
 		# res.locals.friendAsked = req.flash 'friendAsked'
 		# UserPackage.renderProfile req, res, req.params.id
 

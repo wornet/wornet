@@ -15,9 +15,9 @@ UserPackage =
 		ids.sort()
 		ids.join '-'
 
-	areFriends: (a, b, calculate, done) ->
+	areFriends: (a, b, areFriends, done) ->
 		key = @getIDCouple a, b
-		cache 'friends-' + key, friendsCoupleCacheLifeTime, calculate, done
+		cache 'friends-' + key, areFriendss, done
 
 	cacheFriends: (a, b, areFriends = true) ->
 		key = @getIDCouple a, b
@@ -25,7 +25,7 @@ UserPackage =
 			1
 		else
 			0
-		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
+		memSet 'friends-' + key, areFriends
 
 	getAlbums: (userIds, done) ->
 		if 'function' is typeof limit
@@ -400,9 +400,7 @@ UserPackage =
 								if isMe or (! me) or empty friends
 									end false
 								else
-									self.areFriends me, profile, (done) ->
-										done friends.has id: me.id
-									, end
+									self.areFriends me, profile, (friends.has id: me.id), end
 							catch err
 								warn err
 								end false
