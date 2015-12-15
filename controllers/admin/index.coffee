@@ -97,6 +97,8 @@ module.exports = (router) ->
 			,
 				certifiedAccount: false
 			, (err, users) ->
+				if req.user
+					req.user.certifiedAccount = false
 				warn err if err
 				res.json()
 
@@ -113,6 +115,8 @@ module.exports = (router) ->
 			,
 				certifiedAccount: true
 			, (err, users) ->
+				if req.user
+					req.user.certifiedAccount = true
 				warn err if err
 				res.json()
 
