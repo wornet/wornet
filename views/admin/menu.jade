@@ -8,7 +8,7 @@ mixin btn(href, src)
 		block
 
 block body
-	.container:.well
+	.container: .well
 		+btn("stats", "admin/stats")
 			| Statistiques générales
 		+btn("stats/medias", "admin/stats")
@@ -17,3 +17,9 @@ block body
 			| Bouger
 		+btn("signalements", "admin/signalements")
 			| Signalements
+		if config.wornet.admin.certifier.indexOf(user.email) >= 0
+			a.btn(href="/admin/certification" style="width: 220px; height: 220px; padding: 20px; text-align: center; margin: 20px;")
+				+glyph("circle-ok")#glyph-certification
+				br
+				br
+				| Certifications

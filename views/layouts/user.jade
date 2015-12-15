@@ -102,6 +102,9 @@ block nav
 						ul.dropdown-menu.user.right(role='menu')
 							li: a(href="/" + user.uniqueURLID)
 									=s("Mon profil")
+							if config.wornet.admin.admin.indexOf(user.email) >= 0
+								li: a(href="/admin")
+									=s("Administration")
 							if config.wornet.agenda && config.wornet.agenda.enabled
 								li: a(href="/agenda")
 										=s("Mon agenda")

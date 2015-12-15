@@ -145,6 +145,25 @@
 
     "wornet": {
 
+        "admin": {
+            "god": [
+                "kylekatarnls@gmail.com",
+        		"jeremy.bayle87@hotmail.fr",
+        		"jeremy.bayle@wornet.fr"
+            ],
+            "admin": [
+                "manuel.costes@gmail.com",
+        		"bastien.miclo@gmail.com",
+        		"kylekatarnls@gmail.com",
+        		"jeremy.bayle87@hotmail.fr",
+        		"jeremy.bayle@wornet.fr"
+            ],
+            "certifier": [
+                "manuel.costes@gmail.com",
+                "manuel.costes@wornet.fr"
+            ]
+        },
+
         "app": {
             "enabled": false
         },

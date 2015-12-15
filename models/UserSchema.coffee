@@ -173,6 +173,10 @@ userSchema = BaseSchema.extend
 	photoUploadAlbumId:
 		type: ObjectId
 		ref: 'AlbumSchema'
+	certifiedAccount:
+		type: Boolean
+		required: true
+		default: false
 ,
 	toObject:
 		virtuals: false

@@ -807,7 +807,7 @@ do ->
 			'#account-confidentiality'
 			($select, e) ->
 				privateFields = ['.account-confidentiality-hint-private' ]
-				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer']
+				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link']
 				if $select.val() is "private"
 					for field in privateFields
 						$(field).removeClass("hidden")
@@ -819,6 +819,58 @@ do ->
 					for field in publicFields
 						$(field).removeClass("hidden")
 
+		]
+		[
+			'submit'
+			'#certification-form'
+			($form, e) ->
+				s = textReplacements
+				$scope = $form.scope()
+				formData = new FormData()
+				certification = $scope.certification
+				if $('input[name="proof"]')[0].files.length
+					certification.proof = $('input[name="proof"]')[0].files[0]
+				switch $scope.certification.userType
+					when "particular"
+						requiredFields =
+							userType: 'Type'
+							firstName: 'Prénom'
+							lastName: 'Nom'
+							email: 'Email'
+							telephone: 'Téléphone'
+							proof: 'Justificatif'
+					when "business", "association"
+						requiredFields =
+							userType: 'Type'
+							entrepriseName: "Nom de l'entreprise"
+							firstName: 'Prénom'
+							lastName: 'Nom'
+							email: 'Email'
+							telephone: 'Téléphone'
+							proof: 'Justificatif'
+
+				missingFields = []
+				for fieldToTest, userError of requiredFields
+					if !certification[fieldToTest]
+						missingFields.push userError
+
+
+				if missingFields.length
+					$('#certification-error')
+						.html s("Veuillez renseigner les champs suivants : ") + missingFields.join ', '
+						.show()
+				else
+					withFormData (formData, xhr) ->
+						prevent e
+						for key, val of certification
+							formData.append key, val
+						formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
+						xhr.open 'POST', $form.prop('action'), true
+						xhr.onload = ->
+							toastr.success s("Votre demande de certification a bien été envoyée. Merci !"), s "C'est fait"
+							$('#certification [data-dismiss="modal"]:first').click()
+							$('.certification-link').hide()
+							$scope.initModal()
 		]
 	], ->
 		params = @
