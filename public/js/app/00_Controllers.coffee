@@ -1533,7 +1533,7 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			if status.content
+			if status.content || $scope.medias.images.length
 				scanAllLinks $scope, status.content || ''
 				data = data:
 					status: status
