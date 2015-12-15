@@ -6,10 +6,16 @@ block body
 		include ../includes/profile-mixins
 
 		.well.settings-edit(ng-controller="SettingsCtrl")
+			#certification.modal.fade: .modal-dialog: .modal-content
+				include ../includes/certification-form
 			+form("/user/settings")
 				fieldset
 					h3
 						=userTexts.identityTitle
+						| &nbsp;
+						if !certifPending
+							a.certification-link(data-toggle="modal" data-target="#certification")
+								=userTexts.certification
 					h6
 						=userTexts.identityHint
 				

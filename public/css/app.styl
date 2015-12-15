@@ -750,6 +750,7 @@ a.mobile-video
 		margin $mainPadding
 
 #contact-error
+#certification-error
 	display none
 
 #liker-list
@@ -798,6 +799,29 @@ a.mobile-video
 
 .modal .modal-header h4
 	color $orange
+
+#glyph-certification
+	font-size 128px
+	color $blue
+
+.certification-table
+.certification-pending-table
+	width 100%
+
+	td
+	th
+		border 1px solid $nearlyBlack
+		padding $mainPadding
+		text-align center
+
+		a
+			color $linkColor
+		.glyphicons
+			margin $smallPadding
+			&.glyphicons-circle-ok
+				color green
+			&.glyphicons-circle-remove
+				color red
 
 // Imports.
 @import "includes/tooltip"

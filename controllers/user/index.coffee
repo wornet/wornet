@@ -245,9 +245,17 @@ module.exports = (router) ->
 		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
 		goingTo: req.goingTo()
 
-	pm.page '/settings', (req) ->
-		settingsAlerts: req.getAlerts 'settings'
-		userTexts: userTexts()
+	router.get '/settings', (req, res) ->
+		CertificationAsk.count
+			user: req.user._id
+			status: $in: ["pending", "approved"]
+		, (err, certif) ->
+			warn err if err
+			res.render 'user/settings',
+				settingsAlerts: req.getAlerts 'settings'
+				userTexts: userTexts()
+				certifPending: !!certif
+
 
 	router.post '/settings', (req, res) ->
 		userModifications = UserPackage.getUserModificationsFromRequest req
@@ -882,3 +890,51 @@ module.exports = (router) ->
 				, (err, count) ->
 					warn err if err
 					res.json isAvailable: (if count then false else true)
+
+	router.post '/certification', (req, res) ->
+		if req.body and req.user and req.files and req.files.proof
+			certification = req.body
+			proof = req.files.proof
+			certif = {
+				user: req.user._id
+				userType: certification.userType
+				userFirstName: certification.firstName
+				userLastName: certification.lastName
+				userEmail: certification.email
+				userTelephone: certification.telephone
+				proof: name: proof.name
+				status: "pending"
+			}.with if certification.userType is "business" or certification.userType is "association"
+				businessName: certification.entrepriseName
+				message: certification.message
+
+
+			if (['application/pdf', 'image/png', 'image/jpeg']).contains proof.type
+				ext = if proof.type is 'application/pdf'
+					".pdf"
+				else
+					".jpg"
+
+				fileDirectory = __dirname + '/../../public/img/certification/'
+				fileName = codeId() + ext
+				dst = fileDirectory + fileName
+				certif.proof.src = '/img/certification/' + fileName
+				fs.exists proof.path, (exists) ->
+					if exists
+						fs.readFile proof.path, (err, data) ->
+							warn err if err
+							if data
+								fs.writeFile dst, data, (err) ->
+									warn err if err
+						CertificationAsk.create	certif, (err, certificationAsk) ->
+							warn err if err
+							res.json()
+					else
+						res.serverError new PublicError s("Le justificatif n'existe pas.")
+			else
+				res.serverError new PublicError s("Le justificatif n'est pas dans un format accepté (png, jpeg, pdf)")
+		else
+			res.serverError new PublicError s("Veuillez renseigner les champs obligatoires")
+
+
+		res.json()

@@ -1,5 +1,56 @@
 Controllers =
 
+	AdminCertification: ($scope) ->
+		$scope.removeCertification = (certifId) ->
+			Ajax.get '/admin/certification/remove/' + certifId, ->
+				$('.certification-table tr[data-certif-id="' + certifId + '"]').slideUp ->
+					$(@).remove()
+					return
+
+		$scope.acceptCertification = (certifId) ->
+			Ajax.get '/admin/certification/accept/' + certifId, ->
+				$('.certification-table tr[data-certif-id="' + certifId + '"]').slideUp ->
+					$(@).remove()
+					return
+
+
+		$scope.certification = {}
+		$scope.loadCertif = (certifId) ->
+			if $scope.certificationPending
+				for certif in $scope.certificationPending
+					if certif._id == certifId
+						$('.user-type').val(certif.userType).prop 'disabled', true
+						toggleForm()
+						$('.firstName').val(certif.userFirstName).prop 'disabled', true
+						$('.lastName').val(certif.userLastName).prop 'disabled', true
+						$('.telNumber').val(certif.userTelephone).prop 'disabled', true
+						$('.email').val(certif.userEmail).prop 'disabled', true
+						$('.businessName').val(certif.businessName).prop 'disabled', true
+						$('.message').val(certif.message).prop 'disabled', true
+						$('.proof').remove()
+						$('.proof-visu').prop 'href', certif.proof.src
+						$('.proof-visu').html certif.proof.name
+						$('.proof-visu').show()
+						$('.modal-footer .btn').hide()
+						$('#certification').modal()
+						return
+
+		toggleForm = ->
+			if $("select.user-type").val() is "particular"
+				$(".entreprise").hide()
+				$(".particulier").show()
+			else
+				$(".entreprise").show()
+				$(".particulier").hide()
+				if $("select.user-type").val() is "business"
+					$(".entreprise-only").show()
+					$(".association-only").hide()
+				else
+					$(".entreprise-only").hide()
+					$(".association-only").show()
+			return
+
+		return
 	Album: ($scope) ->
 
 		$scope.update = (album) ->
@@ -238,6 +289,43 @@ Controllers =
 		# Take event source at event list get from the controller
 		# (passed through the template)
 		$scope.eventSources = [$scope.events]
+
+		return
+
+	Certification: ($scope) ->
+		s = textReplacements
+		$scope.send = ->
+			$('#certification-form').submit()
+			return
+
+		$scope.toggleForm = ->
+			if $("select.user-type").val() is "particular"
+				$(".entreprise").hide()
+				$(".particulier").show()
+			else
+				$(".entreprise").show()
+				$(".particulier").hide()
+				if $("select.user-type").val() is "business"
+					$(".entreprise-only").show()
+					$(".association-only").hide()
+				else
+					$(".entreprise-only").hide()
+					$(".association-only").show()
+			return
+
+
+		$scope.certification = {}
+		$scope.initModal = ->
+			$scope.certification.userType = "particular"
+			$scope.certification.name = {}
+			$scope.certification.firstName = $('input[name="name.first"]:last').val()
+			$scope.certification.lastName = $('input[name="name.last"]:last').val()
+			$scope.certification.email = $('input[name="email"]:last').val()
+			refreshScope $scope
+			return
+
+		$scope.initModal()
+		$scope.toggleForm()
 
 		return
 
