@@ -96,6 +96,9 @@
 					+half('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
 					|&nbsp;
 				=strtoupper(profile.fullName)
+				if profile.certifiedAccount
+					| &nbsp;
+					+glyph('circle-ok').certification-glyph
 				if ! isMe && user && ! askedForFriend
 					if isAFriend
 						if config.wornet.bestFriends.enabled
