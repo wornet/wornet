@@ -259,14 +259,49 @@ module.exports = (router) ->
 
 	router.post '/settings', (req, res) ->
 		userModifications = UserPackage.getUserModificationsFromRequest req
+		publicDataError = false
+		newUrlId = replaceAccent req.body.uniqueURLID
 		###
 		for setting in ['newsletter', 'noticeFriendAsk', 'noticePublish', 'noticeMessage']
 			userModifications[setting] = !! req.body[setting]
 		###
+		next = ->
+			updateUser req, userModifications, (err) ->
+				err = humanError err
+				cache "publicAccountByHashedId-" + req.user.hashedId, null, (dataCache) ->
+
+					oldUrlId = dataCache["publicAccountByHashedId-" + req.user.hashedId]
+					memDel "publicAccountByUrlId-" + oldUrlId
+					memSet "publicAccountByUrlId-" + newUrlId, req.user.hashedId
+					memSet "publicAccountByHashedId-" + req.user.hashedId, newUrlId
+
+					save = ->
+						if userModifications.password
+							delete userModifications.password
+					if req.xhr
+						if err
+							res.serverError err
+						else
+							save()
+							res.json()
+					else
+						if err or publicDataError
+							if err instanceof PublicError
+								req.flash 'settingsErrors', err.toString()
+							else if err
+								switch err.code
+									when 11000
+										req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
+									else
+										req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+							else
+								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+						else
+							save()
+							req.flash 'settingsSuccess', s("Modifications enregistrées.")
+						res.redirect '/user/settings'
 
 		if userModifications.accountConfidentiality is "public"
-			publicDataError = false
-			newUrlId = replaceAccent req.body.uniqueURLID
 			unless newUrlId is req.user.uniqueURLID
 				if /^[a-zA-Z0-9_.]*$/.test newUrlId
 					User.count
@@ -278,44 +313,15 @@ module.exports = (router) ->
 						else
 							publicDataError = true
 							req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")
+						next()
 				else
 					publicDataError = true
 					req.flash 'settingsErrors', s("Personnalisation URL: Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
-
-		updateUser req, userModifications, (err) ->
-			err = humanError err
-			cache "publicAccountByHashedId-" + req.user.hashedId, null, (dataCache) ->
-
-				oldUrlId = dataCache["publicAccountByHashedId-" + req.user.hashedId]
-				memDel "publicAccountByUrlId-" + oldUrlId
-				memSet "publicAccountByUrlId-" + newUrlId, req.user.hashedId
-				memSet "publicAccountByHashedId-" + req.user.hashedId, newUrlId
-
-				save = ->
-					if userModifications.password
-						delete userModifications.password
-				if req.xhr
-					if err
-						res.serverError err
-					else
-						save()
-						res.json()
-				else
-					if err or publicDataError
-						if err instanceof PublicError
-							req.flash 'settingsErrors', err.toString()
-						else if err
-							switch err.code
-								when 11000
-									req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
-								else
-									req.flash 'settingsErrors', s("Erreur d'enregistrement.")
-						else
-							req.flash 'settingsErrors', s("Erreur d'enregistrement.")
-					else
-						save()
-						req.flash 'settingsSuccess', s("Modifications enregistrées.")
-					res.redirect '/user/settings'
+					next()
+			else
+				next()
+		else
+			next()
 
 	toggleShutter = (req, res, opened) ->
 		updateUser req, openedShutter: opened, (err) ->
