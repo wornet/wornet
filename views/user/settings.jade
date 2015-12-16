@@ -14,7 +14,7 @@ block body
 						=userTexts.identityTitle
 						| &nbsp;
 						if !certifPending
-							a.certification-link(data-toggle="modal" data-target="#certification")
+							a.certification-link(data-toggle="modal" data-target="#certification" class=(user.accountConfidentiality=="public") ? "" : "hidden")
 								=userTexts.certification
 					h6
 						=userTexts.identityHint
