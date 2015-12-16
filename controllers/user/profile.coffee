@@ -15,17 +15,15 @@ module.exports = (router) ->
 		# UserPackage.renderProfile req, res
 
 	router.get '/:id/:name', (req, res) ->
-		cache 'publicAccountByHashedId', (publicAccountByHashedId) ->
-			if publicAccountByHashedId[req.params.id]
-				res.redirect '/' + publicAccountByHashedId[req.params.id]
+		cache 'publicAccountByHashedId-' + req.params.id, null, (dataCache) ->
+			if dataCache['publicAccountByHashedId-' + req.params.id]
+				res.redirect '/' + dataCache['publicAccountByHashedId-' + req.params.id]
 			else
 				User.findOne
 					_id: cesarRight req.params.id
 				, (err, user) ->
-					publicAccountByHashedId[req.params.id] = user.uniqueURLID
-					publicAccountByUrlId[user.uniqueURLID] = req.params.id
-					cache 'publicAccountByHashedId', publicAccountByHashedId
-					cache 'publicAccountByUrlId', publicAccountByUrlId
+					memSet 'publicAccountByHashedId-' + req.params.id, user.uniqueURLID
+					memSet 'publicAccountByUrlId-' + user.uniqueURLID, req.params.id
 					res.redirect '/' + user.uniqueURLID
 		# res.locals.friendAsked = req.flash 'friendAsked'
 		# UserPackage.renderProfile req, res, req.params.id

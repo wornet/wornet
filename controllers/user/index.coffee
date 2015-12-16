@@ -284,42 +284,38 @@ module.exports = (router) ->
 
 		updateUser req, userModifications, (err) ->
 			err = humanError err
-			cache "publicAccountByUrlId", (publicAccountByUrlId) ->
-				cache "publicAccountByHashedId", (publicAccountByHashedId) ->
-					if !publicAccountByHashedId
-						publicAccountByHashedId = {}
-					oldUrlId = publicAccountByHashedId[req.user.hashedId]
-					delete publicAccountByUrlId[oldUrlId]
-					publicAccountByUrlId[newUrlId] = req.user.hashedId
-					publicAccountByHashedId[req.user.hashedId] = newUrlId
+			cache "publicAccountByHashedId-" + req.user.hashedId, null, (dataCache) ->
 
-					cache "publicAccountByUrlId", publicAccountByUrlId
-					cache "publicAccountByHashedId", publicAccountByHashedId
-					save = ->
-						if userModifications.password
-							delete userModifications.password
-					if req.xhr
-						if err
-							res.serverError err
-						else
-							save()
-							res.json()
+				oldUrlId = dataCache["publicAccountByHashedId-" + req.user.hashedId]
+				memDel "publicAccountByUrlId-" + oldUrlId
+				memSet "publicAccountByUrlId-" + newUrlId, req.user.hashedId
+				memSet "publicAccountByHashedId-" + req.user.hashedId, newUrlId
+
+				save = ->
+					if userModifications.password
+						delete userModifications.password
+				if req.xhr
+					if err
+						res.serverError err
 					else
-						if err or publicDataError
-							if err instanceof PublicError
-								req.flash 'settingsErrors', err.toString()
-							else if err
-								switch err.code
-									when 11000
-										req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
-									else
-										req.flash 'settingsErrors', s("Erreur d'enregistrement.")
-							else
-								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+						save()
+						res.json()
+				else
+					if err or publicDataError
+						if err instanceof PublicError
+							req.flash 'settingsErrors', err.toString()
+						else if err
+							switch err.code
+								when 11000
+									req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
+								else
+									req.flash 'settingsErrors', s("Erreur d'enregistrement.")
 						else
-							save()
-							req.flash 'settingsSuccess', s("Modifications enregistrées.")
-						res.redirect '/user/settings'
+							req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+					else
+						save()
+						req.flash 'settingsSuccess', s("Modifications enregistrées.")
+					res.redirect '/user/settings'
 
 	toggleShutter = (req, res, opened) ->
 		updateUser req, openedShutter: opened, (err) ->

@@ -17,7 +17,7 @@ UserPackage =
 
 	areFriends: (a, b, areFriends, done) ->
 		key = @getIDCouple a, b
-		cache 'friends-' + key, areFriendss, done
+		cache 'friends-' + key, areFriends, done
 
 	cacheFriends: (a, b, areFriends = true) ->
 		key = @getIDCouple a, b
@@ -400,7 +400,9 @@ UserPackage =
 								if isMe or (! me) or empty friends
 									end false
 								else
-									self.areFriends me, profile, (friends.has id: me.id), end
+									self.areFriends me, profile, ->
+										friends.has id: me.id
+									, end
 							catch err
 								warn err
 								end false

@@ -59,14 +59,14 @@ module.exports =
 	memGet: (key, done) ->
 		redis.get key, (err, result) ->
 			if !err and result is null
-				err = 'not found'
+				done null, null
 			else
 				try
 					result = objectResolve JSON.parse result
 				catch e
 					result = null
 					err = 'json: ' + e
-			done err, result
+				done err, result
 	###
 	Set a cached mixed value
 	@param string key for cached value in redis store engine
@@ -88,39 +88,51 @@ module.exports =
 			redis.del key
 		catch e
 			warn e
+
 	###
 	Cache a value
-	@param string key for cached value in memcached store engine
-	@param newValue for key
-	@param boolean for delete value
+	@param array keys for cached values in redis store engine
+	@param function to execute to calculate value when it's not in cache
 	@param function to pass the result
 	###
-	cache: (key, newValue, toDelete, done) ->
-		if typeof(newValue) is 'function' and done is undefined
-			done = newValue
-			newValue = null
-			toDelete = false
-		else if typeof(newValue) is 'boolean' and typeof(toDelete) is 'function' and done is undefined
-			done = toDelete
-			toDelete = newValue
-			newValue = null
-
+	cache: (keys, calculate, done) ->
+		if typeof(key) is 'function'
+			done = calculate
+			calculate = key
+			key = codeId()
+		if typeof(key) isnt 'object'
+			keys = [keys]
 		if config.wornet.cache.enabled
-			memGet key, (err, result) ->
-				if result and toDelete
-					memDel key
-					done()
-				else if newValue isnt null and newValue isnt undefined
-						if done
-							done newValue, null
-						if result isnt newValue
-							memSet key, newValue
+			parallelTab = {}
+			for key in keys
+				parallelTab[key] = (next) ->
+					memGet key, next
+			parallel parallelTab
+			, (data) ->
+				if !data or !data.length
+					if calculate
+						calculate (value) ->
+							if value is null
+								console.warn "[redis] cannot store a null value"
+								console.trace()
+							for key in keys
+								data[key] = value
+								memSet key, value, (err) ->
+									if err
+										console.warn "[redis] " + err
+										console.trace()
+							done data, false
+
+					else
+						done {}, false
 				else
-					done result, true
+					done {}, true
 				null
 		else
-			done newValue, false
+			calculate (value) ->
+				done value, false
 		null
+
 	###
 	Unlink file and handle errors
 	###
@@ -1464,37 +1476,24 @@ module.exports =
 	@return user
 	###
 	isAPublicAccount: (req, id, isHashedId, done) ->
-		cache 'publicAccountByHashedId', (publicAccountByHashedId) ->
-			if !publicAccountByHashedId
-				modifiedPublicAccountByHashedId = {}
+		cache [if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id], null, (dataCache) ->
+			if dataCache[if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id]
+				done true, if isHashedId then id else dataCache["publicAccountByUrlId-" + id]
 			else
-				modifiedPublicAccountByHashedId = publicAccountByHashedId.copy()
-			cache 'publicAccountByUrlId', (publicAccountByUrlId) ->
-				if !publicAccountByUrlId
-					modifiedPublicAccountByUrlId = {}
+				where = if isHashedId
+					_id: cesarRight id
 				else
-					modifiedPublicAccountByUrlId = publicAccountByUrlId.copy()
-				if [if isHashedId then "publicAccountByHashedId" else "publicAccountByUrlId"][id]
-					done true, if isHashedId then id else publicAccountByUrlId[id]
-				else
-					where = if isHashedId
-						_id: cesarRight id
-					else
-						uniqueURLID: id
-					User.findOne where, (err, user) ->
-						warn err if err
-						if user
-							end = (isAPublicAccount, hashedId, user) ->
-								cache 'publicAccountByHashedId', modifiedPublicAccountByHashedId
-								cache 'publicAccountByUrlId', modifiedPublicAccountByUrlId
-								done isAPublicAccount, hashedId, user
-							if user.accountConfidentiality is "public"
-								modifiedPublicAccountByHashedId[user.hashedId] = user.uniqueURLID
-								modifiedPublicAccountByUrlId[user.uniqueURLID] = user.hashedId
-								end true, user.hashedId
-							else
-								delete modifiedPublicAccountByHashedId[user.hashedId]
-								delete modifiedPublicAccountByUrlId[user.uniqueURLID]
-								end false, user.hashedId, user
+					uniqueURLID: id
+				User.findOne where, (err, user) ->
+					warn err if err
+					if user
+						if user.accountConfidentiality is "public"
+							memSet "publicAccountByHashedId-" + user.hashedId, user.uniqueURLID
+							memSet "publicAccountByUrlId-" + user.uniqueURLID, user.hashedId
+							done true, user.hashedId
 						else
-							done false, null, null
+							memDel "publicAccountByHashedId-" + user.hashedId
+							memDel "publicAccountByUrlId-" + user.uniqueURLID
+							done false, user.hashedId, user
+					else
+						done false, null, null
