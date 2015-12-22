@@ -51,5 +51,15 @@ module.exports = ->
 						PhotoPackage.photos[messageObj.message.photoId] = messageObj.message.token
 					when "deletePhoto"
 						PhotoPackage.delete messageObj.message.photoId
+					when "addHiddenSuggest"
+						if UserPackage.hiddenSuggests[messageObj.message.me]
+							UserPackage.hiddenSuggests[messageObj.message.me].push cesarRight messageObj.message.userHashedId
+						else
+							UserPackage.hiddenSuggests[messageObj.message.me] = [cesarRight messageObj.message.userHashedId]
+						delay config.wornet.suggests.removeHiddenSuggest.minutes, ->
+							if UserPackage.hiddenSuggests[messageObj.message.me]
+								index = UserPackage.hiddenSuggests[messageObj.message.me].indexOf cesarRight messageObj.message.userHashedId
+								if index > -1
+									UserPackage.hiddenSuggests[messageObj.message.me].splice index, 1
 			else
 				warn new serverError("missformed message")

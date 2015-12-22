@@ -132,21 +132,58 @@ module.exports = (router) ->
 			res.serverError new PublicError s('Aucune photo selectionnée.')
 
 	router.put "/follow", (req, res) ->
-		userId = req.data.id
-		if userId
-			isAPublicAccount req, userId, true, (isAPublicAccount) ->
+		userHashedId = req.data.hashedId
+		if userHashedId
+			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
 				if isAPublicAccount and req.user
 					Follow.create
 						follower: req.user.id
-						followed: cesarRight userId
+						followed: cesarRight userHashedId
 					, (err, follow) ->
 						warn err if err
-						res.json()
+						if !req.data.returnSuggest
+							res.json()
+						else
+							UserPackage.findNextRandomPublic req, req.body.alreadyPresent.map(cesarRight), (publicUser) ->
+								if publicUser
+									res.json newUser: publicUser
+								else
+									res.json()
+								#update suggestList
+								UserPackage.randomPublicUsers req.user.id, true, ->
 				else
 					res.serverError new PublicError s('Seuls les comptes publics peuvent être suivis.')
 		else
 			res.serverError new PublicError s('Personne à suivre.')
 
+	router.put "/hideSuggest", (req, res) ->
+		userHashedId = req.data.hashedId
+		if userHashedId
+			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+				if isAPublicAccount and req.user
+					if UserPackage.hiddenSuggests[req.user.id]
+						UserPackage.hiddenSuggests[req.user.id].push cesarRight userHashedId
+					else
+						UserPackage.hiddenSuggests[req.user.id] = [cesarRight userHashedId]
+					redisClientEmitter.publish config.wornet.redis.defaultChannel,
+						JSON.stringify(
+							type: "addHiddenSuggest",
+							message:
+								userHashedId: userHashedId,
+								me: req.user.id
+						)
+					delay config.wornet.suggests.removeHiddenSuggest.minutes, ->
+						if UserPackage.hiddenSuggests[req.user.id]
+							index = UserPackage.hiddenSuggests[req.user.id].indexOf cesarRight userHashedId
+							if index > -1
+								UserPackage.hiddenSuggests[req.user.id].splice index, 1
+					UserPackage.findNextRandomPublic req, req.body.alreadyPresent.map(cesarRight), (publicUser) ->
+						if publicUser
+							res.json newUser: publicUser
+						else
+							res.json()
+						#update suggestList
+						UserPackage.randomPublicUsers req.user.id, true, ->
 
 	router.delete "/follow", (req, res) ->
 		userId = req.data.id

@@ -1,12 +1,16 @@
 'use strict'
 
 randomUsers = []
+randomPublicUsers = []
+randomPublicUsersLastRetreive = 0
 randomUsersLastRetreive = 0
 friendsCoupleCacheLifeTime = 1.hour
 
 UserPackage =
 
 	DEFAULT_SEARCH_LIMIT: 8
+
+	hiddenSuggests: {}
 
 	getIDCouple: (a, b) ->
 		a = strval a.id || a
@@ -344,6 +348,108 @@ UserPackage =
 				if users and users.length
 					randomUsers = users
 
+	randomPublicUsers: (myId, forceReload, done) ->
+		if "function" is typeof forceReload
+			done = forceReload
+			forceReload = false
+		done randomPublicUsers
+		now = time()
+		if ( now - randomPublicUsersLastRetreive > 30.seconds ) or forceReload
+			randomPublicUsersLastRetreive = now
+			configLimit = config.wornet.limits.publicSuggestions + 1
+			limit = limit: configLimit
+			Follow.find
+				follower: myId
+			, (err, follow) ->
+				warn err if err
+				followed = if follow
+					follow.column('followed')
+				else
+					[]
+				followed.push myId
+				exceptions = if UserPackage.hiddenSuggests[myId]
+					followed.merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+				else
+					followed.map strval
+				where =
+					photoId: $ne: null
+					accountConfidentiality: "public"
+					certifiedAccount: true
+					_id: $nin: exceptions
+				User.findRandom where, {}, limit, (err, certifiedUsers) ->
+					warn err if err
+					if certifiedUsers and certifiedUsers.length
+						randomPublicUsers = certifiedUsers.map (user) ->
+							user.publicInformations()
+					else
+						randomPublicUsers = []
+						certifiedUsers = []
+					if certifiedUsers.length < configLimit
+						where =
+							photoId: $ne: null
+							accountConfidentiality: "public"
+							$or: [
+								certifiedAccount: $exists: false
+							,
+								certifiedAccount: null
+							,
+								certifiedAccount: false
+							]
+							_id: $nin: exceptions
+						limit = limit: ( configLimit - certifiedUsers.length )
+						User.findRandom where, {}, limit, (err, users) ->
+							if users and users.length
+								randomPublicUsers.merge users.map (user) ->
+									user.publicInformations()
+								.unique()
+							else
+								if !certifiedUsers or !certifiedUsers.length
+									randomPublicUsers = []
+
+	findNextRandomPublic: (req, alreadyPresent, done) ->
+		myId = req.user._id
+		Follow.find
+			follower: req.user._id
+			followed: $ne: cesarRight req.data.hashedId
+		, (err, follow) ->
+			warn err if err
+			followed = if follow
+				follow.column('followed')
+			else
+				[]
+			followed.push myId
+			exceptions = if UserPackage.hiddenSuggests[myId]
+				followed.merge(alreadyPresent).merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+			else
+				followed.merge(alreadyPresent).unique().map strval
+			where =
+				photoId: $ne: null
+				accountConfidentiality: "public"
+				certifiedAccount: true
+				_id: $nin: exceptions
+			User.findOne where, (err, certifiedUser) ->
+				warn err if err
+				if certifiedUser
+					done certifiedUser.publicInformations()
+				else
+					where =
+						photoId: $ne: null
+						accountConfidentiality: "public"
+						$or: [
+							certifiedAccount: $exists: false
+						,
+							certifiedAccount: null
+						,
+							certifiedAccount: false
+						]
+						_id: $nin: exceptions
+					User.findOne where, (err, user) ->
+						warn err if err
+						if user
+							done user.publicInformations()
+						else
+							done null
+
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
 		me = req.user || req.session.user
@@ -353,96 +459,103 @@ UserPackage =
 		else
 			isMe = me and equals id, me.id
 		self = @
-		@randomUsers (users) ->
+		@randomUsers (users) =>
 			users = users.filter (user) ->
 				if me
 					! equals user._id, me._id
 				else
 					true
-
-			done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, nbFollowing = 0) ->
-				profile = objectToUser profile
-				isAPublicAccount = profile.accountConfidentiality is "public"
-				profile.getFriends (err, friends, friendAsks) ->
-					if err
-						res.serverError err
+			@randomPublicUsers me.id, (publicUsers) ->
+				publicUsers = publicUsers.filter (user) ->
+					if me
+						! equals user.hashedId, me.hashedId
 					else
-						friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
-						end = (isAFriend) ->
-							myfriendAskPending = false
-							if !isAFriend and !empty friendAsks
-								for id, friendAsk of friendAsks
-									if req.user && friendAsk.hashedId is req.user.hashedId
-										myfriendAskPending = true
-							res.render template,
-								isMe: isMe
-								askedForFriend: askedForFriend
-								isAFriend: !! isAFriend
-								isABestFriend: me && me.isABestFriend profile.hashedId
-								isAPublicAccount: isAPublicAccount
-								profile: profile
-								profileAlerts: req.getAlerts 'profile'
-								numberOfFriends: friends.length
-								numberOfFollowers: nbFollowers
-								amIAFollower: !! amIAFollower
-								numberOfFollowing: nbFollowing
-								friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
-								friendAsks: if isMe then friendAsks else {}
-								myfriendAskPending: myfriendAskPending
-								userTexts: userTexts()
-								users: users
-						if isAFriend is null
-							try
-								askedForFriend = if isMe or (! me) or empty me.friendAsks
-									false
-								else
-									me.friendAsks.has hashedId: cesarLeft profile.id
-								if isMe or (! me) or empty friends
+						true
+
+				done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, nbFollowing = 0) ->
+					profile = objectToUser profile
+					isAPublicAccount = profile.accountConfidentiality is "public"
+					profile.getFriends (err, friends, friendAsks) ->
+						if err
+							res.serverError err
+						else
+							friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
+							end = (isAFriend) ->
+								myfriendAskPending = false
+								if !isAFriend and !empty friendAsks
+									for id, friendAsk of friendAsks
+										if req.user && friendAsk.hashedId is req.user.hashedId
+											myfriendAskPending = true
+								res.render template,
+									isMe: isMe
+									askedForFriend: askedForFriend
+									isAFriend: !! isAFriend
+									isABestFriend: me && me.isABestFriend profile.hashedId
+									isAPublicAccount: isAPublicAccount
+									profile: profile
+									profileAlerts: req.getAlerts 'profile'
+									numberOfFriends: friends.length
+									numberOfFollowers: nbFollowers
+									amIAFollower: !! amIAFollower
+									numberOfFollowing: nbFollowing
+									friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
+									friendAsks: if isMe then friendAsks else {}
+									myfriendAskPending: myfriendAskPending
+									userTexts: userTexts()
+									users: users
+									publicUsers: publicUsers
+							if isAFriend is null
+								try
+									askedForFriend = if isMe or (! me) or empty me.friendAsks
+										false
+									else
+										me.friendAsks.has hashedId: cesarLeft profile.id
+									if isMe or (! me) or empty friends
+										end false
+									else
+										self.areFriends me, profile, ->
+											friends.has id: me.id
+										, end
+								catch err
+									warn err
 									end false
-								else
-									self.areFriends me, profile, ->
-										friends.has id: me.id
-									, end
-							catch err
-								warn err
-								end false
+							else
+								end isAFriend
+				if isMe
+					done me, false
+				else
+					User.findById id, (err, user) ->
+						if err
+							res.notFound()
 						else
-							end isAFriend
-			if isMe
-				done me, false
-			else
-				User.findById id, (err, user) ->
-					if err
-						res.notFound()
-					else
-						isAPublicAccount = user.accountConfidentiality is "public"
-						if isAPublicAccount and !req.user
-							done user, false
-						else
-							req.getFriends (err, friends, friendAsks) ->
-								isAFriend = if friends and friends.getLength() > 0
-									friends.has id: id
-								else
-									null
+							isAPublicAccount = user.accountConfidentiality is "public"
+							if isAPublicAccount and !req.user
+								done user, false
+							else
+								req.getFriends (err, friends, friendAsks) ->
+									isAFriend = if friends and friends.getLength() > 0
+										friends.has id: id
+									else
+										null
 
-								if isAPublicAccount
-									Follow.count
-										followed: id
-									, (err, nbFollowers) ->
-										warn err if err
+									if isAPublicAccount
 										Follow.count
 											followed: id
-											follower: me
-										, (err, amIAFollower) ->
+										, (err, nbFollowers) ->
 											warn err if err
 											Follow.count
-												follower: id
-											, (err, nbFollowing)->
+												followed: id
+												follower: me
+											, (err, amIAFollower) ->
 												warn err if err
-												done user, isAFriend, nbFollowers, amIAFollower, nbFollowing
+												Follow.count
+													follower: id
+												, (err, nbFollowing)->
+													warn err if err
+													done user, isAFriend, nbFollowers, amIAFollower, nbFollowing
 
-								else
-									done user, isAFriend
+									else
+										done user, isAFriend
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
