@@ -267,6 +267,7 @@
         "limits": {
             "friendsOnProfile": 50,
             "theyUseWornet": 50,
+            "publicSuggestions": 4,
             "maxTabs": 5,
             "notifications": 10,
             "userMaxAge": 150,
@@ -354,6 +355,10 @@
         },
 
         "staticServer": "",
+
+        "suggests": {
+            "removeHiddenSuggest": 60
+        },
 
         "thumbSizes": [50, 90, 200],
 

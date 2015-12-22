@@ -28,9 +28,10 @@ Controllers =
 						$('.businessName').val(certif.businessName).prop 'disabled', true
 						$('.message').val(certif.message).prop 'disabled', true
 						$('.proof').remove()
-						$('.proof-visu').prop 'href', certif.proof.src
-						$('.proof-visu').html certif.proof.name
-						$('.proof-visu').show()
+						$('.proof-visu')
+							.prop 'href', certif.proof.src
+							.html certif.proof.name
+							.show()
 						$('.modal-footer .btn').hide()
 						$('#certification').modal()
 						return
@@ -613,7 +614,7 @@ Controllers =
 
 		$scope.inviteFacebook = ->
 			post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
-			infoDialog s("Inviter vos amis"), "<textarea id='facebookPostMessage'>" + post.message + "</textarea><br>" + s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
+			infoDialog s("Inviter vos amis"), "<p>Votre message Facebook : </p><textarea id='facebookPostMessage' placeholder='" + s('(Facultatif)') + "'></textarea><br><span class='facebookExemple'>" + s('Par exemple: ') + post.message + "</span>", (ok) ->
 				if ok
 					post.message = $('#facebookPostMessage').val()
 					FB.login ->
@@ -1173,12 +1174,14 @@ Controllers =
 					return
 			return
 
-		$scope.follow = (id, follow = true) ->
-			if id
+		$scope.follow = (hashedId, follow = true) ->
+			if hashedId
 				$('.follow').prop 'disabled', true
 				$('.unfollow').prop 'disabled', true
 				Ajax[if follow then "put" else "delete"] "user/profile/follow",
-					data: id: id
+					data:
+						hashedId: hashedId
+						returnSuggest: false
 					success: (res) ->
 						$scope.followed = follow
 						refreshScope $scope
@@ -1793,6 +1796,57 @@ Controllers =
 					$('.album-select select option').each (id, elem) ->
 						if elem.value.indexOf('undefined') >= 0
 							$(elem).remove()
+		return
+
+	Suggests: ($scope) ->
+
+		treatSuggest = (userHashedId, urlToCall) ->
+			if userHashedId
+				alreadyPresent = []
+				newPublicUsers = []
+				for user in $scope.publicUsers
+					alreadyPresent.push user.hashedId
+					unless user.hashedId is userHashedId
+						newPublicUsers.push user
+				if $scope.nextSuggest
+					alreadyPresent.push $scope.nextSuggest.hashedId
+					newPublicUsers.push $scope.nextSuggest
+				$scope.publicUsers = newPublicUsers
+				refreshScope $scope
+				delay 1, ->
+					$('.follow-suggest, .hide-suggest').prop 'disabled', true
+					Ajax.put urlToCall,
+						data:
+							hashedId: userHashedId
+							returnSuggest: true
+							alreadyPresent: alreadyPresent
+						success: (res) ->
+							$('.follow-suggest, .hide-suggest').prop 'disabled', false
+							if res.newUser
+								$scope.nextSuggest = res.newUser
+							else
+								$scope.nextSuggest = null
+							refreshScope $scope
+
+							return
+
+
+		$scope.follow = (userHashedId) ->
+			treatSuggest userHashedId, "user/profile/follow"
+			return
+
+		$scope.hideSuggest = (userHashedId) ->
+			treatSuggest userHashedId, "user/profile/hideSuggest"
+			return
+
+		$scope.nextSuggest = null
+		delay 1, ->
+			if $scope.publicUsers.length > 1
+				$scope.nextSuggest = $scope.publicUsers.splice(-1)[0]
+			else
+				$scope.nextSuggest = null
+			refreshScope $scope
+
 		return
 
 	Welcome: ($scope) ->

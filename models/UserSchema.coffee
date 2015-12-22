@@ -288,6 +288,7 @@ extend userSchema.methods,
 			'photoUploadAlbumId'
 			'accountConfidentiality'
 			'uniqueURLID'
+			'certifiedAccount'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]

@@ -805,7 +805,6 @@ a.mobile-video
 	color $blue
 
 .certification-table
-.certification-pending-table
 	width 100%
 
 	td
@@ -822,6 +821,31 @@ a.mobile-video
 				color green
 			&.glyphicons-circle-remove
 				color red
+
+#public-suggestions
+	ul
+		padding $smallPadding
+		li
+			list-style none
+			.thumb
+			.follow-suggest
+			.suggest-name
+				float left
+			.hide-suggest
+				float right
+			.follow-suggest
+				margin 8px $smallPadding
+				background-color $nearlyWhite
+				border 1px solid $orange
+				border-radius(4px)
+				color $darkGray
+			.suggest-name
+				margin 0 $smallPadding
+			a
+				color $linkColor
+
+.facebookExemple
+	font-size 12px
 
 // Imports.
 @import "includes/tooltip"
