@@ -806,7 +806,7 @@ do ->
 			'change'
 			'#account-confidentiality'
 			($select, e) ->
-				privateFields = ['.account-confidentiality-hint-private' ]
+				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList' ]
 				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link']
 				if $select.val() is "private"
 					for field in privateFields

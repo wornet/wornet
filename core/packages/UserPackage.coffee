@@ -567,7 +567,7 @@ UserPackage =
 					birthDate = inputDate val
 					if birthDate.isValid()
 						userModifications.birthDate = birthDate
-				when 'maskBirthDate', 'maskFriendList', 'allowFriendPostOnMe'
+				when 'maskBirthDate', 'maskFriendList', 'allowFriendPostOnMe', 'maskFollowList'
 					userModifications[key] = val is 'on'
 				when 'name.first'
 					unless userModifications.name
