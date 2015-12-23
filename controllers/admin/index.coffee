@@ -110,15 +110,35 @@ module.exports = (router) ->
 			status: "approved"
 		, (err, certif) ->
 			warn err if err
-			User.update
-				_id: certif.user
-			,
-				certifiedAccount: true
-			, (err, users) ->
-				if req.user
-					req.user.certifiedAccount = true
-				warn err if err
-				res.json()
+			isAPublicAccount req, cesarLeft(certif.user), true, (isAPublicAccount) ->
+				if isAPublicAccount
+					User.findOneAndUpdate
+						_id: certif.user
+					,
+						certifiedAccount: true
+					, (err, user) ->
+						if req.user
+							req.user.certifiedAccount = true
+						warn err if err
+						img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: user
+						NoticePackage.notify [certif.user], null,
+							action: 'notice'
+							author: certif.user
+							notice: [
+								img +
+								jd 'span(data-href="/' +
+								user.uniqueURLID + '") ' +
+								s("Félicitations, votre demande de certification a été acceptée.")
+							, 'certificationApproved', req.user._id, null, null
+							]
+						res.json()
+				else
+					CertificationAsk.update
+						_id: id
+					,
+						status: "refused"
+					, (err, result) ->
+						res.json err: new PublicError s("Ce compte n'est plus un compte public. Certification refusée")
 
 	# http links to https
 	adminOnly '/port', (info) ->
