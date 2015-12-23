@@ -101,6 +101,14 @@ block body
 						input(type="radio" name="maskFriendList" id="confidentialityFriendListPrive" value="on" checked=user.maskFriendList)
 						=s("Non")
 						input(type="radio" name="maskFriendList" id="confidentialityFriendListPublic" value="off" checked=!user.maskFriendList)
+					br
+					label.confidentialityFollowList(class=(user.accountConfidentiality=="private") ? "" : "hidden")
+						span
+							=userTexts.confidentialityFollowList
+						=s("Oui")
+						input(type="radio" name="maskFollowList" id="confidentialityFollowListPrive" value="on" checked=user.maskFollowList)
+						=s("Non")
+						input(type="radio" name="maskFollowList" id="confidentialityFollowListPublic" value="off" checked=!user.maskFollowList)
 					//- Notification
 						.opt-group
 							input(type="checkbox" name="newsletter" id="newsletter" checked=user.newsletter)

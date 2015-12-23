@@ -44,6 +44,7 @@ module.exports = ->
 	customURL: s("Personnalisation URL")
 	btnCheckURLID: s("Vérifier")
 	confidentialityFriendList: s("Masquer votre liste d'amis")
+	confidentialityFollowList: s("Masquer ma liste d'abonnements")
 	certification: s("( Certification )")
 	telNumber: s("Numéro de téléphone")
 	identityCard: s("Carte d'identité (identity card) : ")
