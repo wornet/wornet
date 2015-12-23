@@ -8,7 +8,9 @@ Controllers =
 					return
 
 		$scope.acceptCertification = (certifId) ->
-			Ajax.get '/admin/certification/accept/' + certifId, ->
+			Ajax.get '/admin/certification/accept/' + certifId, (result) ->
+				if result.err
+					serverError result.err.msg
 				$('.certification-table tr[data-certif-id="' + certifId + '"]').slideUp ->
 					$(@).remove()
 					return
