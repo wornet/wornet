@@ -254,7 +254,7 @@ module.exports = (router) ->
 			res.render 'user/settings',
 				settingsAlerts: req.getAlerts 'settings'
 				userTexts: userTexts()
-				certifPending: !!certif
+				certifPendingOrApproved: !!certif
 
 
 	router.post '/settings', (req, res) ->
@@ -321,6 +321,16 @@ module.exports = (router) ->
 			else
 				next()
 		else
+			if req.user.certifiedAccount is true
+				CertificationAsk.update
+					user: req.user.id
+				,
+					status: "refused"
+				,
+					multi: true
+				, (err, certif) ->
+					warn err if err
+					userModifications.certifiedAccount = false
 			next()
 
 	toggleShutter = (req, res, opened) ->

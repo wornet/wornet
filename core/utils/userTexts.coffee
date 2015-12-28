@@ -55,3 +55,4 @@ module.exports = ->
 	recepEnreg: s("Récépissé d'enregistrement")
 	associationName: s("Nom de l'association")
 	userType: s('Vous êtes : ')
+	certificationWarning: s('Attention, si vous rendez votre compte privé, vous perdrez la certification obtenue.')
