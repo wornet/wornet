@@ -808,9 +808,13 @@ module.exports = (router) ->
 					res.json users: friends.unique('id').map (user) ->
 						user = objectToUser user
 						isAFriend = (req.session.friends || []).has id: user.id
+						isAFollower = (req.session.follower || []).contains user._id, equals
+						isAFollowing = (req.session.following || []).contains user._id, equals
 						extend user.publicInformations(),
 							isAFriend: isAFriend
 							askedForFriend: ! isAFriend and (req.session.friendAsks || {}).has hashedId: user.hashedId
+							isAFollower: isAFollower
+							isAFollowing: isAFollowing
 				if friends.length >= 8
 					friends = friends.slice 0, limit
 					done()

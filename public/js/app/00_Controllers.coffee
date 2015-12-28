@@ -1183,10 +1183,9 @@ Controllers =
 				Ajax[if follow then "put" else "delete"] "user/profile/follow",
 					data:
 						hashedId: hashedId
-						returnSuggest: false
 					success: (res) ->
-						$scope.followed = follow
-						refreshScope $scope
+						$(if follow then '.follow' else '.unfollow').hide()
+						$(if !follow then '.follow' else '.unfollow').show()
 						$('.follow').prop 'disabled', false
 						$('.unfollow').prop 'disabled', false
 						if follow
@@ -1209,7 +1208,13 @@ Controllers =
 			return
 
 		$scope.canBeAddedAsAFriend = (user) ->
-			! user.isAFriend and ! user.askedForFriend and ! (user.hashedId in askedForFriends)
+			! user.isAFriend and ! user.askedForFriend and ! (user.hashedId in askedForFriends) and user.accountConfidentiality == "private"
+
+		$scope.canBeFollowed = (user) ->
+			user.accountConfidentiality == "public" and ! user.isAFollowing and ! user.isAFriend
+
+		$scope.canBeUnfollowed = (user) ->
+			user.accountConfidentiality == "public" and user.isAFollowing and ! user.isAFriend
 
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
