@@ -834,19 +834,23 @@ do ->
 			'change'
 			'#account-confidentiality'
 			($select, e) ->
-				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList' ]
+				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning' ]
 				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link']
 				if $select.val() is "private"
 					for field in privateFields
 						$(field).removeClass("hidden")
 					for field in publicFields
 						$(field).addClass("hidden")
+					if $select.data("certified-account") is true
+						$('#certification-warning').removeClass("hidden")
+					else
+						$('#certification-warning').addClass("hidden")
+
 				else
 					for field in privateFields
 						$(field).addClass("hidden")
 					for field in publicFields
 						$(field).removeClass("hidden")
-
 		]
 		[
 			'submit'

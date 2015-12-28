@@ -13,7 +13,7 @@ block body
 					h3
 						=userTexts.identityTitle
 						| &nbsp;
-						if !certifPending
+						if !certifPendingOrApproved
 							a.certification-link(data-toggle="modal" data-target="#certification" class=(user.accountConfidentiality=="public") ? "" : "hidden")
 								=userTexts.certification
 					h6
@@ -60,10 +60,12 @@ block body
 					h6
 						=userTexts.confidentialityHint
 					//- Privacy
+					#certification-warning.alert.alert-warning.hidden
+						=userTexts.certificationWarning
 					label
 						span
 							=userTexts.privacy
-						select#account-confidentiality.form-control(autocomplete="off" name="accountConfidentiality")
+						select#account-confidentiality.form-control(autocomplete="off" name="accountConfidentiality" data-certified-account=certifPendingOrApproved.toString())
 							option(value="private" selected=(user.accountConfidentiality=="private"))
 								=userTexts.private
 							option(value="public" selected=(user.accountConfidentiality=="public"))
