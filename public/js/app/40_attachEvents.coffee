@@ -522,6 +522,34 @@ do ->
 		]
 		[
 			click
+			'[data-follow]'
+			($btn, e) ->
+				id = $btn.data 'follow'
+				Ajax.put '/user/profile/follow',
+					data: hashedId: id
+					success: (data) ->
+						$('.follow').hide()
+						$('.unfollow').show()
+						$btn.hide()
+						$('.search-unfollow[data-unfollow="' + id + '"]').removeClass("ng-hide").show()
+				prevent e
+		]
+		[
+			click
+			'[data-unfollow]'
+			($btn, e) ->
+				id = $btn.data 'unfollow'
+				Ajax.delete '/user/profile/follow',
+					data: hashedId: id
+					success: (data) ->
+						$('.follow').show()
+						$('.unfollow').hide()
+						$btn.hide()
+						$('.search-follow[data-follow="' + id + '"]').removeClass("ng-hide").show()
+				prevent e
+		]
+		[
+			click
 			'.accept-friend, .ignore-friend'
 			($btn, e) ->
 				$message = $btn.parents '.friend-ask'

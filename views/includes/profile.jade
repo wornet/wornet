@@ -40,8 +40,8 @@
 							type="button"
 						)
 					if isAPublicAccount
-						input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(ng-if="!followed" value="Suivre" type="button" ng-click="follow('" + profile.hashedId + "')")
-						input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(ng-if="followed" value="Ne plus suivre" type="button" ng-click="unfollow('" + profile.hashedId + "')")
+						input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value="Suivre" type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
+						input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value="Ne plus suivre" type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
 		.profile-edit(class=(edit ? null : "hidden"))
 			iframe(name="upload")
 			.photo-options

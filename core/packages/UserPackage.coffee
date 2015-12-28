@@ -222,6 +222,28 @@ UserPackage =
 				req.session.friendAsks = friendAsks
 				done err
 
+	refreshFollows: (req, done) ->
+		Follow.find
+			$or: [
+				follower: req.user.id
+			,
+				followed: req.user.id
+			]
+		, (err, allFollows) ->
+			unless err
+				iFollow = []
+				iamFollowed = []
+				for follow in allFollows
+					if equals follow.follower, req.user.id
+						iFollow.push follow.followed
+					else
+						iamFollowed.push follow.follower
+				req.user.follower = iamFollowed
+				req.user.following = iFollow
+				req.session.follower = iamFollowed
+				req.session.following = iFollow
+			done err
+
 	askForFriend: (id, req, done) ->
 		if empty id
 			done err: s("Utilisateur introuvable")

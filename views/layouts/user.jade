@@ -146,10 +146,12 @@ block nav
 					+half('search')
 				.suggests
 					ul(dpr): li(ng-repeat="user in query.users")
-						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend, 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/{{ user.uniqueURLID }}")
+						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend || canBeFollowed(user) || canBeUnfollowed(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/{{ user.uniqueURLID }}")
 							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
 							.user-name
 								| {{ user.name.full }}
+								| &nbsp;
+								+glyph('circle-ok')(ng-if="user.certifiedAccount").certification-glyph
 							.user-points
 								| {{ user.points }}
 								=' '+s("points")
@@ -173,6 +175,16 @@ block nav
 							data-remove-friend-ask="{{ user.hashedId }}"
 						)
 							+half('remove')
+						a.col-xs-3.search-follow.suggest-action(
+							ng-show="canBeFollowed(user)"
+							data-follow="{{ user.hashedId }}"
+						)
+							+glyph("star-empty")
+						a.col-xs-3.search-unfollow.suggest-action(
+							ng-show="canBeUnfollowed(user)"
+							data-unfollow="{{ user.hashedId }}"
+						)
+							+glyph("star")
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding

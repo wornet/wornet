@@ -40,6 +40,8 @@ exports.logout = (req, res) ->
 	delete req.session.user
 	delete req.session.friends
 	delete req.session.friendAsks
+	delete req.session.follower
+	delete req.session.following
 	req.cacheFlush()
 	exports.remember res, config.wornet.remember.off
 
@@ -58,8 +60,26 @@ exports.auth = (req, res, user, done) ->
 			req.session.friends = friends
 			req.session.friendAsks = friendAsks
 			user.numberOfFriends = friends.length
-		if typeof(done) is 'function'
-			done err, user
+			Follow.find
+				$or: [
+					follower: user._id
+				,
+					followed: user._id
+				]
+			, (err, allFollows) ->
+				iFollow = []
+				iamFollowed = []
+				for follow in allFollows
+					if equals follow.follower, user._id
+						iFollow.push follow.followed
+					else
+						iamFollowed.push follow.follower
+				user.follower = iamFollowed
+				user.following = iFollow
+				req.session.follower = iamFollowed
+				req.session.following = iFollow
+			if typeof(done) is 'function'
+				done err, user
 
 exports.login = (req, res, done) ->
 	# Retrieve the user from the database by login
@@ -229,10 +249,28 @@ exports.isAuthenticated = (req, res, next) ->
 					req.session.friendAsks = friendAsks
 					req.session.friends = friends
 					req.session.user.numberOfFriends = friends.length
-					if err
-						res.serverError err
-					else
-						req.session.notifications ||= []
-						done()
+					Follow.find
+						$or: [
+							follower: req.user.id
+						,
+							followed: req.user.id
+						]
+					, (err, allFollows) ->
+						iFollow = []
+						iamFollowed = []
+						for follow in allFollows
+							if equals follow.follower, req.user.id
+								iFollow.push follow.followed
+							else
+								iamFollowed.push follow.follower
+						req.user.follower = iamFollowed
+						req.user.following = iFollow
+						req.session.follower = iamFollowed
+						req.session.following = iFollow
+						if err
+							res.serverError err
+						else
+							req.session.notifications ||= []
+							done()
 			else
 				done()

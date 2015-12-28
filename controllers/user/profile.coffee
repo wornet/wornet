@@ -136,21 +136,31 @@ module.exports = (router) ->
 		if userHashedId
 			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
 				if isAPublicAccount and req.user
-					Follow.create
+					Follow.count
 						follower: req.user.id
 						followed: cesarRight userHashedId
-					, (err, follow) ->
+					, (err, existingFollow) ->
 						warn err if err
-						if !req.data.returnSuggest
-							res.json()
+						unless existingFollow
+							Follow.create
+								follower: req.user.id
+								followed: cesarRight userHashedId
+							, (err, follow) ->
+								warn err if err
+								UserPackage.refreshFollows req, (err) ->
+									warn err if err
+									if !req.data.returnSuggest
+										res.json()
+									else
+										UserPackage.findNextRandomPublic req, req.body.alreadyPresent.map(cesarRight), (publicUser) ->
+											if publicUser
+												res.json newUser: publicUser
+											else
+												res.json()
+											#update suggestList
+											UserPackage.randomPublicUsers req.user.id, true, ->
 						else
-							UserPackage.findNextRandomPublic req, req.body.alreadyPresent.map(cesarRight), (publicUser) ->
-								if publicUser
-									res.json newUser: publicUser
-								else
-									res.json()
-								#update suggestList
-								UserPackage.randomPublicUsers req.user.id, true, ->
+							res.serverError new PublicError s('Vous suivez déjà ce compte.')
 				else
 					res.serverError new PublicError s('Seuls les comptes publics peuvent être suivis.')
 		else
@@ -186,7 +196,7 @@ module.exports = (router) ->
 						UserPackage.randomPublicUsers req.user.id, true, ->
 
 	router.delete "/follow", (req, res) ->
-		userId = req.data.id
+		userId = req.data.hashedId
 		if userId
 			Follow.remove
 				follower: req.user.id
