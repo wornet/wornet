@@ -1421,7 +1421,9 @@ Controllers =
 												status.comments = data.commentList[status._id]
 												status.nbComment = data.commentList[status._id].length
 											else
-												status.nbComment = 0
+												#to prevent 0 on scroll
+												if !status.nbComment
+													status.nbComment = 0
 											status
 										refreshScope $scope
 									return
