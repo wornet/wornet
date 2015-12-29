@@ -1858,7 +1858,17 @@ Controllers =
 
 	Welcome: ($scope) ->
 		removeSessionItem 'user'
-		$('iframe.player').removeClass('hidden')
 		$(window).trigger('resize')
+		$scope.send = ->
+			selectedUsers = []
+			$('input[type="checkbox"]').each (index, checkbox) ->
+				if $(checkbox).is(':checked')
+					selectedUsers.push $(checkbox).data 'user-hashedid'
+
+			Ajax.put '/user/welcome',
+				data:
+					usersHashedId: selectedUsers
+				success: ->
+					locationHref '/' + $scope.userURLId
 
 		return

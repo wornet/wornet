@@ -241,9 +241,25 @@ module.exports = (router) ->
 					else
 						fail s("Lien invalide ou expiré")
 
-	pm.page '/welcome', (req) ->
-		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
-		goingTo: req.goingTo()
+	router.get '/welcome', (req, res) ->
+		UserPackage.randomPublicUsers req.user.id, true, 20, (publicUsers) ->
+			res.render "user/welcome",
+				welcomeSuggest: publicUsers
+
+	router.put '/welcome', (req, res) ->
+		usersHashedId = req.data.usersHashedId
+		if usersHashedId and usersHashedId.length
+			objectsToCreate = []
+			for hashedId in usersHashedId
+				objectsToCreate.push
+					follower: req.user.id
+					followed: cesarRight hashedId
+
+			Follow.create objectsToCreate, (err) ->
+				warn err if err
+				res.json()
+		else
+			res.json()
 
 	router.get '/settings', (req, res) ->
 		CertificationAsk.count

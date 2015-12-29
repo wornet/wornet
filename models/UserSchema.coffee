@@ -292,6 +292,7 @@ extend userSchema.methods,
 			'accountConfidentiality'
 			'uniqueURLID'
 			'certifiedAccount'
+			'biography'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]
