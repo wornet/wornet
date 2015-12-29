@@ -2,20 +2,32 @@ extends ../layouts/simple
 
 
 block body
-	.container: section(ng-controller="WelcomeCtrl")
+	.container: .well(ng-controller="WelcomeCtrl" ng-init="userURLId=" + JSON.stringify(user.uniqueURLID))
 		if user
-			h2
+			h3
 				=s("Inscription réussie !")
-			.alert.alert-success
-				=s("Félicitations vos êtes désormais un worner ! Avant d’aller plus loin vous pouvez regarder cette courte vidéo vous présentant les principales fonctionnalités de votre réseau social.")
-			.alert.alert-info
-				=s("Pour utiliser toutes les fonctionnalités de Wornet, n'oubliez pas de confirmer votre adresse e-mail.")
-		else
-			h2
-				=s("Bienvenue sur Wornet !")
-		iframe.player.hidden(data-ratio="1.7778" src="//www.youtube.com/embed/z1k6_mRONPI" frameborder="0" allowfullscreen)
-		//-if hasGoingTo
-			a.btn.btn-plain(href=goingTo)
-				=s("Reprendre là où j'en étais avant mon inscription")
-		a.btn.btn-plain(href="/" + user.uniqueURLID)
-			=s("Accéder à mon profil")
+			p
+				=s("Nous sommes ravis de vous compter parmi nos membres, {name}. Wornet est un lieu à part entière où vous pouvez suivre les personnes les plus cool. Nous souhaitons intégrer à cet outil le meilleur du web tout en respectant les valeurs qui font ce que nous sommes. Protégeant la vie privée par défaut, vous n’aurez pas d’amis à l’inscription alors nous vous suggérons de vous abonner à des comptes publics avant de poursuivre et d'inviter tous vos amis !", {name: user.name.full})
+			br
+			ul.welcome-suggests
+				h4
+					=s("Quelques suggestions pour vous")
+				for suggest in welcomeSuggest
+					li
+						a(href="/"+suggest.uniqueURLID data-toggle="tooltip" data-placement="top" title=suggest.fullName target="_blank").thumb
+							img(ng-src=suggest.thumb50 alt=suggest.fullName)
+						a.suggest-name(href="/"+suggest.uniqueURLID)
+							=suggest.name.full
+							| &nbsp;
+							if suggest.certifiedAccount
+								+glyph('circle-ok').certification-glyph
+						br
+						span.biography
+							=suggest.biography
+						input.welcome-follow(type="checkbox" data-user-hashedid=suggest.hashedId id="follow-" + suggest.hashedId)
+						label(for="follow-" + suggest.hashedId)
+					hr.cb
+			
+			a.btn.welcome-next(ng-click="send()")
+				=s("Enregistrer et continuer vers mon profil")
+			.cb

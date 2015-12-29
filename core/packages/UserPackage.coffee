@@ -370,16 +370,20 @@ UserPackage =
 				if users and users.length
 					randomUsers = users
 
-	randomPublicUsers: (myId, forceReload, done) ->
+	randomPublicUsers: (myId, forceReload, userLimit, done) ->
 		if "function" is typeof forceReload
 			done = forceReload
 			forceReload = false
-		done randomPublicUsers
+			userLimit = config.wornet.limits.publicSuggestions + 1
+		if "function" is typeof userLimit
+			done = userLimit
+			userLimit = config.wornet.limits.publicSuggestions + 1
+		if ! forceReload
+			done randomPublicUsers
 		now = time()
 		if ( now - randomPublicUsersLastRetreive > 30.seconds ) or forceReload
 			randomPublicUsersLastRetreive = now
-			configLimit = config.wornet.limits.publicSuggestions + 1
-			limit = limit: configLimit
+			limit = limit: userLimit
 			Follow.find
 				follower: myId
 			, (err, follow) ->
@@ -406,7 +410,7 @@ UserPackage =
 					else
 						randomPublicUsers = []
 						certifiedUsers = []
-					if certifiedUsers.length < configLimit
+					if certifiedUsers.length < userLimit
 						where =
 							photoId: $ne: null
 							accountConfidentiality: "public"
@@ -418,7 +422,7 @@ UserPackage =
 								certifiedAccount: false
 							]
 							_id: $nin: exceptions
-						limit = limit: ( configLimit - certifiedUsers.length )
+						limit = limit: ( userLimit - certifiedUsers.length )
 						User.findRandom where, {}, limit, (err, users) ->
 							if users and users.length
 								randomPublicUsers.merge users.map (user) ->
@@ -427,6 +431,8 @@ UserPackage =
 							else
 								if !certifiedUsers or !certifiedUsers.length
 									randomPublicUsers = []
+							if forceReload
+								done randomPublicUsers
 
 	findNextRandomPublic: (req, alreadyPresent, done) ->
 		myId = req.user._id
@@ -543,8 +549,26 @@ UserPackage =
 									end false
 							else
 								end isAFriend
+				getFollowInformations = (user, isAFriend, next) ->
+					Follow.count
+						followed: id
+					, (err, nbFollowers) ->
+						warn err if err
+						Follow.count
+							followed: id
+							follower: me
+						, (err, amIAFollower) ->
+							warn err if err
+							Follow.count
+								follower: id
+							, (err, nbFollowing)->
+								warn err if err
+								next user, isAFriend, nbFollowers, amIAFollower, nbFollowing
 				if isMe
-					done me, false
+					if me.accountConfidentiality is "public"
+						getFollowInformations me, false, done
+					else
+						done me, false
 				else
 					User.findById id, (err, user) ->
 						if err
@@ -561,21 +585,7 @@ UserPackage =
 										null
 
 									if isAPublicAccount
-										Follow.count
-											followed: id
-										, (err, nbFollowers) ->
-											warn err if err
-											Follow.count
-												followed: id
-												follower: me
-											, (err, amIAFollower) ->
-												warn err if err
-												Follow.count
-													follower: id
-												, (err, nbFollowing)->
-													warn err if err
-													done user, isAFriend, nbFollowers, amIAFollower, nbFollowing
-
+										getFollowInformations user, isAFriend, one
 									else
 										done user, isAFriend
 
