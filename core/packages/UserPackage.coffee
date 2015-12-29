@@ -585,7 +585,7 @@ UserPackage =
 										null
 
 									if isAPublicAccount
-										getFollowInformations user, isAFriend, one
+										getFollowInformations user, isAFriend, done
 									else
 										done user, isAFriend
 
