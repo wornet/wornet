@@ -603,11 +603,11 @@ UserPackage =
 					userModifications[key] = val is 'on'
 				when 'name.first'
 					unless userModifications.name
-						userModifications.name = req.user.name
+						userModifications.name = req.user.name.copy()
 					userModifications.name.first = val
 				when 'name.last'
 					unless userModifications.name
-						userModifications.name = req.user.name
+						userModifications.name = req.user.name.copy()
 					userModifications.name.last = val
 				when 'photoId'
 					if PhotoPackage.allowedToSee req, val
