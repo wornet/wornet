@@ -113,10 +113,7 @@ StatusPackage =
 													status.nbImages = status.images.length
 													if status.images.length
 														status.images.sort (a, b) ->
-															if a.src > b.src
-																-1
-															else
-																1
+															b.src - a.src
 														status.images = [status.images[0]]
 														if -1 isnt status.images[0].src.indexOf "200x"
 															status.images[0].src = status.images[0].src.replace "200x", ""
