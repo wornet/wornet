@@ -1,7 +1,6 @@
 'use strict'
 
 randomUsers = []
-randomPublicUsers = []
 randomPublicUsersLastRetreive = 0
 randomUsersLastRetreive = 0
 friendsCoupleCacheLifeTime = 1.hour
@@ -378,8 +377,6 @@ UserPackage =
 		if "function" is typeof userLimit
 			done = userLimit
 			userLimit = config.wornet.limits.publicSuggestions + 1
-		if ! forceReload
-			done randomPublicUsers
 		now = time()
 		if ( now - randomPublicUsersLastRetreive > 30.seconds ) or forceReload
 			randomPublicUsersLastRetreive = now
@@ -431,8 +428,10 @@ UserPackage =
 							else
 								if !certifiedUsers or !certifiedUsers.length
 									randomPublicUsers = []
-							if forceReload
-								done randomPublicUsers
+
+							done randomPublicUsers
+					else
+						done randomPublicUsers
 
 	findNextRandomPublic: (req, alreadyPresent, done) ->
 		myId = req.user._id
