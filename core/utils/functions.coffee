@@ -1461,7 +1461,7 @@ module.exports =
 		reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_-]/gi
 		text.replace( reg, ->
 			TabSpec[arguments[0].toLowerCase()]
-		).toLowerCase()
+		).replace(/\s/g, "").toLowerCase()
 
 	###
 	check if the specified account is public
