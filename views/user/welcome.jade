@@ -16,7 +16,7 @@ block body
 					li
 						a(href="/"+suggest.uniqueURLID data-toggle="tooltip" data-placement="top" title=suggest.fullName target="_blank").thumb
 							img(ng-src=suggest.thumb50 alt=suggest.fullName)
-						a.suggest-name(href="/"+suggest.uniqueURLID)
+						a.suggest-name(href="/"+suggest.uniqueURLID target="_blank")
 							=suggest.name.full
 							| &nbsp;
 							if suggest.certifiedAccount
