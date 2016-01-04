@@ -1781,7 +1781,8 @@ Controllers =
 		$scope.monoStatut = false
 		$scope.setMonoStatut = (val, status) ->
 			$scope.monoStatut = val
-			status.content = richText $scope, status.content, false, false
+			status.content = richText $scope, status.content
+			status.nbComment = 0
 			$scope.statusToDisplay = status
 		delay 1, ->
 			if $scope.monoStatut
@@ -1796,6 +1797,7 @@ Controllers =
 									status.nbComment = data.commentList[status._id].length
 								else
 									status.nbComment = 0
+								status.commentForm = status.commentList = !!(status.comments && status.comments.length)
 								status
 							refreshScope $scope
 						return

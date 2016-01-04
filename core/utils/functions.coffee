@@ -289,12 +289,6 @@ module.exports =
 						writable: true
 						configurable: true
 
-
-
-
-
-
-
 	###
 	make content for notice
 
@@ -309,8 +303,12 @@ module.exports =
 			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
 				done img +
-				jd 'span(data-href="/' +
-				place.uniqueURLID + (if attachedStatus then '#' + attachedStatus._id else '') + '") ' +
+				if attachedStatus
+					jd 'span(data-href="/user/status/' + attachedStatus._id + '") ' +
+					text
+				else
+					jd 'span(data-href="/' +
+					place.uniqueURLID + '") ' +
 					text
 
 			if notice.user and notice.place and notice.launcher
