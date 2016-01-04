@@ -597,6 +597,11 @@ do ->
 			click + " mousedown"
 			'.notifications ul a:not(".activities, .read-all-notifs"), .notifications-mobile ul a:not(".activities, .read-all-notifs"), #notification-list a'
 			($a, e) ->
+				target = $(e.target)
+				isFriendAskButton = target.hasClass("ignore-friend") || target.hasClass("accept-friend")
+				if isFriendAskButton
+					cancel e
+					return true
 				href = $a.find('[data-href]').data 'href'
 				id = $a.parents('li:first').attr 'data-id'
 				if href
