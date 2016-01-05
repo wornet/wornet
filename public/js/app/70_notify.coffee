@@ -49,10 +49,11 @@ waitForNotify = ->
 						when 'comment'
 							statusService.receiveComment notification.comment
 						when 'notice'
-							data = notification.notice
-							id = notification.id
-							data.unshift id
-							notificationsService.receiveNotification data
+							if ! notification.notice[1] or notification.notice[1] isnt "chatMessage"
+								data = notification.notice
+								id = notification.id
+								data.unshift id
+								notificationsService.receiveNotification data
 						when 'askForFriend'
 							s = textReplacements
 							id = notification.id

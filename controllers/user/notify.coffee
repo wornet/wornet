@@ -40,6 +40,16 @@ module.exports = (router) ->
 											message: message._id
 											recipient: id
 					NoticePackage.notify userIds.with(req.user.id), null, data, true, req.getHeader 't'
+					notice = {}
+					notice.action = "notice"
+					notice.author = data.from
+					notice.notice = [
+						jd('img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: data.from) +
+						jd 'span(data-href="/") ' +
+							s("{username} vous a envoyé un message.", username: data.from.name.full)
+					]
+					notice.notice.push 'chatMessage'
+					NoticePackage.notify userIds.with(req.user.id), null, notice, true, req.getHeader 't'
 					res.json()
 				else
 					err = new PublicError s("Vous ne pouvez discuter qu'avec vos amis, si vous avez envoyé une demande, il faut d'abord qu'elle soit validée.")
@@ -76,8 +86,10 @@ module.exports = (router) ->
 					friendAsks: if isMe then friendAsks else {}
 
 	router.post '/list/:id', (req, res) ->
-		where = user: req.user._id
-		.with if req.params.id
+		where = {
+			user: req.user._id
+			type: $ne: "chatMessage"
+		}.with if req.params.id
 			_objectId = req.params.id
 			if /^[0-9a-fA-F]{24}$/.test _objectId
 				_id: $lt: new ObjectId(_objectId).path
