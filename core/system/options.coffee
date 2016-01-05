@@ -348,7 +348,7 @@ module.exports = (app, port) ->
 				if user = @user
 					sessionInfos = @session.columns ['notifications', 'friendAsks', 'friends']
 					userId = user._id
-					Notice.find user: userId
+					Notice.find {user: userId, type: $ne: "chatMessage"}
 						.sort _id: 'desc'
 						.limit config.wornet.limits.notifications
 						.exec (err, coreNotifications) =>
