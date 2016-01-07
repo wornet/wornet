@@ -47,8 +47,8 @@ module.exports = (router) ->
 						jd('img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: data.from) +
 						jd 'span(data-href="/") ' +
 							s("{username} vous a envoyé un message.", username: data.from.name.full)
+						'chatMessage'
 					]
-					notice.notice.push 'chatMessage'
 					NoticePackage.notify userIds.with(req.user.id), null, notice, true, req.getHeader 't'
 					res.json()
 				else
