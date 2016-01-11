@@ -59,7 +59,7 @@
 		cursor auto
 
 .status-block
-	padding $mainPadding $mainPadding 20px
+	padding $mainPadding
 	margin $mainPadding 0
 	background white
 	border 1px solid #ddd
@@ -87,13 +87,20 @@
 	margin-bottom $bigPadding * 2
 
 .status-actions
-	float right
-	margin -8px (- $smallPadding) (-2 * $mainPadding - $smallPadding) 0
+	height 30px
+	border-top 1px solid $gray
+	margin-top $mainPadding
+
+	div
+		height 50px
+		&:first-child
+			border-right 1px solid $gray
+		&:last-child
+			border-left 1px solid $gray
 
 	.btn-action-plus-w
 	.btn-action-comment
 		background transparent
-		color $darkGray
 		cursor pointer
 		.icon
 			background url(png("comment"))
@@ -113,12 +120,24 @@
 		&.full
 			background-image url(png("full-w"))
 
-	.like-zone
-		color $darkGray
-		cursor pointer
+	.btn-action-share
+		color $orange
+		font-size 18px
+
+		.glyphicons
+			margin-top $mainPadding
 
 	.btn
 		box-shadow none
+
+.like-zone
+	cursor pointer
+
+.status-actions
+.status-actions-text
+	text-align center
+	padding 0
+	color $darkGray
 
 .add-media h4
 	a
@@ -158,6 +177,12 @@
 
 	small
 		font-weight normal
+
+.share-message-block
+	padding $mainPadding
+	color $darkGray
+	border-bottom 1px solid $gray
+	margin-bottom $mainPadding
 
 @media (max-width: 414px)
 	.status-actions

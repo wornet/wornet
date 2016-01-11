@@ -11,6 +11,16 @@ statusSchema = PostSchema.extend
 		type: String
 	pointsValue:
 		type: Number
+	shares: [
+		type: ObjectId
+		ref: 'StatusSchema'
+	]
+	isAShare:
+		type: Boolean
+		default: false
+	referencedStatus:
+		type: ObjectId
+		ref: 'StatusSchema'
 
 statusSchema.path('content').validate (text) ->
 	text.length < config.wornet.limits.realStatusLength
@@ -18,8 +28,26 @@ statusSchema.path('content').validate (text) ->
 statusSchema.methods.isEmpty = ->
 	empty(@content) and empty(@images) and empty(@videos) and empty(@links)
 
+statusSchema.methods.populateUsers = (done) ->
+	statusToReturn = @toObject()
+	usersToFind = []
+	usersToFind.push(@author) if !empty(@author)
+	usersToFind.push(@at) if !empty(@at)
+	if usersToFind.length
+		User.find
+			_id: $in: usersToFind
+		, (err, users) ->
+			for user in users
+				if equals user._id, @author
+					statusToReturn.author = user
+				else if equals user._id, @at
+					statusToReturn.at = user
+			done statusToReturn
+	else
+		done statusToReturn
+
 statusSchema.pre 'save', (next) ->
-	if @isEmpty()
+	if @isEmpty() and !@isAShare
 		next new PublicError s("Ce statut est vide")
 	else
 		if equals @at, @author

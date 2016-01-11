@@ -2,6 +2,15 @@
 	//- .nostyle(data-starpush="{{ status._id }}")
 	- var init = "status.edit = false;"
 	- init += "status.originalContent = status.content;"
+	.col-xs-12.share-message-block(ng-if="status.isAShare")
+		span
+			a(ng-bind="status.sharer.name.full" href="/{{ status.sharer.uniqueURLID }}")
+			| &nbsp;
+			=s("a partagé")
+			| &nbsp;
+			span(data-date="{{ status.shareDate }}" data-phrase="true")
+				| &nbsp;
+	.cb		
 	.aside.settings.continue(ng-init=init ng-if="status.author.hashedId")
 		a.dropdown-toggle(data-toggle="dropdown")
 			+half('cog')
@@ -84,16 +93,41 @@
 	.cb
 	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "'")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
-			.status-actions
-				if config.wornet.plusW.enabled
-					span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe }" ng-click="toggleLike(status)")
-					span.like-zone(ng-click="displaylikerList(status)")
-						| {{ nbLikeText(status) }}
-				if config.wornet.comments.enabled
-					span.btn-action-comment(ng-click="toggleCommentBlock(status)")
-						span.btn.icon
-						span
-							| {{ nbCommentText(status) }}
+			.col-xs-12.status-actions
+				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+					if config.wornet.plusW.enabled
+						span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe }" ng-click="toggleLike(status)")
+				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+					if config.wornet.comments.enabled
+						span.btn-action-comment(ng-click="toggleCommentBlock(status)")
+							span.btn.icon
+				.col-xs-4(ng-if="isShareable(status)")
+					if config.wornet.comments.enabled
+						span.btn-action-share(ng-click="share(status)")
+							span.icon
+								+glyph('share')
+			.col-xs-12.status-actions-text
+				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+					if config.wornet.plusW.enabled
+						span.like-zone(ng-click="displaylikerList(status)")
+							//- =s("J'aime")
+							//- br
+							| {{ status.nbLike }}
+				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+					if config.wornet.comments.enabled
+						span.btn-action-comment(ng-click="toggleCommentBlock(status)")
+							span
+								//- | {{ nbCommentText(status) }}
+								//- br
+								| {{ status.nbComment }}
+				.col-xs-4(ng-if="isShareable(status)")
+					if config.wornet.shares.enabled
+						span.btn-action-share
+							span
+								//- | {{ nbShareText(status) }}
+								//- br
+								| {{ status.nbShare }}
+	
 			.cb
 		if config.wornet.comments.enabled
 			.comment-list(ng-if="status.comments && status.comments.length && status.commentList")
