@@ -354,6 +354,10 @@
             }
         },
 
+        "shares": {
+            "enabled" : true
+        },
+
         "staticServer": "",
 
         "suggests": {

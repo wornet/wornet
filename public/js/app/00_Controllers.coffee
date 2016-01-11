@@ -1678,12 +1678,29 @@ Controllers =
 					$('[data-id="'+status._id+'"] .btn-action-plus-w').removeAttr 'disabled'
 					true
 
-
-		$scope.nbLikeText = (status) ->
-			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
-
 		$scope.nbCommentText = (status) ->
-			s("{nbComm} commentaire|{nbComm} commentaires", { nbComm: status.nbComment }, status.nbComment)
+			s("Commentaire|Commentaires", null, status.nbComment)
+
+		$scope.nbShareText = (status) ->
+			s("Partage|Partages", null, status.nbShare)
+
+		$scope.isShareable = (status) ->
+			conf = if status.at
+				status.at.accountConfidentiality
+			else
+				status.author.accountConfidentiality
+			conf is 'public'
+
+		$scope.share = (status) ->
+			if $scope.isShareable status
+				Ajax.put '/user/status/share',
+					data:
+						statusId: status._id
+					success: (result) ->
+						status.nbShare++
+						refreshScope $scope
+						toastr.success s("Ce statut a été partagé sur votre profil."), s "C'est fait"
+
 
 		at = getCachedData 'at'
 
@@ -1700,11 +1717,10 @@ Controllers =
 			comment.content = richText $scope, comment.content, true, false
 			if !$scope.monoStatut
 				for status in $scope.recentStatus
-					if comment.attachedStatus and status._id is comment.attachedStatus
+					if comment.attachedStatus and (status._id is comment.attachedStatus or status.referencedStatus is comment.attachedStatus)
 						statusAt = status.at || status.author
 						comment.onMyWall = statusAt.hashedId is getData 'me'
 						(status.comments ||= []).uniquePush '_id', comment
-						break
 			else
 				statusAt = $scope.statusToDisplay.at || $scope.statusToDisplay.author
 				comment.onMyWall = statusAt.hashedId is getData 'me'

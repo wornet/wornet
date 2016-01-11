@@ -130,3 +130,44 @@ module.exports = (router) ->
 						res.notFound()
 		else
 			res.serverError new PublicError s('Pas de statut à afficher')
+
+	router.put '/share', (req, res) ->
+		statusId = req.data.statusId
+		if statusId
+			statusToCreate =
+				author: req.user.id
+				at: null
+				isAShare: true
+				referencedStatus: statusId
+			Status.findOne
+				_id: statusId
+			, (err, statusShared) ->
+				warn err if err
+				if statusShared
+					accountTocheck = cesarLeft if statusShared.at
+						statusShared.at
+					else
+						statusShared.author
+
+					isAPublicAccount req, accountTocheck, true, (isAPublicAccount) ->
+						if isAPublicAccount
+							Status.create statusToCreate, (err, status) ->
+								warn err if err
+								if statusShared.shares
+									newShares = statusShared.shares.copy()
+									newShares.push status._id
+								else
+									newShares = [status._id]
+								Status.update
+									_id: statusId
+								,
+									shares: newShares
+								, (err, statusCreated) ->
+									warn err if err
+									res.json()
+						else
+							res.serverError new PublicError "Vous ne pouvez pas partager ce statut."
+				else
+					res.serverError new PublicError "Le statut à partager n'existe pas."
+		else
+			res.serverError new PublicError "Le statut à partager n'existe pas."

@@ -6,61 +6,93 @@ PlusWPackage =
 
 	put: (req, res, end) ->
 		statusReq = req.data.status
-		idStatus = req.data.status._id
-		hashedIdUser = req.user.hashedId
-		at = if req.data.at
-			req.data.at
-		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
-			req.data.status.at.hashedId
-		else null
 
-		if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
-			locks[hashedIdUser + '-' + idStatus] = true
-			@checkRights req, res, req.data.status, true, (err, ok) =>
-				if ok
-					PlusW.create
-						user: req.user._id
-						status: idStatus
-					, (err, plusW) =>
+		next = (status) =>
+			idStatus = status._id
+			hashedIdUser = req.user.hashedId
+			at = if req.data.at
+				req.data.at
+			else if status and status.at and status.at.hashedId
+				status.at.hashedId
+			else null
+
+			if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
+				locks[hashedIdUser + '-' + idStatus] = true
+				@checkRights req, res, status, true, (err, ok) =>
+					if ok
+						PlusW.create
+							user: req.user._id
+							status: idStatus
+						, (err, plusW) =>
+							delete locks[hashedIdUser + '-' + idStatus]
+							usersToNotify = []
+							hashedIdAuthor = status.author.hashedId
+							#usersToNotify contains hashedIds tests in notify.
+							#It will be transformed just before NoticePackage calling
+							unless equals hashedIdUser, hashedIdAuthor
+								usersToNotify.push hashedIdAuthor
+							unless [null, hashedIdAuthor, hashedIdUser].contains at
+								usersToNotify.push at
+							unless empty usersToNotify
+								@notify usersToNotify, statusReq, req.user
+							end null
+					else
 						delete locks[hashedIdUser + '-' + idStatus]
-						usersToNotify = []
-						hashedIdAuthor = statusReq.author.hashedId
-						#usersToNotify contains hashedIds tests in notify.
-						#It will be transformed just before NoticePackage calling
-						unless equals hashedIdUser, hashedIdAuthor
-							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at
-							usersToNotify.push at
-						unless empty usersToNotify
-							@notify usersToNotify, statusReq, req.user
-						end null
+						end err
+			else
+				end null
+
+		if statusReq.isAShare and statusReq.referencedStatus
+			Status.findOne
+				_id: statusReq.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				unless originalStatus
+					res.serverError new PublicError "Le status originel est introuvable."
 				else
-					delete locks[hashedIdUser + '-' + idStatus]
-					end err
+					originalStatus.populateUsers next
 		else
-			end null
+			next statusReq
+
+
 
 	delete: (req, res, end) ->
-		idStatus = req.data.status._id
-		idUser = req.user._id
-		@checkRights req, res, req.data.status, false, (err, ok) =>
-			if ok
-				PlusW.remove
-					user: idUser
-					status: idStatus
-				, (err) ->
-					if err
-						end err
-					else
-						NoticePackage.unnotify
-							action: 'notice'
-							notice:
-								type: 'like'
-								launcher: idUser
-								status: idStatus
-						end null
-			else
-				end err
+		statusReq = req.data.status
+
+		next = (status) =>
+			idStatus = status._id
+			idUser = req.user._id
+			@checkRights req, res, status, false, (err, ok) =>
+				if ok
+					PlusW.remove
+						user: idUser
+						status: idStatus
+					, (err) ->
+						if err
+							end err
+						else
+							NoticePackage.unnotify
+								action: 'notice'
+								notice:
+									type: 'like'
+									launcher: idUser
+									status: idStatus
+							end null
+				else
+					end err
+					
+		if statusReq.isAShare and statusReq.referencedStatus
+			Status.findOne
+				_id: statusReq.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				unless originalStatus
+					res.serverError new PublicError "Le status originel est introuvable."
+				else
+					originalStatus.populateUsers next
+		else
+			next statusReq
+
 
 	checkRights: (req, res, status, liking, onlySeeing = false, done) ->
 		if 'function' is typeof onlySeeing

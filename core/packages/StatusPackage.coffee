@@ -42,91 +42,142 @@ StatusPackage =
 					data.chat = chat
 					next()
 		req.getFriends (err, friends, friendAsks) =>
-			connectedPeople = friends.column 'id'
-			connectedPeopleAndMe = connectedPeople.with req.user.id
-			where = @where id, connectedPeopleAndMe, onProfile
-			limit = config.wornet.limits.statusPageCount
-			if req.data.offset
-				limit = config.wornet.limits.scrollStatusPageCount
-				_objectId = req.data.offset
-				if /^[0-9a-fA-F]{24}$/.test _objectId
-					where._id = $lt: new ObjectId(_objectId).path
-			isAPublicAccount req, cesarLeft(id), true, (isAPublicAccount) =>
-				if isAPublicAccount || connectedPeopleAndMe.contains id
-					Status.find where
-						.skip 0
-						.limit limit
-						.sort date: 'desc'
-						.select '_id date author at content status images videos links album albumName pointsValue nbLike'
-						.exec (err, recentStatus) ->
-							if err
-								res.serverError err
-							else
-								missingIds = []
-								recentStatusPublicData = []
-								if recentStatus and typeof recentStatus is 'object'
-									add = (val) ->
-										val = strval val
-										if val is 'undefined'
-											throw new Error 'val must not be undefined'
-										unless missingIds.contains val
-											missingIds.push val
-									recentStatus.each ->
-										if @at
-											add @at
-										add @author
-									searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
-									done = (err, usersMap) ->
-										if err
-											res.serverError err
-										else
-											idsStatus = recentStatus.column '_id'
-											likedStatus = {}
-											PlusW.find
-												status: $in: idsStatus
-											, (err, result) ->
-												tabLike = []
-												for idStatus in idsStatus
-													tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
-												for like in result
-													tabLike[like.status].nbLike++
-													if equals req.user.id, like.user
-														tabLike[like.status].likedByMe = true
-
-												recentStatus.each ->
-													status = @toObject()
-													if @at is @author
-														@at = null
-													status.author = usersMap[strval @author].publicInformations()
-													if @at
-														status.at = usersMap[strval @at].publicInformations()
-													status.concernMe = [@at, @author].contains req.user.id, equals
-													if status.concernMe and status.images.length and ! equals req.user.id, @author
-														ids = status.images.column('src').map PhotoPackage.urlToId
-														(req.session.photosAtMe ||= []).merge ids, 'add'
-														next = nextWithSession
-													status.status = @status
-													if @status is 'blocked'
-														status.content = ''
-													status.likedByMe = tabLike[status._id].likedByMe
-													status.nbLike = tabLike[status._id].nbLike
-													status.nbImages = status.images.length
-													if status.images.length
-														status.images.sort (a, b) ->
-															b.src - a.src
-														status.images = [status.images[0]]
-														if -1 isnt status.images[0].src.indexOf "200x"
-															status.images[0].src = status.images[0].src.replace "200x", ""
-													recentStatusPublicData.push status
-												data.recentStatus = recentStatusPublicData
-												next()
-									req.getUsersByIds missingIds, done #, searchInDataBase
+			Follow.find
+				follower: req.user.id
+			, (err, follows) =>
+				followed = follows.column 'followed'
+				connectedPeople = friends.column 'id'
+				connectedPeopleAndMe = connectedPeople.merge(followed).unique().with req.user.id
+				where = @where id, connectedPeopleAndMe, onProfile
+				limit = config.wornet.limits.statusPageCount
+				if req.data.offset
+					limit = config.wornet.limits.scrollStatusPageCount
+					_objectId = req.data.offset
+					if /^[0-9a-fA-F]{24}$/.test _objectId
+						where._id = $lt: new ObjectId(_objectId).path
+				isAPublicAccount req, cesarLeft(id), true, (isAPublicAccount) =>
+					if isAPublicAccount || connectedPeopleAndMe.contains id
+						Status.find where
+							.skip 0
+							.limit limit
+							.sort date: 'desc'
+							.select '_id date author at content status images videos links album albumName pointsValue nbLike shares isAShare referencedStatus'
+							.exec (err, recentStatus) ->
+								if err
+									res.serverError err
 								else
-									data.recentStatus = recentStatusPublicData
-									next()
-				else
-					warn [connectedPeopleAndMe, 'does not contains', id]
-					res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
+									missingIds = []
+									recentStatusPublicData = []
+									if recentStatus and typeof recentStatus is 'object'
+										add = (val) ->
+											val = strval val
+											if val is 'undefined'
+												throw new Error 'val must not be undefined'
+											unless missingIds.contains val
+												missingIds.push val
+										recentStatus.each ->
+											if @at
+												add @at
+											add @author
+										searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
+										done = (err, usersMap) ->
+											if err
+												res.serverError err
+											else
+												originalStatusToSearch = []
+												for aStatus in recentStatus
+													if aStatus.isAShare
+														originalStatusToSearch.push aStatus.referencedStatus
+
+												Status.find
+													_id: $in: originalStatusToSearch
+												, (err, originalStatus) ->
+													warn err if err
+													newMissingIds = []
+													for anOriginalStatus in originalStatus
+														newMissingIds.push(anOriginalStatus.author) if anOriginalStatus.author
+														newMissingIds.push(anOriginalStatus.at) if anOriginalStatus.at
+													req.getUsersByIds newMissingIds, (err, missingUsers) ->
+														warn err if err
+														usersMap.merge missingUsers
+														idsStatus = recentStatus.column('_id').merge originalStatus.column '_id'
+														likedStatus = {}
+														PlusW.find
+															status: $in: idsStatus
+														, (err, result) ->
+															tabLike = []
+															for idStatus in idsStatus
+																tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
+															for like in result
+																tabLike[like.status].nbLike++
+																if equals req.user.id, like.user
+																	tabLike[like.status].likedByMe = true
+
+															recentStatus.each ->
+																status = @toObject()
+
+																if @isAShare
+																	theOriginalStatus = null
+																	for anOriginalStatus in originalStatus
+																		if equals anOriginalStatus._id, @referencedStatus
+																			theOriginalStatus = anOriginalStatus
+																	if !theOriginalStatus
+																		res.serverError new PublicError s("Statut originel introuvable")
+																	else
+																		status.sharer = usersMap[strval status.author].publicInformations()
+																		status.author = usersMap[strval theOriginalStatus.author].publicInformations()
+																		if theOriginalStatus.at
+																			status.at = usersMap[strval theOriginalStatus.at].publicInformations()
+																		status.concernMe = [theOriginalStatus.at, theOriginalStatus.author].contains req.user.id, equals
+																		status.content = theOriginalStatus.content
+																		status.images = theOriginalStatus.images
+																		status.videos = theOriginalStatus.videos
+																		status.links = theOriginalStatus.links
+																		if theOriginalStatus.status is 'blocked'
+																			status.status = 'blocked'
+																			status.content = ''
+																		status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
+																		status.nbLike = tabLike[theOriginalStatus._id].nbLike
+																		status.shares = theOriginalStatus.shares
+																		status.shareDate = status.date
+																		status.date = theOriginalStatus.date
+																else
+																	if @at is @author
+																		@at = null
+																	status.author = usersMap[strval @author].publicInformations()
+																	if @at
+																		status.at = usersMap[strval @at].publicInformations()
+																	status.concernMe = [@at, @author].contains req.user.id, equals
+																	if status.concernMe and status.images.length and ! equals req.user.id, @author
+																		ids = status.images.column('src').map PhotoPackage.urlToId
+																		(req.session.photosAtMe ||= []).merge ids, 'add'
+																		next = nextWithSession
+																	status.status = @status
+																	if @status is 'blocked'
+																		status.content = ''
+																	status.likedByMe = tabLike[status._id].likedByMe
+																	status.nbLike = tabLike[status._id].nbLike
+																status.nbImages = status.images.length
+																status.nbShare = if status.shares
+																	status.shares.length
+																else
+																	0
+																if status.images.length
+																	status.images.sort (a, b) ->
+																		b.src - a.src
+																	status.images = [status.images[0]]
+																	if -1 isnt status.images[0].src.indexOf "200x"
+																		status.images[0].src = status.images[0].src.replace "200x", ""
+																recentStatusPublicData.push status
+															data.recentStatus = recentStatusPublicData
+															next()
+										req.getUsersByIds missingIds, done #, searchInDataBase
+									else
+										data.recentStatus = recentStatusPublicData
+										next()
+					else
+						warn [connectedPeopleAndMe, 'does not contains', id]
+						res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
 
 	where: (id, connectedPeopleAndMe, onProfile) ->
 		if onProfile
@@ -272,6 +323,7 @@ StatusPackage =
 		place = place.hashedId or place
 		status.nbLike = 0
 		status.nbComment = 0
+		status.nbShare = 0
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
