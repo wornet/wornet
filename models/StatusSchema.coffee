@@ -36,12 +36,12 @@ statusSchema.methods.populateUsers = (done) ->
 	if usersToFind.length
 		User.find
 			_id: $in: usersToFind
-		, (err, users) ->
+		, (err, users) =>
 			for user in users
 				if equals user._id, @author
-					statusToReturn.author = user
+					statusToReturn.author = user.publicInformations()
 				else if equals user._id, @at
-					statusToReturn.at = user
+					statusToReturn.at = user.publicInformations()
 			done statusToReturn
 	else
 		done statusToReturn

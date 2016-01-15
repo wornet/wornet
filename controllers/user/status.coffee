@@ -44,12 +44,40 @@ module.exports = (router) ->
 					else unless status
 						res.serverError standartError()
 					else
-						status.remove (err) ->
-							if err
-								res.serverError err
-							else
-								StatusPackage.updatePoints req, status, status.author, false, ->
-									next status
+						deleteStatus = ->
+							status.remove (err) ->
+								if err
+									res.serverError err
+								else
+									StatusPackage.updatePoints req, status, status.author, false, ->
+										next status
+						if status.shares.length
+							Status.remove
+								_id: $in: status.shares
+							, (err) ->
+								warn err if err
+								deleteStatus()
+						else if status.isAShare and status.referencedStatus
+							Status.findOne
+								_id: status.referencedStatus
+							, (err, originalStatus) ->
+								warn err if err
+								if originalStatus
+									newShares = []
+									for share in originalStatus.shares
+										unless equals share, status._id
+											newShares.push share
+									Status.update
+										_id: originalStatus._id
+									,
+										shares: newShares
+									, (err) ->
+										warn err if err
+										deleteStatus()
+								else
+									res.serverError new PublicError s("Le status original est introuvable.")
+						else
+							deleteStatus()
 
 
 	router.put '/add/:updatedAt/:id', (req, res) ->
@@ -88,46 +116,30 @@ module.exports = (router) ->
 				if err
 					res.serverError err
 				else
-					if StatusPackage.checkRightToSee(req, status)
-						status = status.toObject()
-						usersToFind = [status.author]
-						if status.at is status.author
-							status.at = null
-						if status.at
-							usersToFind.push status.at
-						status.concernMe = [status.at, status.author].contains req.user.id, equals
-						status.isMine = equals status.author, req.user._id
-						User.find
-							_id: $in: usersToFind
-						, (err, users) ->
-							if err
-								res.serverError err
-							else
-								for user in users
-									if equals user._id, status.author
-										status.author = user.publicInformations()
-									else if equals user._id, status.at
-										status.at = user.publicInformations()
-								PlusW.find
-									status: id
-								, (err, result) ->
-									tabLike = []
-									tabLike[id] ||= {likedByMe: false, nbLike: 0}
-									for like in result
-										tabLike[id].nbLike++
-										if equals req.user.id, like.user
-											tabLike[id].likedByMe = true
-									status.likedByMe = tabLike[id].likedByMe
-									status.nbLike = tabLike[id].nbLike
-									status.nbImages = status.images.length
-									if status.images.length
-										for image in status.images
-											if -1 isnt image.src.indexOf "200x"
-												image.src =image.src.replace "200x", ""
-									res.render 'user/status',
-										status: status
-					else
-						res.notFound()
+					status.populateUsers (status) ->
+						if StatusPackage.checkRightToSee(req, status)
+							status.concernMe = status.author.hashedId is req.user.hashedId or (status.at and stat.at.hashedId is req.user.hashedId)
+							status.isMine = equals status.author.hashedId, req.user.hashedId
+							PlusW.find
+								status: id
+							, (err, result) ->
+								tabLike = []
+								tabLike[id] ||= {likedByMe: false, nbLike: 0}
+								for like in result
+									tabLike[id].nbLike++
+									if equals req.user.id, like.user
+										tabLike[id].likedByMe = true
+								status.likedByMe = tabLike[id].likedByMe
+								status.nbLike = tabLike[id].nbLike
+								status.nbImages = status.images.length
+								if status.images.length
+									for image in status.images
+										if -1 isnt image.src.indexOf "200x"
+											image.src =image.src.replace "200x", ""
+								res.render 'user/status',
+									status: status
+						else
+							res.notFound()
 		else
 			res.serverError new PublicError s('Pas de statut à afficher')
 
@@ -138,35 +150,37 @@ module.exports = (router) ->
 				author: req.user.id
 				at: null
 				isAShare: true
-				referencedStatus: statusId
 			Status.findOne
 				_id: statusId
 			, (err, statusShared) ->
 				warn err if err
 				if statusShared
-					accountTocheck = cesarLeft if statusShared.at
-						statusShared.at
-					else
-						statusShared.author
-
-					isAPublicAccount req, accountTocheck, true, (isAPublicAccount) ->
-						if isAPublicAccount
-							Status.create statusToCreate, (err, status) ->
-								warn err if err
-								if statusShared.shares
-									newShares = statusShared.shares.copy()
-									newShares.push status._id
-								else
-									newShares = [status._id]
-								Status.update
-									_id: statusId
-								,
-									shares: newShares
-								, (err, statusCreated) ->
-									warn err if err
-									res.json()
+					StatusPackage.getOriginalStatus statusShared, (err, originalStatus) ->
+						warn err if err
+						statusToCreate.referencedStatus = originalStatus._id
+						accountTocheck = cesarLeft if originalStatus.at
+							originalStatus.at
 						else
-							res.serverError new PublicError "Vous ne pouvez pas partager ce statut."
+							originalStatus.author
+
+						isAPublicAccount req, accountTocheck, true, (isAPublicAccount) ->
+							if isAPublicAccount
+								Status.create statusToCreate, (err, status) ->
+									warn err if err
+									if originalStatus.shares
+										newShares = originalStatus.shares.copy()
+										newShares.push status._id
+									else
+										newShares = [status._id]
+									Status.update
+										_id: originalStatus._id
+									,
+										shares: newShares
+									, (err, statusCreated) ->
+										warn err if err
+										res.json()
+							else
+								res.serverError new PublicError "Vous ne pouvez pas partager ce statut."
 				else
 					res.serverError new PublicError "Le statut à partager n'existe pas."
 		else

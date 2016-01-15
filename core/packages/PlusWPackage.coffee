@@ -7,7 +7,7 @@ PlusWPackage =
 	put: (req, res, end) ->
 		statusReq = req.data.status
 
-		next = (status) =>
+		next = (status, isAShare = false) =>
 			idStatus = status._id
 			hashedIdUser = req.user.hashedId
 			at = if req.data.at
@@ -18,7 +18,7 @@ PlusWPackage =
 
 			if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
 				locks[hashedIdUser + '-' + idStatus] = true
-				@checkRights req, res, status, true, (err, ok) =>
+				@checkRights req, res, status, true, false, isAShare, (err, ok) =>
 					if ok
 						PlusW.create
 							user: req.user._id
@@ -50,7 +50,8 @@ PlusWPackage =
 				unless originalStatus
 					res.serverError new PublicError "Le status originel est introuvable."
 				else
-					originalStatus.populateUsers next
+					originalStatus.populateUsers (statusPopulated) ->
+						next statusPopulated, true
 		else
 			next statusReq
 
@@ -59,10 +60,10 @@ PlusWPackage =
 	delete: (req, res, end) ->
 		statusReq = req.data.status
 
-		next = (status) =>
+		next = (status, isAShare) =>
 			idStatus = status._id
 			idUser = req.user._id
-			@checkRights req, res, status, false, (err, ok) =>
+			@checkRights req, res, status, false, false, isAShare, (err, ok) =>
 				if ok
 					PlusW.remove
 						user: idUser
@@ -80,7 +81,7 @@ PlusWPackage =
 							end null
 				else
 					end err
-					
+
 		if statusReq.isAShare and statusReq.referencedStatus
 			Status.findOne
 				_id: statusReq.referencedStatus
@@ -89,15 +90,20 @@ PlusWPackage =
 				unless originalStatus
 					res.serverError new PublicError "Le status originel est introuvable."
 				else
-					originalStatus.populateUsers next
+					originalStatus.populateUsers (statusPopulated) ->
+						next statusPopulated, true
 		else
 			next statusReq
 
 
-	checkRights: (req, res, status, liking, onlySeeing = false, done) ->
+	checkRights: (req, res, status, liking, onlySeeing = false, isAShare = false, done) ->
 		if 'function' is typeof onlySeeing
 			done = onlySeeing
 			onlySeeing = false
+			isAShare = false
+		if 'function' is typeof isAShare
+			done = isAShare
+			isAShare = false
 
 		idStatus = status._id
 		#already liked or disliked?
@@ -107,9 +113,8 @@ PlusWPackage =
 				status: idStatus
 			PlusW.count wherePlus, (err, count) ->
 				done null, !err and liking is !count
-
 		#if the status is mine or on my wall
-		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId))
+		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId)) or isAShare
 			if onlySeeing
 				done null, true
 			else
@@ -117,24 +122,31 @@ PlusWPackage =
 		else
 			req.getFriends (err, friends, friendAsks) ->
 				friendsList = friends.column('_id')
-				#The status is owned by one of my friends or on his wall
-				whereStatus =
-					_id: idStatus
-					$or: [
-						author: $in: friendsList
-					,
-						at: $in: friendsList
-					]
-				Status.count whereStatus, (err, countStatut) ->
-					if err
-						done err, false
-					else if !countStatut
-						done new PublicError s("Vous n'avez accès à ce statut"), false
-					else
-						if onlySeeing
-							done null, true
+				Follow.find
+					follower: req.user._id
+				, (err, follows) ->
+					warn err if err
+					followed = follows.column('followed')
+					friendsListWithFollow = friendsList.copy()
+					friendsListWithFollow.merge followed
+					#The status is owned by one of my friends or on his wall or is owned by one of my following
+					whereStatus =
+						_id: idStatus
+						$or: [
+							author: $in: friendsListWithFollow
+						,
+							at: $in: friendsList
+						]
+					Status.count whereStatus, (err, countStatut) ->
+						if err
+							done err, false
+						else if !countStatut
+							done new PublicError s("Vous n'avez pas accès à ce statut"), false
 						else
-							next()
+							if onlySeeing
+								done null, true
+							else
+								next()
 
 	notify: (usersToNotify, status, liker) ->
 
@@ -167,39 +179,42 @@ PlusWPackage =
 
 
 	get: (req, res, status, done) ->
-		@checkRights req, res, status, false, true, (err, ok) ->
-			if !err and ok
-				offset = req.data.offset
-				where = status: status._id
-				.with if offset
-				    _id: $gt: new ObjectId(offset).path
-				PlusW.find where
-					.limit config.wornet.limits.likersPageCount
-					.sort createdAt: 'desc'
-					.exec (err, plusWs) ->
-						if err
-							done err
-						else if !plusWs or !plusWs.length
-							done null, []
-						else
-							likersId = plusWs.map (plusW) ->
-								plusW.user
-							User.find
-								_id: $in: likersId
-							, (err, users) ->
-								if err
-									done err
-								else if !users or !users.length
-									done null, []
-								else
-									users = users.map (user) ->
-										user.publicInformations()
-									for user in users
-										for plusW in plusWs
-											if strval(plusW.user) is strval(cesarRight(user.hashedId))
-												user.plusWId = plusW._id
-									done null, users
-			else
-				done err
+		StatusPackage.getOriginalStatus status, (err, originalStatus) =>
+			warn err if err
+			@checkRights req, res, originalStatus, false, true, status.isAShare, (err, ok) ->
+				if !err and ok
+					status = originalStatus
+					offset = req.data.offset
+					where = status: status._id
+					.with if offset
+					    _id: $gt: new ObjectId(offset).path
+					PlusW.find where
+						.limit config.wornet.limits.likersPageCount
+						.sort createdAt: 'desc'
+						.exec (err, plusWs) ->
+							if err
+								done err
+							else if !plusWs or !plusWs.length
+								done null, []
+							else
+								likersId = plusWs.map (plusW) ->
+									plusW.user
+								User.find
+									_id: $in: likersId
+								, (err, users) ->
+									if err
+										done err
+									else if !users or !users.length
+										done null, []
+									else
+										users = users.map (user) ->
+											user.publicInformations()
+										for user in users
+											for plusW in plusWs
+												if strval(plusW.user) is strval(cesarRight(user.hashedId))
+													user.plusWId = plusW._id
+										done null, users
+				else
+					done err
 
 module.exports = PlusWPackage
