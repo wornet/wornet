@@ -113,64 +113,70 @@ StatusPackage =
 																if equals req.user.id, like.user
 																	tabLike[like.status].likedByMe = true
 
-															recentStatus.each ->
-																status = @toObject()
+															UserPackage.refreshFollows req, (err) ->
+																warn err if err
+																recentStatus.each ->
+																	status = @toObject()
 
-																if @isAShare
-																	theOriginalStatus = null
-																	for anOriginalStatus in originalStatus
-																		if equals anOriginalStatus._id, @referencedStatus
-																			theOriginalStatus = anOriginalStatus
-																	if !theOriginalStatus
-																		res.serverError new PublicError s("Statut originel introuvable")
+																	if @isAShare
+																		theOriginalStatus = null
+																		for anOriginalStatus in originalStatus
+																			if equals anOriginalStatus._id, @referencedStatus
+																				theOriginalStatus = anOriginalStatus
+																		if !theOriginalStatus
+																			res.serverError new PublicError s("Statut originel introuvable")
+																		else
+																			status.sharer = usersMap[strval status.author].publicInformations()
+																			status.author = usersMap[strval theOriginalStatus.author].publicInformations()
+																			if theOriginalStatus.at
+																				status.at = usersMap[strval theOriginalStatus.at].publicInformations()
+																			status.concernMe = true
+																			status.content = theOriginalStatus.content
+																			status.images = theOriginalStatus.images
+																			status.videos = theOriginalStatus.videos
+																			status.links = theOriginalStatus.links
+																			if theOriginalStatus.status is 'blocked'
+																				status.status = 'blocked'
+																				status.content = ''
+																			status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
+																			status.nbLike = tabLike[theOriginalStatus._id].nbLike
+																			status.shares = theOriginalStatus.shares
+																			status.shareDate = status.date
+																			status.date = theOriginalStatus.date
 																	else
-																		status.sharer = usersMap[strval status.author].publicInformations()
-																		status.author = usersMap[strval theOriginalStatus.author].publicInformations()
-																		if theOriginalStatus.at
-																			status.at = usersMap[strval theOriginalStatus.at].publicInformations()
-																		status.concernMe = [theOriginalStatus.at, theOriginalStatus.author].contains req.user.id, equals
-																		status.content = theOriginalStatus.content
-																		status.images = theOriginalStatus.images
-																		status.videos = theOriginalStatus.videos
-																		status.links = theOriginalStatus.links
-																		if theOriginalStatus.status is 'blocked'
-																			status.status = 'blocked'
+																		if @at is @author
+																			@at = null
+																		status.author = usersMap[strval @author].publicInformations()
+																		if @at
+																			status.at = usersMap[strval @at].publicInformations()
+																		status.concernMe = [@at, @author].contains req.user.id, equals
+																		if status.concernMe and status.images.length and ! equals req.user.id, @author
+																			ids = status.images.column('src').map PhotoPackage.urlToId
+																			(req.session.photosAtMe ||= []).merge ids, 'add'
+																			next = nextWithSession
+																		status.status = @status
+																		if @status is 'blocked'
 																			status.content = ''
-																		status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
-																		status.nbLike = tabLike[theOriginalStatus._id].nbLike
-																		status.shares = theOriginalStatus.shares
-																		status.shareDate = status.date
-																		status.date = theOriginalStatus.date
-																else
-																	if @at is @author
-																		@at = null
-																	status.author = usersMap[strval @author].publicInformations()
-																	if @at
-																		status.at = usersMap[strval @at].publicInformations()
-																	status.concernMe = [@at, @author].contains req.user.id, equals
-																	if status.concernMe and status.images.length and ! equals req.user.id, @author
-																		ids = status.images.column('src').map PhotoPackage.urlToId
-																		(req.session.photosAtMe ||= []).merge ids, 'add'
-																		next = nextWithSession
-																	status.status = @status
-																	if @status is 'blocked'
-																		status.content = ''
-																	status.likedByMe = tabLike[status._id].likedByMe
-																	status.nbLike = tabLike[status._id].nbLike
-																status.nbImages = status.images.length
-																status.nbShare = if status.shares
-																	status.shares.length
-																else
-																	0
-																if status.images.length
-																	status.images.sort (a, b) ->
-																		b.src - a.src
-																	status.images = [status.images[0]]
-																	if -1 isnt status.images[0].src.indexOf "200x"
-																		status.images[0].src = status.images[0].src.replace "200x", ""
-																recentStatusPublicData.push status
-															data.recentStatus = recentStatusPublicData
-															next()
+																		status.likedByMe = tabLike[status._id].likedByMe
+																		status.nbLike = tabLike[status._id].nbLike
+																	status.nbImages = status.images.length
+																	status.isPlaceFollowed = if status.at
+																		req.user.followings.contains cesarRight(status.at.hashedId), equals
+																	else
+																		req.user.followings.contains cesarRight(status.author.hashedId), equals
+																	status.nbShare = if status.shares
+																		status.shares.length
+																	else
+																		0
+																	if status.images.length
+																		status.images.sort (a, b) ->
+																			b.src - a.src
+																		status.images = [status.images[0]]
+																		if -1 isnt status.images[0].src.indexOf "200x"
+																			status.images[0].src = status.images[0].src.replace "200x", ""
+																	recentStatusPublicData.push status
+																data.recentStatus = recentStatusPublicData
+																next()
 										req.getUsersByIds missingIds, done #, searchInDataBase
 									else
 										data.recentStatus = recentStatusPublicData
@@ -398,10 +404,31 @@ StatusPackage =
 				, done
 
 	checkRightToSee: (req, status) ->
-		me = req.user.id
-		myFriendsId = req.user.friends.map (friend) ->
-			friend._id
-		(equals(status.author, me) or equals(status.at, me) or (myFriendsId.contains(status.author, equals) && (status.at is null or myFriendsId.contains(status.at, equals))) or myFriendsId.contains status.at, equals)
+		if (status.at and status.at.accountConfidentiality is "public") or (!status.at and status.author.accountConfidentiality is "public")
+			true
+		else
+			me = req.user.hashedId
+			atHashedId = if status.at
+				status.at.hashedId
+			else
+				null
+			myFriendsId = req.user.friends.map (friend) ->
+				friend.hashedId
+			(equals(status.author.hashedId, me) or equals(atHashedId, me) or (myFriendsId.contains(status.author.hashedId, equals) && (!status.at or myFriendsId.contains(atHashedId, equals))) or myFriendsId.contains atHashedId, equals)
+
+	getOriginalStatus: (status, done) ->
+		if !status.isAShare or !status.referencedStatus
+			done null, status
+		else
+			Status.findOne
+				_id: status.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				if originalStatus
+					done null, originalStatus
+				else
+					done new PublicError s('Le statut originel est introuvable')
+
 
 	DEFAULT_STATUS_ID: "100000000000000000000001"
 

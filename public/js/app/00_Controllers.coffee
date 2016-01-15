@@ -1192,6 +1192,11 @@ Controllers =
 							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) + 1
 						else
 							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) - 1
+
+						for status in statusScope.recentStatus
+							if status.at and status.at.hashedId is hashedId or status.author and status.author.hashedId is hashedId
+								status.isPlaceFollowed = follow
+						refreshScope statusScope
 						return
 
 		$scope.unfollow = (id) ->
@@ -1388,7 +1393,10 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText $scope, status.content
-					status.isMine = isMe(status.author.hashedId)
+					status.isMine = if !status.isAShare
+						isMe(status.author.hashedId)
+					else
+						false
 					status.nbComment = 0
 					status.nbLike ||= 0
 					status
@@ -1406,7 +1414,13 @@ Controllers =
 				lastStatusLoadedCount = chunk.length
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
-					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
+					statusIds = []
+					for status in $scope.recentStatus
+						if ! status.comments
+							statusIds.push if status.isAShare and status.referencedStatus
+								status.referencedStatus
+							else
+								status._id
 					if statusIds.length
 						delay 1, ->
 							Ajax.bigGet 'user/comment',
@@ -1415,11 +1429,15 @@ Controllers =
 								success: (data) ->
 									if data.commentList
 										$scope.recentStatus.map (status) ->
-											if data.commentList[status._id]
-												for comment in data.commentList[status._id]
+											idToTest = if status.isAShare
+												status.referencedStatus
+											else
+												status._id
+											if data.commentList[idToTest]
+												for comment in data.commentList[idToTest]
 													comment.content = richText $scope, comment.content, true, false
-												status.comments = data.commentList[status._id]
-												status.nbComment = data.commentList[status._id].length
+												status.comments = data.commentList[idToTest]
+												status.nbComment = data.commentList[idToTest].length
 											else
 												#to prevent 0 on scroll
 												if !status.nbComment

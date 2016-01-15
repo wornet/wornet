@@ -1,6 +1,7 @@
 'use strict'
 
 randomUsers = []
+randomPublicUsers = []
 randomPublicUsersLastRetreive = 0
 randomUsersLastRetreive = 0
 friendsCoupleCacheLifeTime = 1.hour
@@ -237,10 +238,10 @@ UserPackage =
 						iFollow.push follow.followed
 					else
 						iamFollowed.push follow.follower
-				req.user.follower = iamFollowed
-				req.user.following = iFollow
-				req.session.follower = iamFollowed
-				req.session.following = iFollow
+				req.user.followers = iamFollowed
+				req.user.followings = iFollow
+				req.session.followers = iamFollowed
+				req.session.followings = iFollow
 			done err
 
 	askForFriend: (id, req, done) ->
@@ -432,6 +433,8 @@ UserPackage =
 							done randomPublicUsers
 					else
 						done randomPublicUsers
+		else
+			done randomPublicUsers
 
 	findNextRandomPublic: (req, alreadyPresent, done) ->
 		myId = req.user._id

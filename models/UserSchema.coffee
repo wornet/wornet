@@ -271,6 +271,17 @@ config.wornet.thumbSizes.each ->
 userSchema.virtual('present').get ->
 	NoticePackage.isPresent @id
 
+userSchema.virtual('followers')
+	.get ->
+		@_followers ||= {}
+	.set (followers) ->
+		@_followers = followers
+userSchema.virtual('followings')
+	.get ->
+		@_followings ||= {}
+	.set (followings) ->
+		@_followings = followings
+
 preRegistration = null
 
 extend userSchema.methods,

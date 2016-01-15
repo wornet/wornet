@@ -75,7 +75,7 @@
 			.media-image(ng-repeat="image in status.images | orderBy: '-src'")
 				a(data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
 					img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-				a.nb-image(ng-if="status.nbImages > 1" ng-href="/user/status/{{ status._id }}")
+				a.nb-image(ng-if="status.nbImages > 1" ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
 					span
 						| + {{ status.nbImages - 1 }}
 		div(ng-if="status.videos.length > 0")
@@ -89,9 +89,9 @@
 					+half('play')
 		div(ng-if="status.links.length > 0")
 			h3=s("Liens")
-			a(ng-repeat="link in status.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
+			a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
-	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "'")
+	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && status.isPlaceFollowed")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
 			.col-xs-12.status-actions
 				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
