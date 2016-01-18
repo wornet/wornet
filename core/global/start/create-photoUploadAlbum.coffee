@@ -23,6 +23,6 @@ app.onready ->
 							_id: user._id
 						,
 							photoUploadAlbumId: album._id
-						, (err, userModified) ->
+						, (err, nbModif) ->
 							warn err if err
 							console['log'] "Album Téléchargement créé pour " + user.fullName
