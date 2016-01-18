@@ -130,24 +130,37 @@ module.exports = (router) ->
 										req.flash 'signinErrors', err
 								res.redirect signinUrl
 							else
-								# if "Se souvenir de moi" est coché
-								if req.body.remember?
-									auth.remember res, user._id
-								# Put user in session
-								auth.auth req, res, user, ->
-									res.redirect if user then '/user/welcome' else signinUrl
-									unless user.role is 'confirmed'
-										confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-										confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-										message = jdMail 'welcome',
-											email: email
-											url: confirmUrl
-										MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
-								emailUnsubscribed email, (err, unsub) ->
-									if unsub
-										Counter.findOne name: 'resubscribe', (err, counter) ->
-											if counter
-												counter.inc()
+								Album.create
+									name: "Téléchargements"
+									user: user._id
+								, (err, album) ->
+									warn err if err
+									if album
+										User.update
+											_id: user._id
+										,
+											photoUploadAlbumId: album._id
+										, (err, nbModif) ->
+											warn err if err
+											user.photoUploadAlbumId = album._id
+											# if "Se souvenir de moi" est coché
+											if req.body.remember?
+												auth.remember res, user._id
+											# Put user in session
+											auth.auth req, res, user, ->
+												res.redirect if user then '/user/welcome' else signinUrl
+												unless user.role is 'confirmed'
+													confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+													confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+													message = jdMail 'welcome',
+														email: email
+														url: confirmUrl
+													MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
+											emailUnsubscribed email, (err, unsub) ->
+												if unsub
+													Counter.findOne name: 'resubscribe', (err, counter) ->
+														if counter
+															counter.inc()
 					if count
 						createURLID next
 					else
