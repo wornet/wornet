@@ -5,45 +5,46 @@ CommentPackage =
 	put: (req, res, done) ->
 		if req.data.status
 			try
-				medias = req.data.medias || {}
-				hashedIdUser = req.user.hashedId
-				at = if req.data.at
-					req.data.at
-				else if req.data.status and req.data.status.at and req.data.status.at.hashedId
-					req.data.status.at.hashedId
-				else null
-				status = req.data.status
-				req.getFriends (err, friends) =>
+				StatusPackage.getOriginalStatus req.data.status, (err, status) =>
 					warn err if err
-					newAt = at || status.author.hashedId
-					isAPublicAccount req, newAt, true, (isAPublicAccount) =>
-						UserPackage.refreshFollows req, =>
-							if friends.column('_id').map(cesarLeft).contains(newAt) or newAt is hashedIdUser or (isAPublicAccount and req.user.followings.contains newAt, equals)
-								res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis ou abonnements.")
-							else
-								Comment.create
-									author: req.user._id
-									content: req.data.comment.content || ""
-									attachedStatus: status._id
-									images: medias.images || []
-									videos: medias.videos || []
-									links: medias.links || []
-								, (err, originalComment) =>
-									warn err if err
-									unless err
-										comment = originalComment.toObject()
-										comment.author = req.user.publicInformations()
-										hashedIdAuthor = status.author.hashedId
-										usersToNotify = []
-										unless equals hashedIdUser, hashedIdAuthor
-											usersToNotify.push hashedIdAuthor
-										unless [null, hashedIdAuthor, hashedIdUser].contains at
-											usersToNotify.push at
-										@propagate comment, at || hashedIdAuthor
+					medias = req.data.medias || {}
+					hashedIdUser = req.user.hashedId
+					at = if req.data.at
+						req.data.at
+					else if status and status.at and status.at.hashedId
+						status.at.hashedId
+					else null
+					req.getFriends (err, friends) =>
+						warn err if err
+						newAt = at || status.author.hashedId
+						isAPublicAccount req, newAt, true, (isAPublicAccount) =>
+							UserPackage.refreshFollows req, =>
+								if !friends.column('_id').map(cesarLeft).contains(newAt) and newAt isnt hashedIdUser and (!isAPublicAccount and !req.user.followings.map(cesarLeft).contains newAt, equals)
+									res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis ou abonnements.")
+								else
+									Comment.create
+										author: req.user._id
+										content: req.data.comment.content || ""
+										attachedStatus: status._id
+										images: medias.images || []
+										videos: medias.videos || []
+										links: medias.links || []
+									, (err, originalComment) =>
+										warn err if err
+										unless err
+											comment = originalComment.toObject()
+											comment.author = req.user.publicInformations()
+											hashedIdAuthor = status.author.hashedId
+											usersToNotify = []
+											unless equals hashedIdUser, hashedIdAuthor
+												usersToNotify.push hashedIdAuthor
+											unless [null, hashedIdAuthor, hashedIdUser].contains at
+												usersToNotify.push at
+											@propagate comment, at || hashedIdAuthor
 
-										@notify usersToNotify, status, req.user, comment
+											@notify usersToNotify, status, req.user, comment
 
-										@getRecentCommentForRequest req, res, [status._id], done
+											@getRecentCommentForRequest req, res, [status._id], done
 			catch err
 				done err
 		else

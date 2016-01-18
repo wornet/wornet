@@ -49,7 +49,7 @@ module.exports = (router) ->
 							s("{username} vous a envoyé un message.", username: data.from.name.full)
 						'chatMessage'
 					]
-					NoticePackage.notify userIds.with(req.user.id), null, notice, true, req.getHeader 't'
+					NoticePackage.notify userIds, null, notice, true, req.getHeader 't'
 					res.json()
 				else
 					err = new PublicError s("Vous ne pouvez discuter qu'avec vos amis, si vous avez envoyé une demande, il faut d'abord qu'elle soit validée.")

@@ -84,16 +84,41 @@ block body
 			.cb
 			div(ng-if="statusToDisplay._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "'")
 				if config.wornet.comments.enabled || config.wornet.plusW.enabled
-					.status-actions
-						if config.wornet.plusW.enabled
-							span.btn.btn-action-plus-w(ng-class="{ full: statusToDisplay.likedByMe }" ng-click="toggleLike(statusToDisplay)")
-							span.like-zone(ng-click="displaylikerList(statusToDisplay)")
-								| {{ nbLikeText(statusToDisplay) }}
-						if config.wornet.comments.enabled
-							span.btn-action-comment(ng-click="toggleCommentBlock(statusToDisplay)")
-								span.btn.icon
-								span
-									| {{ nbCommentText(statusToDisplay) }}
+					.col-xs-12.status-actions
+						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
+							if config.wornet.plusW.enabled
+								span.btn.btn-action-plus-w(ng-class="{ full: statusToDisplay.likedByMe }" ng-click="toggleLike(statusToDisplay)")
+						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
+							if config.wornet.comments.enabled
+								span.btn-action-comment(ng-click="toggleCommentBlock(statusToDisplay)")
+									span.btn.icon
+						.col-xs-4(ng-if="isShareable(statusToDisplay)")
+							if config.wornet.comments.enabled
+								span.btn-action-share(ng-click="share(statusToDisplay)")
+									span.icon
+										+glyph('share')
+					.col-xs-12.status-actions-text
+						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
+							if config.wornet.plusW.enabled
+								span.like-zone(ng-click="displaylikerList(statusToDisplay)")
+									//- =s("J'aime")
+									//- br
+									| {{ statusToDisplay.nbLike }}
+						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
+							if config.wornet.comments.enabled
+								span.btn-action-comment(ng-click="toggleCommentBlock(statusToDisplay)")
+									span
+										//- | {{ nbCommentText(status) }}
+										//- br
+										| {{ statusToDisplay.nbComment }}
+						.col-xs-4(ng-if="isShareable(statusToDisplay)")
+							if config.wornet.shares.enabled
+								span.btn-action-share
+									span
+										//- | {{ nbShareText(status) }}
+										//- br
+										| {{ statusToDisplay.nbShare }}
+			
 					.cb
 				if config.wornet.comments.enabled
 					.comment-list(ng-if="statusToDisplay.comments && statusToDisplay.comments.length && statusToDisplay.commentList")

@@ -132,6 +132,7 @@ module.exports = (router) ->
 								status.likedByMe = tabLike[id].likedByMe
 								status.nbLike = tabLike[id].nbLike
 								status.nbImages = status.images.length
+								status.nbShare = status.shares.length
 								if status.images.length
 									for image in status.images
 										if -1 isnt image.src.indexOf "200x"

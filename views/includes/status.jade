@@ -1,4 +1,4 @@
 .well.loading.loading-big-height.fit-to-bottom.macro(ng-controller="StatusCtrl")
-	if isMe || isAFriend
+	if (isMe || isAFriend) && profile.allowFriendPostOnMe
 		include ../includes/status-form.jade
 	include ../includes/status-list.jade
