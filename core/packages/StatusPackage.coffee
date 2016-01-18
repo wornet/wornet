@@ -425,7 +425,8 @@ StatusPackage =
 			, (err, originalStatus) ->
 				warn err if err
 				if originalStatus
-					done null, originalStatus
+					originalStatus.populateUsers (originalStatus) ->
+						done null, originalStatus
 				else
 					done new PublicError s('Le statut originel est introuvable')
 
