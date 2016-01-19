@@ -331,6 +331,7 @@ module.exports = (router) ->
 						res.redirect '/user/settings'
 
 		if userModifications.accountConfidentiality is "public"
+			userModifications.maskFollowList = false
 			unless newUrlId is req.user.uniqueURLID
 				if /^[a-zA-Z0-9_.]*$/.test newUrlId
 					User.count
