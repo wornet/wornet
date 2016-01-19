@@ -1,0 +1,16 @@
+.well.following-block
+	h3
+		if isMe
+			=strtoupper(s("Mes abonnements")) + " "
+		else if isAFriend || isAPublicAccount
+			=strtoupper(s("Abonnements de {name}", {name: profile.name.first})) + " "
+		span.numberOfFollowing
+			=s("({number} abonnement)|({number} abonnements)", { number: numberOfFollowing }, numberOfFollowing)
+		+data('numberOfFollowing', numberOfFollowing)
+	hr
+	ul#followings.photos-thumbs
+		each following in followings
+			if following
+				li: a(href="/" + following.uniqueURLID data-toggle="tooltip" data-placement="top" title=following.fullName).thumb
+					img(src=following.thumb50 alt=following.fullName data-id=following.hashedId)
+	.cb

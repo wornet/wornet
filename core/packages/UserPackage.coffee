@@ -502,7 +502,7 @@ UserPackage =
 					else
 						true
 
-				done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, nbFollowing = 0) ->
+				done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, followings) ->
 					profile = objectToUser profile
 					isAPublicAccount = profile.accountConfidentiality is "public"
 					profile.getFriends (err, friends, friendAsks) ->
@@ -516,6 +516,9 @@ UserPackage =
 									for id, friendAsk of friendAsks
 										if req.user && friendAsk.hashedId is req.user.hashedId
 											myfriendAskPending = true
+								followings = [] if !followings
+								nbFollowing = followings.length
+
 								res.render template,
 									isMe: isMe
 									askedForFriend: askedForFriend
@@ -528,6 +531,7 @@ UserPackage =
 									numberOfFollowers: nbFollowers
 									amIAFollower: !! amIAFollower
 									numberOfFollowing: nbFollowing
+									followings: followings
 									friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
 									friendAsks: if isMe then friendAsks else {}
 									myfriendAskPending: myfriendAskPending
@@ -561,16 +565,18 @@ UserPackage =
 							follower: me
 						, (err, amIAFollower) ->
 							warn err if err
-							Follow.count
+							Follow.find
 								follower: id
-							, (err, nbFollowing)->
+							, (err, followings)->
 								warn err if err
-								next user, isAFriend, nbFollowers, amIAFollower, nbFollowing
+								followedIds = followings.column 'followed'
+								User.find
+									_id: $in: followedIds
+								, (err, userFollowings) ->
+									warn err if err
+									next user, isAFriend, nbFollowers, amIAFollower, userFollowings
 				if isMe
-					if me.accountConfidentiality is "public"
-						getFollowInformations me, false, done
-					else
-						done me, false
+					getFollowInformations me, false, done
 				else
 					User.findById id, (err, user) ->
 						if err
@@ -586,13 +592,17 @@ UserPackage =
 									else
 										null
 
-									if isAPublicAccount
-										getFollowInformations user, isAFriend, done
-									else
-										done user, isAFriend
+									getFollowInformations user, isAFriend, done
+
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
+		privateValues = ['maskFollowList']
+		publicValues = ['allowFriendPostOnMe', 'uniqueURLID']
+
+		for val in (if (req.body.accountConfidentiality is "public") then privateValues else publicValues)
+			delete req.body[val]
+
 		for key, val of req.body
 			if empty val
 				val = null
