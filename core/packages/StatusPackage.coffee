@@ -164,6 +164,7 @@ StatusPackage =
 																		req.user.followings.contains cesarRight(status.at.hashedId), equals
 																	else
 																		req.user.followings.contains cesarRight(status.author.hashedId), equals
+																	status.isMineOrAFriends = connectedPeopleAndMe.contains id
 																	status.nbShare = if status.shares
 																		status.shares.length
 																	else
