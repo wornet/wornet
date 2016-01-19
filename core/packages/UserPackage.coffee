@@ -598,7 +598,7 @@ UserPackage =
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
 		privateValues = ['maskFollowList']
-		publicValues = ['allowFriendPostOnMe', 'uniqueURLID']
+		publicValues = ['allowFriendPostOnMe', 'uniqueURLID', 'publicName']
 
 		for val in (if (req.body.accountConfidentiality is "public") then privateValues else publicValues)
 			delete req.body[val]
@@ -621,6 +621,12 @@ UserPackage =
 					unless userModifications.name
 						userModifications.name = req.user.name.copy()
 					userModifications.name.last = val
+				when 'name.public'
+					unless userModifications.name
+						userModifications.name = req.user.name.copy()
+					if val && !val.trim().length
+						val = null
+					userModifications.name.public = val
 				when 'photoId'
 					if PhotoPackage.allowedToSee req, val
 						userModifications.photoId = val

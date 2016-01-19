@@ -56,3 +56,5 @@ module.exports = ->
 	associationName: s("Nom de l'association")
 	userType: s('Vous êtes : ')
 	certificationWarning: s('Attention en passant votre compte en privé vous perdrez votre certification.')
+	publicName: s("Nom d'utilisateur")
+	publicNameHint: s("Le nom d'utilisateur remplace votre prénom et nom lorsqu'il est ajouté. Dans le cas contraire, votre prénom et nom seront par défaut affichés à vos abonnés.")

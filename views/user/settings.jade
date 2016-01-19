@@ -70,9 +70,9 @@ block body
 								=userTexts.private
 							option(value="public" selected=(user.accountConfidentiality=="public"))
 								=userTexts.public
-						label.right.account-confidentiality-hint-private(class=(user.accountConfidentiality=="private") ? "" : "hidden")
+						label.right.settings-hint.account-confidentiality-hint-private(class=(user.accountConfidentiality=="private") ? "" : "hidden")
 							=userTexts.accountConfidentialityHintPrivate
-						label.right.account-confidentiality-hint-public(class=(user.accountConfidentiality=="public") ? "" : "hidden")
+						label.right.settings-hint.account-confidentiality-hint-public(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 							=userTexts.accountConfidentialityHintPublic
 					label#allowFriendPostOnMe(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 						span
@@ -87,7 +87,13 @@ block body
 							=userTexts.customURL
 						+formControl#uniqueURLID(name="uniqueURLID" value=user.uniqueURLID required ng-keyUp="generateURLVisu()")
 						input.btn.checkURLID(type="button" value=userTexts.btnCheckURLID ng-click="checkURLID()")
-						label.right#urlVisual
+						label.right.settings-hint#urlVisual
+					label#publicName(class=(user.accountConfidentiality=="public") ? "" : "hidden")
+						span
+							=userTexts.publicName
+						+formControl(name="name.public" value=user.name.public)
+						label.right.settings-hint.publicName-hint
+							=userTexts.publicNameHint
 					label
 						span
 							=userTexts.confidentialityBirthDate

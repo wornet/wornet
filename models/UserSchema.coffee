@@ -18,6 +18,8 @@ userSchema = BaseSchema.extend
 			]
 			trim: true
 			required: true
+		public:
+			type: String
 	sex:
 		type: String
 		enum: [
@@ -206,16 +208,19 @@ getFullName = ->
 	if typeof @name isnt 'object'
 		anonymous
 	else
-		f = empty @name.first
-		l = empty @name.last
-		if f and l
-			anonymous
-		else if f
-			@name.last.ucFirst()
-		else if l
-			@name.first.ucFirst()
+		if @accountConfidentiality is "public" and !empty @name.public
+			@name.public.ucFirst()
 		else
-			@name.first.ucFirst() + ' ' + @name.last.ucFirst()
+			f = empty @name.first
+			l = empty @name.last
+			if f and l
+				anonymous
+			else if f
+				@name.last.ucFirst()
+			else if l
+				@name.first.ucFirst()
+			else
+				@name.first.ucFirst() + ' ' + @name.last.ucFirst()
 
 
 for key in ['name.full', 'fullName']
@@ -235,6 +240,11 @@ userSchema.virtual('firstName').get ->
 	@name.first
 userSchema.virtual('lastName').get ->
 	@name.last
+userSchema.virtual('publicName').get ->
+	if @accountConfidentiality is "public"
+		@name.public
+	else
+		null
 
 
 userSchema.virtual('photoUpdateAt').get ->

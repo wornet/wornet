@@ -3,7 +3,10 @@
 		if isMe
 			=strtoupper(s("Mes amis")) + " "
 		else if isAFriend || isAPublicAccount
-			=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
+			if profile.publicName
+				=strtoupper(s("Amis de {name}", {name: profile.publicName})) + " "
+			else
+				=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
 		span.numberOfFriends
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 		+data('numberOfFriends', numberOfFriends)

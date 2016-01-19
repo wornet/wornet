@@ -840,7 +840,7 @@ do ->
 			'#account-confidentiality'
 			($select, e) ->
 				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning' ]
-				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link']
+				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link', "#publicName"]
 				if $select.val() is "private"
 					for field in privateFields
 						$(field).removeClass("hidden")
