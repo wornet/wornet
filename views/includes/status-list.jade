@@ -91,7 +91,7 @@
 			h3=s("Liens")
 			a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
-	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe )")
+	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends )")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
 			.col-xs-12.status-actions
 				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
