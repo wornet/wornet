@@ -96,7 +96,10 @@ block nav
 						+half("list")
 					li.right.btn-group
 						a.dropdown-toggle( data-toggle="dropdown")
-							=user.name.first
+							if user.publicName
+								=user.publicName.ucFirst()
+							else
+								=user.name.first.ucFirst()
 							|&nbsp;
 							span.caret
 						ul.dropdown-menu.user.right(role='menu')
