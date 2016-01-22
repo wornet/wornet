@@ -593,6 +593,100 @@ Controllers =
 		$scope.etape = 1
 		return
 
+
+	FollowerList: ($scope) ->
+		$scope.followers = {}
+		window.followerListScope = $scope
+		$scope.lastfollowerLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/follower/list'
+
+		$scope.followerRemaining = ->
+			($scope.followers || []).length > 0 and $scope.lastfollowerLoadedCount > 0 and $scope.lastfollowerLoadedCount <= getCachedData 'followersPageCount'
+
+		$scope.getfollowersOffset = ->
+			followersList = $scope.followers || []
+			if followersList.length
+				followersList[followersList.length - 1].hashedId
+			else
+				null
+
+		$scope.loadfollowersList = (chunk) ->
+			$scope.lastfollowerLoadedCount = chunk.followers.length
+			for follower in chunk.followers
+				$scope.followers.push follower
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFollowerList = window.displayFollowerList
+
+		return
+
+	FollowingList: ($scope) ->
+		$scope.followings = {}
+		window.followingListScope = $scope
+		$scope.lastfollowingLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/following/list'
+
+		$scope.followingRemaining = ->
+			($scope.followings || []).length > 0 and $scope.lastfollowingLoadedCount > 0 and $scope.lastfollowingLoadedCount <= getCachedData 'followingsPageCount'
+
+		$scope.getfollowingsOffset = ->
+			followingsList = $scope.followings || []
+			if followingsList.length
+				followingsList[followingsList.length - 1].hashedId
+			else
+				null
+
+		$scope.loadfollowingsList = (chunk) ->
+			$scope.lastfollowingLoadedCount = chunk.followings.length
+			for following in chunk.followings
+				$scope.followings.push following
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFollowingList = window.displayFollowingList
+
+		return
+
+	FriendList: ($scope) ->
+		$scope.friends = {}
+		window.friendListScope = $scope
+		$scope.lastfriendLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/friend/list'
+
+		$scope.friendRemaining = ->
+			($scope.friends || []).length > 0 and $scope.lastfriendLoadedCount > 0 and $scope.lastfriendLoadedCount <= getCachedData 'friendsPageCount'
+
+		$scope.getfriendsOffset = ->
+			friendsList = $scope.friends || []
+			if friendsList.length
+				friendsList[friendsList.length - 1].idFriend
+			else
+				null
+
+		$scope.loadfriendsList = (chunk) ->
+			$scope.lastfriendLoadedCount = chunk.friends.length
+			for friend in chunk.friends
+				$scope.friends.push friend
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFriendList = window.displayFriendList
+
+		return
+
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
@@ -1202,6 +1296,46 @@ Controllers =
 		$scope.unfollow = (id) ->
 			$scope.follow id, false
 
+		lock = false
+		window.displayFriendList = $scope.displayFriendList = (hashedId) ->
+			if !window.isMobile() and !lock and $scope.numberOfFriends
+				lock = true
+				Ajax.post '/user/friend/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.friendListScope.lastfriendLoadedCount = data.friends.length
+						window.friendListScope.friends = data.friends
+						refreshScope window.friendListScope
+						$('#friend-list').modal 'show'
+						lock = false
+						return
+			return
+		window.displayFollowerList = $scope.displayFollowerList = (hashedId) ->
+			if !window.isMobile() and !lock and $scope.numberOfFollowers
+				lock = true
+				Ajax.post '/user/follower/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.followerListScope.lastfollowerLoadedCount = data.followers.length
+						window.followerListScope.followers = data.followers
+						refreshScope window.followerListScope
+						$('#follower-list').modal 'show'
+						lock = false
+						return
+			return
+		window.displayFollowingList = $scope.displayFollowingList = (hashedId) ->
+			if !window.isMobile() and !lock and $scope.numberOfFollowing
+				lock = true
+				Ajax.post '/user/following/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.followingListScope.lastfollowingLoadedCount = data.followings.length
+						window.followingListScope.followings = data.followings
+						refreshScope window.followingListScope
+						$('#following-list').modal 'show'
+						lock = false
+						return
+			return
 		return
 
 	Search: ($scope) ->

@@ -1,4 +1,4 @@
-.well.following-block
+.well.following-block(ng-controller="FollowingListCtrl")
 	h3
 		if isMe
 			=strtoupper(s("Mes abonnements")) + " "
@@ -7,7 +7,7 @@
 				=strtoupper(s("Abonnements de {name}", {name: profile.publicName})) + " "
 			else
 				=strtoupper(s("Abonnements de {name}", {name: profile.name.first})) + " "
-		span.numberOfFollowing
+		a.numberOfFollowing(ng-click="displayFollowingList('" + profile.hashedId + "')")
 			=s("({number} abonnement)|({number} abonnements)", { number: numberOfFollowing }, numberOfFollowing)
 		+data('numberOfFollowing', numberOfFollowing)
 	hr

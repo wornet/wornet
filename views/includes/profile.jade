@@ -1,4 +1,8 @@
-.well.profile.loading(ng-controller="ProfileCtrl" ng-init="followed=" + JSON.stringify(amIAFollower))
+- var init = "followed=" + JSON.stringify(amIAFollower) + ";"
+- init += "numberOfFriends=" + numberOfFriends + ";"
+- init += "numberOfFollowers=" + numberOfFollowers + ";"
+- init += "numberOfFollowing=" + numberOfFollowing + ";"
+.well.profile.loading(ng-controller="ProfileCtrl" ng-init=init)
 	.col-sm-11
 		.profile-edit(class=(edit ? "hidden" : null))
 			.profileError
@@ -226,17 +230,17 @@
 						+glyph('circle-minus')
 	if isAPublicAccount
 		.col-sm-12.profile-banner
-			.col-sm-4.right-separator
+			.col-sm-4.right-separator(ng-click="displayFriendList('" + profile.hashedId + "')")
 				p
 					=s("AMI|AMIS", {}, numberOfFriends)
 				p
 					=s("{number}", { number: numberOfFriends })
-			.col-sm-4.right-separator
+			.col-sm-4.right-separator(ng-click="displayFollowedList('" + profile.hashedId + "')")
 				p
 					=s("ABONNE|ABONNES", {}, numberOfFollowers)
 				p.numberOfFollowers
 					=s("{number}", { number: numberOfFollowers })
-			.col-sm-4
+			.col-sm-4(ng-click="displayFollowingList('" + profile.hashedId + "')")
 				p
 					=s("ABONNEMENT|ABONNEMENTS", {}, numberOfFollowing)
 				p

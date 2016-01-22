@@ -981,6 +981,134 @@ module.exports = (router) ->
 				res.serverError new PublicError s("Le justificatif n'est pas dans un format accepté (png, jpeg, pdf)")
 		else
 			res.serverError new PublicError s("Veuillez renseigner les champs obligatoires")
-
-
 		res.json()
+
+	router.post '/following/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+				if isAPublicAccount or isAFriend
+					where = follower: cesarRight userHashedId
+					.with if offset
+						_id: $lt: new ObjectId(offset).path
+					Follow.find where
+						.limit config.wornet.limits.followingsPageCount
+						.sort _id: 'desc'
+						.exec (err, follows) ->
+							warn err if err
+							followingIds = follows.column 'followed'
+							User.find
+								_id: $in: followingIds
+							, (err, followings) ->
+								warn err if err
+								sortedFollowings = []
+								for follow in follows
+									for following in followings
+										if equals(following._id, follow.followed)
+											sortedFollowings.push following
+								res.json followings: sortedFollowings.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for follow in follows
+										if equals follow.followed, userId
+											user.followId = follow._id
+									user
+
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les abonnements de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.post '/follower/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+				if isAPublicAccount or isAFriend
+					where = followed: cesarRight userHashedId
+					.with if offset
+						_id: $lt: new ObjectId(offset).path
+					Follow.find where
+						.limit config.wornet.limits.followersPageCount
+						.sort _id: 'desc'
+						.exec (err, follows) ->
+							warn err if err
+							followerIds = follows.column 'follower'
+							User.find
+								_id: $in: followerIds
+							, (err, followers) ->
+								warn err if err
+								sortedFollowers = []
+								for follow in follows
+									for follower in followers
+										if equals(follower._id, follow.follower)
+											sortedFollowers.push follower
+								res.json followers: sortedFollowers.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for follow in follows
+										if equals follow.follower, userId
+											user.followId = follow._id
+									user
+
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les abonnés de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.post '/friend/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		id = cesarRight userHashedId
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: id
+			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+				if isAPublicAccount or isAFriend
+					offsetObj = new ObjectId(offset).path
+					where = {
+						status: 'accepted'
+						$or: [
+							askedFrom: id
+
+						,
+							askedTo: id
+						]
+					}.with if offset
+						_id: $lt: offsetObj
+
+					Friend.find where
+						.limit config.wornet.limits.friendsPageCount
+						.sort _id: 'desc'
+						.exec (err, friendsObj) ->
+							warn err if err
+							userIds = []
+							for friend in friendsObj
+								if !equals friend._id, offsetObj
+									if equals id, friend.askedFrom
+										userIds.push friend.askedTo
+									else
+										userIds.push friend.askedFrom
+
+							User.find
+								_id: $in: userIds
+							, (err, friends) ->
+								warn err if err
+								sortedFriends = []
+								for friend in friendsObj
+									for userFriend in friends
+										if equals(friend.askedFrom, userFriend._id) or equals(friend.askedTo, userFriend._id)
+											sortedFriends.push userFriend
+								res.json friends: sortedFriends.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for friend in friendsObj
+										if equals(userId, friend.askedFrom) or equals(userId, friend.askedTo)
+											user.idFriend =  friend._id
+									user
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les amis de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
