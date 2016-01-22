@@ -1,4 +1,4 @@
-.well.friends-block
+.well.friends-block(ng-controller="FriendListCtrl")
 	h3
 		if isMe
 			=strtoupper(s("Mes amis")) + " "
@@ -7,7 +7,7 @@
 				=strtoupper(s("Amis de {name}", {name: profile.publicName})) + " "
 			else
 				=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
-		span.numberOfFriends
+		a.numberOfFriends(ng-click="displayFriendList('" + profile.hashedId + "')")
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 		+data('numberOfFriends', numberOfFriends)
 	hr

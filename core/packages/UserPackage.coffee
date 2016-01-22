@@ -531,7 +531,7 @@ UserPackage =
 									numberOfFollowers: nbFollowers
 									amIAFollower: !! amIAFollower
 									numberOfFollowing: nbFollowing
-									followings: followings
+									followings: followings.slice 0, 10
 									friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
 									friendAsks: if isMe then friendAsks else {}
 									myfriendAskPending: myfriendAskPending

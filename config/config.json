@@ -284,7 +284,10 @@
             "realStatusLength": 1228,
             "mailsAtOnce": 10,
             "monthsBeforeRemoveNotice": 1,
-            "urlId": 20
+            "urlId": 20,
+            "followingsPageCount": 10,
+            "followersPageCount": 10,
+            "friendsPageCount": 10
         },
 
         "lockFriendAsk": [
