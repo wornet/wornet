@@ -134,7 +134,7 @@ module.exports = (router) ->
 	router.put "/follow", (req, res) ->
 		userHashedId = req.data.hashedId
 		if userHashedId
-			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount and req.user
 					Follow.count
 						follower: req.user.id
@@ -169,7 +169,7 @@ module.exports = (router) ->
 	router.put "/hideSuggest", (req, res) ->
 		userHashedId = req.data.hashedId
 		if userHashedId
-			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount and req.user
 					if UserPackage.hiddenSuggests[req.user.id]
 						UserPackage.hiddenSuggests[req.user.id].push cesarRight userHashedId

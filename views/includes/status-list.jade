@@ -1,4 +1,5 @@
 .status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}" ng-if="(status.images && status.images.length) || (status.links && status.links.length) || (status.videos && status.videos.length) || (status.content && status.content.length)")
+	a.google-link(ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
 	//- .nostyle(data-starpush="{{ status._id }}")
 	- var init = "status.edit = false;"
 	- init += "status.originalContent = status.content;"
@@ -11,7 +12,7 @@
 			span(data-date="{{ status.shareDate }}" data-phrase="true")
 				| &nbsp;
 	.cb		
-	.aside.settings.continue(ng-init=init ng-if="status.author.hashedId")
+	.aside.settings.continue(ng-init=init ng-if="status.author.hashedId && userConnected")
 		a.dropdown-toggle(data-toggle="dropdown")
 			+half('cog')
 		ul.dropdown-menu(role="menu")
@@ -91,19 +92,19 @@
 			h3=s("Liens")
 			a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
-	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends )")
+	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends || status.isAShare || !userConnected)")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
 			.col-xs-12.status-actions
 				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
 					if config.wornet.plusW.enabled
-						span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe }" ng-click="toggleLike(status)")
+						span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe, disabled: !userConnected }" ng-click="toggleLike(status)")
 				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
 					if config.wornet.comments.enabled
 						span.btn-action-comment(ng-click="toggleCommentBlock(status)")
-							span.btn.icon
+							span.btn.icon(ng-class="{ disabled: !userConnected }")
 				.col-xs-4(ng-if="isShareable(status)")
 					if config.wornet.comments.enabled
-						span.btn-action-share(ng-click="share(status)")
+						span.btn.btn-action-share(ng-click="share(status)" ng-class="{ disabled: !userConnected }")
 							span.icon
 								+glyph('share')
 			.col-xs-12.status-actions-text

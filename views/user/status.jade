@@ -2,13 +2,14 @@ extends ../layouts/user
 
 block body
 	- var init = "statusToDisplay = " + JSON.stringify(status) + ";"
-	- init += "setMonoStatut(true, statusToDisplay)"
+	- init += "setMonoStatut(true, statusToDisplay);"
+	- init += "userConnected=" + JSON.stringify(user)
 	.col-sm-3
 	.col-sm-6.well.loading.loading-big-height.fit-to-bottom.macro(ng-controller="StatusCtrl" ng-init=init)
 		.status-block(data-id="{{ statusToDisplay._id }}" ng-if="(statusToDisplay.images && statusToDisplay.images.length) || (statusToDisplay.links && statusToDisplay.links.length) || (statusToDisplay.videos && statusToDisplay.videos.length) || (statusToDisplay.content && statusToDisplay.content.length)")
 			- var init = "statusToDisplay.edit = false;"
 			- init += "statusToDisplay.originalContent = statusToDisplay.content;"
-			.aside.settings.continue(ng-init=init ng-if="statusToDisplay.author.hashedId")
+			.aside.settings.continue(ng-init=init ng-if="statusToDisplay.author.hashedId  && userConnected")
 				a.dropdown-toggle(data-toggle="dropdown")
 					+half('cog')
 				ul.dropdown-menu(role="menu")
@@ -87,14 +88,14 @@ block body
 					.col-xs-12.status-actions
 						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
 							if config.wornet.plusW.enabled
-								span.btn.btn-action-plus-w(ng-class="{ full: statusToDisplay.likedByMe }" ng-click="toggleLike(statusToDisplay)")
+								span.btn.btn-action-plus-w(ng-class="{ full: statusToDisplay.likedByMe, disabled: !userConnected }" ng-click="toggleLike(statusToDisplay)")
 						div(ng-class='{ "col-xs-4": isShareable(statusToDisplay), "col-xs-6": !isShareable(statusToDisplay) }')
 							if config.wornet.comments.enabled
 								span.btn-action-comment(ng-click="toggleCommentBlock(statusToDisplay)")
-									span.btn.icon
+									span.btn.icon(ng-class="{ disabled: !userConnected }")
 						.col-xs-4(ng-if="isShareable(statusToDisplay)")
 							if config.wornet.comments.enabled
-								span.btn-action-share(ng-click="share(statusToDisplay)")
+								span.btn.btn-action-share(ng-click="share(statusToDisplay)" ng-class="{ disabled: !userConnected }")
 									span.icon
 										+glyph('share')
 					.col-xs-12.status-actions-text

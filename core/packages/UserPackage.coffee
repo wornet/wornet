@@ -63,7 +63,7 @@ UserPackage =
 			false
 
 	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
-		isAPublicAccount req, hashedId, true, (publicAccount) =>
+		isAPublicAccount req, hashedId, true, (err, publicAccount) =>
 			if @isMeOrAFriend(req, hashedId) or publicAccount
 				idUser = cesarRight hashedId
 				UserAlbums.findOne
@@ -223,26 +223,29 @@ UserPackage =
 				done err
 
 	refreshFollows: (req, done) ->
-		Follow.find
-			$or: [
-				follower: req.user.id
-			,
-				followed: req.user.id
-			]
-		, (err, allFollows) ->
-			unless err
-				iFollow = []
-				iamFollowed = []
-				for follow in allFollows
-					if equals follow.follower, req.user.id
-						iFollow.push follow.followed
-					else
-						iamFollowed.push follow.follower
-				req.user.followers = iamFollowed
-				req.user.followings = iFollow
-				req.session.followers = iamFollowed
-				req.session.followings = iFollow
-			done err
+		if req.user
+			Follow.find
+				$or: [
+					follower: req.user.id
+				,
+					followed: req.user.id
+				]
+			, (err, allFollows) ->
+				unless err
+					iFollow = []
+					iamFollowed = []
+					for follow in allFollows
+						if equals follow.follower, req.user.id
+							iFollow.push follow.followed
+						else
+							iamFollowed.push follow.follower
+					req.user.followers = iamFollowed
+					req.user.followings = iFollow
+					req.session.followers = iamFollowed
+					req.session.followings = iFollow
+				done err
+		else
+			done null
 
 	askForFriend: (id, req, done) ->
 		if empty id
@@ -390,11 +393,15 @@ UserPackage =
 					follow.column('followed')
 				else
 					[]
-				followed.push myId
-				exceptions = if UserPackage.hiddenSuggests[myId]
-					followed.merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+				if myId
+					followed.push myId
+					exceptions = if UserPackage.hiddenSuggests[myId]
+						followed.merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+					else
+						followed.map strval
 				else
-					followed.map strval
+					exceptions = []
+
 				where =
 					photoId: $ne: null
 					accountConfidentiality: "public"
@@ -495,7 +502,11 @@ UserPackage =
 					! equals user._id, me._id
 				else
 					true
-			@randomPublicUsers me.id, (publicUsers) ->
+			myId = if me
+				me.id
+			else
+				null
+			@randomPublicUsers myId, (publicUsers) ->
 				publicUsers = publicUsers.filter (user) ->
 					if me
 						! equals user.hashedId, me.hashedId
@@ -518,7 +529,6 @@ UserPackage =
 											myfriendAskPending = true
 								followings = [] if !followings
 								nbFollowing = followings.length
-
 								res.render template,
 									isMe: isMe
 									askedForFriend: askedForFriend
@@ -584,8 +594,10 @@ UserPackage =
 						else
 							isAPublicAccount = user.accountConfidentiality is "public"
 							if isAPublicAccount and !req.user
-								done user, false
+								res.locals.noIndex = false
+								getFollowInformations user, false, done
 							else
+								res.locals.noIndex = true
 								req.getFriends (err, friends, friendAsks) ->
 									isAFriend = if friends and friends.getLength() > 0
 										friends.has id: id

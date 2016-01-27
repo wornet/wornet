@@ -1479,7 +1479,7 @@ module.exports =
 	isAPublicAccount: (req, id, isHashedId, done) ->
 		cache [if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id], null, (dataCache) ->
 			if dataCache[if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id]
-				done true, if isHashedId then id else dataCache["publicAccountByUrlId-" + id]
+				done null, true, if isHashedId then id else dataCache["publicAccountByUrlId-" + id]
 			else
 				where = if isHashedId
 					_id: cesarRight id
@@ -1491,10 +1491,10 @@ module.exports =
 						if user.accountConfidentiality is "public"
 							memSet "publicAccountByHashedId-" + user.hashedId, user.uniqueURLID
 							memSet "publicAccountByUrlId-" + user.uniqueURLID, user.hashedId
-							done true, user.hashedId
+							done null, true, user.hashedId
 						else
 							memDel "publicAccountByHashedId-" + user.hashedId
 							memDel "publicAccountByUrlId-" + user.uniqueURLID
-							done false, user.hashedId, user
+							done null, false, user.hashedId, user
 					else
-						done false, null, null
+						done new Error('NOTAUSERID'), false, null, null

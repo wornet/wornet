@@ -22,7 +22,7 @@
 							+glyph("lock")
 							| &nbsp;
 							=s("Profil privé")
-				if !isMe
+				if !isMe && user
 					if !isAFriend && isAPublicAccount
 						input.profile-btn.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
 							href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)

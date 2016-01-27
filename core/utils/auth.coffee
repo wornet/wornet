@@ -167,8 +167,17 @@ exports.isAuthenticated = (req, res, next) ->
 				]
 
 				publicAccountList = [
-					/\/user\/albums\/medias\/([0-9a-z].*)/
-					/\/user\/status\/and\/chat\/[0-9a-z].*\/([0-9a-z].*)/
+					/^\/user\/albums\/medias\/[0-9a-fA-F]{24}$/
+					/^\/user\/status\/and\/chat\/[0-9a-fA-F]{24}|0\/?([0-9a-fA-F]{24})?$/
+					/^\/user\/albums$/
+					/^\/user\/plusW\/list$/
+					/^\/user\/comment$/
+					/^\/user\/friend\/list$/
+					/^\/user\/following\/list$/
+					/^\/user\/follower\/list$/
+					/^\/user\/photo\/[0-9a-fA-F]{24}$/
+					/^\/user\/status\/[0-9a-fA-F]{24}$/
+					/^\/user\/directory$/
 				]
 
 				admin = [
@@ -189,44 +198,55 @@ exports.isAuthenticated = (req, res, next) ->
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
 
+				nextStep = (isARouteForPublicAccount) ->
+					# If the URL is in the access restricted list
+					if inList route, admin
+						if role is 'admin'
+							res.locals.noIndex = true
+							next()
+						else
+							model = url: route
+							res.unautorized model
+					else if isARouteForPublicAccount
+						next()
+					else if inList(route, auth) and ! inList(route, whitelist)
+						# If any user are connected
+						if req.user
+							res.locals.noIndex = true
+							next()
+						else
+							# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
+							isARouteWithoutMessage = (route is '/')
+							if req.isJSON
+								if isARouteWithoutMessage
+									res.serverError new PublicError s("Connectez-vous pour accéder à cette page.")
+								else
+									res.json goingTo: req.url
+							else
+								req.goingTo req.url
+								if isARouteWithoutMessage
+									req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
+								res.redirect "/"
+					else
+						next()
+
 				isARouteForPublicAccount = false
 				for regexp in publicAccountList
 					if regexp.test route
-						route.replace regexp, (all, hashedId) ->
-							cache "publicAccountByHashedId-" + hashedId, null, (dataCache)->
-								if dataCache and dataCache["publicAccountByHashedId-" + hashedId]
-									isARouteForPublicAccount = true
-
-				# If the URL is in the access restricted list
-				if inList route, admin
-					if role is 'admin'
-						res.locals.noIndex = true
-						next()
-					else
-						model = url: route
-						res.unautorized model
-				else if isARouteForPublicAccount
-					next()
-				else if inList(route, auth) and ! inList(route, whitelist)
-					# If any user are connected
-					if req.user
-						res.locals.noIndex = true
-						next()
-					else
-						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-						isARouteWithoutMessage = (route is '/')
-						if req.isJSON
-							if isARouteWithoutMessage
-								res.serverError new PublicError s("Connectez-vous pour accéder à cette page.")
-							else
-								res.json goingTo: req.url
+						isARouteForPublicAccount = true
+						regexpToTest = regexp
+				if isARouteForPublicAccount
+					route.replace regexpToTest, (all, hashedId) ->
+						if hashedId
+							isAPublicAccount req, hashedId, true, (err, isAPublicAccount) ->
+								if err and err instanceof Error and err.message is "NOTAUSERID"
+									nextStep true
+								else
+									nextStep isAPublicAccount
 						else
-							req.goingTo req.url
-							if isARouteWithoutMessage
-								req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
-							res.redirect "/"
+							nextStep true
 				else
-					next()
+					nextStep false
 
 			if req.user
 				unless req.url is '/user/notify'

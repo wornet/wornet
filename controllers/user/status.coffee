@@ -15,6 +15,8 @@ module.exports = (router) ->
 		StatusPackage.getRecentStatusForRequest req, res, null, null, req.params.updatedAt
 
 	router.delete '/:id', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		# We cannot use findOneAndRemove because it does not execute pre-remove hook
 		me = req.user._id
 		next = (status) ->
@@ -81,14 +83,20 @@ module.exports = (router) ->
 
 
 	router.put '/add/:updatedAt/:id', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		StatusPackage.put req, res, (status) ->
 			StatusPackage.getRecentStatusForRequest req, res, req.params.id, newStatus: status, req.params.updatedAt
 
 	router.put '/add/:updatedAt', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		StatusPackage.put req, res, (status) ->
 			StatusPackage.getRecentStatusForRequest req, res, null, newStatus: status, req.params.updatedAt
 
 	router.post '/', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		if req.data.status and req.user
 			Status.update
 				_id: req.data.status._id
@@ -118,8 +126,14 @@ module.exports = (router) ->
 				else
 					status.populateUsers (status) ->
 						if StatusPackage.checkRightToSee(req, status)
-							status.concernMe = status.author.hashedId is req.user.hashedId or (status.at and stat.at.hashedId is req.user.hashedId)
-							status.isMine = equals status.author.hashedId, req.user.hashedId
+							status.concernMe = if req.user
+								status.author.hashedId is req.user.hashedId or (status.at and stat.at.hashedId is req.user.hashedId)
+							else
+								false
+							status.isMine = if req.user
+								equals status.author.hashedId, req.user.hashedId
+							else
+								false
 							PlusW.find
 								status: id
 							, (err, result) ->
@@ -127,7 +141,7 @@ module.exports = (router) ->
 								tabLike[id] ||= {likedByMe: false, nbLike: 0}
 								for like in result
 									tabLike[id].nbLike++
-									if equals req.user.id, like.user
+									if req.user and equals req.user.id, like.user
 										tabLike[id].likedByMe = true
 								status.likedByMe = tabLike[id].likedByMe
 								status.nbLike = tabLike[id].nbLike
@@ -145,6 +159,8 @@ module.exports = (router) ->
 			res.serverError new PublicError s('Pas de statut à afficher')
 
 	router.put '/share', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		statusId = req.data.statusId
 		if statusId
 			statusToCreate =
@@ -164,7 +180,7 @@ module.exports = (router) ->
 						else
 							originalStatus.author
 
-						isAPublicAccount req, accountTocheck, true, (isAPublicAccount) ->
+						isAPublicAccount req, accountTocheck, true, (err, isAPublicAccount) ->
 							if isAPublicAccount
 								Status.create statusToCreate, (err, status) ->
 									warn err if err
