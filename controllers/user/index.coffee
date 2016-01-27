@@ -10,6 +10,8 @@ UserErrors =
 
 module.exports = (router) ->
 
+	directoryPublicUsers = []
+	directoryLastRetreive = 0
 	templateFolder = 'user'
 	signinUrl = '/user/signin'
 
@@ -393,10 +395,13 @@ module.exports = (router) ->
 
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
-		UserPackage.getAlbums [req.user.id], (err, albums) ->
-			res.json
-				err: err
-				albums: albums[req.user.id]
+		if req.user
+			UserPackage.getAlbums [req.user.id], (err, albums) ->
+				res.json
+					err: err
+					albums: albums[req.user.id]
+		else
+			res.json()
 
 	router.get '/albums/medias/:hashedId', (req, res) ->
 		# hashedId is me or at (of a friend)
@@ -607,7 +612,10 @@ module.exports = (router) ->
 			res.json()
 
 	router.get '/photo/:id', (req, res) ->
-		me = req.user._id
+		me = if req.user
+			req.user._id
+		else
+			null
 		Photo.findById req.params.id, (err, photo) ->
 			if err
 				res.serverError err
@@ -988,7 +996,7 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend
 					where = follower: cesarRight userHashedId
 					.with if offset
@@ -1026,7 +1034,7 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend
 					where = followed: cesarRight userHashedId
 					.with if offset
@@ -1065,7 +1073,7 @@ module.exports = (router) ->
 		id = cesarRight userHashedId
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: id
-			isAPublicAccount req, userHashedId, true, (isAPublicAccount) ->
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend
 					offsetObj = new ObjectId(offset).path
 					where = {
@@ -1112,3 +1120,16 @@ module.exports = (router) ->
 					res.serverError new PublicError s("Vous ne pouvez pas voir les amis de ce compte.")
 		else
 			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.get '/directory', (req, res) ->
+		now = time()
+		if now - directoryLastRetreive > 30.minutes
+			directoryLastRetreive = now
+			User.find
+				accountConfidentiality: "public"
+			, (err, users) ->
+				warn err if err
+				directoryPublicUsers = users
+				res.render 'user/directory', publicUsers: users
+		else
+			res.render 'user/directory', publicUsers: directoryPublicUsers

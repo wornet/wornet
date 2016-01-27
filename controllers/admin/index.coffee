@@ -110,7 +110,7 @@ module.exports = (router) ->
 			status: "approved"
 		, (err, certif) ->
 			warn err if err
-			isAPublicAccount req, cesarLeft(certif.user), true, (isAPublicAccount) ->
+			isAPublicAccount req, cesarLeft(certif.user), true, (err, isAPublicAccount) ->
 				if isAPublicAccount
 					User.findOneAndUpdate
 						_id: certif.user

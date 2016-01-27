@@ -1906,7 +1906,10 @@ Controllers =
 
 		$scope.toggleCommentBlock = (status) ->
 			delay 1, ->
-				status.commentForm = !status.commentForm
+				if $scope.userConnected
+					status.commentForm = !status.commentForm
+				else
+					status.commentForm = false
 				status.commentList = !status.commentList
 				refreshScope statusScope
 				return
@@ -1938,10 +1941,12 @@ Controllers =
 						return
 			return
 
-		Ajax.post $scope.getLoadUrl(),
-			data: {}
-			success: (data) ->
-				setRecentStatus data
+		delay 1, ->
+			if !$scope.monoStatut
+				Ajax.post $scope.getLoadUrl(),
+					data: {}
+					success: (data) ->
+						setRecentStatus data
 
 		refreshMediaAlbums()
 
@@ -1954,7 +1959,7 @@ Controllers =
 			$scope.statusToDisplay = status
 		delay 1, ->
 			if $scope.monoStatut
-				Ajax.get 'user/comment',
+				Ajax.bigGet 'user/comment',
 					data:
 						statusIds: [$scope.statusToDisplay._id]
 					success: (data) ->
@@ -1966,6 +1971,8 @@ Controllers =
 								else
 									status.nbComment = 0
 								status.commentForm = status.commentList = !!(status.comments && status.comments.length)
+								if !$scope.userConnected
+									status.commentForm = false
 								status
 							refreshScope $scope
 						return

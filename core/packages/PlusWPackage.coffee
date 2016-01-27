@@ -114,7 +114,17 @@ PlusWPackage =
 			PlusW.count wherePlus, (err, count) ->
 				done null, !err and liking is !count
 		#if the status is mine or on my wall
-		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId)) or isAShare
+		right = if req.user
+			if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId)) or isAShare
+				true
+			else
+				false
+		else
+			if status.at
+				status.at.accountConfidentiality is 'public'
+			else
+				status.author.accountConfidentiality is 'public'
+		if right
 			if onlySeeing
 				done null, true
 			else

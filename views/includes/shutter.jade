@@ -4,7 +4,11 @@
 		| &nbsp; 
 		+half('cog')
 
-	a(href="/" + user.uniqueURLID)
+	if user
+		- var href = user.uniqueURLID
+	else
+		- var href = ""
+	a(href="/" + href)
 		+half('user')
 		| &nbsp; 
 		=s("Espace personnel")

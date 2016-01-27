@@ -17,7 +17,7 @@ CommentPackage =
 					req.getFriends (err, friends) =>
 						warn err if err
 						newAt = at || status.author.hashedId
-						isAPublicAccount req, newAt, true, (isAPublicAccount) =>
+						isAPublicAccount req, newAt, true, (err, isAPublicAccount) =>
 							UserPackage.refreshFollows req, =>
 								if !friends.column('_id').map(cesarLeft).contains(newAt) and newAt isnt hashedIdUser and (!isAPublicAccount and !req.user.followings.map(cesarLeft).contains newAt, equals)
 									res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis ou abonnements.")
@@ -81,7 +81,7 @@ CommentPackage =
 		if status.comments
 			otherCommentators = []
 			for comment in status.comments
-				if ![status.author.hashedId, status.at.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
+				if ![status.author.hashedId, status.at.hashedId, commentator.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
 					otherCommentators.push comment.author.hashedId
 
 			notice = generateNotice s("{username} a également commenté une publication.", username: commentator.name.full)
@@ -119,12 +119,18 @@ CommentPackage =
 								result = {}
 								comments.each ->
 									comment = @toObject()
-									comment.isMine = equals @author, req.user._id
+									comment.isMine = if req.user
+										equals @author, req.user._id
+									else
+										false
 									for status in statusList
 										if equals status._id, @attachedStatus
 											comment.attachedStatus = status
 											statusAt = status.at || status.author
-											comment.onMyWall = equals statusAt, req.user._id
+											comment.onMyWall = if req.user
+												equals statusAt, req.user._id
+											else
+												false
 											break
 									comment.author = usersMap[comment.author].publicInformations()
 									(result[comment.attachedStatus._id] ||= []).push comment
