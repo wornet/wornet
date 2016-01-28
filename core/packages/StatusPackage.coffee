@@ -345,10 +345,10 @@ StatusPackage =
 		status.nbLike = 0
 		status.nbComment = 0
 		status.nbShare = 0
+		status.isPlaceFollowed = true
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
-
 
 	calculatePoints: (medias, nbOfFriends) ->
 		points = 1 # simple status

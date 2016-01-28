@@ -1858,6 +1858,13 @@ Controllers =
 
 		$scope.$on 'receiveStatus', (e, status) ->
 			status.content = richText $scope, status.content
+			me = getData 'me'
+			if status.author and status.author.hashedId is me
+				status.isMine = true
+				status.concernMe = true
+			else if status.at and status.at.hashedId is me
+				status.isMine = false
+				status.concernMe = true
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
