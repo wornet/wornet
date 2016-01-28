@@ -1,8 +1,11 @@
 extends ../layouts/user
 
+block meta
+	+meta("robots", "noindex, follow")
+
 block body
 	.well
 		each user in publicUsers
-			a.google-link(href="/" + user.uniqueURLID)
+			a(href="/" + user.uniqueURLID)
 				=user.name.full
 			br
