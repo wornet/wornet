@@ -433,15 +433,19 @@ StatusPackage =
 
 	getOriginalStatus: (status, done) ->
 		if !status.isAShare or !status.referencedStatus
-			done null, status
+			if status.populateUsers
+				status.populateUsers (populatedStatus) ->
+					done null, populatedStatus
+			else
+				done null, status
 		else
 			Status.findOne
 				_id: status.referencedStatus
 			, (err, originalStatus) ->
 				warn err if err
 				if originalStatus
-					originalStatus.populateUsers (originalStatus) ->
-						done null, originalStatus
+					originalStatus.populateUsers (populatedStatus) ->
+						done null, populatedStatus
 				else
 					done new PublicError s('Le statut originel est introuvable')
 

@@ -37,9 +37,11 @@ CommentPackage =
 											hashedIdAuthor = status.author.hashedId
 											usersToNotify = []
 											unless equals hashedIdUser, hashedIdAuthor
-												usersToNotify.push hashedIdAuthor
+												if !status.author.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains hashedIdAuthor
+													usersToNotify.push hashedIdAuthor
 											unless [null, hashedIdAuthor, hashedIdUser].contains at
-												usersToNotify.push at
+												if status.at and !status.at.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains at
+													usersToNotify.push at
 											@propagate comment, at || hashedIdAuthor
 
 											@notify usersToNotify, status, req.user, comment
@@ -82,7 +84,8 @@ CommentPackage =
 			otherCommentators = []
 			for comment in status.comments
 				if ![status.author.hashedId, status.at.hashedId, commentator.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
-					otherCommentators.push comment.author.hashedId
+					if !comment.author.accountConfidentiality is "public" or commentator.friends.column('hashedId').contains comment.author.hashedId
+						otherCommentators.push comment.author.hashedId
 
 			notice = generateNotice s("{username} a également commenté une publication.", username: commentator.name.full)
 

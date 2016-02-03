@@ -161,10 +161,11 @@ module.exports = (router) ->
 	router.put '/share', (req, res) ->
 		if !req.user
 			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
+		user = req.user
 		statusId = req.data.statusId
 		if statusId
 			statusToCreate =
-				author: req.user.id
+				author: user.id
 				at: null
 				isAShare: true
 			Status.findOne
@@ -175,10 +176,10 @@ module.exports = (router) ->
 					StatusPackage.getOriginalStatus statusShared, (err, originalStatus) ->
 						warn err if err
 						statusToCreate.referencedStatus = originalStatus._id
-						accountTocheck = cesarLeft if originalStatus.at
-							originalStatus.at
+						accountTocheck = if originalStatus.at
+							originalStatus.at.hashedId
 						else
-							originalStatus.author
+							originalStatus.author.hashedId
 
 						isAPublicAccount req, accountTocheck, true, (err, isAPublicAccount) ->
 							if isAPublicAccount
@@ -195,6 +196,63 @@ module.exports = (router) ->
 										shares: newShares
 									, (err, statusCreated) ->
 										warn err if err
+
+										img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: user
+										if originalStatus.at
+											if user.friends.column('hashedId').contains originalStatus.at.hashedId
+												notice = [
+													img +
+													jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+														s("{username} a partagé une publication de votre profil.", username: user.name.full)
+												, 'share', user._id, originalStatus._id, cesarRight originalStatus.at.hashedId]
+											else
+												Notice.findOne
+													type: 'share_count'
+													attachedStatus: originalStatus._id
+													place: cesarRight originalStatus.at.hashedId
+												, (err, existingNotice) ->
+													warn err if err
+													if existingNotice and existingNotice.count
+														notice = [
+															img +
+															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+																s("{number} personnes ont partagé l'une de vos publications.", number: existingNotice.count + 1)
+														, 'share_count', user._id, originalStatus._id, cesarRight originalStatus.at.hashedId, existingNotice.count + 1]
+														Notice.update
+															_id: existingNotice._id
+														,
+															$inc: count: 1
+														, (err, noticeUpdated) ->
+															warn err if err
+															NoticePackage.updateNotice [cesarRight originalStatus.at.hashedId], null,
+																action: 'notice'
+																notice: notice
+
+													else
+														notice = [
+															img +
+															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+																s("{number} personnes ont partagé l'une de vos publications.", number: 1)
+														, 'share_count', user._id, originalStatus._id, cesarRight(originalStatus.at.hashedId), 1]
+
+
+											NoticePackage.notify [cesarRight originalStatus.at.hashedId], null,
+												action: 'notice'
+												author: user._id
+												notice: notice
+										if originalStatus.author
+											if user.friends.column('hashedId').contains originalStatus.author.hashedId
+												notice = [
+													img +
+													jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+														s("{username} a partagé votre publication.", username: user.name.full)
+												, 'share', user._id, originalStatus._id, cesarRight originalStatus.author.hashedId]
+											else
+
+											NoticePackage.notify [cesarRight originalStatus.author.hashedId], null,
+												action: 'notice'
+												author: user._id
+												notice: notice
 										res.json()
 							else
 								res.serverError new PublicError "Vous ne pouvez pas partager ce statut."

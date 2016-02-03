@@ -50,6 +50,7 @@ NoticePackage =
 				launcher: data.notice[2]
 				attachedStatus: data.notice[3]
 				place: data.notice[4]
+				count: data.notice[5]
 			, (err, notice) ->
 				if err
 					warn err

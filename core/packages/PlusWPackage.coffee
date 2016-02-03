@@ -30,9 +30,11 @@ PlusWPackage =
 							#usersToNotify contains hashedIds tests in notify.
 							#It will be transformed just before NoticePackage calling
 							unless equals hashedIdUser, hashedIdAuthor
-								usersToNotify.push hashedIdAuthor
+								if !status.author.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains hashedIdAuthor
+									usersToNotify.push hashedIdAuthor
 							unless [null, hashedIdAuthor, hashedIdUser].contains at
-								usersToNotify.push at
+								if status.at and !status.at.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains at
+									usersToNotify.push at
 							unless empty usersToNotify
 								@notify usersToNotify, statusReq, req.user
 							end null
