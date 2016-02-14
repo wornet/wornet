@@ -59,15 +59,15 @@ module.exports = (app) ->
 		basicAuth = config.basicAuth || null
 		if req.connection.remoteAddress is '127.0.0.1'
 			basicAuth = null
-			switch req.url
-				when '/status'
-					return res.end 'OK'
-				when '/alive'
-					if User
-						User.find().limit(1).exec (err, user) ->
-							if user and ! err
-								res.end 'alive'
-					return
+		switch req.url
+			when '/status'
+				return res.end 'OK'
+			when '/alive'
+				if User
+					User.find().limit(1).exec (err, user) ->
+						if user and ! err
+							res.end 'alive'
+				return
 
 		next = ->
 			bodyParser req, res, ->
