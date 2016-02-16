@@ -310,48 +310,57 @@ module.exports =
 					jd 'span(data-href="/' +
 					place.uniqueURLID + '") ' +
 					text
-
 			if notice.user and notice.place and notice.launcher
 				userToNotify = notice.user
 				place = notice.place
 				launcher = notice.launcher
 				launcherFriends = notice.launcherFriends
-				if notice.attachedStatus and notice.type isnt 'birthday'
-					statusAuthorHashedId = cesarLeft notice.attachedStatus.author
-					switch notice.type
-						when 'status'
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, if notice.attachedStatus.at is null
-								s("{username} a publié un statut.", username: launcher.fullName)
-							else
-								s("{username} a publié un statut sur votre profil.", username: launcher.fullName)
-						when 'comment'
-							if userToNotify.hashedId is place.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
-							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
-									s("{username} a commenté votre publication.", username: launcher.name.full)
-								else
-									s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
-							else
-								done null
-						when 'othercomments'
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: launcher.name.full)
-						when 'like'
-							if userToNotify.hashedId is place.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
-							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
-									s("{username} a aimé votre publication.", username: launcher.name.full)
-								else
-									s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
-							else
-								done null
-						else
-							done notice.content
-				else if notice.type is 'birthday'
-					generateNotice launcher, place, userToNotify, null, s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: launcher.name.full)
+				statusAuthorHashedId = if notice.attachedStatus
+					cesarLeft notice.attachedStatus.author
 				else
-					done notice.content
+					null
+				switch notice.type
+					when 'status'
+						generateNotice launcher, place, userToNotify, notice.attachedStatus, if notice.attachedStatus.at is null
+							s("{username} a publié un statut.", username: launcher.fullName)
+						else
+							s("{username} a publié un statut sur votre profil.", username: launcher.fullName)
+					when 'comment'
+						if userToNotify.hashedId is place.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
+						else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+								s("{username} a commenté votre publication.", username: launcher.name.full)
+							else
+								s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
+						else
+							done null
+					when 'othercomments'
+						generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: launcher.name.full)
+					when 'like'
+						if userToNotify.hashedId is place.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
+						else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+								s("{username} a aimé votre publication.", username: launcher.name.full)
+							else
+								s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
+						else
+							done null
+					when 'share_count'
+						if notice.count
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("L'une de vos publications a été partagée {count} fois.", count: notice.count)
+						else
+							done null
+					when 'follow_count'
+						if notice.count
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{count} personnes ont commencé à vous suivre.", count: notice.count)
+						else
+							done null
+					when 'birthday'
+						generateNotice launcher, place, userToNotify, null, s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: launcher.name.full)
+					else
+						done notice.content
 			else
 				done notice.content
 

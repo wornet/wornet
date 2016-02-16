@@ -199,12 +199,17 @@ module.exports = (router) ->
 
 										img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: user
 										if originalStatus.at
+											alreadyNoticed = false
 											if user.friends.column('hashedId').contains originalStatus.at.hashedId
 												notice = [
 													img +
 													jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
 														s("{username} a partagé une publication de votre profil.", username: user.name.full)
 												, 'share', user._id, originalStatus._id, cesarRight originalStatus.at.hashedId]
+												NoticePackage.notify [cesarRight originalStatus.at.hashedId], null,
+													action: 'notice'
+													author: user._id
+													notice: notice
 											else
 												Notice.findOne
 													type: 'share_count'
@@ -216,7 +221,7 @@ module.exports = (router) ->
 														notice = [
 															img +
 															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
-																s("{number} personnes ont partagé l'une de vos publications.", number: existingNotice.count + 1)
+																s("{number} personnes ont partagé une publication de votre profil.", number: existingNotice.count + 1)
 														, 'share_count', user._id, originalStatus._id, cesarRight originalStatus.at.hashedId, existingNotice.count + 1]
 														Notice.update
 															_id: existingNotice._id
@@ -224,6 +229,7 @@ module.exports = (router) ->
 															$inc: count: 1
 														, (err, noticeUpdated) ->
 															warn err if err
+															alreadyNoticed = true
 															NoticePackage.updateNotice [cesarRight originalStatus.at.hashedId], null,
 																action: 'notice'
 																notice: notice
@@ -232,14 +238,13 @@ module.exports = (router) ->
 														notice = [
 															img +
 															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
-																s("{number} personnes ont partagé l'une de vos publications.", number: 1)
+																s("L'une de vos publications a été partagée {number} fois.", number: 1)
 														, 'share_count', user._id, originalStatus._id, cesarRight(originalStatus.at.hashedId), 1]
+														NoticePackage.notify [cesarRight originalStatus.at.hashedId], null,
+															action: 'notice'
+															author: user._id
+															notice: notice
 
-
-											NoticePackage.notify [cesarRight originalStatus.at.hashedId], null,
-												action: 'notice'
-												author: user._id
-												notice: notice
 										if originalStatus.author
 											if user.friends.column('hashedId').contains originalStatus.author.hashedId
 												notice = [
@@ -247,12 +252,47 @@ module.exports = (router) ->
 													jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
 														s("{username} a partagé votre publication.", username: user.name.full)
 												, 'share', user._id, originalStatus._id, cesarRight originalStatus.author.hashedId]
+												NoticePackage.notify [cesarRight originalStatus.author.hashedId], null,
+													action: 'notice'
+													author: user._id
+													notice: notice
 											else
+												Notice.findOne
+													type: 'share_count'
+													attachedStatus: originalStatus._id
+													place: cesarRight originalStatus.author.hashedId
+												, (err, existingNotice) ->
+													warn err if err
+													if existingNotice and existingNotice.count
+														notice = [
+															img +
+															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+																s("L'une de vos publications a été partagée {number} fois.", number: existingNotice.count + 1)
+														, 'share_count', user._id, originalStatus._id, cesarRight originalStatus.author.hashedId, existingNotice.count + 1]
+														Notice.update
+															_id: existingNotice._id
+														,
+															$inc: count: 1
+															status: "unread"
+														, (err, noticeUpdated) ->
+															warn err if err
+															alreadyNoticed = true
+															NoticePackage.updateNotice [cesarRight originalStatus.author.hashedId], null,
+																action: 'notice'
+																notice: notice
+																id: strval existingNotice._id
 
-											NoticePackage.notify [cesarRight originalStatus.author.hashedId], null,
-												action: 'notice'
-												author: user._id
-												notice: notice
+													else
+														notice = [
+															img +
+															jd 'span(data-href="/user/status/' + originalStatus._id + '") ' +
+																s("L'une de vos publications a été partagée {number} fois.", number: 1)
+														, 'share_count', user._id, originalStatus._id, cesarRight(originalStatus.author.hashedId), 1]
+
+														NoticePackage.notify [cesarRight originalStatus.author.hashedId], null,
+															action: 'notice'
+															author: user._id
+															notice: notice
 										res.json()
 							else
 								res.serverError new PublicError "Vous ne pouvez pas partager ce statut."

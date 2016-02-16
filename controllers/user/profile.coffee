@@ -134,19 +134,79 @@ module.exports = (router) ->
 	router.put "/follow", (req, res) ->
 		userHashedId = req.data.hashedId
 		if userHashedId
+			userId = cesarRight userHashedId
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount and req.user
 					Follow.count
 						follower: req.user.id
-						followed: cesarRight userHashedId
+						followed: userId
 					, (err, existingFollow) ->
 						warn err if err
 						unless existingFollow
 							Follow.create
 								follower: req.user.id
-								followed: cesarRight userHashedId
+								followed: userId
 							, (err, follow) ->
 								warn err if err
+								today = (new Date).midnight()
+								id = Math.floor(today.getTime() / 1000).toString(16) + "0000000000000000"
+								img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: req.user
+								Notice.findOne
+									user: userId
+									type: 'follow_count'
+									_id: $gt: id
+								, (err, noticeCount) ->
+									warn err if err
+									if noticeCount
+										Notice.findOneAndUpdate
+											_id: noticeCount._id
+										,
+											$inc: count: 1
+											status: "unread"
+										, (err) ->
+											warn err if err
+											notice = [
+												img +
+												jd 'span ' +
+													s("{count} personnes ont commencé à vous suivre.", count: noticeCount.count + 1)
+											, 'follow_count', req.user._id, null, req.user._id, noticeCount.count + 1]
+											NoticePackage.updateNotice [userId], null,
+												action: 'notice'
+												notice: notice
+												id: strval noticeCount._id
+									else
+										Notice.count
+											user: userId
+											type: 'follow'
+											_id: $gt: id
+										, (err, count) ->
+											warn err if err
+											if count and count >= 2
+												Notice.remove
+													user: userId
+													type: 'follow'
+													_id: $gt: id
+												, (err) ->
+													notice = [
+														img +
+														jd 'span ' +
+															s("{count} personnes ont commencé à vous suivre.", count: count + 1)
+													, 'follow_count', req.user._id, null, req.user._id, count + 1]
+													NoticePackage.notify [userId], null,
+														action: 'notice'
+														author: req.user._id
+														notice: notice
+											else
+												notice = [
+													img +
+													jd 'span ' +
+														s("{username} a commencé à vous suivre.", username: req.user.name.full )
+												, 'follow', req.user._id, null, req.user._id]
+												NoticePackage.notify [userId], null,
+													action: 'notice'
+													author: req.user._id
+													notice: notice
+
 								UserPackage.refreshFollows req, (err) ->
 									warn err if err
 									if !req.data.returnSuggest

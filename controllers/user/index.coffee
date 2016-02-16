@@ -1133,3 +1133,35 @@ module.exports = (router) ->
 				res.render 'user/directory', publicUsers: users
 		else
 			res.render 'user/directory', publicUsers: directoryPublicUsers
+
+	router.post '/share/list', (req, res) ->
+		StatusPackage.getOriginalStatus req.data.status, (err, originalStatus) =>
+			warn err if err
+			if originalStatus
+				if originalStatus.shares.length
+					Status.find
+						_id: $in: originalStatus.shares
+					, (err, shareList) ->
+						warn err if err
+						if shareList
+							userIds = []
+							sharers = {}
+							results = []
+							for share in shareList
+								if !sharers[share.author]
+									sharers[share.author] = {user: share.author, nbShare: 1}
+								else
+									sharers[share.author].nbShare++
+								userIds.push share.author
+							User.find
+								_id: $in: userIds
+							, (err, users) ->
+								warn err if err
+								for sharer of sharers
+									for user in users
+										if equals user._id, sharer
+											userObj = user.publicInformations()
+											userObj.nbShare = sharers[sharer].nbShare
+											results.push userObj
+
+								res.json sharers: results

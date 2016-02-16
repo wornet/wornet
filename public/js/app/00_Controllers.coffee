@@ -1141,6 +1141,17 @@ Controllers =
 				$scope.notifications[id] = notification
 				refreshScope $scope
 				delay 1, refreshPill
+			else if id and /_count$/.test notification[2]
+				$('.notifications li[data-id]').each (idElem, elem) ->
+					$elem = $ elem
+					if $elem.data('id') is id
+						saveDate = $elem.find('i.mobile-notification-date, div.notification-date')
+						$elem.find('a:first').html notification[1]
+						$elem.removeClass 'read'
+						delay 1, refreshPill
+						saveDate.each (idElem, elem) ->
+							$elem.find('a:first').append elem
+
 			return
 
 		$scope.$on 'setNotifications', (e, notifications) ->
@@ -1435,6 +1446,34 @@ Controllers =
 			return
 
 		$scope.generateURLVisu()
+		return
+
+	ShareList: ($scope) ->
+		$scope.sharers = {}
+		window.shareListScope = $scope
+		$scope.lastsharersLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/share/list'
+
+		$scope.sharersRemaining = ->
+			($scope.sharers || []).length > 0 and $scope.lastsharersLoadedCount > 0 and $scope.lastsharersLoadedCount <= getCachedData 'sharersPageCount'
+
+		$scope.getsharersOffset = ->
+			sharersList = $scope.sharers || []
+			if sharersList.length
+				sharersList[sharersList.length - 1].id
+			else
+				null
+
+		$scope.loadsharersList = (chunk) ->
+			$scope.lastsharersLoadedCount = chunk.sharers.length
+			for sharer in chunk.sharers
+				$scope.sharers.push sharer
+			refreshScope $scope
+
+		$scope.getAdditionnalData = ->
+			status: $scope.status
 		return
 
 	SigninSecondStep: ($scope) ->
@@ -1944,6 +1983,22 @@ Controllers =
 						window.plusWListScope.status = status
 						refreshScope window.plusWListScope
 						$('#liker-list').modal 'show'
+						lock = false
+						return
+			return
+
+		lock = false
+		$scope.displaySharerList = (status) ->
+			if !window.isMobile() and !lock and status.nbShare
+				lock = true
+				Ajax.post '/user/share/list',
+					data: status: status
+					success: (data) ->
+						window.shareListScope.lastsharersLoadedCount = data.sharers.length
+						window.shareListScope.sharers = data.sharers
+						window.shareListScope.status = status
+						refreshScope window.shareListScope
+						$('#sharer-list').modal 'show'
 						lock = false
 						return
 			return
