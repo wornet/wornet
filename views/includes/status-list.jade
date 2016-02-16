@@ -124,7 +124,7 @@
 				.col-xs-4(ng-if="isShareable(status)")
 					if config.wornet.shares.enabled
 						span.btn-action-share
-							span
+							span(ng-click="displaySharerList(status)")
 								//- | {{ nbShareText(status) }}
 								//- br
 								| {{ status.nbShare }}

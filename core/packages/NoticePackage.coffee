@@ -131,6 +131,22 @@ NoticePackage =
 					for notice in notices
 						notice.remove()
 
+	updateNotice: (userIds, err, groupData) ->
+		userIds.each ->
+			userId = strval @
+			if /^[0-9a-f]+$/ig.test userId
+				data = groupData.copy()
+				redisClientEmitter.publish config.wornet.redis.defaultChannel,
+					JSON.stringify(
+						type: "hasWaiter",
+						message:
+							userId: userId,
+							err: err,
+							data: data,
+							noticeId: uniqueId()
+					)
+				true
+
 	# Delete a notification if id is specified or all the notifications to a user if not
 	remove: (userId, id = null) ->
 		if @responsesToNotify[userId]?
