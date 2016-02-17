@@ -300,11 +300,14 @@ module.exports =
 		if (!notice.place or !notice.type) and notice.content
 			done notice.content
 		else
-			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
+			generateNotice = (launcher, place, userToNotify, attachedStatus, text, displayFollowerList = false) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
 				done img +
 				if attachedStatus
 					jd 'span(data-href="/user/status/' + attachedStatus._id + '") ' +
+					text
+				else if displayFollowerList
+					jd 'span(ng-click="displayFollowerList(\'' + userToNotify.hashedId + '\')") ' +
 					text
 				else
 					jd 'span(data-href="/' +
@@ -354,7 +357,7 @@ module.exports =
 							done null
 					when 'follow_count'
 						if notice.count
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{count} personnes ont commencé à vous suivre.", count: notice.count)
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{count} personnes ont commencé à vous suivre.", count: notice.count), true
 						else
 							done null
 					when 'birthday'
