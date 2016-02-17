@@ -127,7 +127,7 @@ module.exports = (router) ->
 					status.populateUsers (status) ->
 						if StatusPackage.checkRightToSee(req, status)
 							status.concernMe = if req.user
-								status.author.hashedId is req.user.hashedId or (status.at and stat.at.hashedId is req.user.hashedId)
+								status.author.hashedId is req.user.hashedId or (status.at and status.at.hashedId is req.user.hashedId)
 							else
 								false
 							status.isMine = if req.user
