@@ -422,16 +422,17 @@ StatusPackage =
 		if (status.at and status.at.accountConfidentiality is "public") or (!status.at and status.author.accountConfidentiality is "public")
 			true
 		else
-			me = if req.user
-				req.user.hashedId
+			if req.user
+				me = req.user.hashedId
+				myFriendsId = req.user.friends.map (friend) ->
+					friend.hashedId
 			else
-				null
+				me = null
+				myFriendsId = []
 			atHashedId = if status.at
 				status.at.hashedId
 			else
 				null
-			myFriendsId = req.user.friends.map (friend) ->
-				friend.hashedId
 			(equals(status.author.hashedId, me) or equals(atHashedId, me) or (myFriendsId.contains(status.author.hashedId, equals) && (!status.at or myFriendsId.contains(atHashedId, equals))) or myFriendsId.contains atHashedId, equals)
 
 	getOriginalStatus: (status, done) ->
