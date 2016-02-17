@@ -1173,6 +1173,10 @@ Controllers =
 				refreshPill()
 
 			return
+
+		$scope.displayFollowerList = (hashedId) ->
+			window.displayFollowerList(hashedId)
+			return
 		return
 
 	NotificationList: ($scope, $sce) ->
