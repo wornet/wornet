@@ -422,7 +422,10 @@ StatusPackage =
 		if (status.at and status.at.accountConfidentiality is "public") or (!status.at and status.author.accountConfidentiality is "public")
 			true
 		else
-			me = req.user.hashedId
+			me = if req.user
+				req.user.hashedId
+			else
+				null
 			atHashedId = if status.at
 				status.at.hashedId
 			else
