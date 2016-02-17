@@ -896,6 +896,7 @@ do ->
 					$('#certification-error')
 						.html s("Veuillez renseigner les champs suivants : ") + missingFields.join ', '
 						.show()
+					cancel e
 				else
 					withFormData (formData, xhr) ->
 						prevent e
