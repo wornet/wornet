@@ -996,8 +996,9 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isMe = userHashedId is req.user.hashedId
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
-				if isAPublicAccount or isAFriend
+				if isAPublicAccount or isAFriend or isMe
 					where = follower: cesarRight userHashedId
 					.with if offset
 						_id: $lt: new ObjectId(offset).path
