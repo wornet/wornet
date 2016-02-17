@@ -842,6 +842,7 @@ do ->
 				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning' ]
 				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link', "#publicName"]
 				if $select.val() is "private"
+					$('#followed-warning').removeClass("hidden")
 					for field in privateFields
 						$(field).removeClass("hidden")
 					for field in publicFields
@@ -852,6 +853,7 @@ do ->
 						$('#certification-warning').addClass("hidden")
 
 				else
+					$('#followed-warning').addClass("hidden")
 					for field in privateFields
 						$(field).addClass("hidden")
 					for field in publicFields
