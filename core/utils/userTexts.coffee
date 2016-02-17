@@ -58,3 +58,4 @@ module.exports = ->
 	certificationWarning: s('Attention en passant votre compte en privé vous perdrez votre certification.')
 	publicName: s("Nom d'utilisateur")
 	publicNameHint: s("Le nom d'utilisateur remplace votre prénom et nom lorsqu'il est ajouté. Dans le cas contraire, votre prénom et nom seront par défaut affichés à vos abonnés.")
+	followedWarning: s("Attention en passant votre compte en privé votre liste d'abonnés sera révoquée.")

@@ -363,6 +363,10 @@ module.exports = (router) ->
 				, (err, certif) ->
 					warn err if err
 					userModifications.certifiedAccount = false
+			Follow.remove
+				followed: req.user._id
+			, (err) ->
+				warn err if err
 			next()
 
 	toggleShutter = (req, res, opened) ->
