@@ -557,8 +557,8 @@ UserPackage =
 									if isMe or (! me) or empty friends
 										end false
 									else
-										self.areFriends me, profile, ->
-											friends.has id: me.id
+										self.areFriends me, profile, (done) ->
+											done friends.has id: me.id
 										, end
 								catch err
 									warn err

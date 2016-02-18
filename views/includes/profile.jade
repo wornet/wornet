@@ -3,7 +3,7 @@
 - init += "numberOfFollowers=" + numberOfFollowers + ";"
 - init += "numberOfFollowing=" + numberOfFollowing + ";"
 .well.profile.loading(ng-controller="ProfileCtrl" ng-init=init)
-	.col-sm-11
+	.col-xs-11.col-sm-11
 		.profile-edit(class=(edit ? "hidden" : null))
 			.profileError
 				if ! empty(friendAsked)
@@ -217,7 +217,7 @@
 						a(href="/user/settings")
 							=s("dès à présent !")
 		.cb
-	.col-sm-1
+	.col-xs-1.col-sm-1.action-col
 		if isMe
 			a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
 				+half('edit')
@@ -229,18 +229,18 @@
 					a.block(ng-click="deleteFriend('" + profile.hashedId + "', '" + profile.fullName + "')")
 						+glyph('circle-minus')
 	if isAPublicAccount
-		.col-sm-12.profile-banner
-			.col-sm-4.right-separator(ng-click="displayFriendList('" + profile.hashedId + "')")
+		.col-sm-12.profile-banner.cb
+			.col-xs-4.col-sm-4.right-separator(ng-click="displayFriendList('" + profile.hashedId + "')")
 				p
 					=s("AMI|AMIS", {}, numberOfFriends)
 				p
 					=s("{number}", { number: numberOfFriends })
-			.col-sm-4.right-separator(ng-click="displayFollowerList('" + profile.hashedId + "')")
+			.col-xs-4.col-sm-4.right-separator(ng-click="displayFollowerList('" + profile.hashedId + "')")
 				p
 					=s("ABONNE|ABONNES", {}, numberOfFollowers)
 				p.numberOfFollowers
 					=s("{number}", { number: numberOfFollowers })
-			.col-sm-4(ng-click="displayFollowingList('" + profile.hashedId + "')")
+			.col-xs-4.col-sm-4(ng-click="displayFollowingList('" + profile.hashedId + "')")
 				p
 					=s("ABONNEMENT|ABONNEMENTS", {}, numberOfFollowing)
 				p

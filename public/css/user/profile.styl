@@ -31,7 +31,7 @@ $progressRadialWidth = 4px
 	color $linkColor
 
 .profile-edit-btn.aside
-	width 180px
+	width 30px
 
 .profile-edit
 .settings-edit
@@ -88,6 +88,15 @@ $progressRadialWidth = 4px
 			line-height 20px
 			padding 2px 0
 			margin-left $mainPadding
+	label
+		input.form-control
+		select.form-control
+		textarea.form-control
+			width 100%
+
+	.btn-group
+		margin-bottom $mainPadding
+
 
 .about-user
 	margin $smallPadding 0 $smallPadding $photoWidth + $mainPadding
@@ -190,6 +199,18 @@ $progressRadialWidth = 4px
 				width 100%
 		.biography
 			margin-left 0
+
+	.profile
+		padding-bottom $smallPadding
+		.profile-confidentiality
+			margin $mainPadding 0
+		.profile-banner
+			padding-top $smallPadding
+			p
+				font-size 10px
+
+	.action-col
+		padding 0
 
 @media (max-width: 414px)
 	.profile-edit

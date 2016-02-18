@@ -1326,7 +1326,7 @@ Controllers =
 						return
 			return
 		window.displayFollowerList = $scope.displayFollowerList = (hashedId) ->
-			if !window.isMobile() and !lock and $scope.numberOfFollowers
+			if !window.isMobile() and !lock
 				lock = true
 				Ajax.post '/user/follower/list',
 					data: userHashedId: hashedId
@@ -1351,6 +1351,7 @@ Controllers =
 						lock = false
 						return
 			return
+		$scope.isMobile = window.isMobile()
 		return
 
 	Search: ($scope) ->
