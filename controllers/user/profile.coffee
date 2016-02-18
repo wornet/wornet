@@ -199,7 +199,7 @@ module.exports = (router) ->
 											else
 												notice = [
 													img +
-													jd 'span ' +
+													jd 'span(data-href="/' + req.user.uniqueURLID + '") ' +
 														s("{username} a commencé à vous suivre.", username: req.user.name.full )
 												, 'follow', req.user._id, null, req.user._id]
 												NoticePackage.notify [userId], null,
