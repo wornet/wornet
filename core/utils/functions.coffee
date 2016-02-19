@@ -116,13 +116,11 @@ module.exports =
 								console.warn "[redis] cannot store a null value"
 								console.trace()
 							for key in keys
-								data[key] = value
 								memSet key, value, (err) ->
 									if err
 										console.warn "[redis] " + err
 										console.trace()
-							done data, false
-
+							done value, false
 					else
 						done {}, false
 				else
