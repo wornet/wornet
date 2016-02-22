@@ -974,7 +974,7 @@ module.exports = (router) ->
 					".jpg"
 
 				fileDirectory = __dirname + '/../../public/img/certification/'
-				fileName = codeId()+ new Date().getTime() + ext
+				fileName = codeId() + time() + ext
 				dst = fileDirectory + fileName
 				certif.proof.src = '/img/certification/' + fileName
 				fs.exists proof.path, (exists) ->
