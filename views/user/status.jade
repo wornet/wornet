@@ -28,8 +28,6 @@ block body
 							+half('exclamation-sign')
 							| &nbsp; 
 							=s("Signaler")
-				.alert.alert-success(ng-if="statusToDisplay.reported")
-					=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
 			.aside.continue.settings(ng-if="! statusToDisplay.author.hashedId")
 				a.dropdown-toggle(data-toggle="dropdown")
 					+half('cog')
