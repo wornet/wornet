@@ -31,8 +31,6 @@
 					+half('exclamation-sign')
 					| &nbsp; 
 					=s("Signaler")
-		.alert.alert-success(ng-if="status.reported")
-			=s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide.")
 	.aside.continue.settings(ng-if="! status.author.hashedId")
 		a.dropdown-toggle(data-toggle="dropdown")
 			+half('cog')

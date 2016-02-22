@@ -974,7 +974,7 @@ module.exports = (router) ->
 					".jpg"
 
 				fileDirectory = __dirname + '/../../public/img/certification/'
-				fileName = codeId() + ext
+				fileName = codeId()+ new Date().getTime() + ext
 				dst = fileDirectory + fileName
 				certif.proof.src = '/img/certification/' + fileName
 				fs.exists proof.path, (exists) ->
@@ -1039,8 +1039,9 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isMe = userHashedId is req.user.hashedId
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
-				if isAPublicAccount or isAFriend
+				if isAPublicAccount or isAFriend or isMe
 					where = followed: cesarRight userHashedId
 					.with if offset
 						_id: $lt: new ObjectId(offset).path
@@ -1078,8 +1079,9 @@ module.exports = (router) ->
 		id = cesarRight userHashedId
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: id
+			isMe = req.user.hashedId is userHashedId
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
-				if isAPublicAccount or isAFriend
+				if isAPublicAccount or isAFriend or isMe
 					offsetObj = new ObjectId(offset).path
 					where = {
 						status: 'accepted'

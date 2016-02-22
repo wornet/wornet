@@ -1451,6 +1451,12 @@ Controllers =
 			return
 
 		$scope.generateURLVisu()
+
+		if window.isMobile() and $('#shutter').css("width") isnt "0px"
+			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+			$('#directives-calendar > .well').removeClass 'col-xs-9'
+			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+
 		return
 
 	ShareList: ($scope) ->
@@ -1678,7 +1684,8 @@ Controllers =
 			$($event.target)
 				.parents('ul.dropdown-menu:first').trigger 'click'
 			status.reported = true
-			Ajax.get '/report/' + status._id
+			Ajax.get '/report/' + status._id, ->
+				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s "C'est fait"
 			return
 
 		$scope.sharedAlbumDefaultName = s("Publications d'amis")
