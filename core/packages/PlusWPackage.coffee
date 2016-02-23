@@ -141,14 +141,10 @@ PlusWPackage =
 					followed = follows.column('followed')
 					friendsListWithFollow = friendsList.copy()
 					friendsListWithFollow.merge followed
-					#The status is owned by one of my friends or on his wall or is owned by one of my following
+					#The status is on the wall of a friend or a following
 					whereStatus =
 						_id: idStatus
-						$or: [
-							author: $in: friendsListWithFollow
-						,
-							at: $in: friendsList
-						]
+						at: $in: friendsListWithFollow
 					Status.count whereStatus, (err, countStatut) ->
 						if err
 							done err, false
