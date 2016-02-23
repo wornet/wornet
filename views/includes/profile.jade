@@ -23,7 +23,7 @@
 							| &nbsp;
 							=s("Profil privé")
 				if !isMe && user
-					if !isAFriend && isAPublicAccount && !profile.certifiedAccount
+					if !isAFriend && isAPublicAccount && (!profile.certifiedAccount || (profile.certifiedAccount && user.certifiedAccount))
 						input.profile-btn.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
 							href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 							data-target=".profileError"
@@ -43,7 +43,7 @@
 							value="Annuler la demande" 
 							type="button"
 						)
-					if isAPublicAccount
+					if isAPublicAccount && !isAFriend
 						input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value="Suivre" type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
 						input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value="Ne plus suivre" type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
 		.profile-edit(class=(edit ? null : "hidden"))

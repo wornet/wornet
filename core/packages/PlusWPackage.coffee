@@ -144,7 +144,12 @@ PlusWPackage =
 					#The status is on the wall of a friend or a following
 					whereStatus =
 						_id: idStatus
-						at: $in: friendsListWithFollow
+						$or: [
+							at: $in: friendsListWithFollow
+						,
+							at: null
+							author: $in: friendsListWithFollow
+						]
 					Status.count whereStatus, (err, countStatut) ->
 						if err
 							done err, false
