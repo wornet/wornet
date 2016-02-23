@@ -184,6 +184,8 @@ StatusPackage =
 																							if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
 																								photoToDisplay = photoStatus
 																								break
+																				if !photoToDisplay
+																					photoToDisplay = status.images[0]
 																				status.images = [photoToDisplay]
 																				if -1 isnt photoToDisplay.src.indexOf "200x"
 																					photoToDisplay.src = photoToDisplay.src.replace "200x", ""
