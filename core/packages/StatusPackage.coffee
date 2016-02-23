@@ -10,7 +10,7 @@ StatusPackage =
 		id = req.getRequestedUserId id
 		next = _next = =>
 			if data.recentStatus and (data.chat or !req.user)
-				if req.user and (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3 and !req.data.offset
+				if req.user and (onProfile and equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3 and !req.data.offset
 					data.recentStatus.push @defaultStatus()
 
 				if res.endAt
@@ -200,7 +200,11 @@ StatusPackage =
 																		next()
 																	else
 																		treatStatus i
-															treatStatus 0
+															if recentStatus.length
+																treatStatus 0
+															else
+																data.recentStatus = recentStatusPublicData
+																next()
 									req.getUsersByIds missingIds, done #, searchInDataBase
 								else
 									data.recentStatus = recentStatusPublicData
