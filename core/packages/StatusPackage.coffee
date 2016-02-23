@@ -113,13 +113,15 @@ StatusPackage =
 
 														UserPackage.refreshFollows req, (err) ->
 															warn err if err
-															recentStatus.each ->
-																status = @toObject()
+															treatStatus = (i) ->
+																statusToTreat = recentStatus[i]
+																i++
+																status = statusToTreat.toObject()
 
-																if @isAShare
+																if statusToTreat.isAShare
 																	theOriginalStatus = null
 																	for anOriginalStatus in originalStatus
-																		if equals anOriginalStatus._id, @referencedStatus
+																		if equals anOriginalStatus._id, statusToTreat.referencedStatus
 																			theOriginalStatus = anOriginalStatus
 																	if !theOriginalStatus
 																		res.serverError new PublicError s("Statut originel introuvable")
@@ -141,23 +143,23 @@ StatusPackage =
 																		status.shareDate = status.date
 																		status.date = theOriginalStatus.date
 																else
-																	if @at is @author
-																		@at = null
-																	status.author = usersMap[strval @author].publicInformations()
-																	if @at
-																		status.at = usersMap[strval @at].publicInformations()
+																	if statusToTreat.at is statusToTreat.author
+																		statusToTreat.at = null
+																	status.author = usersMap[strval statusToTreat.author].publicInformations()
+																	if statusToTreat.at
+																		status.at = usersMap[strval statusToTreat.at].publicInformations()
 
 																	if status.concernMe and status.images.length and req.user and ! equals req.user.id, @author
 																		ids = status.images.column('src').map PhotoPackage.urlToId
 																		(req.session.photosAtMe ||= []).merge ids, 'add'
 																		next = nextWithSession
-																	status.status = @status
-																	if @status is 'blocked'
+																	status.status = statusToTreat.status
+																	if statusToTreat.status is 'blocked'
 																		status.content = ''
 																	status.likedByMe = tabLike[status._id].likedByMe
 																	status.nbLike = tabLike[status._id].nbLike
 																status.nbImages = status.images.length
-																status.concernMe = req.user and [@at, @author].contains req.user.id, equals
+																status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
 																status.isPlaceFollowed = if status.at and req.user
 																	req.user.followings.contains cesarRight(status.at.hashedId), equals
 																else if req.user
@@ -170,14 +172,35 @@ StatusPackage =
 																else
 																	0
 																if status.images.length
-																	status.images.sort (a, b) ->
-																		b.src - a.src
-																	status.images = [status.images[0]]
-																	if -1 isnt status.images[0].src.indexOf "200x"
-																		status.images[0].src = status.images[0].src.replace "200x", ""
-																recentStatusPublicData.push status
-															data.recentStatus = recentStatusPublicData
-															next()
+																	Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
+																		warn err if err
+																		if photo
+																			PhotoPackage.fromAlbum photo.album, (err, photos) ->
+																				warn err if err
+																				photoToDisplay = null
+																				if photos and photos.length
+																					for photoAlbum in photos
+																						for photoStatus in status.images
+																							if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
+																								photoToDisplay = photoStatus
+																								break
+																				status.images = [photoToDisplay]
+																				if -1 isnt photoToDisplay.src.indexOf "200x"
+																					photoToDisplay.src = photoToDisplay.src.replace "200x", ""
+																				recentStatusPublicData.push status
+																				if recentStatusPublicData.length is recentStatus.length
+																					data.recentStatus = recentStatusPublicData
+																					next()
+																				else
+																					treatStatus i
+																else
+																	recentStatusPublicData.push status
+																	if recentStatusPublicData.length is recentStatus.length
+																		data.recentStatus = recentStatusPublicData
+																		next()
+																	else
+																		treatStatus i
+															treatStatus 0
 									req.getUsersByIds missingIds, done #, searchInDataBase
 								else
 									data.recentStatus = recentStatusPublicData
@@ -277,7 +300,6 @@ StatusPackage =
 					at = cesarRight at
 
 				pointsValue = @calculatePoints medias, req.user.numberOfFriends
-
 				Status.create
 					author: req.user._id
 					at: at
