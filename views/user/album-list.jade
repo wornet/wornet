@@ -6,7 +6,7 @@ block body
 		- var init = "isMe = " + isMe + ";"
 		- init += "profileFirstName = " + JSON.stringify(profile.firstName) + ";"
 		- init += "profileURLId = " + JSON.stringify(profile.uniqueURLID) + ";"
-		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init).medias-block
+		#all-albums.loading(ng-controller="MediasCtrl" ng-init=init)
 			h3(ng-class="{ myMedias: isMe }")
 				if isMe
 					=s("Mes medias").toUpperCase() + ' '

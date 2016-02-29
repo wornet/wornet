@@ -221,6 +221,8 @@
 		if isMe
 			a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
 				+half('edit')
+			a.profile-display.profile-photos-btn.aside(href="/user/albums/" + profile.hashedId)
+				+glyph('picture')
 		else 
 			if isAFriend
 				.aside
