@@ -1313,7 +1313,7 @@ Controllers =
 
 		lock = false
 		window.displayFriendList = $scope.displayFriendList = (hashedId) ->
-			if !window.isMobile() and !lock and $scope.numberOfFriends
+			if !lock and $scope.numberOfFriends
 				lock = true
 				Ajax.post '/user/friend/list',
 					data: userHashedId: hashedId
@@ -1326,7 +1326,7 @@ Controllers =
 						return
 			return
 		window.displayFollowerList = $scope.displayFollowerList = (hashedId) ->
-			if !window.isMobile() and !lock
+			if !lock and $scope.numberOfFollowers
 				lock = true
 				Ajax.post '/user/follower/list',
 					data: userHashedId: hashedId
@@ -1339,7 +1339,7 @@ Controllers =
 						return
 			return
 		window.displayFollowingList = $scope.displayFollowingList = (hashedId) ->
-			if !window.isMobile() and !lock and $scope.numberOfFollowing
+			if !lock and $scope.numberOfFollowing
 				lock = true
 				Ajax.post '/user/following/list',
 					data: userHashedId: hashedId
@@ -1985,7 +1985,7 @@ Controllers =
 
 		lock = false
 		$scope.displaylikerList = (status) ->
-			if !window.isMobile() and !lock and status.nbLike
+			if !lock and status.nbLike
 				lock = true
 				Ajax.post '/user/plusW/list',
 					data: status: status
@@ -2001,7 +2001,7 @@ Controllers =
 
 		lock = false
 		$scope.displaySharerList = (status) ->
-			if !window.isMobile() and !lock and status.nbShare
+			if !lock and status.nbShare
 				lock = true
 				Ajax.post '/user/share/list',
 					data: status: status
