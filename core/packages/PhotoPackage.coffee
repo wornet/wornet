@@ -97,7 +97,8 @@ PhotoPackage =
 			if err
 				throw err
 			else
-				delete @photos[photoId]
+				if @photos[photoId]
+					delete @photos[photoId]
 
 	deleteImages: (images) ->
 		self = @
