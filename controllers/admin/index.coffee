@@ -97,7 +97,7 @@ module.exports = (router) ->
 			,
 				certifiedAccount: false
 			, (err, users) ->
-				if req.user
+				if req.user and equals certif.user, req.user._id
 					req.user.certifiedAccount = false
 				warn err if err
 				res.json()
