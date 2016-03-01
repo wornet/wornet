@@ -126,9 +126,11 @@ module.exports =
 				else
 					done {}, true
 				null
-		else
+		else if calculate
 			calculate (value) ->
 				done value, false
+		else
+			done {}, false
 		null
 
 	###

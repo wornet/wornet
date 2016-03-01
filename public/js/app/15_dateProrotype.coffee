@@ -8,7 +8,7 @@ textReplacements = (text, replacements, count = null) ->
 				texts.unshift texts[0]
 			count = Math.abs Math.floor count
 			count = Math.min count, texts.length - 1
-			text = texts[count]
+			text = texts[count] || texts[0]
 	for key, value of replacements
 		text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
 	text
