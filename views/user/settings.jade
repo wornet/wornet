@@ -76,13 +76,15 @@ block body
 							=userTexts.accountConfidentialityHintPrivate
 						label.right.settings-hint.account-confidentiality-hint-public(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 							=userTexts.accountConfidentialityHintPublic
-					label#allowFriendPostOnMe(class=(user.accountConfidentiality=="public") ? "" : "hidden")
+					span#allowFriendPostOnMe(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 						span
 							=userTexts.allowFriendPostOnMe
-						=s("Oui")
-						input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeOui" value="on" checked=user.allowFriendPostOnMe)
-						=s("Non")
-						input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeNon" value="off" checked=!user.allowFriendPostOnMe)
+						label
+							=s("Oui")
+							input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeOui" value="on" checked=user.allowFriendPostOnMe)
+						label
+							=s("Non")
+							input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeNon" value="off" checked=!user.allowFriendPostOnMe)
 					label.right#urlIdDisponibility(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 					label#urlIdContainer(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 						span
@@ -96,29 +98,35 @@ block body
 						+formControl(name="name.public" value=user.name.public)
 						label.right.settings-hint.publicName-hint
 							=userTexts.publicNameHint
-					label
+					span
 						span
 							=userTexts.confidentialityBirthDate
-						=s("Oui")
-						input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
-						=s("Non")
-						input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
+						label
+							=s("Oui")
+							input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
+						label
+							=s("Non")
+							input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
 					br
-					label
+					span
 						span
 							=userTexts.confidentialityFriendList
-						=s("Oui")
-						input(type="radio" name="maskFriendList" id="confidentialityFriendListPrive" value="on" checked=user.maskFriendList)
-						=s("Non")
-						input(type="radio" name="maskFriendList" id="confidentialityFriendListPublic" value="off" checked=!user.maskFriendList)
+						label
+							=s("Oui")
+							input(type="radio" name="maskFriendList" id="confidentialityFriendListPrive" value="on" checked=user.maskFriendList)
+						label
+							=s("Non")
+							input(type="radio" name="maskFriendList" id="confidentialityFriendListPublic" value="off" checked=!user.maskFriendList)
 					br
-					label.confidentialityFollowList(class=(user.accountConfidentiality=="private") ? "" : "hidden")
+					span.confidentialityFollowList(class=(user.accountConfidentiality=="private") ? "" : "hidden")
 						span
 							=userTexts.confidentialityFollowList
-						=s("Oui")
-						input(type="radio" name="maskFollowList" id="confidentialityFollowListPrive" value="on" checked=user.maskFollowList)
-						=s("Non")
-						input(type="radio" name="maskFollowList" id="confidentialityFollowListPublic" value="off" checked=!user.maskFollowList)
+						label
+							=s("Oui")
+							input(type="radio" name="maskFollowList" id="confidentialityFollowListPrive" value="on" checked=user.maskFollowList)
+						label
+							=s("Non")
+							input(type="radio" name="maskFollowList" id="confidentialityFollowListPublic" value="off" checked=!user.maskFollowList)
 					//- Notification
 						.opt-group
 							input(type="checkbox" name="newsletter" id="newsletter" checked=user.newsletter)
