@@ -26,10 +26,10 @@ fieldset.status-form
 			.medias-uploaded(ng-if="medias.images.length > 0")
 					//- h3=s("Images")
 					//- img(ng-repeat="image in medias.images" ng-src="{{ image.src }}" alt="{{ image.name }}")
-				span.image-box(ng-repeat="image in medias.images")
+				div.image-box(ng-repeat="image in medias.images")
 					img(ng-src="{{ image.src }}" alt="{{ image.name }}")
 					+half('remove-sign')(ng-click="removeMedia(image)")
-				.upload-container
+				.upload-container.image-box
 					.upload-label
 						=s("+")
 					input(type="hidden" name="album" value="{{ currentAlbum._id || 'new' }}")

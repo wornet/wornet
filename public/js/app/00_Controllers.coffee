@@ -1536,7 +1536,7 @@ Controllers =
 									if media and media.id is data.id
 										$scope.medias[key].splice index, 1
 								break
-						$('.tab .medias-uploaded img[src="' + data.src + '"]').parent().remove()
+						$('.status-form .status-images .image-box img[src="' + data.src + '"]').parent().remove()
 					else
 						location.reload()
 					hideLoader()

@@ -37,10 +37,26 @@
 		border-radius(4px)
 		background-color $mediumGray
 
-	.image-box img
+	div.image-box
 		size(90px)
-		margin $mainPadding $mainPadding $mainPadding 0
+		display inline-block
+		margin $mainPadding $mainPadding 0 0
 		float left
+		img
+			size(90px)
+
+		span.halflings
+			rel()
+			float left
+			margin 2px 2px 0 0px
+			color rgba(255,255,255,.6)
+			font-size 19px
+			cursor pointer
+			right -69px
+			top -90px
+
+			&:hover
+				color white
 
 .status-author
 	a
@@ -150,13 +166,13 @@
 		color $mediumGray
 
 .upload-container
-	margin $mainPadding $mainPadding $mainPadding 0
+	margin $mainPadding $mainPadding 0 0
 	position relative
 	// border-radius(4px)
 	border 2px solid $orange
 	box-sizing border-box
 	size(90px)
-	float left
+	display inline-block
 
 	@media (max-width: 768px)
 		margin $mainPadding 0 0 0
