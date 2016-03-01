@@ -39,7 +39,7 @@ do ->
 	.on 'touchstart mousedown', (e) ->
 		p = pointer e
 		_x = x = p.pageX
-		_y = y = p.pageY - $document.scrollTop()
+		_y = y = p.pageY # - $document.scrollTop()
 		touch = $.now()
 		touchTarget = e.target
 		return
@@ -100,7 +100,7 @@ do ->
 		return
 
 	.on 'swiperight', (e, isTouchEvent) ->
-		if isTouchEvent and exists '#shutter'
+		if isTouchEvent and (! exists '#media-viewer:visible') and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
 			$('#directives-calendar > .well').removeClass 'col-xs-9'
 			syncShutter()
@@ -109,7 +109,7 @@ do ->
 			true
 
 	.on 'swipeleft', (e, isTouchEvent) ->
-		if isTouchEvent and exists '#shutter'
+		if isTouchEvent and (! exists '#media-viewer:visible') and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
 			$('#directives-calendar > .well').addClass 'col-xs-9'
 			syncShutter()
