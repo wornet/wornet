@@ -81,9 +81,11 @@ block body
 							=userTexts.allowFriendPostOnMe
 						label
 							=s("Oui")
+							| &nbsp;
 							input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeOui" value="on" checked=user.allowFriendPostOnMe)
 						label
 							=s("Non")
+							| &nbsp;
 							input(type="radio" name="allowFriendPostOnMe" id="allowFriendPostOnMeNon" value="off" checked=!user.allowFriendPostOnMe)
 					label.right#urlIdDisponibility(class=(user.accountConfidentiality=="public") ? "" : "hidden")
 					label#urlIdContainer(class=(user.accountConfidentiality=="public") ? "" : "hidden")
@@ -103,9 +105,11 @@ block body
 							=userTexts.confidentialityBirthDate
 						label
 							=s("Oui")
+							| &nbsp;
 							input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePrive" value="on" checked=user.maskBirthDate)
 						label
 							=s("Non")
+							| &nbsp;
 							input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
 					br
 					span
@@ -113,9 +117,11 @@ block body
 							=userTexts.confidentialityFriendList
 						label
 							=s("Oui")
+							| &nbsp;
 							input(type="radio" name="maskFriendList" id="confidentialityFriendListPrive" value="on" checked=user.maskFriendList)
 						label
 							=s("Non")
+							| &nbsp;
 							input(type="radio" name="maskFriendList" id="confidentialityFriendListPublic" value="off" checked=!user.maskFriendList)
 					br
 					span.confidentialityFollowList(class=(user.accountConfidentiality=="private") ? "" : "hidden")
@@ -123,9 +129,11 @@ block body
 							=userTexts.confidentialityFollowList
 						label
 							=s("Oui")
+							| &nbsp;
 							input(type="radio" name="maskFollowList" id="confidentialityFollowListPrive" value="on" checked=user.maskFollowList)
 						label
 							=s("Non")
+							| &nbsp;
 							input(type="radio" name="maskFollowList" id="confidentialityFollowListPublic" value="off" checked=!user.maskFollowList)
 					//- Notification
 						.opt-group
