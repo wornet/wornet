@@ -1422,14 +1422,14 @@ Controllers =
 		s = textReplacements
 		urlPattern = "https://www.wornet.fr/"
 		$scope.generateURLVisu = ->
-			$('#urlVisual').html urlPattern + $('#uniqueURLID').val()
+			$('#urlVisual').html urlPattern + $('#uniqueURLID').val().toLowerCase()
 			return
 
 		validFormat = (id) ->
-			/^[a-zA-Z0-9_.]*$/.test id
+			/^[a-z0-9_.]*$/.test id
 
 		$scope.checkURLID = ->
-			urlId = $('#uniqueURLID').val()
+			urlId = $('#uniqueURLID').val().toLowerCase()
 			if urlId and validFormat urlId
 				Ajax.get '/user/checkURLID/' + urlId, (data) ->
 					if data.err and data.err is "same"
@@ -1445,7 +1445,7 @@ Controllers =
 						$('#urlIdDisponibility').removeClass "green"
 						$('#urlIdDisponibility').addClass "red"
 			else
-				$('#urlIdDisponibility').html s("Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
+				$('#urlIdDisponibility').html s("Caractères acceptés : lettres minuscule non accentuées, chiffres, points et undescores")
 				$('#urlIdDisponibility').removeClass "green"
 				$('#urlIdDisponibility').addClass "red"
 			return
