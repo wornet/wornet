@@ -100,6 +100,7 @@ PhotoPackage =
 			else
 				if @photos[photoId]
 					delete @photos[photoId]
+					delete @photosForCookieChecking[photoId]
 
 	deleteImages: (images) ->
 		self = @
