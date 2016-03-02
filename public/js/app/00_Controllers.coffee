@@ -1445,7 +1445,7 @@ Controllers =
 						$('#urlIdDisponibility').removeClass "green"
 						$('#urlIdDisponibility').addClass "red"
 			else
-				$('#urlIdDisponibility').html s("Caractères acceptés : lettres minuscule non accentuées, chiffres, points et undescores")
+				$('#urlIdDisponibility').html s("Caractères acceptés : lettres minuscules non accentuées, chiffres, points et undescores")
 				$('#urlIdDisponibility').removeClass "green"
 				$('#urlIdDisponibility').addClass "red"
 			return
