@@ -5,6 +5,9 @@ block body
 		if config.wornet.admin.certifier.indexOf(user.email) >= 0
 			h3
 				=s('Gestion des certifications')
+			a(href="/admin")
+				=s("Retour au menu")
+			.cb
 			a.btn(href="/admin/certification/list" style="width: 220px; height: 220px; padding: 20px 10px; text-align: center; margin: 20px;")
 				+glyph("circle-ok")#glyph-certification
 				br
