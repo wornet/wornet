@@ -53,7 +53,7 @@ do ->
 		if ax > 50 or ay > 50
 			$(touchTarget)
 				.trigger 'swipe', [dx, dy, isTouchEvent]
-				.trigger if ax > (ay * 1.5)
+				.trigger if ax > (ay * (window.innerHeight / window.innerWidth))
 					if dx > 0
 						'swiperight'
 					else
