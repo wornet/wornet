@@ -51,6 +51,7 @@ PhotoPackage =
 		photoId = strval photoId
 		if @restrictedAndAllowedToSee req, photoId
 			delete @photos[photoId]
+			delete @photosForCookieChecking[photoId]
 			deleteCookie req, photoId
 
 	publish: (req, photoId, statusId, lastSelectedAlbum = null, done) ->
