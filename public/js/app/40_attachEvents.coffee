@@ -665,6 +665,8 @@ do ->
 			'.profile-edit-btn'
 			($a, e) ->
 				$('.profile-display').toggle()
+				if window.isMobile()
+					$('.profile-photos-btn').toggle()
 				$('.profile-edit').toggleClass 'hidden'
 				cancel e
 		]
