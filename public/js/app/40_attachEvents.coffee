@@ -845,7 +845,7 @@ do ->
 			'change'
 			'#account-confidentiality'
 			($select, e) ->
-				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning' ]
+				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning', '.confidentialityFriendList']
 				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link', "#publicName"]
 				if $select.val() is "private"
 					$('#followed-warning').removeClass("hidden")

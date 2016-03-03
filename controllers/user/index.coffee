@@ -334,6 +334,7 @@ module.exports = (router) ->
 
 		if userModifications.accountConfidentiality is "public"
 			userModifications.maskFollowList = false
+			userModifications.maskFriendList = false
 			unless newUrlId is req.user.uniqueURLID
 				if /^[a-zA-Z0-9_.]*$/.test newUrlId
 					User.count

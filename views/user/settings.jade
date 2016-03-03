@@ -112,7 +112,7 @@ block body
 							| &nbsp;
 							input(type="radio" name="maskBirthDate" id="confidentialityBirthDatePublic" value="off" checked=!user.maskBirthDate)
 					br
-					span
+					span.confidentialityFriendList(class=(user.accountConfidentiality=="private") ? "" : "hidden")
 						span
 							=userTexts.confidentialityFriendList
 						label
