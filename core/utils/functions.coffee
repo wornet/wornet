@@ -307,7 +307,7 @@ module.exports =
 					jd 'span(data-href="/user/status/' + attachedStatus._id + '") ' +
 					text
 				else if displayFollowerList
-					jd 'span(ng-click="displayFollowerList(\'' + userToNotify.hashedId + '\')") ' +
+					jd 'span(ng-click="displayFollowerList(\'' + userToNotify.hashedId + '\', true)") ' +
 					text
 				else
 					jd 'span(data-href="/' +
