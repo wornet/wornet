@@ -1174,8 +1174,8 @@ Controllers =
 
 			return
 
-		$scope.displayFollowerList = (hashedId) ->
-			window.displayFollowerList(hashedId)
+		$scope.displayFollowerList = (hashedId, fromNotice) ->
+			window.displayFollowerList(hashedId, fromNotice)
 			return
 		return
 
@@ -1325,8 +1325,8 @@ Controllers =
 						lock = false
 						return
 			return
-		window.displayFollowerList = $scope.displayFollowerList = (hashedId) ->
-			if !lock and $scope.numberOfFollowers
+		window.displayFollowerList = $scope.displayFollowerList = (hashedId, fromNotice = false) ->
+			if !lock and ($scope.numberOfFollowers or fromNotice)
 				lock = true
 				Ajax.post '/user/follower/list',
 					data: userHashedId: hashedId
