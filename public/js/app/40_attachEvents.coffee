@@ -355,7 +355,7 @@ do ->
 			'upload'
 			'.status-images'
 			($form, e, body) ->
-				$form.find('input[type="submit"]').prop 'disabled', false
+				$('.publish input').prop 'disabled', false
 				$container = $form.find '.upload-container'
 				$container.html $container.data 'save-html'
 				$scope = $form.scope()
@@ -406,6 +406,9 @@ do ->
 
 					complete = ->
 						enable()
+						$label
+							.css 'font-size', '58px'
+							.text '+'
 						delay 1000, ->
 							$input.show()
 
@@ -428,6 +431,7 @@ do ->
 						complete()
 						$form.trigger 'upload', [@responseText]
 						return
+
 					return
 		]
 		[
