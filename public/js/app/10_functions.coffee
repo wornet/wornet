@@ -526,7 +526,7 @@ withFormData = ($form, done) ->
 					input.files.length
 				else
 					1
-			$form.find('.upload-label').text if sum > 1
+			$form.find('.upload-label').css('font-size', '16px').text if sum > 1
 				s("Envoi des images en cours...")
 			else
 				s("Envoi de l\'image en cours...")
