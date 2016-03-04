@@ -64,8 +64,8 @@ module.exports = (app) ->
 					return res.end 'OK'
 				when '/alive'
 					if User
-						User.find().limit(1).exec (err, user) ->
-							if user and ! err
+						User.find().limit(1).exec (err, users) ->
+							if users.length and ! err
 								res.end 'alive'
 					return
 

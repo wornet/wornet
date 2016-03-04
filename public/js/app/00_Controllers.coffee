@@ -590,7 +590,16 @@ Controllers =
 		onResize loadTemplate
 
 	EventForm: ($scope) ->
-		$scope.etape = 1
+		$.extend $scope,
+			etape: 1
+			event:
+				author: {}
+			send: (event) ->
+				settings = data: event: $scope.event
+				Ajax.put '/api/move/add', settings, (data) ->
+					return
+				cancel event
+				return
 		return
 
 
