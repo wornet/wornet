@@ -51,6 +51,9 @@ module.exports = ->
 						PhotoPackage.photos[messageObj.message.photoId] = messageObj.message.token
 					when "deletePhoto"
 						PhotoPackage.delete messageObj.message.photoId
+					when "delPhoto"
+						delete PhotoPackage.photos[messageObj.message.photoId]
+						delete PhotoPackage.photosForCookieChecking[messageObj.message.photoId]
 					when "addHiddenSuggest"
 						if UserPackage.hiddenSuggests[messageObj.message.me]
 							UserPackage.hiddenSuggests[messageObj.message.me].push cesarRight messageObj.message.userHashedId
