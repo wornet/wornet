@@ -52,6 +52,12 @@ PhotoPackage =
 		if @restrictedAndAllowedToSee req, photoId
 			delete @photos[photoId]
 			delete @photosForCookieChecking[photoId]
+			redisClientEmitter.publish config.wornet.redis.defaultChannel,
+				JSON.stringify(
+					type: "delPhoto",
+					message:
+						photoId: photoId
+				)
 			deleteCookie req, photoId
 
 	publish: (req, photoId, statusId, lastSelectedAlbum = null, done) ->
