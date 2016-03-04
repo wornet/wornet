@@ -461,7 +461,7 @@ StatusPackage =
 				status.at.hashedId
 			else
 				null
-			(equals(status.author.hashedId, me) or equals(atHashedId, me) or (myFriendsId.contains(status.author.hashedId, equals) && (!status.at or myFriendsId.contains(atHashedId, equals))) or myFriendsId.contains atHashedId, equals)
+			(equals(status.author.hashedId, me) or (me and equals(atHashedId, me)) or (myFriendsId.contains(status.author.hashedId, equals) && (!status.at or myFriendsId.contains(atHashedId, equals))) or myFriendsId.contains atHashedId, equals)
 
 	getOriginalStatus: (status, done) ->
 		if !status.isAShare or !status.referencedStatus
