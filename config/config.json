@@ -314,6 +314,13 @@
             "displayPhotoTitle": false
         },
 
+        "move": {
+            "enabled": true,
+            "api": {
+                "enabled": true
+            }
+        },
+
         "onlyAuthoredByAFriend": false,
 
         "parseProxyUrl": false,

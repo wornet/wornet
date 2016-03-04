@@ -1,6 +1,6 @@
 'use strict'
 
-eventSchema = BaseSchema.extend
+eventSchema = LocationSchema.extend
 	user:
 		type: ObjectId
 		ref: 'UserSchema'
@@ -24,6 +24,35 @@ eventSchema = BaseSchema.extend
 	allDay:
 		type: Boolean
 		default: false
+	participantsLimit:
+		type: Number
+	author:
+		name:
+			type: String
+		type:
+			type: String
+			enum: [
+				null
+				""
+				"startup"
+				"person"
+				"association"
+				"business"
+			]
+	acceptMode:
+		type: String
+		enum: [
+			null,
+			"auto"
+			"manual"
+		]
+	country:
+		type: String
+	city:
+		type: ObjectId
+		ref: 'CitySchema'
+	address:
+		type: String
 	url: String
 ,
 	toObject:
