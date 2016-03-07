@@ -987,6 +987,10 @@ module.exports = (router) ->
 									warn err if err
 						CertificationAsk.create	certif, (err, certificationAsk) ->
 							warn err if err
+							email = config.wornet.admin.certifier
+							subject = s("Une nouvelle demande de certification est en attente.")
+							message = s("Un utilisateur vient de soumettre une demande de certification. Merci de la traiter.")
+							MailPackage.send email, subject, message
 							res.json()
 					else
 						res.serverError new PublicError s("Le justificatif n'existe pas.")
