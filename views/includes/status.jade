@@ -1,3 +1,5 @@
-.well.loading.loading-big-height.fit-to-bottom.macro(ng-controller="StatusCtrl")
-	include ../includes/status-form.jade
+.well.loading.loading-big-height.fit-to-bottom.macro.all-status-block(ng-controller="StatusCtrl" ng-init="userConnected=" + !!user)
+	.cb
+	if isMe || (isAFriend && profile.allowFriendPostOnMe)
+		include ../includes/status-form.jade
 	include ../includes/status-list.jade

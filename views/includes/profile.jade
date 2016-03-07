@@ -1,196 +1,249 @@
-.well.profile(ng-controller="ProfileCtrl")
-	.profile-edit(class=(edit ? "hidden" : null))
-		.profileError
-			if ! empty(friendAsked)
-				.alert.alert-success
-					=friendAsked
-		.photo-options
-			#profile-photo
-				img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view-src=profile.photo alt=profile.fullName)
-			if isMe && profile.photoId
-				.btn(ng-click="deletePhoto($event)")
-					span.long
-						=s("Supprimer ma photo")
-					span.short
-						=s("Supprimer")
-	.profile-edit(class=(edit ? null : "hidden"))
-		iframe(name="upload")
-		.photo-options
-			+form("/user/photo", "FILE")#profile-photo(target="upload")
-				.progress-radial: .overlay
-					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
-					.btn
-						+half('edit')
-						span.long
-							=s("Changer de photo")
-						span.short
-							=s("Changer")
-					input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
-	if isMe
-		a.profile-display.profile-edit-btn.aside(href="/user/profile/edit")
-			=s("Modifier mon profil")
-			| &nbsp;
-			+half('edit')
-		.profile-edit(class=(edit ? null : "hidden"))
-			+form("/user/profile/edit")
-				input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
-				mixin profileText(name)
-					label
-						span
-							=userTexts[name]
-						+formControl(name=name value=profile[name])&attributes(attributes)
-				mixin profileEnum(name)
-					label
-						span
-							=userTexts[name]
-						select.form-control(name=name autocomplete="off")
-							option(value="")
-								=userTexts.noDisplay
-							each status in profile.schema.path(name).enumValues
-								if status
-									option(selected=(profile[name] === status) value=status)
-										=userTexts[status]
-				+profileText("city")
-				+profileText("birthCity")
-				+profileText("job")
-				+profileText("jobPlace")(placeholder=s("Où travaillez-vous ?"))
-				+profileEnum("maritalStatus")
-				+profileEnum("loveInterest")
-				label
-					span
-						=s("Biographie")
-					textarea.form-control.counter(name="biography" maxlength=config.wornet.limits.biographyLength)=profile.biography
-				.btn-group
-					input(type="submit" value=s("Enregistrer")).btn.btn-primary
-				.btn-group
-					input(type="button" value=s("Annuler")).btn.cancel.profile-edit-btn
-					| &nbsp;
-	else if isAFriend
-		.aside
-			a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
-				=s("Discuter")
-				| &nbsp;
-				+half('comments')
-			a.block(ng-click="deleteFriend('" + profile.hashedId + "', '" + profile.fullName + "')")
-				=s("Retirer des amis")
-				| &nbsp;
-				+half('minus')
-	.profile-edit(class=(edit ? "hidden" : null))
-		h3.important
-			if (isAFriend || isMe) && profile.preRegistered()
-				+half('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
-				|&nbsp;
-			=strtoupper(profile.fullName)
-			if ! isMe && user && ! askedForFriend
-				if isAFriend
-					if config.wornet.bestFriends.enabled
-						- var isNormal = JSON.stringify(s("Vous serez uniquement notifié si {username} publie sur votre mur.", { username: profile.fullName }))
-						- var isBest = JSON.stringify(s("Vous serez notifié de toutes les publications de {username}.", { username: profile.fullName }))
-						a.inline-button(
-							ng-init="isABestFriend = " + isABestFriend
-							ng-click="isABestFriend = ! isABestFriend; $event.preventDefault()"
-							href="/user/friend/{{ isABestFriend ? 'best' : 'normal' }}/" + profile.hashedId
-							data-ajax
+- var init = "followed=" + JSON.stringify(amIAFollower) + ";"
+- init += "numberOfFriends=" + numberOfFriends + ";"
+- init += "numberOfFollowers=" + numberOfFollowers + ";"
+- init += "numberOfFollowing=" + numberOfFollowing + ";"
+.well.profile.loading(ng-controller="ProfileCtrl" ng-init=init)
+	.col-xs-11.col-sm-11
+		.profile-edit(class=(edit ? "hidden" : null))
+			.profileError
+				if ! empty(friendAsked)
+					.alert.alert-success
+						=friendAsked
+			.photo-options
+				#profile-photo
+					img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view-src=profile.photo alt=profile.fullName)
+				if isAFriend || isAPublicAccount
+					h6.profile-confidentiality
+						if isAPublicAccount
+							+glyph("globe-af")
+							| &nbsp;
+							=s("Profil public")
+						else
+							+glyph("lock")
+							| &nbsp;
+							=s("Profil privé")
+				if !isMe && user
+					if !isAFriend && isAPublicAccount && (!profile.certifiedAccount || (profile.certifiedAccount && user.certifiedAccount))
+						input.profile-btn.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
+							href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 							data-target=".profileError"
 							data-click="success"
-							data-param0='{{ isABestFriend ? ' + isBest + ' : ' + isNormal + ' }}'
+							data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
+							data-ask-for-friend=profile.hashedId
+							style="display:" + (myfriendAskPending?"none":"inline-block")
+							value="Ajouter" 
+							type="button"
 						)
-							+half("star{{ isABestFriend ? '' : '-empty' }}")
-				else
-					br
-					a.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
-						href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
-						data-target=".profileError"
-						data-click="success"
-						data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
-						data-ask-for-friend=profile.hashedId
-						style="display:" + (myfriendAskPending?"none":"inline-block")
-					)
-						+half('user')
-						=' '+strtoupper(s("Ajouter à la liste d'amis"))
-					a.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
-						data-target=".profileError"
-						data-click="success"
-						data-param0=s("Demande annulée")
-						data-remove-friend-ask=profile.hashedId
-						style="display:" + (!myfriendAskPending?"none":"inline-block")
-					)
-						+half('remove')
-						=' '+strtoupper(s("Annuler la demande"))
-		if isAFriend || isMe
-			if ! profile.birthDate || profile.maskBirthDate
-				if profile.birthCity
-					h5
-						- var infos = { date: profile.birthDate.humanDate() }
-						if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
-							- infos.city = profile.birthCity.substr(3)
-							=s("Né au {city}", infos)
-						else
-							- infos.city = profile.birthCity
-							=s("Né à {city}", infos)
-			else
-				h5
-					- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
+						input.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
+							data-target=".profileError"
+							data-click="success"
+							data-param0=s("Demande annulée")
+							data-remove-friend-ask=profile.hashedId
+							style="display:" + (!myfriendAskPending?"none":"inline-block")
+							value="Annuler la demande" 
+							type="button"
+						)
+					if isAPublicAccount && !isAFriend
+						input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value="Suivre" type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
+						input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value="Ne plus suivre" type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
+		.profile-edit(class=(edit ? null : "hidden"))
+			iframe(name="upload")
+			.photo-options
+				+form("/user/photo", "FILE")#profile-photo(target="upload")
+					.progress-radial: .overlay
+						img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
+						.btn
+							+half('edit')
+							span.long
+								=s("Changer de photo")
+							span.short
+								=s("Changer")
+						input.upload(type="file" accept="image/*" capture="camera" data-toggle="tooltip" data-placement="top" title=s("Votre photo") ng-model="user.photo" name="photo")
+		if isMe
+			.profile-edit(class=(edit ? null : "hidden"))
+				+form("/user/profile/edit")
+					input(type="hidden" id="uploadedPhotoId" name="photoId" value=profile.photoId)
+					mixin profileText(name)
+						label
+							span
+								=userTexts[name]
+							+formControl(name=name value=profile[name])&attributes(attributes)
+					mixin profileEnum(name)
+						label
+							span
+								=userTexts[name]
+							select.form-control(name=name autocomplete="off")
+								option(value="")
+									=userTexts.noDisplay
+								each status in profile.schema.path(name).enumValues
+									if status
+										option(selected=(profile[name] === status) value=status)
+											=userTexts[status]
+					+profileText("city")
+					+profileText("birthCity")
+					+profileText("job")
+					+profileText("jobPlace")(placeholder=s("Où travaillez-vous ?"))
+					+profileEnum("maritalStatus")
+					+profileEnum("loveInterest")
+					label
+						span
+							=s("Biographie")
+						textarea.form-control.counter(name="biography" maxlength=config.wornet.limits.biographyLength)=profile.biography
+					.btn-group
+						input(type="submit" value=s("Enregistrer")).btn.btn-primary
+					.btn-group
+						input(type="button" value=s("Annuler")).btn.cancel.profile-edit-btn
+						| &nbsp;	
+		.profile-edit(class=(edit ? "hidden" : null))
+			h3.important
+				if (isAFriend || isMe) && profile.preRegistered()
+					+half('certificate')(data-toggle="tooltip" data-placement="top" title=s("Je me suis pré-inscrit"))
+					|&nbsp;
+				=strtoupper(profile.fullName)
+				if profile.certifiedAccount
+					| &nbsp;
+					+glyph('circle-ok').certification-glyph
+				if ! isMe && user && ! askedForFriend
+					if isAFriend
+						if config.wornet.bestFriends.enabled
+							- var isNormal = JSON.stringify(s("Vous serez uniquement notifié si {username} publie sur votre mur.", { username: profile.fullName }))
+							- var isBest = JSON.stringify(s("Vous serez notifié de toutes les publications de {username}.", { username: profile.fullName }))
+							a.inline-button(
+								ng-init="isABestFriend = " + isABestFriend
+								ng-click="isABestFriend = ! isABestFriend; $event.preventDefault()"
+								href="/user/friend/{{ isABestFriend ? 'best' : 'normal' }}/" + profile.hashedId
+								data-ajax
+								data-target=".profileError"
+								data-click="success"
+								data-param0='{{ isABestFriend ? ' + isBest + ' : ' + isNormal + ' }}'
+							)
+								+half("star{{ isABestFriend ? '' : '-empty' }}")
+					else 
+						if !isAFriend && !isAPublicAccount
+							br
+							a.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
+								href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
+								data-target=".profileError"
+								data-click="success"
+								data-param0=s("Demande envoyée à {username}", { username: profile.fullName })
+								data-ask-for-friend=profile.hashedId
+								style="display:" + (myfriendAskPending?"none":"inline-block")
+							)
+								+half('user')
+								=' '+strtoupper(s("Ajouter à la liste d'amis"))
+							a.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
+								data-target=".profileError"
+								data-click="success"
+								data-param0=s("Demande annulée")
+								data-remove-friend-ask=profile.hashedId
+								style="display:" + (!myfriendAskPending?"none":"inline-block")
+							)
+								+half('remove')
+								=' '+strtoupper(s("Annuler la demande"))
+			if isAFriend || isMe || isAPublicAccount
+				if ! profile.birthDate || profile.maskBirthDate
 					if profile.birthCity
-						if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
-							- infos.city = profile.birthCity.substr(3)
-							=s("Né le {date} ({age} an) au {city}|Né le {date} ({age} ans) au {city}", infos, profile.age)
-						else
-							- infos.city = profile.birthCity
-							=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
-					else
-						=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
-			.user-points
-				h5
-					if !profile.points
-						- profile.points=0
-					span.points
-						!=s("{points} point|{points} points", { points: jd('b ' + profile.points) }, profile.points)
-			.about-user
-				if profile.city
-					.col-xs-12.col-sm-6
-						p
-							+half('home')
-							if profile.city.toLowerCase().substr(0, 3) === 'le '
-								=s("Habite au {city}", { city: profile.city.substr(3) })
-							else
-								=s("Habite à {city}", { city: profile.city })
-				if profile.maritalStatus
-					.col-xs-12.col-sm-6
-						p
-							+half('user')
-							=colon(userTexts.maritalStatus)
-							=userTexts[profile.maritalStatus]
-				if profile.job
-					.col-xs-12.col-sm-6
-						p
-							+half('glyph-briefcase')
-							if profile.jobPlace
-								=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
-							else
-								=s("{job}", { job: profile.job })
-				else if profile.jobPlace
-					.col-xs-12.col-sm-6
-						p
-							+half('glyph-briefcase')
-							=s("Travail à {place}", { place: profile.jobPlace })
-				
-				if profile.loveInterest
-					.col-xs-12.col-sm-6
-						p
-							+half('heart')
-							=userTexts.loveInterest
-							| 
-							=userTexts[profile.loveInterest]
-				if profile.biography
-					.col-sm-12
 						h5
-							=userTexts.biography
-						p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
-							=profile.biography
-			if user.sex == "default" && isMe
-				.col-xs-12.alert.alert-info.missing-sex: span
-					=s("Vous n'avez pas renseigné votre sexe, vous pouvez le faire ")	
-					a(href="/user/settings")
-						=s("dès à présent !")
-	.cb
+							- var infos = { date: profile.birthDate.humanDate() }
+							if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
+								- infos.city = profile.birthCity.substr(3)
+								=s("Né au {city}", infos)
+							else
+								- infos.city = profile.birthCity
+								=s("Né à {city}", infos)
+				else
+					h5
+						- var infos = { date: profile.birthDate.humanDate(), age: profile.age }
+						if profile.birthCity
+							if profile.birthCity.toLowerCase().substr(0, 3) === 'le '
+								- infos.city = profile.birthCity.substr(3)
+								=s("Né le {date} ({age} an) au {city}|Né le {date} ({age} ans) au {city}", infos, profile.age)
+							else
+								- infos.city = profile.birthCity
+								=s("Né le {date} ({age} an) à {city}|Né le {date} ({age} ans) à {city}", infos, profile.age)
+						else
+							=s("Né le {date} ({age} an)|Né le {date} ({age} ans)", infos, profile.age)
+				.user-points
+					h5
+						if !profile.points
+							- profile.points=0
+						span.points
+							!=s("{points} point|{points} points", { points: jd('b ' + profile.points) }, profile.points)
+				.about-user
+					if profile.city
+						.col-xs-12.col-sm-6
+							p
+								+half('home')
+								if profile.city.toLowerCase().substr(0, 3) === 'le '
+									=s("Habite au {city}", { city: profile.city.substr(3) })
+								else
+									=s("Habite à {city}", { city: profile.city })
+					if profile.maritalStatus
+						.col-xs-12.col-sm-6
+							p
+								+half('user')
+								=colon(userTexts.maritalStatus)
+								=userTexts[profile.maritalStatus]
+					if profile.job
+						.col-xs-12.col-sm-6
+							p
+								+half('glyph-briefcase')
+								if profile.jobPlace
+									=s("{job} à {place}", { job: profile.job, place: profile.jobPlace })
+								else
+									=s("{job}", { job: profile.job })
+					else if profile.jobPlace
+						.col-xs-12.col-sm-6
+							p
+								+half('glyph-briefcase')
+								=s("Travail à {place}", { place: profile.jobPlace })
+					
+					if profile.loveInterest
+						.col-xs-12.col-sm-6
+							p
+								+half('heart')
+								=userTexts.loveInterest
+								| 
+								=userTexts[profile.loveInterest]
+					if profile.biography
+						.col-sm-12
+							h5
+								=userTexts.biography
+							p.biography(ng-init="biography = " + JSON.stringify(profile.biography) ng-bind-html="biography | smilies")
+								=profile.biography
+				if  isMe && user.sex == "default"
+					.col-xs-12.alert.alert-info.missing-sex: span
+						=s("Vous n'avez pas renseigné votre sexe, vous pouvez le faire ")	
+						a(href="/user/settings")
+							=s("dès à présent !")
+		.cb
+	.col-xs-1.col-sm-1.action-col
+		if isMe
+			a.profile-display.profile-edit-btn.aside
+				+half('edit')
+			a.profile-photos-btn.aside(href="/user/albums/" + profile.hashedId)
+				+glyph('picture')
+		else 
+			if isAFriend
+				.aside
+					a.block(ng-click="chatWith(" + JSON.stringify(profile.publicInformations()) + ")")
+						+glyph('chat')
+					a.block(ng-click="deleteFriend('" + profile.hashedId + "', '" + profile.fullName + "')")
+						+glyph('circle-minus')
+	if isAPublicAccount
+		.col-sm-12.profile-banner.cb
+			.col-xs-4.col-sm-4.right-separator(ng-click="displayFriendList('" + profile.hashedId + "')")
+				p
+					=s("AMI|AMIS", {}, numberOfFriends)
+				p
+					=s("{number}", { number: numberOfFriends })
+			.col-xs-4.col-sm-4.right-separator(ng-click="displayFollowerList('" + profile.hashedId + "')")
+				p
+					=s("ABONNE|ABONNES", {}, numberOfFollowers)
+				p.numberOfFollowers
+					=s("{number}", { number: numberOfFollowers })
+			.col-xs-4.col-sm-4(ng-click="displayFollowingList('" + profile.hashedId + "')")
+				p
+					=s("ABONNEMENT|ABONNEMENTS", {}, numberOfFollowing)
+				p
+					=s("{number}", { number: numberOfFollowing })

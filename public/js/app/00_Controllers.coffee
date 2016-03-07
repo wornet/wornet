@@ -1,5 +1,59 @@
 Controllers =
 
+	AdminCertification: ($scope) ->
+		$scope.removeCertification = (certifId) ->
+			Ajax.get '/admin/certification/remove/' + certifId, ->
+				$('.certification-table tr[data-certif-id="' + certifId + '"]').slideUp ->
+					$(@).remove()
+					return
+
+		$scope.acceptCertification = (certifId) ->
+			Ajax.get '/admin/certification/accept/' + certifId, (result) ->
+				if result.err
+					serverError result.err.msg
+				$('.certification-table tr[data-certif-id="' + certifId + '"]').slideUp ->
+					$(@).remove()
+					return
+
+
+		$scope.certification = {}
+		$scope.loadCertif = (certifId) ->
+			if $scope.certificationPending
+				for certif in $scope.certificationPending
+					if certif._id == certifId
+						$('.user-type').val(certif.userType).prop 'disabled', true
+						toggleForm()
+						$('.firstName').val(certif.userFirstName).prop 'disabled', true
+						$('.lastName').val(certif.userLastName).prop 'disabled', true
+						$('.telNumber').val(certif.userTelephone).prop 'disabled', true
+						$('.email').val(certif.userEmail).prop 'disabled', true
+						$('.businessName').val(certif.businessName).prop 'disabled', true
+						$('.message').val(certif.message).prop 'disabled', true
+						$('.proof').remove()
+						$('.proof-visu')
+							.prop 'href', certif.proof.src
+							.html certif.proof.name
+							.show()
+						$('.modal-footer .btn').hide()
+						$('#certification').modal()
+						return
+
+		toggleForm = ->
+			if $("select.user-type").val() is "particular"
+				$(".entreprise").hide()
+				$(".particulier").show()
+			else
+				$(".entreprise").show()
+				$(".particulier").hide()
+				if $("select.user-type").val() is "business"
+					$(".entreprise-only").show()
+					$(".association-only").hide()
+				else
+					$(".entreprise-only").hide()
+					$(".association-only").show()
+			return
+
+		return
 	Album: ($scope) ->
 
 		$scope.update = (album) ->
@@ -241,6 +295,43 @@ Controllers =
 
 		return
 
+	Certification: ($scope) ->
+		s = textReplacements
+		$scope.send = ->
+			$('#certification-form').submit()
+			return
+
+		$scope.toggleForm = ->
+			if $("select.user-type").val() is "particular"
+				$(".entreprise").hide()
+				$(".particulier").show()
+			else
+				$(".entreprise").show()
+				$(".particulier").hide()
+				if $("select.user-type").val() is "business"
+					$(".entreprise-only").show()
+					$(".association-only").hide()
+				else
+					$(".entreprise-only").hide()
+					$(".association-only").show()
+			return
+
+
+		$scope.certification = {}
+		$scope.initModal = ->
+			$scope.certification.userType = "particular"
+			$scope.certification.name = {}
+			$scope.certification.firstName = $('input[name="name.first"]:last').val()
+			$scope.certification.lastName = $('input[name="name.last"]:last').val()
+			$scope.certification.email = $('input[name="email"]:last').val()
+			refreshScope $scope
+			return
+
+		$scope.initModal()
+		$scope.toggleForm()
+
+		return
+
 	Chat: ($scope, $sce) ->
 		$('#chat').show()
 		chats = getChats()
@@ -392,7 +483,7 @@ Controllers =
 
 		$scope.send = (message, id) ->
 			if message.content and message.content.length
-				content = richText $scope, message.content, true
+				content = richText $scope, message.content, true, true
 				chatData =
 					date: new Date
 					content: content
@@ -499,7 +590,110 @@ Controllers =
 		onResize loadTemplate
 
 	EventForm: ($scope) ->
-		$scope.etape = 1
+		$.extend $scope,
+			etape: 1
+			event:
+				author: {}
+			send: (event) ->
+				settings = data: event: $scope.event
+				Ajax.put '/api/move/add', settings, (data) ->
+					return
+				cancel event
+				return
+		return
+
+
+	FollowerList: ($scope) ->
+		$scope.followers = {}
+		window.followerListScope = $scope
+		$scope.lastfollowerLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/follower/list'
+
+		$scope.followerRemaining = ->
+			($scope.followers || []).length > 0 and $scope.lastfollowerLoadedCount > 0 and $scope.lastfollowerLoadedCount <= getCachedData 'followersPageCount'
+
+		$scope.getfollowersOffset = ->
+			followersList = $scope.followers || []
+			if followersList.length
+				followersList[followersList.length - 1].hashedId
+			else
+				null
+
+		$scope.loadfollowersList = (chunk) ->
+			$scope.lastfollowerLoadedCount = chunk.followers.length
+			for follower in chunk.followers
+				$scope.followers.push follower
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFollowerList = window.displayFollowerList
+
+		return
+
+	FollowingList: ($scope) ->
+		$scope.followings = {}
+		window.followingListScope = $scope
+		$scope.lastfollowingLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/following/list'
+
+		$scope.followingRemaining = ->
+			($scope.followings || []).length > 0 and $scope.lastfollowingLoadedCount > 0 and $scope.lastfollowingLoadedCount <= getCachedData 'followingsPageCount'
+
+		$scope.getfollowingsOffset = ->
+			followingsList = $scope.followings || []
+			if followingsList.length
+				followingsList[followingsList.length - 1].hashedId
+			else
+				null
+
+		$scope.loadfollowingsList = (chunk) ->
+			$scope.lastfollowingLoadedCount = chunk.followings.length
+			for following in chunk.followings
+				$scope.followings.push following
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFollowingList = window.displayFollowingList
+
+		return
+
+	FriendList: ($scope) ->
+		$scope.friends = {}
+		window.friendListScope = $scope
+		$scope.lastfriendLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/friend/list'
+
+		$scope.friendRemaining = ->
+			($scope.friends || []).length > 0 and $scope.lastfriendLoadedCount > 0 and $scope.lastfriendLoadedCount <= getCachedData 'friendsPageCount'
+
+		$scope.getfriendsOffset = ->
+			friendsList = $scope.friends || []
+			if friendsList.length
+				friendsList[friendsList.length - 1].idFriend
+			else
+				null
+
+		$scope.loadfriendsList = (chunk) ->
+			$scope.lastfriendLoadedCount = chunk.friends.length
+			for friend in chunk.friends
+				$scope.friends.push friend
+			refreshScope $scope
+
+		$scope.getAdditionnalData = (hashedId) ->
+			userHashedId: hashedId
+
+		$scope.displayFriendList = window.displayFriendList
+
 		return
 
 	Head: ($scope) ->
@@ -525,7 +719,7 @@ Controllers =
 
 		$scope.inviteFacebook = ->
 			post = FACEBOOK_POST_LIST[Math.floor Math.random() * FACEBOOK_POST_LIST.length]
-			infoDialog s("Inviter vos amis"), "<textarea id='facebookPostMessage'>" + post.message + "</textarea><br>" + s("Voulez-vous poster un statut sur votre mur Facebook pour inciter vos amis à vous rejoindre?"), (ok) ->
+			infoDialog s("Inviter vos amis"), "<p>Votre message Facebook : </p><textarea id='facebookPostMessage' placeholder='" + s('(Facultatif)') + "'></textarea><br><span class='facebookExemple'>" + s('Par exemple: ') + post.message + "</span>", (ok) ->
 				if ok
 					post.message = $('#facebookPostMessage').val()
 					FB.login ->
@@ -956,6 +1150,17 @@ Controllers =
 				$scope.notifications[id] = notification
 				refreshScope $scope
 				delay 1, refreshPill
+			else if id and /_count$/.test notification[2]
+				$('.notifications li[data-id]').each (idElem, elem) ->
+					$elem = $ elem
+					if $elem.data('id') is id
+						saveDate = $elem.find('i.mobile-notification-date, div.notification-date')
+						$elem.find('a:first').html notification[1]
+						$elem.removeClass 'read'
+						delay 1, refreshPill
+						saveDate.each (idElem, elem) ->
+							$elem.find('a:first').append elem
+
 			return
 
 		$scope.$on 'setNotifications', (e, notifications) ->
@@ -976,6 +1181,10 @@ Controllers =
 				liUnread.addClass('read')
 				refreshPill()
 
+			return
+
+		$scope.displayFollowerList = (hashedId, fromNotice) ->
+			window.displayFollowerList(hashedId, fromNotice)
 			return
 		return
 
@@ -1085,6 +1294,73 @@ Controllers =
 					return
 			return
 
+		$scope.follow = (hashedId, follow = true) ->
+			if hashedId
+				$('.follow').prop 'disabled', true
+				$('.unfollow').prop 'disabled', true
+				Ajax[if follow then "put" else "delete"] "user/profile/follow",
+					data:
+						hashedId: hashedId
+					success: (res) ->
+						$(if follow then '.follow' else '.unfollow').hide()
+						$(if !follow then '.follow' else '.unfollow').show()
+						$('.follow').prop 'disabled', false
+						$('.unfollow').prop 'disabled', false
+						if follow
+							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) + 1
+						else
+							$('p.numberOfFollowers').html parseInt($('p.numberOfFollowers').html()) - 1
+
+						for status in statusScope.recentStatus
+							if status.at and status.at.hashedId is hashedId or status.author and status.author.hashedId is hashedId
+								status.isPlaceFollowed = follow
+						refreshScope statusScope
+						return
+
+		$scope.unfollow = (id) ->
+			$scope.follow id, false
+
+		lock = false
+		window.displayFriendList = $scope.displayFriendList = (hashedId) ->
+			if !lock and $scope.numberOfFriends
+				lock = true
+				Ajax.post '/user/friend/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.friendListScope.lastfriendLoadedCount = data.friends.length
+						window.friendListScope.friends = data.friends
+						refreshScope window.friendListScope
+						$('#friend-list').modal 'show'
+						lock = false
+						return
+			return
+		window.displayFollowerList = $scope.displayFollowerList = (hashedId, fromNotice = false) ->
+			if !lock and ($scope.numberOfFollowers or fromNotice)
+				lock = true
+				Ajax.post '/user/follower/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.followerListScope.lastfollowerLoadedCount = data.followers.length
+						window.followerListScope.followers = data.followers
+						refreshScope window.followerListScope
+						$('#follower-list').modal 'show'
+						lock = false
+						return
+			return
+		window.displayFollowingList = $scope.displayFollowingList = (hashedId) ->
+			if !lock and $scope.numberOfFollowing
+				lock = true
+				Ajax.post '/user/following/list',
+					data: userHashedId: hashedId
+					success: (data) ->
+						window.followingListScope.lastfollowingLoadedCount = data.followings.length
+						window.followingListScope.followings = data.followings
+						refreshScope window.followingListScope
+						$('#following-list').modal 'show'
+						lock = false
+						return
+			return
+		$scope.isMobile = window.isMobile()
 		return
 
 	Search: ($scope) ->
@@ -1096,7 +1372,13 @@ Controllers =
 			return
 
 		$scope.canBeAddedAsAFriend = (user) ->
-			! user.isAFriend and ! user.askedForFriend and ! (user.hashedId in askedForFriends)
+			! user.isAFriend and ! user.askedForFriend and ! (user.hashedId in askedForFriends) and user.accountConfidentiality == "private"
+
+		$scope.canBeFollowed = (user) ->
+			user.accountConfidentiality == "public" and ! user.isAFollowing and ! user.isAFriend
+
+		$scope.canBeUnfollowed = (user) ->
+			user.accountConfidentiality == "public" and user.isAFollowing and ! user.isAFriend
 
 		$scope.chatWith = (user) ->
 			chatService.chatWith [objectResolve user]
@@ -1142,6 +1424,76 @@ Controllers =
 				delay 1, ->
 					$('#search').show()
 
+		return
+
+	Settings: ($scope) ->
+
+		s = textReplacements
+		urlPattern = "https://www.wornet.fr/"
+		$scope.generateURLVisu = ->
+			$('#urlVisual').html urlPattern + $('#uniqueURLID').val().toLowerCase()
+			return
+
+		validFormat = (id) ->
+			/^[a-z0-9_.]*$/.test id
+
+		$scope.checkURLID = ->
+			urlId = $('#uniqueURLID').val().toLowerCase()
+			if urlId and validFormat urlId
+				Ajax.get '/user/checkURLID/' + urlId, (data) ->
+					if data.err and data.err is "same"
+						$('#urlIdDisponibility').html s("C'est vous !")
+						$('#urlIdDisponibility').removeClass "red"
+						$('#urlIdDisponibility').addClass "green"
+					else if data.isAvailable
+						$('#urlIdDisponibility').html s("Disponible !")
+						$('#urlIdDisponibility').removeClass "red"
+						$('#urlIdDisponibility').addClass "green"
+					else
+						$('#urlIdDisponibility').html s("Non disponible !")
+						$('#urlIdDisponibility').removeClass "green"
+						$('#urlIdDisponibility').addClass "red"
+			else
+				$('#urlIdDisponibility').html s("Caractères acceptés : lettres minuscules non accentuées, chiffres, points et undescores")
+				$('#urlIdDisponibility').removeClass "green"
+				$('#urlIdDisponibility').addClass "red"
+			return
+
+		$scope.generateURLVisu()
+
+		if window.isMobile() and $('#shutter').css("width") isnt "0px"
+			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+			$('#directives-calendar > .well').removeClass 'col-xs-9'
+			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+
+		return
+
+	ShareList: ($scope) ->
+		$scope.sharers = {}
+		window.shareListScope = $scope
+		$scope.lastsharersLoadedCount = null
+
+		$scope.getLoadUrl = ->
+			'/user/share/list'
+
+		$scope.sharersRemaining = ->
+			($scope.sharers || []).length > 0 and $scope.lastsharersLoadedCount > 0 and $scope.lastsharersLoadedCount <= getCachedData 'sharersPageCount'
+
+		$scope.getsharersOffset = ->
+			sharersList = $scope.sharers || []
+			if sharersList.length
+				sharersList[sharersList.length - 1].id
+			else
+				null
+
+		$scope.loadsharersList = (chunk) ->
+			$scope.lastsharersLoadedCount = chunk.sharers.length
+			for sharer in chunk.sharers
+				$scope.sharers.push sharer
+			refreshScope $scope
+
+		$scope.getAdditionnalData = ->
+			status: $scope.status
 		return
 
 	SigninSecondStep: ($scope) ->
@@ -1193,7 +1545,7 @@ Controllers =
 									if media and media.id is data.id
 										$scope.medias[key].splice index, 1
 								break
-						$('.tab .medias-uploaded img[src="' + data.src + '"]').parent().remove()
+						$('.status-form .status-images .image-box img[src="' + data.src + '"]').parent().remove()
 					else
 						location.reload()
 					hideLoader()
@@ -1234,7 +1586,10 @@ Controllers =
 							@statusId = status._id
 							@concernMe = status.concernMe
 					status.content = richText $scope, status.content
-					status.isMine = isMe(status.author.hashedId)
+					status.isMine = if !status.isAShare
+						isMe(status.author.hashedId)
+					else
+						false
 					status.nbComment = 0
 					status.nbLike ||= 0
 					status
@@ -1252,7 +1607,13 @@ Controllers =
 				lastStatusLoadedCount = chunk.length
 				refreshScope $scope
 				if getCachedData 'commentsEnabled'
-					statusIds = (status._id for status in $scope.recentStatus when ! status.comments)
+					statusIds = []
+					for status in $scope.recentStatus
+						if ! status.comments
+							statusIds.push if status.isAShare and status.referencedStatus
+								status.referencedStatus
+							else
+								status._id
 					if statusIds.length
 						delay 1, ->
 							Ajax.bigGet 'user/comment',
@@ -1261,13 +1622,19 @@ Controllers =
 								success: (data) ->
 									if data.commentList
 										$scope.recentStatus.map (status) ->
-											if data.commentList[status._id]
-												for comment in data.commentList[status._id]
-													comment.content = richText $scope, comment.content, true, false
-												status.comments = data.commentList[status._id]
-												status.nbComment = data.commentList[status._id].length
+											idToTest = if status.isAShare
+												status.referencedStatus
 											else
-												status.nbComment = 0
+												status._id
+											if data.commentList[idToTest]
+												for comment in data.commentList[idToTest]
+													comment.content = richText $scope, comment.content, true, false
+												status.comments = data.commentList[idToTest]
+												status.nbComment = data.commentList[idToTest].length
+											else
+												#to prevent 0 on scroll
+												if !status.nbComment
+													status.nbComment = 0
 											status
 										refreshScope $scope
 									return
@@ -1292,6 +1659,11 @@ Controllers =
 				err = data.err || null
 				if data.albums
 					albums = removeDeprecatedAlbums( data.withAlbums || data.albums )
+					albums.sort (a, b) ->
+						if a._id is getData 'photoUploadAlbumId'
+							-1
+						else
+							1
 					$scope.albums = albums
 					refreshScope $scope
 					if window.refreshMediaAlbums
@@ -1321,34 +1693,42 @@ Controllers =
 			$($event.target)
 				.parents('ul.dropdown-menu:first').trigger 'click'
 			status.reported = true
-			Ajax.get '/report/' + status._id
+			Ajax.get '/report/' + status._id, ->
+				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s "C'est fait"
 			return
 
 		$scope.sharedAlbumDefaultName = s("Publications d'amis")
 		temporarySharedAlbumId = null
 		at = getData 'at'
 		$scope.onMe = !at or at is getData 'me'
+		$scope.photoUploadAlbumId = getData 'photoUploadAlbumId'
+
 		$scope.containsMedias = (status) ->
 			status.containsMedias = true
 			initMedias()
-			if $scope.onMe
-				$scope.media.step = null
-			else
+			if !$scope.onMe
 				sharedAlbumId = getData('sharedAlbumId') || temporarySharedAlbumId
 				if sharedAlbumId
 					Ajax.get 'user/album/one/' + sharedAlbumId, (data) ->
-						$scope.selectAlbum data.album
+						$scope.selectAlbum data.album._id
 						refreshScope $scope
 				else
 					$scope.createAlbum {name: $scope.sharedAlbumDefaultName, description: ''}, at
-				$scope.media.step = "add"
+					$scope.selectAlbum $('#album-select').val()
+			else
+				$scope.selectAlbum $('#album-select').val()
 			return
 
-		$scope.selectAlbum = (album) ->
-			$scope.currentAlbum = $.extend {}, album
-			initMedias()
-			$scope.media.step = 'add'
-			loadNewIFrames()
+
+		$scope.selectAlbum = (albumId) ->
+			$scope.status.newAlbum = if albumId is "new"
+				true
+			else
+				false
+			$scope.currentAlbum = $.extend {}, _id: albumId
+			$scope.status.lastSelectedAlbum = _id: albumId
+			# initMedias()
+			# loadNewIFrames()
 			return
 
 		$scope.createAlbum = (album, at) ->
@@ -1360,7 +1740,7 @@ Controllers =
 				success: (data) ->
 					if at
 						temporarySharedAlbumId = data.album._id
-			$scope.selectAlbum album
+						$scope.selectAlbum data.album._id
 			album =
 				name: ''
 				description: ''
@@ -1377,21 +1757,36 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			scanAllLinks $scope, status.content || ''
-			Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),
-				data:
+			if status.content || $scope.medias.images.length
+				scanAllLinks $scope, status.content || ''
+				data = data:
 					status: status
 					at: at
 					medias: $scope.medias || null
-				success: (data) ->
-					$('.points').trigger 'updatePoints', [data.newStatus, true]
-					setRecentStatus data, false
-					if window.refreshMediaAlbums
-						window.refreshMediaAlbums()
-			status.content = ""
-			initMedias()
+				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
+					$.extend data.data,
+						album:
+							name: $("#album-name").val()
+							description: $("#album-description").val()
+				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
+					success: (data) ->
+						$('.points').trigger 'updatePoints', [data.newStatus, true]
+						setRecentStatus data, false
+						if window.refreshMediaAlbums
+							window.refreshMediaAlbums()
+				resetStatus()
 
 			return
+
+		resetStatus = ->
+			$scope.status.content = ""
+			$scope.status.containsMedias = false
+			$scope.status.newAlbum = false
+			$("#album-name").val("")
+			$("#album-description").val("")
+			initMedias()
+			refreshScope $scope
+
 
 		updateCommentList = (data) ->
 			if data.commentList
@@ -1495,17 +1890,41 @@ Controllers =
 					$('[data-id="'+status._id+'"] .btn-action-plus-w').removeAttr 'disabled'
 					true
 
-
-		$scope.nbLikeText = (status) ->
-			s("{nbLike} personne aime ça.|{nbLike} personnes aiment ça.", { nbLike: status.nbLike }, status.nbLike)
-
 		$scope.nbCommentText = (status) ->
-			s("{nbComm} commentaire|{nbComm} commentaires", { nbComm: status.nbComment }, status.nbComment)
+			s("Commentaire|Commentaires", null, status.nbComment)
+
+		$scope.nbShareText = (status) ->
+			s("Partage|Partages", null, status.nbShare)
+
+		$scope.isShareable = (status) ->
+			conf = if status.at
+				status.at.accountConfidentiality
+			else
+				status.author.accountConfidentiality
+			conf is 'public'
+
+		$scope.share = (status) ->
+			if $scope.isShareable status
+				Ajax.put '/user/status/share',
+					data:
+						statusId: status._id
+					success: (result) ->
+						status.nbShare++
+						refreshScope $scope
+						toastr.success s("Ce statut a été partagé sur votre profil."), s "C'est fait"
+
 
 		at = getCachedData 'at'
 
 		$scope.$on 'receiveStatus', (e, status) ->
 			status.content = richText $scope, status.content
+			me = getData 'me'
+			if status.author and status.author.hashedId is me
+				status.isMine = true
+				status.concernMe = true
+			else if status.at and status.at.hashedId is me
+				status.isMine = false
+				status.concernMe = true
 			$scope.recentStatus.uniqueUnshift '_id', status
 			refreshScope $scope
 			if status.images and status.author and status.images.length and status.author.hashedId is at
@@ -1517,11 +1936,10 @@ Controllers =
 			comment.content = richText $scope, comment.content, true, false
 			if !$scope.monoStatut
 				for status in $scope.recentStatus
-					if comment.attachedStatus and status._id is comment.attachedStatus
+					if comment.attachedStatus and (status._id is comment.attachedStatus or status.referencedStatus is comment.attachedStatus)
 						statusAt = status.at || status.author
 						comment.onMyWall = statusAt.hashedId is getData 'me'
 						(status.comments ||= []).uniquePush '_id', comment
-						break
 			else
 				statusAt = $scope.statusToDisplay.at || $scope.statusToDisplay.author
 				comment.onMyWall = statusAt.hashedId is getData 'me'
@@ -1532,6 +1950,7 @@ Controllers =
 		window.statusScope = $scope
 
 		$scope.status = containsMedias: false
+		$scope.status.newAlbum = false
 		$scope.media = step: null
 
 		select = if getSessionItem 'chats'
@@ -1554,7 +1973,10 @@ Controllers =
 
 		$scope.toggleCommentBlock = (status) ->
 			delay 1, ->
-				status.commentForm = !status.commentForm
+				if $scope.userConnected
+					status.commentForm = !status.commentForm
+				else
+					status.commentForm = false
 				status.commentList = !status.commentList
 				refreshScope statusScope
 				return
@@ -1572,7 +1994,7 @@ Controllers =
 
 		lock = false
 		$scope.displaylikerList = (status) ->
-			if !window.isMobile() and !lock and status.nbLike
+			if !lock and status.nbLike
 				lock = true
 				Ajax.post '/user/plusW/list',
 					data: status: status
@@ -1586,10 +2008,28 @@ Controllers =
 						return
 			return
 
-		Ajax.post $scope.getLoadUrl(),
-			data: {}
-			success: (data) ->
-				setRecentStatus data
+		lock = false
+		$scope.displaySharerList = (status) ->
+			if !lock and status.nbShare
+				lock = true
+				Ajax.post '/user/share/list',
+					data: status: status
+					success: (data) ->
+						window.shareListScope.lastsharersLoadedCount = data.sharers.length
+						window.shareListScope.sharers = data.sharers
+						window.shareListScope.status = status
+						refreshScope window.shareListScope
+						$('#sharer-list').modal 'show'
+						lock = false
+						return
+			return
+
+		delay 1, ->
+			if !$scope.monoStatut
+				Ajax.post $scope.getLoadUrl(),
+					data: {}
+					success: (data) ->
+						setRecentStatus data
 
 		refreshMediaAlbums()
 
@@ -1597,11 +2037,12 @@ Controllers =
 		$scope.monoStatut = false
 		$scope.setMonoStatut = (val, status) ->
 			$scope.monoStatut = val
-			status.content = richText $scope, status.content, false, false
+			status.content = richText $scope, status.content
+			status.nbComment = 0
 			$scope.statusToDisplay = status
 		delay 1, ->
 			if $scope.monoStatut
-				Ajax.get 'user/comment',
+				Ajax.bigGet 'user/comment',
 					data:
 						statusIds: [$scope.statusToDisplay._id]
 					success: (data) ->
@@ -1612,15 +2053,84 @@ Controllers =
 									status.nbComment = data.commentList[status._id].length
 								else
 									status.nbComment = 0
+								status.commentForm = status.commentList = !!(status.comments && status.comments.length)
+								if !$scope.userConnected
+									status.commentForm = false
 								status
 							refreshScope $scope
 						return
 				return
+			else
+				if $ '.album-select select option'
+					$('.album-select select option').each (id, elem) ->
+						if elem.value.indexOf('undefined') >= 0
+							$(elem).remove()
+		return
+
+	Suggests: ($scope) ->
+
+		treatSuggest = (userHashedId, urlToCall) ->
+			if userHashedId
+				alreadyPresent = []
+				newPublicUsers = []
+				for user in $scope.publicUsers
+					alreadyPresent.push user.hashedId
+					unless user.hashedId is userHashedId
+						newPublicUsers.push user
+				if $scope.nextSuggest
+					alreadyPresent.push $scope.nextSuggest.hashedId
+					newPublicUsers.push $scope.nextSuggest
+				$scope.publicUsers = newPublicUsers
+				refreshScope $scope
+				delay 1, ->
+					$('.follow-suggest, .hide-suggest').prop 'disabled', true
+					Ajax.put urlToCall,
+						data:
+							hashedId: userHashedId
+							returnSuggest: true
+							alreadyPresent: alreadyPresent
+						success: (res) ->
+							$('.follow-suggest, .hide-suggest').prop 'disabled', false
+							if res.newUser
+								$scope.nextSuggest = res.newUser
+							else
+								$scope.nextSuggest = null
+							refreshScope $scope
+
+							return
+
+
+		$scope.follow = (userHashedId) ->
+			treatSuggest userHashedId, "user/profile/follow"
+			return
+
+		$scope.hideSuggest = (userHashedId) ->
+			treatSuggest userHashedId, "user/profile/hideSuggest"
+			return
+
+		$scope.nextSuggest = null
+		delay 1, ->
+			if $scope.publicUsers.length > 1
+				$scope.nextSuggest = $scope.publicUsers.splice(-1)[0]
+			else
+				$scope.nextSuggest = null
+			refreshScope $scope
+
 		return
 
 	Welcome: ($scope) ->
 		removeSessionItem 'user'
-		$('iframe.player').removeClass('hidden')
 		$(window).trigger('resize')
+		$scope.send = ->
+			selectedUsers = []
+			$('input[type="checkbox"]').each (index, checkbox) ->
+				if $(checkbox).is(':checked')
+					selectedUsers.push $(checkbox).data 'user-hashedid'
+
+			Ajax.put '/user/welcome',
+				data:
+					usersHashedId: selectedUsers
+				success: ->
+					locationHref '/' + $scope.userURLId
 
 		return

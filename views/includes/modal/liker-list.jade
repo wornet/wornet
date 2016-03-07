@@ -7,7 +7,7 @@
 		.modal-body
 			.liker(ng-repeat='liker in likers' data-id='{{ liker.hashedId }}')
 				img(ng-src="{{ liker.thumb50 }}" alt="{{ liker.name.full }}" data-id="{{ liker.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ liker.name.full }}").thumb
-				a(ng-class="" href="/user/profile/{{ liker.hashedId }}/{{ liker.name.full | urlencode }}")
+				a(ng-class="" href="/{{ liker.uniqueURLID }}")
 					.user-name
 						| {{ liker.name.full }}
 				.user-points

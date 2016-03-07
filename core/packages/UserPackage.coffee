@@ -1,12 +1,16 @@
 'use strict'
 
 randomUsers = []
+randomPublicUsers = []
+randomPublicUsersLastRetreive = 0
 randomUsersLastRetreive = 0
 friendsCoupleCacheLifeTime = 1.hour
 
 UserPackage =
 
 	DEFAULT_SEARCH_LIMIT: 8
+
+	hiddenSuggests: {}
 
 	getIDCouple: (a, b) ->
 		a = strval a.id || a
@@ -15,9 +19,9 @@ UserPackage =
 		ids.sort()
 		ids.join '-'
 
-	areFriends: (a, b, calculate, done) ->
+	areFriends: (a, b, areFriends, done) ->
 		key = @getIDCouple a, b
-		cache 'friends-' + key, friendsCoupleCacheLifeTime, calculate, done
+		cache 'friends-' + key, areFriends, done
 
 	cacheFriends: (a, b, areFriends = true) ->
 		key = @getIDCouple a, b
@@ -25,7 +29,7 @@ UserPackage =
 			1
 		else
 			0
-		memSet 'friends-' + key, areFriends, friendsCoupleCacheLifeTime
+		memSet 'friends-' + key, areFriends
 
 	getAlbums: (userIds, done) ->
 		if 'function' is typeof limit
@@ -48,89 +52,93 @@ UserPackage =
 				done null, result
 
 	isMeOrAFriend: (req, hashedId) ->
-		if req.user.hashedId is hashedId
-			true
+		if req.user
+			if req.user.hashedId is hashedId
+				true
+			else
+				friendsHashedIds = req.user.friends.map (friend) ->
+					friend.hashedId
+				friendsHashedIds.contains hashedId
 		else
-			friendsHashedIds = req.user.friends.map (friend) ->
-				friend.hashedId
-			friendsHashedIds.contains hashedId
+			false
 
 	getAlbumsForMedias: (req, hashedId, all = false,  done) ->
-		if @isMeOrAFriend req, hashedId
-			idUser = cesarRight hashedId
-			UserAlbums.findOne
-				user: idUser
-			, (err, userAlbums) ->
-				if err
-					warn err
-				else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
-					done null, {}, 0
-				else
-					theLastFour = userAlbums.lastFour
+		isAPublicAccount req, hashedId, true, (err, publicAccount) =>
+			if @isMeOrAFriend(req, hashedId) or publicAccount
+				idUser = cesarRight hashedId
+				UserAlbums.findOne
+					user: idUser
+				, (err, userAlbums) ->
+					if err
+						warn err
+					else if !userAlbums or (userAlbums and (!userAlbums.lastFour or !userAlbums.lastFour.length))
+						done null, {}, 0
+					else
+						theLastFour = userAlbums.lastFour
 
-					Album.find
-						user: idUser
-					.sort lastAdd: 'desc'
-					.exec (err, allAlbums) ->
-						albumIdsList = allAlbums.column '_id'
-						Photo.aggregate [
-							$match:
-								status: "published"
-								album: $in: albumIdsList
-						,
-							$group:
-								_id: "$album"
-								count: $sum: 1
-						], (err, allData) ->
-							if err
-								warn err
-							else
-								# all non empty albums
-								allData = allData.filter (data) ->
-									data.count isnt 0
-								nbAlbumsNotEmpty = allData.length
-
-								tabAlbum = {}
-								photoIds = []
-								if !all
-									albums = allAlbums.filter (album) ->
-										theLastFour.contains album._id
-									# to keep the order
-									for id in theLastFour
-										for album in albums
-											if strval(id) is strval(album._id)
-												for data in allData
-													if equals data._id, album._id
-														albumObj = album.toObject()
-														albumObj.preview = []
-														albumObj.nbPhotos = data.count
-														photoIds = photoIds.concat album.preview
-														tabAlbum[album.id] = albumObj
-								else
-									for album in allAlbums
-										for data in allData
-											if equals data._id, album._id
-												albumObj = album.toObject()
-												albumObj.preview = []
-												albumObj.nbPhotos = data.count
-												photoIds = photoIds.concat album.preview
-												tabAlbum[album.id] = albumObj
-
-								Photo.find
-									_id: $in: photoIds
+						Album.find
+							user: idUser
+						.sort lastAdd: 'desc'
+						.exec (err, allAlbums) ->
+							albumIdsList = allAlbums.column '_id'
+							Photo.aggregate [
+								$match:
 									status: "published"
-								, (err, photos) ->
-									if err
-										warn err
+									album: $in: albumIdsList
+							,
+								$group:
+									_id: "$album"
+									count: $sum: 1
+							], (err, allData) ->
+								if err
+									warn err
+								else
+									# all non empty albums
+									allData = allData.filter (data) ->
+										data.count isnt 0
+									nbAlbumsNotEmpty = allData.length
+
+									tabAlbum = {}
+									photoIds = []
+									if !all
+										albums = allAlbums.filter (album) ->
+											theLastFour.contains album._id
+										# to keep the order
+										for id in theLastFour
+											for album in albums
+												if strval(id) is strval(album._id)
+													for data in allData
+														if equals data._id, album._id
+															albumObj = album.toObject()
+															albumObj.preview = []
+															albumObj.nbPhotos = data.count
+															photoIds = photoIds.concat album.preview
+															tabAlbum[album.id] = albumObj
 									else
-										for photo in photos
-											photoPath = photo.photo
-											photo = photo.toObject()
-											photo.src = photoPath
-											tabAlbum[photo.album].preview.push photo
-										done null, tabAlbum, nbAlbumsNotEmpty
-		else
-			res.serverError new PublicError s('Vous ne pouvez pas voir ces médias.')
+										for album in allAlbums
+											for data in allData
+												if equals data._id, album._id
+													albumObj = album.toObject()
+													albumObj.preview = []
+													albumObj.nbPhotos = data.count
+													photoIds = photoIds.concat album.preview
+													tabAlbum[album.id] = albumObj
+
+									Photo.find
+										_id: $in: photoIds
+										status: "published"
+									, (err, photos) ->
+										if err
+											warn err
+										else
+											for photo in photos
+												photoPath = photo.photo
+												photo = photo.toObject()
+												photo.src = photoPath
+												tabAlbum[photo.album].preview.push photo
+											done null, tabAlbum, nbAlbumsNotEmpty
+			else
+				done new PublicError s('Vous ne pouvez pas voir ces médias.')
 
 
 	search: ->
@@ -213,6 +221,31 @@ UserPackage =
 				req.session.friends = friends
 				req.session.friendAsks = friendAsks
 				done err
+
+	refreshFollows: (req, done) ->
+		if req.user
+			Follow.find
+				$or: [
+					follower: req.user.id
+				,
+					followed: req.user.id
+				]
+			, (err, allFollows) ->
+				unless err
+					iFollow = []
+					iamFollowed = []
+					for follow in allFollows
+						if equals follow.follower, req.user.id
+							iFollow.push follow.followed
+						else
+							iamFollowed.push follow.follower
+					req.user.followers = iamFollowed
+					req.user.followings = iFollow
+					req.session.followers = iamFollowed
+					req.session.followings = iFollow
+				done err
+		else
+			done null
 
 	askForFriend: (id, req, done) ->
 		if empty id
@@ -309,12 +342,12 @@ UserPackage =
 									req.addFriend user
 									dataWithUser = username: jd 'span.username ' + me.fullName
 									img = jd 'img(src="' + escape(me.thumb50) + '" alt="' + escape(me.fullName) + '" data-id="' + me.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(me.fullName) + '").thumb'
-									sendNotice me, friend.askedFrom, '<span data-href="/user/profile/' + me.hashedId + '/' + encodeURIComponent(me.name.full) + '">' +
+									sendNotice me, friend.askedFrom, '<span data-href="/' + me.uniqueURLID + '">' +
 										img + " " + s("{username} a accepté votre demande !", dataWithUser) +
 										'</span>'
 									dataWithUser = username: jd 'span.username ' + user.fullName
 									img = jd 'img(src="' + escape(user.thumb50) + '" alt="' + escape(user.fullName) + '" data-id="' + user.hashedId + '" data-toggle="tooltip" data-placement="top" title="' + escape(user.fullName) + '").thumb'
-									sendNotice user, friend.askedTo, '<span data-href="/user/profile/' + user.hashedId + '/' + encodeURIComponent(user.name.full) + '">' +
+									sendNotice user, friend.askedTo, '<span data-href="/' + user.uniqueURLID + '">' +
 										img + " " + s("Vous êtes dorénavant ami avec {username} !", dataWithUser) +
 										'</span>'
 									end()
@@ -340,75 +373,248 @@ UserPackage =
 				if users and users.length
 					randomUsers = users
 
+	randomPublicUsers: (myId, forceReload, userLimit, done) ->
+		if "function" is typeof forceReload
+			done = forceReload
+			forceReload = false
+			userLimit = config.wornet.limits.publicSuggestions + 1
+		if "function" is typeof userLimit
+			done = userLimit
+			userLimit = config.wornet.limits.publicSuggestions + 1
+		now = time()
+		if ( now - randomPublicUsersLastRetreive > 30.seconds ) or forceReload
+			randomPublicUsersLastRetreive = now
+			limit = limit: userLimit
+			Follow.find
+				follower: myId
+			, (err, follow) ->
+				warn err if err
+				followed = if follow
+					follow.column('followed')
+				else
+					[]
+				if myId
+					followed.push myId
+					exceptions = if UserPackage.hiddenSuggests[myId]
+						followed.merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+					else
+						followed.map strval
+				else
+					exceptions = []
+
+				where =
+					photoId: $ne: null
+					accountConfidentiality: "public"
+					certifiedAccount: true
+					_id: $nin: exceptions
+				User.findRandom where, {}, limit, (err, certifiedUsers) ->
+					warn err if err
+					if certifiedUsers and certifiedUsers.length
+						randomPublicUsers = certifiedUsers.map (user) ->
+							user.publicInformations()
+					else
+						randomPublicUsers = []
+						certifiedUsers = []
+					if certifiedUsers.length < userLimit
+						where =
+							photoId: $ne: null
+							accountConfidentiality: "public"
+							$or: [
+								certifiedAccount: $exists: false
+							,
+								certifiedAccount: null
+							,
+								certifiedAccount: false
+							]
+							_id: $nin: exceptions
+						limit = limit: ( userLimit - certifiedUsers.length )
+						User.findRandom where, {}, limit, (err, users) ->
+							if users and users.length
+								randomPublicUsers.merge users.map (user) ->
+									user.publicInformations()
+								.unique()
+							else
+								if !certifiedUsers or !certifiedUsers.length
+									randomPublicUsers = []
+
+							done randomPublicUsers
+					else
+						done randomPublicUsers
+		else
+			done randomPublicUsers
+
+	findNextRandomPublic: (req, alreadyPresent, done) ->
+		myId = req.user._id
+		Follow.find
+			follower: req.user._id
+			followed: $ne: cesarRight req.data.hashedId
+		, (err, follow) ->
+			warn err if err
+			followed = if follow
+				follow.column('followed')
+			else
+				[]
+			followed.push myId
+			exceptions = if UserPackage.hiddenSuggests[myId]
+				followed.merge(alreadyPresent).merge(UserPackage.hiddenSuggests[myId]).unique().map strval
+			else
+				followed.merge(alreadyPresent).unique().map strval
+			where =
+				photoId: $ne: null
+				accountConfidentiality: "public"
+				certifiedAccount: true
+				_id: $nin: exceptions
+			User.findOne where, (err, certifiedUser) ->
+				warn err if err
+				if certifiedUser
+					done certifiedUser.publicInformations()
+				else
+					where =
+						photoId: $ne: null
+						accountConfidentiality: "public"
+						$or: [
+							certifiedAccount: $exists: false
+						,
+							certifiedAccount: null
+						,
+							certifiedAccount: false
+						]
+						_id: $nin: exceptions
+					User.findOne where, (err, user) ->
+						warn err if err
+						if user
+							done user.publicInformations()
+						else
+							done null
+
 	renderProfile: (req, res, id = null, template = 'user/profile') ->
 		id = req.getRequestedUserId id
 		me = req.user || req.session.user
-		unless me
-			warn "me is not defined"
-		isMe = me and equals id, me.id
+		isAPublicAccount = false
+		if !me
+			isMe = false
+		else
+			isMe = me and equals id, me.id
 		self = @
-		@randomUsers (users) ->
+		@randomUsers (users) =>
 			users = users.filter (user) ->
-				! equals user._id, me._id
-			done = (profile, isAFriend) ->
-				profile = objectToUser profile
-				profile.getFriends (err, friends, friendAsks) ->
-					if err
-						res.serverError err
-					else
-						friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
-						end = (isAFriend) ->
-							myfriendAskPending = false
-							if !isAFriend and !empty friendAsks
-								for id, friendAsk of friendAsks
-									if friendAsk.hashedId is req.user.hashedId
-										myfriendAskPending = true
-							res.render template,
-								isMe: isMe
-								askedForFriend: askedForFriend
-								isAFriend: !! isAFriend
-								isABestFriend: me.isABestFriend profile.hashedId
-								profile: profile
-								profileAlerts: req.getAlerts 'profile'
-								numberOfFriends: friends.length
-								friends: if isMe || !! isAFriend then friendsThumb else []
-								friendAsks: if isMe then friendAsks else {}
-								myfriendAskPending: myfriendAskPending
-								userTexts: userTexts()
-								users: users
-						if isAFriend is null
-							try
-								askedForFriend = if isMe or (! me) or empty me.friendAsks
-									false
-								else
-									me.friendAsks.has hashedId: cesarLeft profile.id
-								if isMe or (! me) or empty friends
-									end false
-								else
-									self.areFriends me, profile, (done) ->
-										done friends.has id: me.id
-									, end
-							catch err
-								warn err
-								end false
-						else
-							end isAFriend
-			if isMe
-				done me, false
+				if me
+					! equals user._id, me._id
+				else
+					true
+			myId = if me
+				me.id
 			else
-				req.getFriends (err, friends, friendAsks) ->
-					isAFriend = if friends and friends.getLength() > 0
-						friends.has id: id
+				null
+			@randomPublicUsers myId, (publicUsers) ->
+				publicUsers = publicUsers.filter (user) ->
+					if me
+						! equals user.hashedId, me.hashedId
 					else
-						null
+						true
+
+				done = (profile, isAFriend, nbFollowers = 0, amIAFollower = false, followings) ->
+					profile = objectToUser profile
+					isAPublicAccount = profile.accountConfidentiality is "public"
+					profile.getFriends (err, friends, friendAsks) ->
+						if err
+							res.serverError err
+						else
+							friendsThumb = friends.copy().pickUnique config.wornet.limits.friendsOnProfile
+							end = (isAFriend) ->
+								myfriendAskPending = false
+								if !isAFriend and !empty friendAsks
+									for id, friendAsk of friendAsks
+										if req.user && friendAsk.hashedId is req.user.hashedId
+											myfriendAskPending = true
+								followings = [] if !followings
+								nbFollowing = followings.length
+								res.render template,
+									isMe: isMe
+									askedForFriend: askedForFriend
+									isAFriend: !! isAFriend
+									isABestFriend: me && me.isABestFriend profile.hashedId
+									isAPublicAccount: isAPublicAccount
+									profile: profile
+									profileAlerts: req.getAlerts 'profile'
+									numberOfFriends: friends.length
+									numberOfFollowers: nbFollowers
+									amIAFollower: !! amIAFollower
+									numberOfFollowing: nbFollowing
+									followings: followings.slice 0, 10
+									friends: if isMe || !! isAFriend || isAPublicAccount then friendsThumb else []
+									friendAsks: if isMe then friendAsks else {}
+									myfriendAskPending: myfriendAskPending
+									userTexts: userTexts()
+									users: users
+									publicUsers: publicUsers
+							if isAFriend is null
+								try
+									askedForFriend = if isMe or (! me) or empty me.friendAsks
+										false
+									else
+										me.friendAsks.has hashedId: cesarLeft profile.id
+									if isMe or (! me) or empty friends
+										end false
+									else
+										self.areFriends me, profile, (done) ->
+											done friends.has id: me.id
+										, end
+								catch err
+									warn err
+									end false
+							else
+								end isAFriend
+				getFollowInformations = (user, isAFriend, next) ->
+					Follow.count
+						followed: id
+					, (err, nbFollowers) ->
+						warn err if err
+						Follow.count
+							followed: id
+							follower: me
+						, (err, amIAFollower) ->
+							warn err if err
+							Follow.find
+								follower: id
+							, (err, followings)->
+								warn err if err
+								followedIds = followings.column 'followed'
+								User.find
+									_id: $in: followedIds
+								, (err, userFollowings) ->
+									warn err if err
+									next user, isAFriend, nbFollowers, amIAFollower, userFollowings
+				if isMe
+					getFollowInformations me, false, done
+				else
 					User.findById id, (err, user) ->
 						if err
 							res.notFound()
 						else
-							done user, isAFriend
+							isAPublicAccount = user.accountConfidentiality is "public"
+							if isAPublicAccount and !req.user
+								res.locals.noIndex = false
+								getFollowInformations user, false, done
+							else
+								res.locals.noIndex = true
+								req.getFriends (err, friends, friendAsks) ->
+									isAFriend = if friends and friends.getLength() > 0
+										friends.has id: id
+									else
+										null
+
+									getFollowInformations user, isAFriend, done
+
 
 	getUserModificationsFromRequest: (req) ->
 		userModifications = {}
+		privateValues = ['maskFollowList']
+		publicValues = ['allowFriendPostOnMe', 'uniqueURLID', 'publicName']
+
+		for val in (if (req.body.accountConfidentiality is "public") then privateValues else publicValues)
+			delete req.body[val]
+
 		for key, val of req.body
 			if empty val
 				val = null
@@ -417,22 +623,26 @@ UserPackage =
 					birthDate = inputDate val
 					if birthDate.isValid()
 						userModifications.birthDate = birthDate
-				when 'confidentialityBirthDate'
-					userModifications.maskBirthDate = val is 'on'
-				when 'confidentialityFriendList'
-					userModifications.maskFriendList = val is 'on'
+				when 'maskBirthDate', 'maskFriendList', 'allowFriendPostOnMe', 'maskFollowList'
+					userModifications[key] = val is 'on'
 				when 'name.first'
 					unless userModifications.name
-						userModifications.name = req.user.name
+						userModifications.name = req.user.name.copy()
 					userModifications.name.first = val
 				when 'name.last'
 					unless userModifications.name
-						userModifications.name = req.user.name
+						userModifications.name = req.user.name.copy()
 					userModifications.name.last = val
+				when 'name.public'
+					unless userModifications.name
+						userModifications.name = req.user.name.copy()
+					if val && !val.trim().length
+						val = null
+					userModifications.name.public = val
 				when 'photoId'
 					if PhotoPackage.allowedToSee req, val
 						userModifications.photoId = val
-				when 'maritalStatus', 'loveInterest'
+				when 'maritalStatus', 'loveInterest', 'accountConfidentiality'
 					unless User.schema.path(key).enumValues.contains val
 						val = null
 					userModifications[key] = val

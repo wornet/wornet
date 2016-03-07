@@ -26,13 +26,22 @@ commentSchema.pre 'save', (next) ->
 						,
 							askedTo: at
 							askedFrom: @author
-						], (err, friend) ->
+						], (err, friend) =>
 							if err
 								next err
 							else if friend
 								next()
 							else
-								next new Error s("Vous ne pouvez poster que sur les profils de vos amis")
+								Follow.findOne
+									followed: at
+									follower: @author
+								, (err, follow) =>
+									if err
+										next err
+									else if follow
+										next()
+									else
+										next new Error s("Vous ne pouvez poster que sur les profils de vos amis ou abonnements")
 			else
 				next new Error s("Le statut est introuvable")
 

@@ -17,6 +17,9 @@ block body
 			+form("/user/signin", "PUT")(ng-submit="submit(user)")
 				h3
 					=s('Inscription')
+				.signin-information
+					=s("Par défaut, l'inscription entraine la création d'un compte privé. Si vous souhaitez le passer en public il faudra vous rendre dans vos paramètres et modifier la confidentialité du compte.")
+				.cb
 				.col-sm-6.col-xs-12
 					label.cb
 						+formControl("email")(
