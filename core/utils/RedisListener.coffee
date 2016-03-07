@@ -48,7 +48,7 @@ module.exports = ->
 								delete NoticePackage.notificationsToSend[userId]
 						true
 					when "addPhoto"
-						PhotoPackage.photos[messageObj.message.photoId] = messageObj.message.token
+						PhotoPackage.photos[messageObj.message.photoId] = PhotoPackage.photosForCookieChecking[messageObj.message.photoId] = messageObj.message.token
 					when "deletePhoto"
 						PhotoPackage.delete messageObj.message.photoId
 					when "delPhoto"
