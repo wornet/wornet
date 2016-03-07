@@ -1,16 +1,19 @@
-.well.friends-block
+.well.friends-block(ng-controller="FriendListCtrl")
 	h3
 		if isMe
 			=strtoupper(s("Mes amis")) + " "
-		else if isAFriend
-			=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
-		span.numberOfFriends
+		else if isAFriend || isAPublicAccount
+			if profile.publicName
+				=strtoupper(s("Amis de {name}", {name: profile.publicName})) + " "
+			else
+				=strtoupper(s("Amis de {name}", {name: profile.name.first})) + " "
+		a.numberOfFriends(ng-click="displayFriendList('" + profile.hashedId + "')")
 			=s("({number} ami)|({number} amis)", { number: numberOfFriends }, numberOfFriends)
 		+data('numberOfFriends', numberOfFriends)
 	hr
 	ul#friends.photos-thumbs
 		each friend in friends
 			if friend
-				li: a(href="/user/profile/" + friend.hashedId + "/" + encodeURIComponent(friend.fullName) data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
+				li: a(href="/" + friend.uniqueURLID data-toggle="tooltip" data-placement="top" title=friend.fullName).thumb
 					img(src=friend.thumb50 alt=friend.fullName data-id=friend.hashedId)
 	.cb

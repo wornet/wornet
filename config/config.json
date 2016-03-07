@@ -145,6 +145,26 @@
 
     "wornet": {
 
+        "admin": {
+            "god": [
+                "kylekatarnls@gmail.com",
+        		"jeremy.bayle87@hotmail.fr",
+        		"jeremy.bayle@wornet.fr"
+            ],
+            "admin": [
+                "manuel.costes@wornet.fr",
+                "manuel.costes@gmail.com",
+        		"bastien.miclo@gmail.com",
+        		"kylekatarnls@gmail.com",
+        		"jeremy.bayle87@hotmail.fr",
+        		"jeremy.bayle@wornet.fr"
+            ],
+            "certifier": [
+                "manuel.costes@gmail.com",
+                "manuel.costes@wornet.fr"
+            ]
+        },
+
         "app": {
             "enabled": false
         },
@@ -218,10 +238,6 @@
 
         "errorsToIssue": 10,
 
-        "move": {
-            "enabled": false
-        },
-
         "friends": {
             "hoursBeforeRemoveNotification": 168
         },
@@ -248,6 +264,7 @@
         "limits": {
             "friendsOnProfile": 50,
             "theyUseWornet": 50,
+            "publicSuggestions": 4,
             "maxTabs": 5,
             "notifications": 10,
             "userMaxAge": 150,
@@ -260,10 +277,15 @@
             "noticePageCount": 50,
             "scrollNoticePageCount": 25,
             "likersPageCount": 25,
+            "sharersPageCount": 25,
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10,
-            "monthsBeforeRemoveNotice": 1
+            "monthsBeforeRemoveNotice": 1,
+            "urlId": 20,
+            "followingsPageCount": 10,
+            "followersPageCount": 10,
+            "friendsPageCount": 10
         },
 
         "lockFriendAsk": [
@@ -286,6 +308,13 @@
         "media": {
             "displayAlbumTitle": false,
             "displayPhotoTitle": false
+        },
+
+        "move": {
+            "enabled": false,
+            "api": {
+                "enabled": false
+            }
         },
 
         "onlyAuthoredByAFriend": false,
@@ -333,7 +362,15 @@
             }
         },
 
+        "shares": {
+            "enabled" : true
+        },
+
         "staticServer": "",
+
+        "suggests": {
+            "removeHiddenSuggest": 60
+        },
 
         "thumbSizes": [50, 90, 200],
 

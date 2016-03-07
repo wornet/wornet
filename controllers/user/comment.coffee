@@ -9,12 +9,16 @@ commentListResponse = (err, commentList) ->
 module.exports = (router) ->
 
 	router.put '/add', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		CommentPackage.put req, res, commentListResponse.bind res
 
 	router.get '', (req, res) ->
 		CommentPackage.getRecentCommentForRequest req, res, req.data.statusIds, commentListResponse.bind res
 
 	router.delete '', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		me = req.user.id
 		userComment = req.data.comment
 
@@ -59,6 +63,8 @@ module.exports = (router) ->
 					res.serverError 'No comment to update'
 
 	router.post '', (req, res) ->
+		if !req.user
+			res.serverError new PublicError s("Vous devez vous connecter pour effectuer cette action.")
 		userComment = req.data.comment
 		me = req.user.id
 		if userComment and userComment._id

@@ -171,13 +171,13 @@ Wornet = angular.module 'Wornet', [
 		else
 			$document
 		lock = false
+
 		$scrollable.scroll ->
 			scrollTopMax = $scrollable[0].scrollHeight
 			if !$attributes.scrollable
 				scrollTopMax = document.body.scrollHeight - document.body.offsetHeight
 			else
 				scrollTopMax -= $scrollable[0].offsetHeight
-
 			if $scrollable.scrollTop() > (scrollTopMax - gap) and offset = getOffset()
 				data = {}
 				if offset

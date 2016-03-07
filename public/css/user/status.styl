@@ -3,16 +3,60 @@
 
 
 .status-form
-.status-medias-form
+//.status-medias-form
+
+	padding 10px
+	margin-bottom 10px
+	background #fff
+	border 1px solid #ddd
+	border-radius(4px)
+
 	.publish
 		input
 			float right
 			margin-left -65px
 	.album-select
 		margin $mainPadding 0
+		padding 0
 
-		label
+		select
 			padding 0
+
+	.status-confidentiality
+		margin $mainPadding 0
+		padding 5px
+		border-radius(2px)
+		width calc( 100% - 38px - 72px - 10px - 10px )
+		float left
+		font-size 12px
+
+	.add-medias
+		float left
+		margin $mainPadding $mainPadding $mainPadding 0
+		padding-top 5px
+		border-radius(4px)
+		background-color $mediumGray
+
+	div.image-box
+		size(90px)
+		display inline-block
+		margin $mainPadding $mainPadding 0 0
+		float left
+		img
+			size(90px)
+
+		span.halflings
+			rel()
+			float left
+			margin 2px 2px 0 0px
+			color rgba(255,255,255,.6)
+			font-size 19px
+			cursor pointer
+			right -69px
+			top -90px
+
+			&:hover
+				color white
 
 .status-author
 	a
@@ -31,7 +75,7 @@
 		cursor auto
 
 .status-block
-	padding $mainPadding $mainPadding 20px
+	padding $mainPadding
 	margin $mainPadding 0
 	background white
 	border 1px solid #ddd
@@ -59,13 +103,20 @@
 	margin-bottom $bigPadding * 2
 
 .status-actions
-	float right
-	margin -8px (- $smallPadding) (-2 * $mainPadding - $smallPadding) 0
+	height 30px
+	border-top 1px solid $gray
+	margin-top $mainPadding
+
+	div
+		height 50px
+		&:first-child
+			border-right 1px solid $gray
+		&:last-child
+			border-left 1px solid $gray
 
 	.btn-action-plus-w
 	.btn-action-comment
 		background transparent
-		color $darkGray
 		cursor pointer
 		.icon
 			background url(png("comment"))
@@ -76,8 +127,7 @@
 
 
 	.btn-action-plus-w
-		margin-bottom 15px
-		margin-right 5px
+		margin 10px 5px 15px
 		background url(png("empty-w"))
 		background-size 18px
 		size(18px, 18px)
@@ -85,12 +135,29 @@
 		&.full
 			background-image url(png("full-w"))
 
-	.like-zone
-		color $darkGray
-		cursor pointer
+	.btn-action-share
+		color $orange
+		font-size 18px
+		background transparent
+		padding 0
+		margin 0
+
+		.glyphicons
+			margin-top $mainPadding
 
 	.btn
 		box-shadow none
+
+.like-zone
+.btn-action-comment
+.btn-action-share
+	cursor pointer
+
+.status-actions
+.status-actions-text
+	text-align center
+	padding 0
+	color $darkGray
 
 .add-media h4
 	a
@@ -99,18 +166,20 @@
 		color $mediumGray
 
 .upload-container
-	margin $mainPadding $mainPadding $mainPadding 0
+	margin $mainPadding $mainPadding 0 0
 	position relative
 	// border-radius(4px)
 	border 2px solid $orange
 	box-sizing border-box
-	height 88px
+	size(90px)
+	display inline-block
+
 	@media (max-width: 768px)
 		margin $mainPadding 0 0 0
 
 	.progress-bar
 		position absolute
-		height 84px
+		height 86px
 		background lighten($lightOrange, 40%)
 
 	.upload
@@ -121,14 +190,19 @@
 .upload-label
 	color $darkGray
 	font-weight bold
-	font-size 17px
+	font-size 58px
 	text-align center
 	position absolute
-	top 10px
 	width 100%
 
 	small
 		font-weight normal
+
+.share-message-block
+	padding $mainPadding
+	color $darkGray
+	border-bottom 1px solid $gray
+	margin-bottom $mainPadding
 
 @media (max-width: 414px)
 	.status-actions
@@ -151,14 +225,15 @@
 		width 50%
 
 	.status-block
-		rel()
 		.settings
 			width 20px
-			abs()
-			top $mainPadding
-			right $mainPadding
 			ul
 				margin-left -150px
+	.well
+		margin-bottom $mainPadding
+
+	.share-message-block
+		padding 0 $mainPadding
 
 	.comment-block
 		rel()
@@ -166,6 +241,26 @@
 			top $smallPadding
 			right $smallPadding
 
+	.status-form .status-confidentiality
+		padding 7px
+
 @media (max-width: 767px)
 	.status-author
 		clear right
+	.all-status-block
+		padding 0
+	.status-form .add-medias
+		padding-top 7px
+	.status-actions
+		height $bigPadding
+		div
+			height 40px
+		.btn-action-plus-w
+		.btn-action-comment .btn.icon
+			margin-top $smallPadding
+		.btn-action-share .glyphicons-share
+			margin-top 0
+	.status-actions-text
+		height $bigPadding
+		span
+			font-size 10px

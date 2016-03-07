@@ -1,6 +1,6 @@
 +standardBlock(s("Ils utilisent Wornet"))#they-use-wornet
 	ul.photos-thumbs
 		each randomUser in users
-			li.fade-on-load.not-loaded: a(href="/user/profile/" + randomUser.hashedId + "/" + encodeURIComponent(randomUser.fullName) data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
+			li.fade-on-load.not-loaded: a(href="/" + randomUser.uniqueURLID data-toggle="tooltip" data-placement="top" title=randomUser.fullName).thumb
 				img(data-delayed-src=randomUser.thumb50 alt=randomUser.fullName data-id=randomUser.hashedId)
 	.cb

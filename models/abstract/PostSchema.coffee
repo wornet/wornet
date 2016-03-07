@@ -6,7 +6,7 @@
 ###
 
 PostSchema = ->
-	throw new Error "BaseSchema is an abstract class and cannot be instancied"
+	throw new Error "PostSchema is an abstract class and cannot be instancied"
 
 ###
 @abstract
