@@ -238,10 +238,6 @@
 
         "errorsToIssue": 10,
 
-        "move": {
-            "enabled": false
-        },
-
         "friends": {
             "hoursBeforeRemoveNotification": 168
         },
@@ -315,9 +311,9 @@
         },
 
         "move": {
-            "enabled": true,
+            "enabled": false,
             "api": {
-                "enabled": true
+                "enabled": false
             }
         },
 
