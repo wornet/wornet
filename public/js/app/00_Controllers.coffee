@@ -1740,7 +1740,7 @@ Controllers =
 				success: (data) ->
 					if at
 						temporarySharedAlbumId = data.album._id
-			$scope.selectAlbum album
+						$scope.selectAlbum data.album._id
 			album =
 				name: ''
 				description: ''
