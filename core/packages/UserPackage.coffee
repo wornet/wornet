@@ -177,6 +177,8 @@ UserPackage =
 						'name.first': regexp
 					,
 						'name.last': regexp
+					,
+						'name.public': regexp
 					]
 					_id: $nin: exclude
 				.limit remind
