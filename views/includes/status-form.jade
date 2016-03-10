@@ -18,8 +18,19 @@ fieldset.status-form
 			tabindex=strval(tabindex+1)
 			ng-model="status.content"
 			placeholder=s("Quoi de neuf ?")
+			ng-keyup="checkLink()"
+			ng-keydown="cancelCheckLink()"
 		)
-		
+	.status-link-preview
+		a.global-link-preview(href="" target="_blank")
+			img.link-preview-image(src="")
+			span.link-preview-title
+			br
+			span.link-preview-description
+			.col-xs-12.status-link-preview-author
+				span.link-preview-link
+				span.link-preview-author
+			.cb
 	.status-medias-form(ng-show="status.containsMedias")
 		iframe(name="status-upload")
 		+form("/user/photo", "FILE").status-images(target="status-upload")
