@@ -573,7 +573,6 @@ Controllers =
 		return
 
 	Event: ($scope, $http) ->
-
 		loadTemplate = ->
 			$scope.template = template (if window.isMobile()
 				'/mobile'
@@ -1517,7 +1516,7 @@ Controllers =
 
 		return
 
-	Status: ($scope, smiliesService, statusService, paginate) ->
+	Status: ($scope, smiliesService, statusService) ->
 		s = textReplacements
 		initMedias = ->
 			$scope.medias =
@@ -1757,7 +1756,7 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			if status.content || $scope.medias.images.length
+			if status.content || $scope.medias.images.length || $scope.medias.links.length
 				scanAllLinks $scope, status.content || ''
 				data = data:
 					status: status
@@ -2065,6 +2064,55 @@ Controllers =
 					$('.album-select select option').each (id, elem) ->
 						if elem.value.indexOf('undefined') >= 0
 							$(elem).remove()
+
+		lastDelayIds = []
+		lock = false
+		$scope.cancelCheckLink = ->
+			for lastDelayId in lastDelayIds
+				clearTimeout lastDelayId
+			lastDelayIds = []
+
+		$scope.checkLink = ->
+			(' ' + $scope.status.content)
+				.replace /(\s)www\./g, '$1http://www.'
+				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+					lastDelayIds.push delay 1000, ->
+						if !lock
+							lock = true
+							Ajax.post '/user/status/link/meta',
+								data:
+									url: link
+								success: (res) ->
+									lock = false
+									if res.data
+										$scope.medias.links = [
+											href: link
+											https: /^https:\/\//.test link
+										]
+										data = res.data
+										if data.ogImage
+											$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
+										else
+											$('.status-link-preview img.link-preview-image').removeAttr('src')
+										if data.ogTitle || data.title
+											$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
+										else
+											$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
+										if data.ogDescription || data.description
+											$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
+										else
+											$('.status-link-preview span.link-preview-description').html('')
+										if data.author
+											$('.status-link-preview span.link-preview-author').html(data.author)
+										else
+											$('.status-link-preview span.link-preview-author').html('')
+										linkMinimized = link.replace /^https?:\/\//g, ''
+										if 0 < linkMinimized.indexOf '/'
+											linkMinimized = linkMinimized.substring 0, linkMinimized.indexOf '/'
+										$('.status-link-preview span.link-preview-link').html linkMinimized
+										$('.status-link-preview a.global-link-preview').attr('href', link)
+										$('.status-link-preview').show()
+
 		return
 
 	Suggests: ($scope) ->

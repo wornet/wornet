@@ -300,3 +300,23 @@ module.exports = (router) ->
 					res.serverError new PublicError "Le statut à partager n'existe pas."
 		else
 			res.serverError new PublicError "Le statut à partager n'existe pas."
+
+
+	router.post '/link/meta', (req, res) ->
+		url = req.data.url
+		httpPattern = 'http://'
+		if url
+			url = url.replace /^https?:\/\//g, ''
+			x = Xray()
+			try
+				x(httpPattern + url,
+					title: "title"
+					ogTitle: "meta[name='og:title']@content"
+					description: "meta[name='description']@content"
+					ogDescription: "meta[property='og:description']@content"
+					ogImage: "meta[property='og:image']@content"
+					author: "meta[name='author']@content"
+				) (err, data)->
+					res.json data: data
+			catch err
+				res.json()
