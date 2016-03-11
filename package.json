@@ -1,6 +1,6 @@
 {
 	"name": "wornet",
-	"version": "1.2.0",
+	"version": "1.2.0-fix1",
 	"description": "Social Network",
 	"author": "Wornet",
 	"main": "index.js",
