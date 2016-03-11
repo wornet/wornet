@@ -195,6 +195,12 @@ StatusPackage =
 																					next()
 																				else
 																					treatStatus i
+																		else
+																			status.images = [status.images[0]]
+																			if -1 isnt status.images[0].src.indexOf "200x"
+																				status.images[0].src = status.images[0].src.replace "200x", ""
+																			recentStatusPublicData.push status
+																			treatStatus i
 																else
 																	recentStatusPublicData.push status
 																	if recentStatusPublicData.length is recentStatus.length
