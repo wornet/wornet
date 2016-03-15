@@ -699,6 +699,11 @@ Controllers =
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
 
+		if window.isMobile() and $('#shutter').css("width") isnt "0px"
+			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+			$('#directives-calendar > .well').removeClass 'col-xs-9'
+			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+
 	Invite: ($scope) ->
 		s = textReplacements
 		FACEBOOK_APP_ID = "400859870103849"
@@ -1459,11 +1464,6 @@ Controllers =
 			return
 
 		$scope.generateURLVisu()
-
-		if window.isMobile() and $('#shutter').css("width") isnt "0px"
-			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
-			$('#directives-calendar > .well').removeClass 'col-xs-9'
-			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
 
 		return
 
