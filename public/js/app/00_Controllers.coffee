@@ -1523,6 +1523,7 @@ Controllers =
 				links: []
 				images: []
 				videos: []
+			$scope.scannedLink = {}
 			return
 
 		$scope.displayPlayer = ! navigator.standalone
@@ -1559,6 +1560,13 @@ Controllers =
 				data[key] and typeof data[key] is 'object' and data[key].length
 			if has 'chat'
 				chatService.all data.chat
+			if data.newStatus and has 'recentStatus'
+				i = 0
+				for recStatus in data.recentStatus
+					if recStatus._id is data.newStatus._id
+						data.recentStatus[i] = data.newStatus
+						break
+					i++
 			if has 'recentStatus'
 				$scope.recentStatus ||= []
 				recentStatusIds = $scope.recentStatus.map (status) ->
@@ -1757,23 +1765,35 @@ Controllers =
 
 		$scope.send = (status) ->
 			if status.content || $scope.medias.images.length || $scope.medias.links.length
-				scanAllLinks $scope, status.content || ''
-				data = data:
-					status: status
-					at: at
-					medias: $scope.medias || null
+				data =
+					data:
+						status: status
+						at: at
+						medias: $scope.medias || null
+						scannedLink: $scope.scannedLink
+					success: (data) ->
+						$scope.newStatusId = data.newStatus._id
+						if $scope.scannedLink && !scanAllLinks $scope, status.content || ''
+							Ajax.put '/user/link/add',
+								data:
+									link:
+										name: $scope.scannedLink.link
+										url: $scope.scannedLink.originalLink.replace /^(https?)?:?\/\//, ''
+										https: $scope.scannedLink.originalLink.substr(0, 5) is 'https'
+										referencedStatus: data.newStatus._id
+										metaData: $scope.scannedLink
+						$('.points').trigger 'updatePoints', [data.newStatus, true]
+						setRecentStatus data, false
+						if window.refreshMediaAlbums
+							window.refreshMediaAlbums()
+						resetStatus()
+
 				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
 					$.extend data.data,
 						album:
 							name: $("#album-name").val()
 							description: $("#album-description").val()
-				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
-					success: (data) ->
-						$('.points').trigger 'updatePoints', [data.newStatus, true]
-						setRecentStatus data, false
-						if window.refreshMediaAlbums
-							window.refreshMediaAlbums()
-				resetStatus()
+				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data
 
 			return
 
@@ -1783,6 +1803,7 @@ Controllers =
 			$scope.status.newAlbum = false
 			$("#album-name").val("")
 			$("#album-description").val("")
+			$('.status-link-preview').hide()
 			initMedias()
 			refreshScope $scope
 
@@ -2067,6 +2088,7 @@ Controllers =
 
 		lastDelayIds = []
 		lock = false
+		$scope.scannedLink = {}
 		$scope.cancelCheckLink = ->
 			for lastDelayId in lastDelayIds
 				clearTimeout lastDelayId
@@ -2090,29 +2112,60 @@ Controllers =
 											https: /^https:\/\//.test link
 										]
 										data = res.data
-										if data.ogImage
-											$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
-										else
-											$('.status-link-preview img.link-preview-image').removeAttr('src')
-										if data.ogTitle || data.title
-											$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
-										else
-											$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
-										if data.ogDescription || data.description
-											$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
-										else
-											$('.status-link-preview span.link-preview-description').html('')
-										if data.author
-											$('.status-link-preview span.link-preview-author').html(data.author)
-										else
-											$('.status-link-preview span.link-preview-author').html('')
+
 										linkMinimized = link.replace /^https?:\/\//g, ''
 										if 0 < linkMinimized.indexOf '/'
 											linkMinimized = linkMinimized.substring 0, linkMinimized.indexOf '/'
-										$('.status-link-preview span.link-preview-link').html linkMinimized
-										$('.status-link-preview a.global-link-preview').attr('href', link)
-										$('.status-link-preview').show()
+										$scope.scannedLink.link = linkMinimized
+										$scope.scannedLink.originalLink = link
+										unless rememberDissmissed[$scope.scannedLink.link] is "all"
+											$('.status-link-preview span.link-preview-link').html linkMinimized
+											$('.status-link-preview a.global-link-preview').attr('href', link)
 
+											if data.ogImage and rememberDissmissed[$scope.scannedLink.link] isnt "img"
+												$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
+												$('.status-link-preview img.link-preview-image').show()
+												$scope.scannedLink.image = data.ogImage
+											else
+												$('.status-link-preview img.link-preview-image').removeAttr('src')
+												$('.status-link-preview img.link-preview-image').hide()
+												$('.status-link-preview .dismiss-link-preview-image').hide()
+												$scope.scannedLink.image = null
+											if data.ogTitle || data.title
+												$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
+												$scope.scannedLink.title = data.ogTitle || data.title
+											else
+												$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
+												$scope.scannedLink.title = null
+											if data.ogDescription || data.description
+												$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
+												$scope.scannedLink.description = data.ogDescription || data.description
+											else
+												$('.status-link-preview span.link-preview-description').html('')
+												$scope.scannedLink.description = null
+											if data.author
+												$('.status-link-preview span.link-preview-author').html(data.author)
+												$scope.scannedLink.author = data.author
+											else
+												$('.status-link-preview span.link-preview-author').html('')
+												$scope.scannedLink.author = null
+											$('.status-link-preview').show()
+											$('.status-link-preview .dismiss-link-preview-image').show()
+											$('.status-link-preview .dismiss-link-preview').show()
+
+		rememberDissmissed = {}
+		$scope.dismissAllPreview = ->
+			$('.status-link-preview').hide()
+			rememberDissmissed[$scope.scannedLink.link] = "all"
+			$scope.scannedLink = {}
+			return
+
+		$scope.dismissImagePreview = ->
+			delete $scope.scannedLink.image
+			$('.status-link-preview img.link-preview-image').hide()
+			$('.status-link-preview .dismiss-link-preview-image').hide()
+			rememberDissmissed[$scope.scannedLink.link] = "img"
+			return
 		return
 
 	Suggests: ($scope) ->

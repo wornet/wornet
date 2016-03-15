@@ -22,6 +22,8 @@ fieldset.status-form
 			ng-keydown="cancelCheckLink()"
 		)
 	.status-link-preview
+		a.dismiss-link-preview(ng-click="dismissAllPreview()") x
+		a.dismiss-link-preview-image(ng-click="dismissImagePreview()") x
 		a.global-link-preview(href="" target="_blank")
 			img.link-preview-image(src="")
 			span.link-preview-title

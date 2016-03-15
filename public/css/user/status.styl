@@ -58,38 +58,57 @@
 			&:hover
 				color white
 
-	.status-link-preview
-		margin-top $mainPadding
-		border 1px solid #ddd
-		display none
-		padding $smallPadding
-		.global-link-preview
-			text-decoration none
-			cursor pointer
-			.link-preview-image
-				size(90px)
-				float left
-				margin-right $smallPadding
+.status-link-preview
+.status-link-preview-list
+	margin-top $mainPadding
+	border 1px solid #ddd
+	display none
+	padding $smallPadding
+	rel()
+	.global-link-preview
+		text-decoration none
+		cursor pointer
+		.link-preview-image
+			size(90px)
+			float left
+			margin-right $mainPadding
+		.link-preview-link
+		.link-preview-description
+		.link-preview-author
+			color $nearlyBlack
+		.link-preview-title
+			color $orange
+		.link-preview-description
+		.link-preview-author
+			font-size 12px
+		.status-link-preview-author
+			margin-top $smallPadding
+			border-top 1px solid #ddd
+			padding 0
+			.link-preview-author
+				border-left 1px solid #ddd
+				padding-left $smallPadding
+				color $darkGray
 			.link-preview-link
-			.link-preview-description
-			.link-preview-author
-				color $nearlyBlack
-			.link-preview-title
-				color $orange
-			.link-preview-description
-			.link-preview-author
-				font-size 12px
-			.status-link-preview-author
-				margin-top $smallPadding
-				border-top 1px solid #ddd
-				padding 0
-				.link-preview-author
-					border-left 1px solid #ddd
-					padding-left $smallPadding
-					color $darkGray
-				.link-preview-link
-					margin-right $smallPadding
-					color $darkGray
+				margin-right $smallPadding
+				color $darkGray
+
+.status-link-preview-list
+	display block
+
+a.dismiss-link-preview-image
+a.dismiss-link-preview
+	abs()
+	top 0
+	color $nearlyBlack
+	cursor pointer
+	text-decoration none
+
+.dismiss-link-preview-image
+	left 85px
+
+.dismiss-link-preview
+	right 10px
 
 .status-author
 	a

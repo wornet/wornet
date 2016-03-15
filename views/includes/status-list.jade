@@ -86,9 +86,19 @@
 				a.mobile-video(ng-if="! displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
 					img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
 					+half('play')
-		//- div(ng-if="status.links.length > 0")
-		//- 	h3=s("Liens")
-		//- 	a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
+		div(ng-if="status.links.length > 0")
+			.status-link-preview-list(ng-if="status.links[0].metaData")
+				a.global-link-preview(ng-href="{{ status.links[0].https ? 'https' : 'http' }}://{{ status.links[0].url }}" target="_blank")
+					img.link-preview-image(ng-if="status.links[0].metaData.image" ng-src="{{ status.links[0].metaData.image }}")
+					span.link-preview-title(ng-bind-html="status.links[0].metaData.title")
+					br
+					span.link-preview-description(ng-bind-html="status.links[0].metaData.description")
+					.col-xs-12.status-link-preview-author
+						span.link-preview-link(ng-bind-html="status.links[0].metaData.link")
+						span.link-preview-author(ng-bind-html="status.links[0].metaData.author")
+					.cb
+			//- h3=s("Liens")
+			//- a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
 	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends || status.isAShare || !userConnected)")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
