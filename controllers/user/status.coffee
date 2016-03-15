@@ -307,7 +307,7 @@ module.exports = (router) ->
 		httpPattern = 'http://'
 		if url
 			url = url.replace /^https?:\/\//g, ''
-			x = Xray()
+			x = xray()
 			try
 				x(httpPattern + url,
 					title: "title"
