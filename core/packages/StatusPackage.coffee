@@ -110,103 +110,118 @@ StatusPackage =
 																	tabLike[like.status].likedByMe = true
 															else
 																tabLike[like.status].likedByMe = false
+														Link.find
+															referencedStatus: $in: idsStatus
+														, (err, links) ->
+															statusConcerned = links.column 'referencedStatus'
+															newRecentStatus = []
+															for status in recentStatus
+																status = status.toObject()
+																if statusConcerned.contains status._id, equals
+																	status.links = []
+																newRecentStatus.push status
+															for status in newRecentStatus
+																for link in links
+																	if equals status._id, link.referencedStatus
+																		status.links.push link
+															recentStatus = newRecentStatus
 
-														UserPackage.refreshFollows req, (err) ->
-															warn err if err
-															treatStatus = (i) ->
-																statusToTreat = recentStatus[i]
-																i++
-																status = statusToTreat.toObject()
+															UserPackage.refreshFollows req, (err) ->
+																warn err if err
+																treatStatus = (i) ->
+																	statusToTreat = recentStatus[i]
+																	i++
+																	status = statusToTreat.copy()
 
-																if statusToTreat.isAShare
-																	theOriginalStatus = null
-																	for anOriginalStatus in originalStatus
-																		if equals anOriginalStatus._id, statusToTreat.referencedStatus
-																			theOriginalStatus = anOriginalStatus
-																	if !theOriginalStatus
-																		res.serverError new PublicError s("Statut originel introuvable")
+																	if statusToTreat.isAShare
+																		theOriginalStatus = null
+																		for anOriginalStatus in originalStatus
+																			if equals anOriginalStatus._id, statusToTreat.referencedStatus
+																				theOriginalStatus = anOriginalStatus
+																		if !theOriginalStatus
+																			res.serverError new PublicError s("Statut originel introuvable")
+																		else
+																			status.sharer = usersMap[strval status.author].publicInformations()
+																			status.author = usersMap[strval theOriginalStatus.author].publicInformations()
+																			if theOriginalStatus.at
+																				status.at = usersMap[strval theOriginalStatus.at].publicInformations()
+																			status.content = theOriginalStatus.content
+																			status.images = theOriginalStatus.images
+																			status.videos = theOriginalStatus.videos
+																			# status.links = theOriginalStatus.links
+																			if theOriginalStatus.status is 'blocked'
+																				status.status = 'blocked'
+																				status.content = ''
+																			status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
+																			status.nbLike = tabLike[theOriginalStatus._id].nbLike
+																			status.shares = theOriginalStatus.shares
+																			status.shareDate = status.date
+																			status.date = theOriginalStatus.date
 																	else
-																		status.sharer = usersMap[strval status.author].publicInformations()
-																		status.author = usersMap[strval theOriginalStatus.author].publicInformations()
-																		if theOriginalStatus.at
-																			status.at = usersMap[strval theOriginalStatus.at].publicInformations()
-																		status.content = theOriginalStatus.content
-																		status.images = theOriginalStatus.images
-																		status.videos = theOriginalStatus.videos
-																		status.links = theOriginalStatus.links
-																		if theOriginalStatus.status is 'blocked'
-																			status.status = 'blocked'
+																		if statusToTreat.at is statusToTreat.author
+																			statusToTreat.at = null
+																		status.author = usersMap[strval statusToTreat.author].publicInformations()
+																		if statusToTreat.at
+																			status.at = usersMap[strval statusToTreat.at].publicInformations()
+
+																		if status.concernMe and status.images.length and req.user and ! equals req.user.id, @author
+																			ids = status.images.column('src').map PhotoPackage.urlToId
+																			(req.session.photosAtMe ||= []).merge ids, 'add'
+																			next = nextWithSession
+																		status.status = statusToTreat.status
+																		if statusToTreat.status is 'blocked'
 																			status.content = ''
-																		status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
-																		status.nbLike = tabLike[theOriginalStatus._id].nbLike
-																		status.shares = theOriginalStatus.shares
-																		status.shareDate = status.date
-																		status.date = theOriginalStatus.date
-																else
-																	if statusToTreat.at is statusToTreat.author
-																		statusToTreat.at = null
-																	status.author = usersMap[strval statusToTreat.author].publicInformations()
-																	if statusToTreat.at
-																		status.at = usersMap[strval statusToTreat.at].publicInformations()
-
-																	if status.concernMe and status.images.length and req.user and ! equals req.user.id, @author
-																		ids = status.images.column('src').map PhotoPackage.urlToId
-																		(req.session.photosAtMe ||= []).merge ids, 'add'
-																		next = nextWithSession
-																	status.status = statusToTreat.status
-																	if statusToTreat.status is 'blocked'
-																		status.content = ''
-																	status.likedByMe = tabLike[status._id].likedByMe
-																	status.nbLike = tabLike[status._id].nbLike
-																status.nbImages = status.images.length
-																status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
-																status.isPlaceFollowed = if status.at and req.user
-																	req.user.followings.contains cesarRight(status.at.hashedId), equals
-																else if req.user
-																	req.user.followings.contains cesarRight(status.author.hashedId), equals
-																else
-																	false
-																status.isMineOrAFriends = connectedPeopleAndMe.contains id
-																status.nbShare = if status.shares
-																	status.shares.length
-																else
-																	0
-																if status.images.length
-																	Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
-																		warn err if err
-																		if photo
-																			PhotoPackage.fromAlbum photo.album, (err, photos) ->
-																				warn err if err
-																				photoToDisplay = null
-																				if photos and photos.length
-																					for photoAlbum in photos
-																						for photoStatus in status.images
-																							if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
-																								photoToDisplay = photoStatus
-																								break
-																				if !photoToDisplay
-																					photoToDisplay = status.images[0]
-																				status.images = [photoToDisplay]
-																				if -1 isnt photoToDisplay.src.indexOf "200x"
-																					photoToDisplay.src = photoToDisplay.src.replace "200x", ""
-																				recentStatusPublicData.push status
-																				if recentStatusPublicData.length is recentStatus.length
-																					data.recentStatus = recentStatusPublicData
-																					next()
-																				else
-																					treatStatus i
-																else
-																	recentStatusPublicData.push status
-																	if recentStatusPublicData.length is recentStatus.length
-																		data.recentStatus = recentStatusPublicData
-																		next()
+																		status.likedByMe = tabLike[status._id].likedByMe
+																		status.nbLike = tabLike[status._id].nbLike
+																	status.nbImages = status.images.length
+																	status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
+																	status.isPlaceFollowed = if status.at and req.user
+																		req.user.followings.contains cesarRight(status.at.hashedId), equals
+																	else if req.user
+																		req.user.followings.contains cesarRight(status.author.hashedId), equals
 																	else
-																		treatStatus i
-															if recentStatus.length
-																treatStatus 0
-															else
-																data.recentStatus = recentStatusPublicData
-																next()
+																		false
+																	status.isMineOrAFriends = connectedPeopleAndMe.contains id
+																	status.nbShare = if status.shares
+																		status.shares.length
+																	else
+																		0
+																	if status.images.length
+																		Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
+																			warn err if err
+																			if photo
+																				PhotoPackage.fromAlbum photo.album, (err, photos) ->
+																					warn err if err
+																					photoToDisplay = null
+																					if photos and photos.length
+																						for photoAlbum in photos
+																							for photoStatus in status.images
+																								if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
+																									photoToDisplay = photoStatus
+																									break
+																					if !photoToDisplay
+																						photoToDisplay = status.images[0]
+																					status.images = [photoToDisplay]
+																					if -1 isnt photoToDisplay.src.indexOf "200x"
+																						photoToDisplay.src = photoToDisplay.src.replace "200x", ""
+																					recentStatusPublicData.push status
+																					if recentStatusPublicData.length is recentStatus.length
+																						data.recentStatus = recentStatusPublicData
+																						next()
+																					else
+																						treatStatus i
+																	else
+																		recentStatusPublicData.push status
+																		if recentStatusPublicData.length is recentStatus.length
+																			data.recentStatus = recentStatusPublicData
+																			next()
+																		else
+																			treatStatus i
+																if recentStatus.length
+																	treatStatus 0
+																else
+																	data.recentStatus = recentStatusPublicData
+																	next()
 									req.getUsersByIds missingIds, done #, searchInDataBase
 								else
 									data.recentStatus = recentStatusPublicData
@@ -299,6 +314,7 @@ StatusPackage =
 
 	add: (req, done) ->
 		if req.data.status
+			scannedLink = req.data.scannedLink
 			try
 				medias = req.data.medias || {}
 				at = req.data.at || null
@@ -316,9 +332,19 @@ StatusPackage =
 					pointsValue: pointsValue
 				, (err, originalStatus) =>
 					unless err
-
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
+						newLinks = []
+						if status.links.length
+							for link in status.links
+								link.href = link.href.replace /^https?:\/\//g, ''
+								if 0 < link.href.indexOf '/'
+									link.href = link.href.substring 0, link.href.indexOf '/'
+								if scannedLink and scannedLink.link is link.href
+									link.url = scannedLink.originalLink.replace /^https?:\/\//g, ''
+									link.metaData = scannedLink
+								newLinks.push link
+						status.links = newLinks
 
 						next = (usersToNotify) =>
 							place = status.at or status.author

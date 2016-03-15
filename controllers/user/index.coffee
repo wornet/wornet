@@ -612,9 +612,9 @@ module.exports = (router) ->
 
 	router.put '/link/add', (req, res) ->
 		# Create a new link
-		link = extend user: req.user._id, req.body.link
-		Link.create link, ->
-			res.json()
+		link = extend user: req.user._id, req.data.link
+		Link.create link, (err, link)->
+			res.json link: link
 
 	router.get '/photo/:id', (req, res) ->
 		me = if req.user

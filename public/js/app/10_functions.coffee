@@ -743,10 +743,15 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 				$scope.medias.links.push
 					href: href
 					https: https
-			Ajax.put '/user/link/add', link:
-				name: href
-				url: href
-				https: https
+			Ajax.put '/user/link/add',
+				data:
+					link:
+						name: href
+						url: href
+						https: https
+						referencedStatus: $scope.newStatusId || null
+						metaData: $scope.scannedLink
+
 			return
 		else
 			hrefToDisplay = if href.length > 34
