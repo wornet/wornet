@@ -1465,6 +1465,18 @@ Controllers =
 
 		$scope.generateURLVisu()
 
+		$scope.showPasswordFields = ->
+			$('.password-fields').show()
+			$('.change-password-link').hide()
+			return
+
+		$scope.togglePasswordVisu = (inputName) ->
+			inputType = $('input.form-control[name="' + inputName + '"]').attr 'type'
+			$('input.form-control[name="' + inputName + '"]').attr 'type', if inputType is "password" then "text" else "password"
+			$('a.toggle-password-view.' + inputName + ' span.glyphicons')[if inputType is "password" then "removeClass" else "addClass"] 'glyphicons-eye-open'
+			$('a.toggle-password-view.' + inputName + ' span.glyphicons')[if inputType isnt "password" then "removeClass" else "addClass"] 'glyphicons-eye-close'
+			return
+
 		return
 
 	ShareList: ($scope) ->

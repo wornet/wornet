@@ -648,7 +648,7 @@ UserPackage =
 					unless User.schema.path(key).enumValues.contains val
 						val = null
 					userModifications[key] = val
-				when 'email', 'password'
+				when 'email'
 					if val?
 						userModifications[key] = val
 				when 'city', 'birthCity', 'job', 'jobPlace', 'biography', 'sex'

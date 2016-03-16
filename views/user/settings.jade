@@ -49,11 +49,73 @@ block body
 						+formControl(autocomplete="off" name="email" value=user.email pattern=pattern('email'))
 					label
 						span
-							=s("Changement de mot de passe")
+							=s("Mot de passe")
 							br
 							small: i
 								=s("Si vide, pas de changement de mot de passe.")
-						+formControl("password")(autocomplete="off" name="password" placeholder=s("Entrez votre nouveau mot de passe"))
+						a.change-password-link(ng-click="showPasswordFields()")
+							=s("Changer de mot de passe")
+						.password-fields
+							span
+							.check-pass
+								+formControl("password")(
+									autocomplete="off"
+									name="actualPassword"
+									placeholder=s("Actuel")
+									tooltip!=[
+										s("Mot de passe"),
+										s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
+										jd('.pass-security\n\t.bar'
+											+ '\n\t\t.inner.verylow ' + s("Faible")
+											+ '\n\t\t.inner.low ' + s("Assez faible")
+											+ '\n\t\t.inner.medium ' + s("Moyen")
+											+ '\n\t\t.inner.high ' + s("Fort")
+											+ '\n\t\t.inner.veryhigh ' + s("Très fort")
+										)
+									]).flash
+								a.toggle-password-view.actualPassword(ng-click="togglePasswordVisu('actualPassword')")
+									+glyph('eye-open')
+								.cb
+							span
+							.check-pass
+								+formControl("password")(
+									autocomplete="off"
+									name="newPassword" 
+									placeholder=s("Nouveau")
+									tooltip!=[
+										s("Mot de passe"),
+										s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
+										jd('.pass-security\n\t.bar'
+											+ '\n\t\t.inner.verylow ' + s("Faible")
+											+ '\n\t\t.inner.low ' + s("Assez faible")
+											+ '\n\t\t.inner.medium ' + s("Moyen")
+											+ '\n\t\t.inner.high ' + s("Fort")
+											+ '\n\t\t.inner.veryhigh ' + s("Très fort")
+										)
+									]).flash
+								a.toggle-password-view.newPassword(ng-click="togglePasswordVisu('newPassword')")
+									+glyph('eye-open')
+								.cb
+							span
+							.check-pass
+								+formControl("password")(
+									autocomplete="off"
+									name="newPasswordAgain"
+									placeholder=s("Confirmer")
+									tooltip!=[
+										s("Mot de passe"),
+										s("Un mot de passe fort vous permetra de sécuriser votre compte wornet contre toute tentative de piratage. Pour un mot de passe fort, ajoutez des majuscules, des symboles et des chiffres.") +
+										jd('.pass-security\n\t.bar'
+											+ '\n\t\t.inner.verylow ' + s("Faible")
+											+ '\n\t\t.inner.low ' + s("Assez faible")
+											+ '\n\t\t.inner.medium ' + s("Moyen")
+											+ '\n\t\t.inner.high ' + s("Fort")
+											+ '\n\t\t.inner.veryhigh ' + s("Très fort")
+										)
+									]).flash
+								a.toggle-password-view.newPasswordAgain(ng-click="togglePasswordVisu('newPasswordAgain')")
+									+glyph('eye-open')
+								.cb
 				fieldset
 					h3
 						=userTexts.confidentialityTitle
