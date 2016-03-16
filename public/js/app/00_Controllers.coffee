@@ -1400,7 +1400,12 @@ Controllers =
 
 		search = null
 
+		$scope.firstSearch = false
+		$scope.pendingSearch = false
+
 		$scope.change = (query) ->
+			$scope.query.users = []
+			$scope.pendingSearch = true
 			if ajaxRequest
 				ajaxRequest.abort()
 			if search
@@ -1412,15 +1417,25 @@ Controllers =
 				query.action = '/user/first/' + keyWords
 				ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent keyWords
 				.done (data) ->
+					$scope.pendingSearch = false
+					$scope.firstSearch = true
 					if data.users
 						clearTimeout search
 						trackEvent 'Search', (if data.users.length then 'Results' else 'No results'), keyWords
 						$scope.query.users = data.users
 						refreshScope $scope
 			else
+				$scope.pendingSearch = false
+				$scope.firstSearch = false
 				$scope.query.users = []
 				query.action = '#'
 			return
+
+		$scope.dismissResults = ->
+			$('.suggests').hide()
+
+		$scope.showResults = ->
+			$('.suggests').show()
 
 		if ~((window.navigator || {}).userAgent || '').indexOf('Safari/')
 			delay 1, ->

@@ -144,50 +144,60 @@ block nav
 					+formControl()(
 						ng-model="query.content"
 						ng-change="change(query)"
+						ng-blur="dismissResults()"
+						ng-focus="showResults()"
 						placeholder=s("Recherchez vos amis")
 						)#search
 					+half('search')
 				.suggests
-					ul(dpr): li(ng-repeat="user in query.users")
-						a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend || canBeFollowed(user) || canBeUnfollowed(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/{{ user.uniqueURLID }}")
-							img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
-							.user-name
-								| {{ user.name.full }}
-								| &nbsp;
-								+glyph('circle-ok')(ng-if="user.certifiedAccount").certification-glyph
-							.user-points
-								| {{ user.points }}
-								=' '+s("points")
-						a.col-xs-3.suggest-action(ng-click="chatWith(user)" ng-if="user.isAFriend")
-							+half('comments')
-						a.col-xs-3.suggest-action(
-							ng-if="canBeAddedAsAFriend(user)"
-							ng-click="askForFriend(user)"
-							href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
-							data-target=".errors"
-							data-click="success"
-							data-param0=s("Demande envoyée à {{ user.name.full }}")
-							data-ask-for-friend="{{ user.hashedId }}"
-						)
-							+half('plus')
-						a.col-xs-3.suggest-action(
-							ng-if="user.askedForFriend && !canBeFollowed(user) && !canBeUnfollowed(user)"
-							data-target=".errors"
-							data-click="success"
-							data-param0=s("Demande annulée")
-							data-remove-friend-ask="{{ user.hashedId }}"
-						)
-							+half('remove')
-						a.col-xs-3.search-follow.suggest-action(
-							ng-show="canBeFollowed(user)"
-							data-follow="{{ user.hashedId }}"
-						)
-							+glyph("star-empty")
-						a.col-xs-3.search-unfollow.suggest-action(
-							ng-show="canBeUnfollowed(user)"
-							data-unfollow="{{ user.hashedId }}"
-						)
-							+glyph("star")
+					ul(dpr) 
+						li(ng-repeat="user in query.users")
+							a(ng-class="{ 'col-xs-9': user.isAFriend || canBeAddedAsAFriend(user) || user.askedForFriend || canBeFollowed(user) || canBeUnfollowed(user), 'col-xs-12': ! user.isAFriend && ! canBeAddedAsAFriend(user) }" href="/{{ user.uniqueURLID }}")
+								img(ng-src="{{ user.thumb50 }}" alt="{{ user.name.full }}" data-id="{{ user.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ user.name.full }}").thumb
+								.user-name
+									| {{ user.name.full }}
+									| &nbsp;
+									+glyph('circle-ok')(ng-if="user.certifiedAccount").certification-glyph
+								.user-points
+									| {{ user.points }}
+									=' '+s("points")
+							a.col-xs-3.suggest-action(ng-click="chatWith(user)" ng-if="user.isAFriend")
+								+half('comments')
+							a.col-xs-3.suggest-action(
+								ng-if="canBeAddedAsAFriend(user)"
+								ng-click="askForFriend(user)"
+								href="/user/friend/{{ user.hashedId }}/{{ user.name.full | urlencode }}"
+								data-target=".errors"
+								data-click="success"
+								data-param0=s("Demande envoyée à {{ user.name.full }}")
+								data-ask-for-friend="{{ user.hashedId }}"
+							)
+								+half('plus')
+							a.col-xs-3.suggest-action(
+								ng-if="user.askedForFriend && !canBeFollowed(user) && !canBeUnfollowed(user)"
+								data-target=".errors"
+								data-click="success"
+								data-param0=s("Demande annulée")
+								data-remove-friend-ask="{{ user.hashedId }}"
+							)
+								+half('remove')
+							a.col-xs-3.search-follow.suggest-action(
+								ng-show="canBeFollowed(user)"
+								data-follow="{{ user.hashedId }}"
+							)
+								+glyph("star-empty")
+							a.col-xs-3.search-unfollow.suggest-action(
+								ng-show="canBeUnfollowed(user)"
+								data-unfollow="{{ user.hashedId }}"
+							)
+								+glyph("star")
+						li(ng-if='!query.users.length && firstSearch && !pendingSearch')
+							a.col-xs-12.no-suggest
+								=s("Aucun résultat. N'hésitez pas à inviter votre ami à vous rejoindre.")
+						li(ng-if='pendingSearch')
+							a.col-xs-12.no-suggest
+								=s("Recherche en cours...")
+					
 			+friends('desktop navbar-nav navbar-right')
 	else
 		.main-padding
