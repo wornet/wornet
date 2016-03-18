@@ -228,6 +228,19 @@ Wornet = angular.module 'Wornet', [
 		$element.css 'height', height + 'px'
 		return
 
+.directive 'chunkPerLine', ->
+	link: ($scope, $element, $attributes) ->
+		$element.addClass "loading"
+		# Without it, $element.width() give errored value
+		delay 1, ->
+			containerWidth = $element.width()
+			chunkWidth = $attributes.chunkWidth * 1
+			minimalMargin = ($attributes.minimalMargin || 10) * 1
+			chunkPerLine = Math.floor containerWidth / ( chunkWidth + minimalMargin )
+			$element.attr 'chunkPerLine', chunkPerLine
+			$element.attr 'optimalMargin', Math.floor ( containerWidth / chunkPerLine ) - chunkWidth
+			$scope.$eval $attributes.adjustChunks
+
 .filter 'urlencode', ->
 	window.encodeURIComponent
 

@@ -1928,6 +1928,25 @@ Controllers =
 			else
 				-1
 			status.nbLike = 0 if status.nbLike < 0
+			if $('#displayLikers-' + status._id).length
+				nbMore = $('#displayLikers-' + status._id + ' .more-liker').data 'nb-more'
+				nbMore += if adding
+					1
+				else
+					-1
+				$('#displayLikers-' + status._id + ' .more-liker')
+					.data 'nb-more', nbMore
+					.html '+' + nbMore
+			else
+				if adding
+					status.likers.push $scope.myPublicInfos
+				else
+					newLikers = []
+					for liker in status.likers
+						if liker.hashedId isnt $scope.myPublicInfos.hashedId
+							newLikers.push liker
+					status.likers = newLikers
+
 			refreshScope $scope
 			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
@@ -1939,6 +1958,9 @@ Controllers =
 
 		$scope.nbCommentText = (status) ->
 			s("Commentaire|Commentaires", null, status.nbComment)
+
+		$scope.nbLikeText = (status) ->
+			s("{nbLike} personne aime ça|{nbLike} personnes aiment ca", nbLike: status.nbLike, status.nbLike)
 
 		$scope.nbShareText = (status) ->
 			s("Partage|Partages", null, status.nbShare)
@@ -2193,6 +2215,23 @@ Controllers =
 			$('.status-link-preview .dismiss-link-preview-image').hide()
 			rememberDissmissed[$scope.scannedLink.link] = "img"
 			return
+
+		$scope.adjustLikers = (statusId) ->
+			elem = $('.status-block[data-id="' + statusId + '"] .like-details .liker-photos')
+			nbChunk = 1 * elem.attr 'chunkPerLine'
+			optimalMargin = elem.attr 'optimalmargin'
+			if nbChunk
+				if optimalMargin
+					delay 1, ->
+						$('.status-block[data-id="' + statusId + '"] .like-details .liker-photos img').css 'margin-right', optimalMargin + "px"
+				for status in $scope.recentStatus
+					if status._id is statusId
+						if status.likers.length > nbChunk
+							status.likers = status.likers.slice 0, nbChunk - 1
+							refreshScope $scope
+							elem.append '<a id="displayLikers-' + status._id + '" ><div class="likers-photo more-liker" data-nb-more="' + (status.nbLike - nbChunk + 1) + '">+' + (status.nbLike - nbChunk + 1) + '</div></a>'
+							$('#displayLikers-' + status._id).on 'click', $scope.displaylikerList.bind $scope, status
+						elem.removeClass "loading"
 		return
 
 	Suggests: ($scope) ->
