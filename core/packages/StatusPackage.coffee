@@ -102,9 +102,10 @@ StatusPackage =
 													, (err, result) ->
 														tabLike = []
 														for idStatus in idsStatus
-															tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
+															tabLike[idStatus] ||= {likedByMe: false, nbLike: 0, likers:[]}
 														for like in result
 															tabLike[like.status].nbLike++
+															tabLike[like.status].likers.push like.user
 															if req.user
 																if equals req.user.id, like.user
 																	tabLike[like.status].likedByMe = true
@@ -133,6 +134,52 @@ StatusPackage =
 																	i++
 																	status = statusToTreat.copy()
 
+																	commonProcess = (status) ->
+																		status.nbImages = status.images.length
+																		status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
+																		status.isPlaceFollowed = if status.at and req.user
+																			req.user.followings.contains cesarRight(status.at.hashedId), equals
+																		else if req.user
+																			req.user.followings.contains cesarRight(status.author.hashedId), equals
+																		else
+																			false
+																		status.isMineOrAFriends = connectedPeopleAndMe.contains id
+																		status.nbShare = if status.shares
+																			status.shares.length
+																		else
+																			0
+																		if status.images.length
+																			Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
+																				warn err if err
+																				if photo
+																					PhotoPackage.fromAlbum photo.album, (err, photos) ->
+																						warn err if err
+																						photoToDisplay = null
+																						if photos and photos.length
+																							for photoAlbum in photos
+																								for photoStatus in status.images
+																									if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
+																										photoToDisplay = photoStatus
+																										break
+																						if !photoToDisplay
+																							photoToDisplay = status.images[0]
+																						status.images = [photoToDisplay]
+																						if -1 isnt photoToDisplay.src.indexOf "200x"
+																							photoToDisplay.src = photoToDisplay.src.replace "200x", ""
+																						recentStatusPublicData.push status
+																						if recentStatusPublicData.length is recentStatus.length
+																							data.recentStatus = recentStatusPublicData
+																							next()
+																						else
+																							treatStatus i
+																		else
+																			recentStatusPublicData.push status
+																			if recentStatusPublicData.length is recentStatus.length
+																				data.recentStatus = recentStatusPublicData
+																				next()
+																			else
+																				treatStatus i
+
 																	if statusToTreat.isAShare
 																		theOriginalStatus = null
 																		for anOriginalStatus in originalStatus
@@ -157,6 +204,23 @@ StatusPackage =
 																			status.shares = theOriginalStatus.shares
 																			status.shareDate = status.date
 																			status.date = theOriginalStatus.date
+																			if status.nbLike
+																				User.find
+																					_id: $in: tabLike[theOriginalStatus._id].likers
+																				.skip 0
+																				.limit config.wornet.limits.maxLikersPhotoDisplayed
+																				.exec (err, likers) ->
+																					warn err if err
+																					if likers
+																						status.likers = likers.map (user) ->
+																							user.publicInformations()
+																						commonProcess status
+																					else
+																						status.likers = []
+																						commonProcess status
+																			else
+																				status.likers = []
+																				commonProcess status
 																	else
 																		if statusToTreat.at is statusToTreat.author
 																			statusToTreat.at = null
@@ -173,50 +237,23 @@ StatusPackage =
 																			status.content = ''
 																		status.likedByMe = tabLike[status._id].likedByMe
 																		status.nbLike = tabLike[status._id].nbLike
-																	status.nbImages = status.images.length
-																	status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
-																	status.isPlaceFollowed = if status.at and req.user
-																		req.user.followings.contains cesarRight(status.at.hashedId), equals
-																	else if req.user
-																		req.user.followings.contains cesarRight(status.author.hashedId), equals
-																	else
-																		false
-																	status.isMineOrAFriends = connectedPeopleAndMe.contains id
-																	status.nbShare = if status.shares
-																		status.shares.length
-																	else
-																		0
-																	if status.images.length
-																		Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
-																			warn err if err
-																			if photo
-																				PhotoPackage.fromAlbum photo.album, (err, photos) ->
-																					warn err if err
-																					photoToDisplay = null
-																					if photos and photos.length
-																						for photoAlbum in photos
-																							for photoStatus in status.images
-																								if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
-																									photoToDisplay = photoStatus
-																									break
-																					if !photoToDisplay
-																						photoToDisplay = status.images[0]
-																					status.images = [photoToDisplay]
-																					if -1 isnt photoToDisplay.src.indexOf "200x"
-																						photoToDisplay.src = photoToDisplay.src.replace "200x", ""
-																					recentStatusPublicData.push status
-																					if recentStatusPublicData.length is recentStatus.length
-																						data.recentStatus = recentStatusPublicData
-																						next()
-																					else
-																						treatStatus i
-																	else
-																		recentStatusPublicData.push status
-																		if recentStatusPublicData.length is recentStatus.length
-																			data.recentStatus = recentStatusPublicData
-																			next()
+																		if status.nbLike
+																			User.find
+																				_id: $in: tabLike[status._id].likers
+																			.skip 0
+																			.limit config.wornet.limits.maxLikersPhotoDisplayed
+																			.exec (err, likers) ->
+																				warn err if err
+																				if likers.length
+																					status.likers = likers.map (user) ->
+																						user.publicInformations()
+																					commonProcess status
+																				else
+																					status.likers = []
+																					commonProcess status
 																		else
-																			treatStatus i
+																			status.likers = []
+																			commonProcess status
 																if recentStatus.length
 																	treatStatus 0
 																else

@@ -200,7 +200,6 @@ a.dismiss-link-preview
 	.btn
 		box-shadow none
 
-.like-zone
 .btn-action-comment
 .btn-action-share
 	cursor pointer
@@ -255,6 +254,23 @@ a.dismiss-link-preview
 	color $darkGray
 	border-bottom 1px solid $gray
 	margin-bottom $mainPadding
+
+.like-details
+	border-top 1px solid $gray
+	margin-top $mainPadding
+	padding-top $smallPadding
+	.likers-photo
+		border-radius(100%)
+		margin $smallPadding $mainPadding $smallPadding 0
+		size(30px)
+	.more-liker
+		display inline-block
+		size(30px)
+		background-color $gray
+		vertical-align middle
+		line-height 30px
+		text-align center
+		font-size 12px
 
 @media (max-width: 414px)
 	.status-actions

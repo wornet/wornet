@@ -550,6 +550,7 @@ UserPackage =
 									userTexts: userTexts()
 									users: users
 									publicUsers: publicUsers
+									myPublicInfos: if req.user then req.user.publicInformations() else null
 							if isAFriend is null
 								try
 									askedForFriend = if isMe or (! me) or empty me.friendAsks
