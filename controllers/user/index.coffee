@@ -627,7 +627,7 @@ module.exports = (router) ->
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video
-		video = extend user: req.user._id, req.body.video
+		video = extend user: req.user._id, req.data.video
 		Video.create video, ->
 			res.json()
 
