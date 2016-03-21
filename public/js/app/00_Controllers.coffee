@@ -2138,69 +2138,108 @@ Controllers =
 		lastDelayIds = []
 		lock = false
 		$scope.scannedLink = {}
+
+		videoHosts =
+			'//www.dailymotion.com/embed/video/$1': [
+				[/^dai\.ly\/([a-z0-9_-]+)/i, 1]
+				[/^dailymotion\.com\/video\/([a-z0-9_-]+)/i, 1]
+			]
+			'//www.youtube.com/embed/$1': [
+				[/^youtu\.be\/([a-z0-9_-]+)/i, 1]
+				[/^youtu\.be\/([a-z0-9_-]+)\?t=([0-9]+)/i, 2]
+				[/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i, 1]
+				[/^youtube\.com\/watch\?t=([0-9]+)(\&|\&amp;)v=([a-z0-9_-]+)/i, 3]
+			]
+		isItAVideo = (link) ->
+			linkToTest = link.replace /^(https?)?:?\/\//, ''
+			test = linkToTest.replace /^www\./, ''
+			video = do ->
+				for url, regexps of videoHosts
+					for regexp in regexps
+						fieldToKeep = regexp[1]
+						match = test.match regexp[0]
+						if match and match.length > 1
+							return url.replace '$1', match[fieldToKeep]
+				null
+			video
+
 		$scope.cancelCheckLink = ->
 			for lastDelayId in lastDelayIds
 				clearTimeout lastDelayId
+			$('.status-form .publish input').prop 'disabled', false
 			lastDelayIds = []
 
 		$scope.checkLink = ->
 			(' ' + $scope.status.content)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
-					lastDelayIds.push delay 1000, ->
-						if !lock
-							lock = true
-							Ajax.post '/user/status/link/meta',
-								data:
-									url: link
-								success: (res) ->
-									lock = false
-									if res.data
-										$scope.medias.links = [
-											href: link
-											https: /^https:\/\//.test link
-										]
-										data = res.data
+					video = isItAVideo link
+					unless video
+						lastDelayIds.push delay 500, ->
+							if !lock
+								$('.status-form .publish input').prop 'disabled', true
+								lock = true
+								Ajax.post '/user/status/link/meta',
+									data:
+										url: link
+									success: (res) ->
+										$('.status-form .publish input').prop 'disabled', false
+										lock = false
+										if res.data
+											$scope.medias.links = [
+												href: link
+												https: /^https:\/\//.test link
+											]
+											data = res.data
 
-										linkMinimized = link.replace /^https?:\/\//g, ''
-										if 0 < linkMinimized.indexOf '/'
-											linkMinimized = linkMinimized.substring 0, linkMinimized.indexOf '/'
-										$scope.scannedLink.link = linkMinimized
-										$scope.scannedLink.originalLink = link
-										unless rememberDissmissed[$scope.scannedLink.link] is "all"
-											$('.status-link-preview span.link-preview-link').html linkMinimized
-											$('.status-link-preview a.global-link-preview').attr('href', link)
+											linkMinimized = link.replace /^https?:\/\//g, ''
+											if 0 < linkMinimized.indexOf '/'
+												linkMinimized = linkMinimized.substring 0, linkMinimized.indexOf '/'
+											$scope.scannedLink.link = linkMinimized
+											$scope.scannedLink.originalLink = link
+											unless rememberDissmissed[$scope.scannedLink.link] is "all"
+												$('.status-link-preview span.link-preview-link').html linkMinimized
+												$('.status-link-preview a.global-link-preview').attr('href', link)
 
-											if data.ogImage and rememberDissmissed[$scope.scannedLink.link] isnt "img"
-												$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
-												$('.status-link-preview img.link-preview-image').show()
-												$scope.scannedLink.image = data.ogImage
-											else
-												$('.status-link-preview img.link-preview-image').removeAttr('src')
-												$('.status-link-preview img.link-preview-image').hide()
-												$('.status-link-preview .dismiss-link-preview-image').hide()
-												$scope.scannedLink.image = null
-											if data.ogTitle || data.title
-												$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
-												$scope.scannedLink.title = data.ogTitle || data.title
-											else
-												$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
-												$scope.scannedLink.title = null
-											if data.ogDescription || data.description
-												$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
-												$scope.scannedLink.description = data.ogDescription || data.description
-											else
-												$('.status-link-preview span.link-preview-description').html('')
-												$scope.scannedLink.description = null
-											if data.author
-												$('.status-link-preview span.link-preview-author').html(data.author)
-												$scope.scannedLink.author = data.author
-											else
-												$('.status-link-preview span.link-preview-author').html('')
-												$scope.scannedLink.author = null
-											$('.status-link-preview').show()
-											$('.status-link-preview .dismiss-link-preview-image').show()
-											$('.status-link-preview .dismiss-link-preview').show()
+												if data.ogImage and rememberDissmissed[$scope.scannedLink.link] isnt "img"
+													$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
+													$('.status-link-preview img.link-preview-image').show()
+													$scope.scannedLink.image = data.ogImage
+												else
+													$('.status-link-preview img.link-preview-image').removeAttr('src')
+													$('.status-link-preview img.link-preview-image').hide()
+													$('.status-link-preview .dismiss-link-preview-image').hide()
+													$scope.scannedLink.image = null
+												if data.ogTitle || data.title
+													$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
+													$scope.scannedLink.title = data.ogTitle || data.title
+												else
+													$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
+													$scope.scannedLink.title = null
+												if data.ogDescription || data.description
+													$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
+													$scope.scannedLink.description = data.ogDescription || data.description
+												else
+													$('.status-link-preview span.link-preview-description').html('')
+													$scope.scannedLink.description = null
+												if data.author
+													$('.status-link-preview span.link-preview-author').html(data.author)
+													$scope.scannedLink.author = data.author
+												else
+													$('.status-link-preview span.link-preview-author').html('')
+													$scope.scannedLink.author = null
+												$('.status-link-preview').show()
+												$('.status-link-preview .dismiss-link-preview-image').show()
+												$('.status-link-preview .dismiss-link-preview').show()
+					else
+						$scope.scannedLink = {}
+						alreadyHere = false
+						for vid in $scope.medias.videos
+							if vid.href is video
+								alreadyHere = true
+						if !alreadyHere
+							$scope.medias.videos.push
+								href: video
 
 		rememberDissmissed = {}
 		$scope.dismissAllPreview = ->

@@ -713,7 +713,11 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 			else
 				$scope.medias.videos.push
 					href: video
-			Ajax.put '/user/video/add', video: url: video
+			Ajax.put '/user/video/add',
+				data:
+					video:
+						url: video
+						referencedStatus: $scope.newStatusId || null
 			return
 		else
 			# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
