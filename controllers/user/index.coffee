@@ -1026,7 +1026,10 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isMe = userHashedId is req.user.hashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					where = follower: cesarRight userHashedId
@@ -1065,7 +1068,10 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isMe = userHashedId is req.user.hashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					where = followed: cesarRight userHashedId
@@ -1105,7 +1111,10 @@ module.exports = (router) ->
 		id = cesarRight userHashedId
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: id
-			isMe = req.user.hashedId is userHashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					offsetObj = new ObjectId(offset).path
