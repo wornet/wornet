@@ -2170,9 +2170,11 @@ Controllers =
 			lastDelayIds = []
 
 		$scope.checkLink = ->
+			linkDetected = false
 			(' ' + $scope.status.content)
 				.replace /(\s)www\./g, '$1http://www.'
 				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+					linkDetected = true
 					video = isItAVideo link
 					unless video
 						lastDelayIds.push delay 500, ->
@@ -2240,6 +2242,9 @@ Controllers =
 						if !alreadyHere
 							$scope.medias.videos.push
 								href: video
+			unless linkDetected
+				$scope.medias.videos = []
+				$scope.medias.link = []
 
 		rememberDissmissed = {}
 		$scope.dismissAllPreview = ->
