@@ -873,11 +873,12 @@ Controllers =
 
 		$scope.inFade = (action) ->
 			$children = $ '#media-viewer > * > * img.big'
-			$children.fadeOut 100, ->
+			$children.fadeOut 150, ->
 				action()
-				delay 20, ->
-					$children.fadeIn 100
-					return
+				resizeViewer()
+				delay 200, ->
+					testSize()
+					$children.fadeIn 150
 				return
 			return
 
@@ -888,9 +889,6 @@ Controllers =
 					$scope.mediaNext = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaPrev
 					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
 
 				delay 200, ->
 					if prev = getPrev()
@@ -906,9 +904,6 @@ Controllers =
 					$scope.mediaPrev = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaNext
 					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
 
 				delay 200, ->
 					if next = getNext()
@@ -948,28 +943,43 @@ Controllers =
 					return
 			return
 
-		resizeViewer = ->
+		resizeViewer = (reset = false)->
 			$mediaViewer = $ '#media-viewer'
 			$img = $mediaViewer.find 'img.big'
+			$img
 			gap = 20
+			$modalDialog = $mediaViewer.find('.modal-dialog')
+			$modalBody = $mediaViewer.find('.modal-body')
+			headerHeight = $mediaViewer.find('.modal-header').outerHeight()
+			footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
 
 			if window.isMobile()
 				newHeight = window.innerHeight
 				newWidth = window.innerWidth
+				$modalDialog.width newWidth
+				$modalDialog.height newHeight
 			else
 				$rawImg = new Image
 				$rawImg.src = $img.attr 'src'
 
-				newHeight = Math.max(180, $rawImg.height + gap * 2)
-				newWidth = Math.max(180, $rawImg.width + gap * 2)
+				newWidth = Math.max(180, Math.min(window.innerWidth, $rawImg.width + gap * 2))
 
-			$mediaViewer.find('.modal-dialog')
-				.height newHeight
-				.width newWidth
+				if ($rawImg.height + 15 * 2 + headerHeight + footerHeight + 30 * 2) > window.innerHeight
+					newBodyHeight = window.innerHeight - (headerHeight + footerHeight + 30 * 2 + 30)
+					newDialogHeight = window.innerHeight - (30 * 2)
+				else
+					newBodyHeight = $rawImg.height + (15 * 2)
+					newDialogHeight = $rawImg.height + (15 * 2 + headerHeight + footerHeight)
+
+				if reset or newDialogHeight > $modalDialog.height()
+					$modalDialog.height newDialogHeight
+				if reset or newBodyHeight > $modalBody.height()
+					$modalBody.height newBodyHeight
+				if reset or newWidth > $modalDialog.width()
+					$modalDialog.width newWidth
 
 			if window.isMobile()
-				headerHeight = $mediaViewer.find('.modal-header').outerHeight()
-				footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
+
 				bodyHeight = newHeight - (footerHeight + headerHeight) - 2 # 2 * border 1px
 				$mediaViewer.find('.modal-body')
 					.height bodyHeight
@@ -982,7 +992,9 @@ Controllers =
 			if $img.length
 				$mediaViewer
 					.find 'img.big, a.next, a.prev'
-					.css 'max-height', Math.max(180, window.innerHeight - 180) + 'px'
+					.css 'max-height', Math.max(180, window.innerHeight - 195) + 'px'
+				imgMargin = ($mediaViewer.find('.modal-body').height() - $img.height()) / 2
+				$img.css 'margin-top', imgMargin
 				w = $img.width()
 				h = $img.height()
 				if w * h
@@ -1073,7 +1085,7 @@ Controllers =
 
 						refreshScope $scope
 						delay 10, ->
-							resizeViewer()
+							resizeViewer true
 							delay 200, ->
 								testSize()
 					return
