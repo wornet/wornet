@@ -2288,6 +2288,10 @@ Controllers =
 							elem.append '<a id="displayLikers-' + status._id + '" ><div class="likers-photo more-liker" data-nb-more="' + (status.nbLike - nbChunk + 1) + '">+' + (status.nbLike - nbChunk + 1) + '</div></a>'
 							$('#displayLikers-' + status._id).on 'click', $scope.displaylikerList.bind $scope, status
 						elem.removeClass "loading"
+
+		# $scope.testsms = ->
+		# 	Ajax.get 'user/test/sms', (result) ->
+		# 		return
 		return
 
 	Suggests: ($scope) ->
