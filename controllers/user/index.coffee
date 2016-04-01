@@ -15,6 +15,17 @@ module.exports = (router) ->
 	templateFolder = 'user'
 	signinUrl = '/user/signin'
 
+
+	if config.env.development
+		router.get '/test/sms', (req, res) ->
+			titre = "Super Event Trop Genial"
+			url = "https://www.wornet.fr/move/event/98413141316987"
+			NoticePackage.notify [req.user._id], null,
+				action: 'sms'
+				author: req.user._id
+				notice: ["Je viens de créer l'évènement " + titre + " rejoins moi vite en cliquant ici : " + url]
+
+
 	pm = new PagesManager router, templateFolder
 
 	# When user submit his e-mail and password to log in
