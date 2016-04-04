@@ -368,6 +368,7 @@ module.exports = (router) ->
 				else
 					next()
 			else
+				userModifications.allowFriendPostOnMe = true
 				if req.user.certifiedAccount is true
 					CertificationAsk.update
 						user: req.user.id
