@@ -2222,6 +2222,7 @@ Controllers =
 												if data.ogImage and rememberDissmissed[$scope.scannedLink.link] isnt "img"
 													$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
 													$('.status-link-preview img.link-preview-image').show()
+													$('.status-link-preview .dismiss-link-preview-image').show()
 													$scope.scannedLink.image = data.ogImage
 												else
 													$('.status-link-preview img.link-preview-image').removeAttr('src')
@@ -2247,7 +2248,6 @@ Controllers =
 													$('.status-link-preview span.link-preview-author').html('')
 													$scope.scannedLink.author = null
 												$('.status-link-preview').show()
-												$('.status-link-preview .dismiss-link-preview-image').show()
 												$('.status-link-preview .dismiss-link-preview').show()
 					else
 						$scope.scannedLink = {}
