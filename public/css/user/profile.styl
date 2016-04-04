@@ -186,10 +186,11 @@ $progressRadialWidth = 4px
 		size($photoWidth / 2, $photoHeight / 2)
 		.btn
 			width calc(100% - 8px)
+			padding $smallPadding
+			span.halflings
+				margin-right 4px
 			i
 				display none
-	.photo-options .btn
-		width ($photoWidth / 2)
 	.profile-edit
 		.long
 			display none
@@ -205,6 +206,8 @@ $progressRadialWidth = 4px
 				width 100%
 		.biography
 			margin-left 0
+		.add-friend
+			padding 4px $smallPadding
 
 	.profile
 		padding-bottom $smallPadding
@@ -238,7 +241,7 @@ $progressRadialWidth = 4px
 
 	.photo-options
 		float none
-		width ($photoWidth / 2) + $bigPadding
+		width 150px
 		margin 0 auto 10px
 
 	#profile-photo
