@@ -1446,9 +1446,11 @@ Controllers =
 		$scope.dismissResults = ->
 			delay 150, ->
 				$('.suggests').hide()
+			return
 
 		$scope.showResults = ->
 			$('.suggests').show()
+			return
 
 		if ~((window.navigator || {}).userAgent || '').indexOf('Safari/')
 			delay 1, ->
