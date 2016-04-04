@@ -3,7 +3,8 @@ extends ../layouts/user
 block body
 	- var init = "statusToDisplay = " + JSON.stringify(status) + ";"
 	- init += "setMonoStatut(true, statusToDisplay);"
-	- init += "userConnected=" + JSON.stringify(user)
+	- init += "userConnected=" + !!user + ";"
+	- init += "myPublicInfos=" + JSON.stringify(myPublicInfos)
 	.col-sm-3
 	.col-sm-6.well.loading.loading-big-height.fit-to-bottom.macro(ng-controller="StatusCtrl" ng-init=init)
 		.status-block(data-id="{{ statusToDisplay._id }}" ng-if="(statusToDisplay.images && statusToDisplay.images.length) || (statusToDisplay.links && statusToDisplay.links.length) || (statusToDisplay.videos && statusToDisplay.videos.length) || (statusToDisplay.content && statusToDisplay.content.length)")
@@ -81,6 +82,12 @@ block body
 					h3=s("Liens")
 					a(ng-repeat="link in statusToDisplay.links" target="_blank" href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 			.cb
+			.like-details(ng-if="statusToDisplay.nbLike")
+				.nb-like
+					| {{ nbLikeText(statusToDisplay) }}
+				.liker-photos(chunk-per-line chunk-width=30 adjust-chunks="adjustLikers('{{ statusToDisplay._id }}')")
+					a(ng-repeat="liker in statusToDisplay.likers" ng-href="/{{ liker.uniqueURLID }}")
+						img.likers-photo( ng-src="{{ liker.thumb50 }}" data-thumb-size="50"  title="{{ liker.name.full }}")
 			div(ng-if="statusToDisplay._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "'")
 				if config.wornet.comments.enabled || config.wornet.plusW.enabled
 					.col-xs-12.status-actions
