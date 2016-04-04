@@ -1444,7 +1444,7 @@ Controllers =
 			return
 
 		$scope.dismissResults = ->
-			delay 150, ->
+			delay 200, ->
 				$('.suggests').hide()
 			return
 
