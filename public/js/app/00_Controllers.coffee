@@ -2280,7 +2280,11 @@ Controllers =
 				if optimalMargin
 					delay 1, ->
 						$('.status-block[data-id="' + statusId + '"] .like-details .liker-photos img').css 'margin-right', optimalMargin + "px"
-				for status in $scope.recentStatus
+				statusList = if $scope.monoStatut
+					[$scope.statusToDisplay]
+				else
+					$scope.recentStatus
+				for status in statusList
 					if status._id is statusId
 						if status.likers.length > nbChunk
 							status.likers = status.likers.slice 0, nbChunk - 1

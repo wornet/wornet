@@ -138,9 +138,10 @@ module.exports = (router) ->
 								status: id
 							, (err, result) ->
 								tabLike = []
-								tabLike[id] ||= {likedByMe: false, nbLike: 0}
+								tabLike[id] ||= {likedByMe: false, nbLike: 0, likers:[]}
 								for like in result
 									tabLike[id].nbLike++
+									tabLike[id].likers.push like.user
 									if req.user and equals req.user.id, like.user
 										tabLike[id].likedByMe = true
 								status.likedByMe = tabLike[id].likedByMe
@@ -151,8 +152,28 @@ module.exports = (router) ->
 									for image in status.images
 										if -1 isnt image.src.indexOf "200x"
 											image.src =image.src.replace "200x", ""
-								res.render 'user/status',
-									status: status
+								next = ->
+									res.render 'user/status',
+										status: status
+										myPublicInfos: req.user.publicInformations()
+								if status.nbLike
+									User.find
+										_id: $in: tabLike[id].likers
+									.skip 0
+									.limit config.wornet.limits.maxLikersPhotoDisplayed
+									.exec (err, likers) ->
+										warn err if err
+										if likers
+											status.likers = likers.map (user) ->
+												user.publicInformations()
+											next status
+										else
+											status.likers = []
+											next status
+								else
+									status.likers = []
+									next status
+
 						else
 							res.notFound()
 		else
