@@ -121,7 +121,7 @@
 					else 
 						if !isAFriend && !isAPublicAccount
 							br
-							a.add-friend.add-friend-ask.destroyable.inline-button.btn.btn-primary(
+							a.add-friend.add-friend-ask.add-private-friend.destroyable.inline-button.btn.btn-primary(
 								href="/user/friend/" + profile.hashedId + "/" + encodeURIComponent(profile.fullName)
 								data-target=".profileError"
 								data-click="success"
@@ -131,7 +131,7 @@
 							)
 								+half('user')
 								=' '+strtoupper(s("Ajouter à la liste d'amis"))
-							a.add-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
+							a.add-friend.add-private-friend.remove-friend-ask.destroyable.inline-button.btn.btn-primary(
 								data-target=".profileError"
 								data-click="success"
 								data-param0=s("Demande annulée")
@@ -140,6 +140,10 @@
 							)
 								+half('remove')
 								=' '+strtoupper(s("Annuler la demande"))
+							br
+							.private-profil
+								+glyph('lock')
+								=s('Cet utilisateur est "privé"')
 			if isAFriend || isMe || isAPublicAccount
 				if ! profile.birthDate || profile.maskBirthDate
 					if profile.birthCity
