@@ -1444,7 +1444,8 @@ Controllers =
 			return
 
 		$scope.dismissResults = ->
-			$('.suggests').hide()
+			delay 150, ->
+				$('.suggests').hide()
 
 		$scope.showResults = ->
 			$('.suggests').show()
@@ -2293,9 +2294,9 @@ Controllers =
 							$('#displayLikers-' + status._id).on 'click', $scope.displaylikerList.bind $scope, status
 						elem.removeClass "loading"
 
-		# $scope.testsms = ->
-		# 	Ajax.get 'user/test/sms', (result) ->
-		# 		return
+		$scope.testsms = ->
+			Ajax.get 'user/test/sms', (result) ->
+				return
 		return
 
 	Suggests: ($scope) ->

@@ -70,6 +70,8 @@ fieldset.status-form
 	.publish
 		input(autofocus type="button" tabindex=strval(tabindex+2) value=s("Publier") ng-click="send(status)").btn.btn-primary
 
+	if config.env.development
+		input.btn(value="TEST SMS" type="button" ng-click="testsms()")
 		
 	//- h3=strtoupper(s("Publier un média"))
 	//- div(ng-switch="media.step")
