@@ -2184,7 +2184,6 @@ Controllers =
 		$scope.cancelCheckLink = ->
 			for lastDelayId in lastDelayIds
 				clearTimeout lastDelayId
-			$('.status-form .publish input').prop 'disabled', false
 			lastDelayIds = []
 
 		$scope.checkLink = ->
