@@ -23,7 +23,7 @@ module.exports = (router) ->
 			NoticePackage.notify [req.user._id], null,
 				action: 'sms'
 				author: req.user._id
-				notice: ["Je viens de créer l'évènement " + titre + " rejoins moi vite en cliquant ici : " + url]
+				notice: ["Je viens de créer l'évènement " + titre + " rejoins moi vite en cliquant ici : " + url, "sms"]
 
 
 	pm = new PagesManager router, templateFolder
