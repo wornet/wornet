@@ -561,7 +561,7 @@ Controllers =
 						motif: $scope.contact.motif
 						message: $scope.contact.message
 					success: ->
-						toastr.success s("Votre message a bien été envoyé. Merci !"), s "C'est fait"
+						toastr.success s("Votre message a bien été envoyé. Merci !"), s("C'est fait")
 						$('#contact [data-dismiss="modal"]:first').click()
 						$scope.contact = {}
 
@@ -1745,7 +1745,7 @@ Controllers =
 				.parents('ul.dropdown-menu:first').trigger 'click'
 			status.reported = true
 			Ajax.get '/report/' + status._id, ->
-				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s "C'est fait"
+				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s("C'est fait")
 			return
 
 		$scope.sharedAlbumDefaultName = s("Publications d'amis")
@@ -1831,7 +1831,7 @@ Controllers =
 						if window.refreshMediaAlbums
 							window.refreshMediaAlbums()
 						resetStatus()
-						toastr.success s("Ce statut a été publié sur votre profil."), s "C'est fait"
+						toastr.success s("Ce statut a été publié sur votre profil."), s("C'est fait")
 
 				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
 					$.extend data.data,
@@ -1998,7 +1998,7 @@ Controllers =
 					success: (result) ->
 						status.nbShare++
 						refreshScope $scope
-						toastr.success s("Ce statut a été partagé sur votre profil."), s "C'est fait"
+						toastr.success s("Ce statut a été partagé sur votre profil."), s("C'est fait")
 
 
 		at = getCachedData 'at'

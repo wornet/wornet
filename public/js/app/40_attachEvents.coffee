@@ -913,7 +913,7 @@ do ->
 						formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 						xhr.open 'POST', $form.prop('action'), true
 						xhr.onload = ->
-							toastr.success s("Votre demande de certification a bien été envoyée. Merci !"), s "C'est fait"
+							toastr.success s("Votre demande de certification a bien été envoyée. Merci !"), s("C'est fait")
 							$('#certification [data-dismiss="modal"]:first').click()
 							$('.certification-link').hide()
 							$scope.initModal()
