@@ -1978,7 +1978,7 @@ Controllers =
 			s("Commentaire|Commentaires", null, status.nbComment)
 
 		$scope.nbLikeText = (status) ->
-			s("{nbLike} personne aime ça|{nbLike} personnes aiment ca", nbLike: status.nbLike, status.nbLike)
+			s("{nbLike} personne aime ça|{nbLike} personnes aiment ça", nbLike: status.nbLike, status.nbLike)
 
 		$scope.nbShareText = (status) ->
 			s("Partage|Partages", null, status.nbShare)
