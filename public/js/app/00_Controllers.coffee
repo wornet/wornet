@@ -1831,6 +1831,7 @@ Controllers =
 						if window.refreshMediaAlbums
 							window.refreshMediaAlbums()
 						resetStatus()
+						toastr.success s("Ce statut a été publié sur votre profil."), s "C'est fait"
 
 				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
 					$.extend data.data,
