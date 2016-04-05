@@ -1032,11 +1032,12 @@ Controllers =
 			if type is 'image'
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 				id = idFromUrl media.src
-			deletableMedia =
-				id: id
-				type: type
-				statusId: media.statusId || null
-				mediaId: media._id || null
+			if postition is "middle"
+				deletableMedia =
+					id: id
+					type: type
+					statusId: media.statusId || null
+					mediaId: media._id || null
 			if id
 				$.extend media,
 					date: Date.fromId(id).toISOString()
