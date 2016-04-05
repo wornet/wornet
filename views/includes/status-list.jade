@@ -60,7 +60,7 @@
 	.status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked' && !status.edit" ng-bind-html="status.content")
 	.status-content-edit(ng-if="status.edit")
 		+form()(ng-submit="status.edit = false; updateStatus(status); status.originalContent = status.content;").cb
-			textarea.form-control(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5')
+			textarea.form-control.counter(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5' maxlength=config.wornet.limits.displayStatusLength)
 			input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="toggleStatusState(status, false)" value=s("Annuler"))
 			input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
 	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
