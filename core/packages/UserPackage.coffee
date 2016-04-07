@@ -177,6 +177,8 @@ UserPackage =
 						'name.first': regexp
 					,
 						'name.last': regexp
+					,
+						'name.public': regexp
 					]
 					_id: $nin: exclude
 				.limit remind
@@ -548,6 +550,7 @@ UserPackage =
 									userTexts: userTexts()
 									users: users
 									publicUsers: publicUsers
+									myPublicInfos: if req.user then req.user.publicInformations() else null
 							if isAFriend is null
 								try
 									askedForFriend = if isMe or (! me) or empty me.friendAsks
@@ -646,7 +649,7 @@ UserPackage =
 					unless User.schema.path(key).enumValues.contains val
 						val = null
 					userModifications[key] = val
-				when 'email', 'password'
+				when 'email'
 					if val?
 						userModifications[key] = val
 				when 'city', 'birthCity', 'job', 'jobPlace', 'biography', 'sex'

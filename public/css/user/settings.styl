@@ -48,6 +48,23 @@
 		label
 			width 24%
 
+	.password-fields
+		display none
+
+		input.form-control
+			width calc(50% - 34px)
+			float left
+
+		a.toggle-password-view span
+			width auto
+			display inline-block
+			margin $mainPadding
+			padding $smallPadding 0
+			color $nearlyBlack
+
+	.tooltip
+		margin-left calc(50% - 240px - 10px)
+
 
 @media (max-width: 414px)
 	.settings-edit
@@ -64,3 +81,7 @@
 			margin $smallPadding 0
 		span label
 			width 20%
+
+		.password-fields
+			input.form-control
+				width calc(100% - 35px)

@@ -561,7 +561,7 @@ Controllers =
 						motif: $scope.contact.motif
 						message: $scope.contact.message
 					success: ->
-						toastr.success s("Votre message a bien été envoyé. Merci !"), s "C'est fait"
+						toastr.success s("Votre message a bien été envoyé. Merci !"), s("C'est fait")
 						$('#contact [data-dismiss="modal"]:first').click()
 						$scope.contact = {}
 
@@ -573,7 +573,6 @@ Controllers =
 		return
 
 	Event: ($scope, $http) ->
-
 		loadTemplate = ->
 			$scope.template = template (if window.isMobile()
 				'/mobile'
@@ -699,6 +698,11 @@ Controllers =
 	Head: ($scope) ->
 		$scope.$on 'enableSmilies', (e, enabled) ->
 			$scope.smilies = enabled
+
+		if window.isMobile() and $('#shutter').css("width") isnt "0px"
+			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
+			$('#directives-calendar > .well').removeClass 'col-xs-9'
+			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
 
 	Invite: ($scope) ->
 		s = textReplacements
@@ -869,11 +873,12 @@ Controllers =
 
 		$scope.inFade = (action) ->
 			$children = $ '#media-viewer > * > * img.big'
-			$children.fadeOut 100, ->
+			$children.fadeOut 150, ->
 				action()
-				delay 20, ->
-					$children.fadeIn 100
-					return
+				resizeViewer()
+				delay 200, ->
+					testSize()
+					$children.fadeIn 150
 				return
 			return
 
@@ -884,9 +889,6 @@ Controllers =
 					$scope.mediaNext = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaPrev
 					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
 
 				delay 200, ->
 					if prev = getPrev()
@@ -902,9 +904,6 @@ Controllers =
 					$scope.mediaPrev = $scope.loadedMedia
 					$scope.loadedMedia = $scope.mediaNext
 					refreshScope $scope
-					resizeViewer()
-					delay 200, ->
-						testSize()
 
 				delay 200, ->
 					if next = getNext()
@@ -944,28 +943,43 @@ Controllers =
 					return
 			return
 
-		resizeViewer = ->
+		resizeViewer = (reset = false)->
 			$mediaViewer = $ '#media-viewer'
 			$img = $mediaViewer.find 'img.big'
+			$img
 			gap = 20
+			$modalDialog = $mediaViewer.find('.modal-dialog')
+			$modalBody = $mediaViewer.find('.modal-body')
+			headerHeight = $mediaViewer.find('.modal-header').outerHeight()
+			footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
 
 			if window.isMobile()
 				newHeight = window.innerHeight
 				newWidth = window.innerWidth
+				$modalDialog.width newWidth
+				$modalDialog.height newHeight
 			else
 				$rawImg = new Image
 				$rawImg.src = $img.attr 'src'
 
-				newHeight = Math.max(180, $rawImg.height + gap * 2)
-				newWidth = Math.max(180, $rawImg.width + gap * 2)
+				newWidth = Math.max(180, Math.min(window.innerWidth, $rawImg.width + gap * 2))
 
-			$mediaViewer.find('.modal-dialog')
-				.height newHeight
-				.width newWidth
+				if ($rawImg.height + 15 * 2 + headerHeight + footerHeight + 30 * 2) > window.innerHeight
+					newBodyHeight = window.innerHeight - (headerHeight + footerHeight + 30 * 2 + 30)
+					newDialogHeight = window.innerHeight - (30 * 2)
+				else
+					newBodyHeight = $rawImg.height + (15 * 2)
+					newDialogHeight = $rawImg.height + (15 * 2 + headerHeight + footerHeight)
+
+				if reset or newDialogHeight > $modalDialog.height()
+					$modalDialog.height newDialogHeight
+				if reset or newBodyHeight > $modalBody.height()
+					$modalBody.height newBodyHeight
+				if reset or newWidth > $modalDialog.width()
+					$modalDialog.width newWidth
 
 			if window.isMobile()
-				headerHeight = $mediaViewer.find('.modal-header').outerHeight()
-				footerHeight = $mediaViewer.find('.modal-footer').outerHeight()
+
 				bodyHeight = newHeight - (footerHeight + headerHeight) - 2 # 2 * border 1px
 				$mediaViewer.find('.modal-body')
 					.height bodyHeight
@@ -978,7 +992,9 @@ Controllers =
 			if $img.length
 				$mediaViewer
 					.find 'img.big, a.next, a.prev'
-					.css 'max-height', Math.max(180, window.innerHeight - 180) + 'px'
+					.css 'max-height', Math.max(180, window.innerHeight - 195) + 'px'
+				imgMargin = ($mediaViewer.find('.modal-body').height() - $img.height()) / 2
+				$img.css 'margin-top', imgMargin
 				w = $img.width()
 				h = $img.height()
 				if w * h
@@ -1016,11 +1032,12 @@ Controllers =
 			if type is 'image'
 				media.src = (media.src || media.photo).replace /\/[0-9]+x([^\/]+)$/g, '/$1'
 				id = idFromUrl media.src
-			deletableMedia =
-				id: id
-				type: type
-				statusId: media.statusId || null
-				mediaId: media._id || null
+			if position is "middle"
+				deletableMedia =
+					id: id
+					type: type
+					statusId: media.statusId || null
+					mediaId: media._id || null
 			if id
 				$.extend media,
 					date: Date.fromId(id).toISOString()
@@ -1069,7 +1086,7 @@ Controllers =
 
 						refreshScope $scope
 						delay 10, ->
-							resizeViewer()
+							resizeViewer true
 							delay 200, ->
 								testSize()
 					return
@@ -1396,7 +1413,12 @@ Controllers =
 
 		search = null
 
+		$scope.firstSearch = false
+		$scope.pendingSearch = false
+
 		$scope.change = (query) ->
+			$scope.query.users = []
+			$scope.pendingSearch = true
 			if ajaxRequest
 				ajaxRequest.abort()
 			if search
@@ -1408,14 +1430,28 @@ Controllers =
 				query.action = '/user/first/' + keyWords
 				ajaxRequest = Ajax.get '/user/search/' + encodeURIComponent keyWords
 				.done (data) ->
+					$scope.pendingSearch = false
+					$scope.firstSearch = true
 					if data.users
 						clearTimeout search
 						trackEvent 'Search', (if data.users.length then 'Results' else 'No results'), keyWords
 						$scope.query.users = data.users
 						refreshScope $scope
 			else
+				$scope.pendingSearch = false
+				$scope.firstSearch = false
 				$scope.query.users = []
 				query.action = '#'
+			return
+
+		$scope.dismissResults = ->
+			delay 200, ->
+				$('.suggests').hide()
+				return
+			return
+
+		$scope.showResults = ->
+			$('.suggests').show()
 			return
 
 		if ~((window.navigator || {}).userAgent || '').indexOf('Safari/')
@@ -1461,10 +1497,17 @@ Controllers =
 
 		$scope.generateURLVisu()
 
-		if window.isMobile() and $('#shutter').css("width") isnt "0px"
-			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
-			$('#directives-calendar > .well').removeClass 'col-xs-9'
-			Ajax.post '/user/shutter/' + (if $('#shutter').is '.opened-shutter' then 'open' else 'close')
+		$scope.showPasswordFields = ->
+			$('.password-fields').show()
+			$('.change-password-link').hide()
+			return
+
+		$scope.togglePasswordVisu = (inputName) ->
+			inputType = $('input.form-control[name="' + inputName + '"]').attr 'type'
+			$('input.form-control[name="' + inputName + '"]').attr 'type', if inputType is "password" then "text" else "password"
+			$('a.toggle-password-view.' + inputName + ' span.glyphicons')[if inputType is "password" then "removeClass" else "addClass"] 'glyphicons-eye-open'
+			$('a.toggle-password-view.' + inputName + ' span.glyphicons')[if inputType isnt "password" then "removeClass" else "addClass"] 'glyphicons-eye-close'
+			return
 
 		return
 
@@ -1517,13 +1560,14 @@ Controllers =
 
 		return
 
-	Status: ($scope, smiliesService, statusService, paginate) ->
+	Status: ($scope, smiliesService, statusService) ->
 		s = textReplacements
 		initMedias = ->
 			$scope.medias =
 				links: []
 				images: []
 				videos: []
+			$scope.scannedLink = {}
 			return
 
 		$scope.displayPlayer = ! navigator.standalone
@@ -1560,6 +1604,13 @@ Controllers =
 				data[key] and typeof data[key] is 'object' and data[key].length
 			if has 'chat'
 				chatService.all data.chat
+			if data.newStatus and has 'recentStatus'
+				i = 0
+				for recStatus in data.recentStatus
+					if recStatus._id is data.newStatus._id
+						data.recentStatus[i] = data.newStatus
+						break
+					i++
 			if has 'recentStatus'
 				$scope.recentStatus ||= []
 				recentStatusIds = $scope.recentStatus.map (status) ->
@@ -1694,7 +1745,7 @@ Controllers =
 				.parents('ul.dropdown-menu:first').trigger 'click'
 			status.reported = true
 			Ajax.get '/report/' + status._id, ->
-				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s "C'est fait"
+				toastr.success s("Une alerte a été envoyée aux modérateurs de Wornet. Merci pour votre aide."), s("C'est fait")
 			return
 
 		$scope.sharedAlbumDefaultName = s("Publications d'amis")
@@ -1757,24 +1808,37 @@ Controllers =
 			return
 
 		$scope.send = (status) ->
-			if status.content || $scope.medias.images.length
-				scanAllLinks $scope, status.content || ''
-				data = data:
-					status: status
-					at: at
-					medias: $scope.medias || null
+			if status.content || $scope.medias.images.length || $scope.medias.links.length
+				data =
+					data:
+						status: status
+						at: at
+						medias: $scope.medias || null
+						scannedLink: $scope.scannedLink
+					success: (data) ->
+						$scope.newStatusId = data.newStatus._id
+						if $scope.scannedLink && !scanAllLinks $scope, status.content || ''
+							Ajax.put '/user/link/add',
+								data:
+									link:
+										name: $scope.scannedLink.link
+										url: $scope.scannedLink.originalLink.replace /^(https?)?:?\/\//, ''
+										https: $scope.scannedLink.originalLink.substr(0, 5) is 'https'
+										referencedStatus: data.newStatus._id
+										metaData: $scope.scannedLink
+						$('.points').trigger 'updatePoints', [data.newStatus, true]
+						setRecentStatus data, false
+						if window.refreshMediaAlbums
+							window.refreshMediaAlbums()
+						resetStatus()
+						toastr.success s("Ce statut a été publié sur votre profil."), s("C'est fait")
+
 				if $scope.status.lastSelectedAlbum and $scope.status.lastSelectedAlbum._id is "new" and $scope.status.newAlbum and $("#album-name").val() isnt ""
 					$.extend data.data,
 						album:
 							name: $("#album-name").val()
 							description: $("#album-description").val()
-				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data,
-					success: (data) ->
-						$('.points').trigger 'updatePoints', [data.newStatus, true]
-						setRecentStatus data, false
-						if window.refreshMediaAlbums
-							window.refreshMediaAlbums()
-				resetStatus()
+				Ajax.put '/user/status/add' + getLastestUpdateChatId() + (if at then '/' + at else ''),	data
 
 			return
 
@@ -1784,6 +1848,7 @@ Controllers =
 			$scope.status.newAlbum = false
 			$("#album-name").val("")
 			$("#album-description").val("")
+			$('.status-link-preview').hide()
 			initMedias()
 			refreshScope $scope
 
@@ -1881,6 +1946,25 @@ Controllers =
 			else
 				-1
 			status.nbLike = 0 if status.nbLike < 0
+			if $('#displayLikers-' + status._id).length
+				nbMore = $('#displayLikers-' + status._id + ' .more-liker').data 'nb-more'
+				nbMore += if adding
+					1
+				else
+					-1
+				$('#displayLikers-' + status._id + ' .more-liker')
+					.data 'nb-more', nbMore
+					.html '+' + nbMore
+			else
+				if adding
+					status.likers.push $scope.myPublicInfos
+				else
+					newLikers = []
+					for liker in status.likers
+						if liker.hashedId isnt $scope.myPublicInfos.hashedId
+							newLikers.push liker
+					status.likers = newLikers
+
 			refreshScope $scope
 			SingleAjax[if adding then 'put' else 'delete'] 'plusw' + status._id, '/user/plusw',
 				data:
@@ -1892,6 +1976,9 @@ Controllers =
 
 		$scope.nbCommentText = (status) ->
 			s("Commentaire|Commentaires", null, status.nbComment)
+
+		$scope.nbLikeText = (status) ->
+			s("{nbLike} personne aime ça|{nbLike} personnes aiment ça", nbLike: status.nbLike, status.nbLike)
 
 		$scope.nbShareText = (status) ->
 			s("Partage|Partages", null, status.nbShare)
@@ -1911,7 +1998,7 @@ Controllers =
 					success: (result) ->
 						status.nbShare++
 						refreshScope $scope
-						toastr.success s("Ce statut a été partagé sur votre profil."), s "C'est fait"
+						toastr.success s("Ce statut a été partagé sur votre profil."), s("C'est fait")
 
 
 		at = getCachedData 'at'
@@ -2065,6 +2152,155 @@ Controllers =
 					$('.album-select select option').each (id, elem) ->
 						if elem.value.indexOf('undefined') >= 0
 							$(elem).remove()
+
+		lastDelayIds = []
+		lock = false
+		$scope.scannedLink = {}
+
+		videoHosts =
+			'//www.dailymotion.com/embed/video/$1': [
+				[/^dai\.ly\/([a-z0-9_-]+)/i, 1]
+				[/^dailymotion\.com\/video\/([a-z0-9_-]+)/i, 1]
+			]
+			'//www.youtube.com/embed/$1': [
+				[/^youtu\.be\/([a-z0-9_-]+)/i, 1]
+				[/^youtu\.be\/([a-z0-9_-]+)\?t=([0-9]+)/i, 2]
+				[/^youtube\.com\/watch\?v=([a-z0-9_-]+)/i, 1]
+				[/^youtube\.com\/watch\?t=([0-9]+)(\&|\&amp;)v=([a-z0-9_-]+)/i, 3]
+			]
+		isItAVideo = (link) ->
+			linkToTest = link.replace /^(https?)?:?\/\//, ''
+			test = linkToTest.replace /^www\./, ''
+			video = do ->
+				for url, regexps of videoHosts
+					for regexp in regexps
+						fieldToKeep = regexp[1]
+						match = test.match regexp[0]
+						if match and match.length > 1
+							return url.replace '$1', match[fieldToKeep]
+				null
+			video
+
+		$scope.cancelCheckLink = ->
+			for lastDelayId in lastDelayIds
+				clearTimeout lastDelayId
+			lastDelayIds = []
+
+		$scope.checkLink = ->
+			linkDetected = false
+			(' ' + $scope.status.content)
+				.replace /(\s)www\./g, '$1http://www.'
+				.replace /(\s)(https?:\/\/\S+)/g, (all, space, link) ->
+					linkDetected = true
+					video = isItAVideo link
+					unless video
+						lastDelayIds.push delay 500, ->
+							if !lock
+								$('.status-form .publish input').prop 'disabled', true
+								lock = true
+								Ajax.post '/user/status/link/meta',
+									data:
+										url: link
+									success: (res) ->
+										$('.status-form .publish input').prop 'disabled', false
+										lock = false
+										if res.data
+											$scope.medias.links = [
+												href: link
+												https: /^https:\/\//.test link
+											]
+											data = res.data
+
+											linkMinimized = link.replace /^https?:\/\//g, ''
+											if 0 < linkMinimized.indexOf '/'
+												linkMinimized = linkMinimized.substring 0, linkMinimized.indexOf '/'
+											$scope.scannedLink.link = linkMinimized
+											$scope.scannedLink.originalLink = link
+											unless rememberDissmissed[$scope.scannedLink.link] is "all"
+												$('.status-link-preview span.link-preview-link').html linkMinimized
+												$('.status-link-preview a.global-link-preview').attr('href', link)
+
+												if data.ogImage and rememberDissmissed[$scope.scannedLink.link] isnt "img"
+													$('.status-link-preview img.link-preview-image').attr('src', data.ogImage)
+													$('.status-link-preview img.link-preview-image').show()
+													$('.status-link-preview .dismiss-link-preview-image').show()
+													$scope.scannedLink.image = data.ogImage
+												else
+													$('.status-link-preview img.link-preview-image').removeAttr('src')
+													$('.status-link-preview img.link-preview-image').hide()
+													$('.status-link-preview .dismiss-link-preview-image').hide()
+													$scope.scannedLink.image = null
+												if data.ogTitle || data.title
+													$('.status-link-preview span.link-preview-title').attr('href', link).html(data.ogTitle || data.title)
+													$scope.scannedLink.title = data.ogTitle || data.title
+												else
+													$('.status-link-preview span.link-preview-title').removeAttr('href').html('')
+													$scope.scannedLink.title = null
+												if data.ogDescription || data.description
+													$('.status-link-preview span.link-preview-description').html(data.ogDescription || data.description)
+													$scope.scannedLink.description = data.ogDescription || data.description
+												else
+													$('.status-link-preview span.link-preview-description').html('')
+													$scope.scannedLink.description = null
+												if data.author
+													$('.status-link-preview span.link-preview-author').html(data.author)
+													$scope.scannedLink.author = data.author
+												else
+													$('.status-link-preview span.link-preview-author').html('')
+													$scope.scannedLink.author = null
+												$('.status-link-preview').show()
+												$('.status-link-preview .dismiss-link-preview').show()
+					else
+						$scope.scannedLink = {}
+						alreadyHere = false
+						for vid in $scope.medias.videos
+							if vid.href is video
+								alreadyHere = true
+						if !alreadyHere
+							$scope.medias.videos.push
+								href: video
+			unless linkDetected
+				$scope.medias.videos = []
+				$scope.medias.link = []
+
+		rememberDissmissed = {}
+		$scope.dismissAllPreview = ->
+			$('.status-link-preview').hide()
+			rememberDissmissed[$scope.scannedLink.link] = "all"
+			$scope.scannedLink = {}
+			return
+
+		$scope.dismissImagePreview = ->
+			delete $scope.scannedLink.image
+			$('.status-link-preview img.link-preview-image').hide()
+			$('.status-link-preview .dismiss-link-preview-image').hide()
+			rememberDissmissed[$scope.scannedLink.link] = "img"
+			return
+
+		$scope.adjustLikers = (statusId) ->
+			elem = $('.status-block[data-id="' + statusId + '"] .like-details .liker-photos')
+			nbChunk = 1 * elem.attr 'chunkPerLine'
+			optimalMargin = elem.attr 'optimalmargin'
+			if nbChunk
+				if optimalMargin
+					delay 1, ->
+						$('.status-block[data-id="' + statusId + '"] .like-details .liker-photos img').css 'margin-right', optimalMargin + "px"
+				statusList = if $scope.monoStatut
+					[$scope.statusToDisplay]
+				else
+					$scope.recentStatus
+				for status in statusList
+					if status._id is statusId
+						if status.likers.length > nbChunk
+							status.likers = status.likers.slice 0, nbChunk - 1
+							refreshScope $scope
+							elem.append '<a id="displayLikers-' + status._id + '" ><div class="likers-photo more-liker" data-nb-more="' + (status.nbLike - nbChunk + 1) + '">+' + (status.nbLike - nbChunk + 1) + '</div></a>'
+							$('#displayLikers-' + status._id).on 'click', $scope.displaylikerList.bind $scope, status
+						elem.removeClass "loading"
+
+		$scope.testsms = ->
+			Ajax.get 'user/test/sms', (result) ->
+				return
 		return
 
 	Suggests: ($scope) ->

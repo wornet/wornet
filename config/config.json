@@ -281,6 +281,7 @@
             "displayStatusLength": 614,
             "realStatusLength": 1228,
             "mailsAtOnce": 10,
+            "maxLikersPhotoDisplayed": 17,
             "monthsBeforeRemoveNotice": 1,
             "urlId": 20,
             "followingsPageCount": 10,

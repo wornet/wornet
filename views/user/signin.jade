@@ -97,6 +97,7 @@ block body
 						title=userTexts.birthDate
 						min=(new Date).tomorrow().subYears(config.wornet.limits.userMaxAge).toString('YYYY-MM-DD')
 						max=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
+						value=(new Date).subYears(config.wornet.limits.userMinAge).toString('YYYY-MM-DD')
 						ng-model="user.birthDate"
 						name="birthDate"
 						placeholder=userTexts.birthDate
