@@ -15,6 +15,17 @@ module.exports = (router) ->
 	templateFolder = 'user'
 	signinUrl = '/user/signin'
 
+
+	if config.env.development
+		router.get '/test/sms', (req, res) ->
+			titre = "Super Event Trop Genial"
+			url = "https://www.wornet.fr/move/event/98413141316987"
+			NoticePackage.notify [req.user._id], null,
+				action: 'sms'
+				author: req.user._id
+				notice: ["Je viens de créer l'évènement " + titre + " rejoins moi vite en cliquant ici : " + url, "sms"]
+
+
 	pm = new PagesManager router, templateFolder
 
 	# When user submit his e-mail and password to log in
@@ -289,6 +300,8 @@ module.exports = (router) ->
 
 
 	router.post '/settings', (req, res) ->
+
+
 		userModifications = UserPackage.getUserModificationsFromRequest req
 		publicDataError = false
 		newUrlId = replaceAccent req.body.uniqueURLID
@@ -332,43 +345,63 @@ module.exports = (router) ->
 							req.flash 'settingsSuccess', s("Modifications enregistrées.")
 						res.redirect '/user/settings'
 
-		if userModifications.accountConfidentiality is "public"
-			userModifications.maskFollowList = false
-			userModifications.maskFriendList = false
-			unless newUrlId is req.user.uniqueURLID
-				if /^[a-zA-Z0-9_.]*$/.test newUrlId
-					User.count
-						uniqueURLID: newUrlId
-					, (err, count) ->
-						warn err if err
-						if count is 0
-							userModifications.uniqueURLID = newUrlId
-						else
-							publicDataError = true
-							req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")
+		treatPublic = ->
+			if userModifications.accountConfidentiality is "public"
+				userModifications.maskFollowList = false
+				userModifications.maskFriendList = false
+				unless newUrlId is req.user.uniqueURLID
+					if /^[a-zA-Z0-9_.]*$/.test newUrlId
+						User.count
+							uniqueURLID: newUrlId
+						, (err, count) ->
+							warn err if err
+							if count is 0
+								userModifications.uniqueURLID = newUrlId
+							else
+								publicDataError = true
+								req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")
+							next()
+					else
+						publicDataError = true
+						req.flash 'settingsErrors', s("Personnalisation URL: Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
 						next()
 				else
-					publicDataError = true
-					req.flash 'settingsErrors', s("Personnalisation URL: Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
 					next()
 			else
-				next()
-		else
-			if req.user.certifiedAccount is true
-				CertificationAsk.update
-					user: req.user.id
-				,
-					status: "refused"
-				,
-					multi: true
-				, (err, certif) ->
+				userModifications.allowFriendPostOnMe = true
+				if req.user.certifiedAccount is true
+					CertificationAsk.update
+						user: req.user.id
+					,
+						status: "refused"
+					,
+						multi: true
+					, (err, certif) ->
+						warn err if err
+						userModifications.certifiedAccount = false
+				Follow.remove
+					followed: req.user._id
+				, (err) ->
 					warn err if err
-					userModifications.certifiedAccount = false
-			Follow.remove
-				followed: req.user._id
-			, (err) ->
-				warn err if err
-			next()
+				next()
+
+		if !empty(req.body.actualPassword) and !empty(req.body.newPassword) and !empty(req.body.newPasswordAgain)
+			if req.body.newPassword isnt req.body.newPasswordAgain
+				publicDataError = true
+				req.flash 'settingsErrors', s("Les nouveaux mots de passe ne correspondent pas.")
+				treatPublic()
+			User.findOne
+				_id: req.user._id
+			, (err, user) ->
+				req.tryPassword user, req.body.actualPassword, (ok) ->
+					if !ok
+						publicDataError = true
+						req.flash 'settingsErrors', s("Mot de passe actuel incorrect.")
+					else
+						userModifications.password = req.body.newPassword
+					treatPublic()
+		else
+			treatPublic()
 
 	toggleShutter = (req, res, opened) ->
 		updateUser req, openedShutter: opened, (err) ->
@@ -606,15 +639,15 @@ module.exports = (router) ->
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video
-		video = extend user: req.user._id, req.body.video
+		video = extend user: req.user._id, req.data.video
 		Video.create video, ->
 			res.json()
 
 	router.put '/link/add', (req, res) ->
 		# Create a new link
-		link = extend user: req.user._id, req.body.link
-		Link.create link, ->
-			res.json()
+		link = extend user: req.user._id, req.data.link
+		Link.create link, (err, link)->
+			res.json link: link
 
 	router.get '/photo/:id', (req, res) ->
 		me = if req.user
@@ -1005,7 +1038,10 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isMe = userHashedId is req.user.hashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					where = follower: cesarRight userHashedId
@@ -1044,7 +1080,10 @@ module.exports = (router) ->
 		offset = req.data.offset
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
-			isMe = userHashedId is req.user.hashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					where = followed: cesarRight userHashedId
@@ -1084,7 +1123,10 @@ module.exports = (router) ->
 		id = cesarRight userHashedId
 		if userHashedId
 			isAFriend = (req.session.friends || []).has id: id
-			isMe = req.user.hashedId is userHashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
 			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
 				if isAPublicAccount or isAFriend or isMe
 					offsetObj = new ObjectId(offset).path

@@ -60,7 +60,7 @@
 	.status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked' && !status.edit" ng-bind-html="status.content")
 	.status-content-edit(ng-if="status.edit")
 		+form()(ng-submit="status.edit = false; updateStatus(status); status.originalContent = status.content;").cb
-			textarea.form-control(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5')
+			textarea.form-control.counter(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5' maxlength=config.wornet.limits.displayStatusLength)
 			input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="toggleStatusState(status, false)" value=s("Annuler"))
 			input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
 	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
@@ -87,9 +87,26 @@
 					img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
 					+half('play')
 		div(ng-if="status.links.length > 0")
-			h3=s("Liens")
-			a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
+			.status-link-preview-list(ng-if="status.links[0].metaData")
+				a.global-link-preview(ng-href="{{ status.links[0].https ? 'https' : 'http' }}://{{ status.links[0].url }}" target="_blank")
+					img.link-preview-image(ng-if="status.links[0].metaData.image" ng-src="{{ status.links[0].metaData.image }}")
+					span.link-preview-title(ng-bind-html="status.links[0].metaData.title")
+					br
+					span.link-preview-description(ng-bind-html="status.links[0].metaData.description")
+					.col-xs-12.status-link-preview-author
+						span.link-preview-link(ng-bind-html="status.links[0].metaData.link")
+						span.link-preview-author(ng-bind-html="status.links[0].metaData.author")
+					.cb
+			//- h3=s("Liens")
+			//- a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
 	.cb
+	.like-details(ng-if="status.nbLike")
+		.nb-like
+			| {{ nbLikeText(status) }}
+		.liker-photos(chunk-per-line chunk-width=30 adjust-chunks="adjustLikers('{{ status._id }}')")
+			a(ng-repeat="liker in status.likers" ng-href="/{{ liker.uniqueURLID }}")
+				img.likers-photo( ng-src="{{ liker.thumb50 }}" data-thumb-size="50"  title="{{ liker.name.full }}")
+			
 	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends || status.isAShare || !userConnected)")
 		if config.wornet.comments.enabled || config.wornet.plusW.enabled
 			.col-xs-12.status-actions
@@ -108,7 +125,7 @@
 			.col-xs-12.status-actions-text
 				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
 					if config.wornet.plusW.enabled
-						span.like-zone(ng-click="displaylikerList(status)")
+						span.like-zone
 							//- =s("J'aime")
 							//- br
 							| {{ status.nbLike }}

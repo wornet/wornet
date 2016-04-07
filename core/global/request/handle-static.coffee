@@ -189,9 +189,9 @@ module.exports = (app) ->
 						req.url = req.originalUrl
 					req.url = profilePhotoUrl req.url
 					photoId = PhotoPackage.urlToId req.url
-					if photoId and PhotoPackage.restricted req, photoId
-						res.notFound()
-						return
+					# if photoId and PhotoPackage.restricted req, photoId
+					# 	res.notFound()
+					# 	return
 					if isMobile
 						path = mobilePath req.url
 						fs.exists __dirname + '/../../../public' + path, (exists) ->

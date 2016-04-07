@@ -18,8 +18,21 @@ fieldset.status-form
 			tabindex=strval(tabindex+1)
 			ng-model="status.content"
 			placeholder=s("Quoi de neuf ?")
+			ng-keyup="checkLink()"
+			ng-keydown="cancelCheckLink()"
 		)
-		
+	.status-link-preview
+		a.dismiss-link-preview(ng-click="dismissAllPreview()") x
+		a.dismiss-link-preview-image(ng-click="dismissImagePreview()") x
+		a.global-link-preview(href="" target="_blank")
+			img.link-preview-image(src="")
+			span.link-preview-title
+			br
+			span.link-preview-description
+			.col-xs-12.status-link-preview-author
+				span.link-preview-link
+				span.link-preview-author
+			.cb
 	.status-medias-form(ng-show="status.containsMedias")
 		iframe(name="status-upload")
 		+form("/user/photo", "FILE").status-images(target="status-upload")
@@ -57,6 +70,8 @@ fieldset.status-form
 	.publish
 		input(autofocus type="button" tabindex=strval(tabindex+2) value=s("Publier") ng-click="send(status)").btn.btn-primary
 
+	if config.env.development
+		input.btn(value="TEST SMS" type="button" ng-click="testsms()")
 		
 	//- h3=strtoupper(s("Publier un média"))
 	//- div(ng-switch="media.step")
