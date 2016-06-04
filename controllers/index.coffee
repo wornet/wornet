@@ -6,6 +6,7 @@ module.exports = (router) ->
 		.page '/newsroom'
 		.page '/jobs'
 		.page '/legals'
+		.page '/robots.txt'
 
 
 	# Temporary fix of /undefined request
