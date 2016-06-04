@@ -2,6 +2,8 @@
 
 'use strict'
 
+require 'newrelic'
+
 require './core/global/start/bootstrap'
 
 defer = []
