@@ -40,6 +40,8 @@ exports.logout = (req, res) ->
 	delete req.session.user
 	delete req.session.friends
 	delete req.session.friendAsks
+	delete req.session.follower
+	delete req.session.following
 	req.cacheFlush()
 	exports.remember res, config.wornet.remember.off
 
@@ -58,8 +60,26 @@ exports.auth = (req, res, user, done) ->
 			req.session.friends = friends
 			req.session.friendAsks = friendAsks
 			user.numberOfFriends = friends.length
-		if typeof(done) is 'function'
-			done err, user
+			Follow.find
+				$or: [
+					follower: user._id
+				,
+					followed: user._id
+				]
+			, (err, allFollows) ->
+				iFollow = []
+				iamFollowed = []
+				for follow in allFollows
+					if equals follow.follower, user._id
+						iFollow.push follow.followed
+					else
+						iamFollowed.push follow.follower
+				user.follower = iamFollowed
+				user.following = iFollow
+				req.session.follower = iamFollowed
+				req.session.following = iFollow
+			if typeof(done) is 'function'
+				done err, user
 
 exports.login = (req, res, done) ->
 	# Retrieve the user from the database by login
@@ -146,6 +166,20 @@ exports.isAuthenticated = (req, res, next) ->
 					"/user/signin"
 				]
 
+				publicAccountList = [
+					/^\/user\/albums\/medias\/[0-9a-fA-F]{24}$/
+					/^\/user\/status\/and\/chat\/[0-9a-fA-F]{24}|0\/?([0-9a-fA-F]{24})?$/
+					/^\/user\/albums$/
+					/^\/user\/plusW\/list$/
+					/^\/user\/comment$/
+					/^\/user\/friend\/list$/
+					/^\/user\/following\/list$/
+					/^\/user\/follower\/list$/
+					/^\/user\/photo\/[0-9a-fA-F]{24}$/
+					/^\/user\/status\/[0-9a-fA-F]{24}$/
+					/^\/user\/directory$/
+				]
+
 				admin = [
 					"/admin"
 				]
@@ -163,34 +197,56 @@ exports.isAuthenticated = (req, res, next) ->
 				route = req.url
 				# Get user role (in any user connected : empty string)
 				role = (if (req.user and req.user.role) then req.user.role else "")
-				# If the URL is in the access restricted list
-				if inList route, admin
-					if role is 'admin'
-						res.locals.noIndex = true
-						next()
-					else
-						model = url: route
-						res.unautorized model
-				else if inList(route, auth) and ! inList(route, whitelist)
-					# If any user are connected
-					if req.user
-						res.locals.noIndex = true
-						next()
-					else
-						# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
-						isARouteWithoutMessage = (route is '/')
-						if req.isJSON
-							if isARouteWithoutMessage
-								res.serverError new PublicError s("Connectez-vous pour accéder à cette page.")
-							else
-								res.json goingTo: req.url
+
+				nextStep = (isARouteForPublicAccount) ->
+					# If the URL is in the access restricted list
+					if inList route, admin
+						if role is 'admin'
+							res.locals.noIndex = true
+							next()
 						else
-							req.goingTo req.url
-							if isARouteWithoutMessage
-								req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
-							res.redirect "/"
+							model = url: route
+							res.unautorized model
+					else if isARouteForPublicAccount
+						next()
+					else if inList(route, auth) and ! inList(route, whitelist)
+						# If any user are connected
+						if req.user
+							res.locals.noIndex = true
+							next()
+						else
+							# If the user is not authorized, save the location that was being accessed so we can redirect afterwards.
+							isARouteWithoutMessage = (route is '/')
+							if req.isJSON
+								if isARouteWithoutMessage
+									res.serverError new PublicError s("Connectez-vous pour accéder à cette page.")
+								else
+									res.json goingTo: req.url
+							else
+								req.goingTo req.url
+								if isARouteWithoutMessage
+									req.flash "loginErrors", new PublicError s("Connectez-vous pour accéder à cette page.")
+								res.redirect "/"
+					else
+						next()
+
+				isARouteForPublicAccount = false
+				for regexp in publicAccountList
+					if regexp.test route
+						isARouteForPublicAccount = true
+						regexpToTest = regexp
+				if isARouteForPublicAccount
+					route.replace regexpToTest, (all, hashedId) ->
+						if hashedId
+							isAPublicAccount req, hashedId, true, (err, isAPublicAccount) ->
+								if err and err instanceof Error and err.message is "NOTAUSERID"
+									nextStep true
+								else
+									nextStep isAPublicAccount
+						else
+							nextStep true
 				else
-					next()
+					nextStep false
 
 			if req.user
 				unless req.url is '/user/notify'
@@ -213,10 +269,28 @@ exports.isAuthenticated = (req, res, next) ->
 					req.session.friendAsks = friendAsks
 					req.session.friends = friends
 					req.session.user.numberOfFriends = friends.length
-					if err
-						res.serverError err
-					else
-						req.session.notifications ||= []
-						done()
+					Follow.find
+						$or: [
+							follower: req.user.id
+						,
+							followed: req.user.id
+						]
+					, (err, allFollows) ->
+						iFollow = []
+						iamFollowed = []
+						for follow in allFollows
+							if equals follow.follower, req.user.id
+								iFollow.push follow.followed
+							else
+								iamFollowed.push follow.follower
+						req.user.follower = iamFollowed
+						req.user.following = iFollow
+						req.session.follower = iamFollowed
+						req.session.following = iFollow
+						if err
+							res.serverError err
+						else
+							req.session.notifications ||= []
+							done()
 			else
 				done()

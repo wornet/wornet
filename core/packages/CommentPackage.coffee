@@ -5,43 +5,48 @@ CommentPackage =
 	put: (req, res, done) ->
 		if req.data.status
 			try
-				medias = req.data.medias || {}
-				hashedIdUser = req.user.hashedId
-				at = if req.data.at
-					req.data.at
-				else if req.data.status and req.data.status.at and req.data.status.at.hashedId
-					req.data.status.at.hashedId
-				else null
-				status = req.data.status
-				req.getFriends (err, friends) =>
-					newAt = at||status.author.hashedId
-					if err
-						res.serverError err
-					else if !friends.column('_id').map(cesarLeft).contains(newAt) && newAt isnt hashedIdUser
-						res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis.")
-					else
-						Comment.create
-							author: req.user._id
-							content: req.data.comment.content || ""
-							attachedStatus: status._id
-							images: medias.images || []
-							videos: medias.videos || []
-							links: medias.links || []
-						, (err, originalComment) =>
-							unless err
-								comment = originalComment.toObject()
-								comment.author = req.user.publicInformations()
-								hashedIdAuthor = status.author.hashedId
-								usersToNotify = []
-								unless equals hashedIdUser, hashedIdAuthor
-									usersToNotify.push hashedIdAuthor
-								unless [null, hashedIdAuthor, hashedIdUser].contains at
-									usersToNotify.push at
-								@propagate comment, at || hashedIdAuthor
+				StatusPackage.getOriginalStatus req.data.status, (err, status) =>
+					warn err if err
+					medias = req.data.medias || {}
+					hashedIdUser = req.user.hashedId
+					at = if req.data.at
+						req.data.at
+					else if status and status.at and status.at.hashedId
+						status.at.hashedId
+					else null
+					req.getFriends (err, friends) =>
+						warn err if err
+						newAt = at || status.author.hashedId
+						isAPublicAccount req, newAt, true, (err, isAPublicAccount) =>
+							UserPackage.refreshFollows req, =>
+								if !friends.column('_id').map(cesarLeft).contains(newAt) and newAt isnt hashedIdUser and (!isAPublicAccount and !req.user.followings.map(cesarLeft).contains newAt, equals)
+									res.serverError new PublicError s("Vous ne pouvez commenter que chez vos amis ou abonnements.")
+								else
+									Comment.create
+										author: req.user._id
+										content: req.data.comment.content || ""
+										attachedStatus: status._id
+										images: medias.images || []
+										videos: medias.videos || []
+										links: medias.links || []
+									, (err, originalComment) =>
+										warn err if err
+										unless err
+											comment = originalComment.toObject()
+											comment.author = req.user.publicInformations()
+											hashedIdAuthor = status.author.hashedId
+											usersToNotify = []
+											unless equals hashedIdUser, hashedIdAuthor
+												if !status.author.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains hashedIdAuthor
+													usersToNotify.push hashedIdAuthor
+											unless [null, hashedIdAuthor, hashedIdUser].contains at
+												if status.at and !status.at.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains at
+													usersToNotify.push at
+											@propagate comment, at || hashedIdAuthor
 
-								@notify usersToNotify, status, req.user, comment
+											@notify usersToNotify, status, req.user, comment
 
-								@getRecentCommentForRequest req, res, [status._id], done
+											@getRecentCommentForRequest req, res, [status._id], done
 			catch err
 				done err
 		else
@@ -53,8 +58,7 @@ CommentPackage =
 		generateNotice = (text) ->
 			[
 				img +
-				jd 'span(data-href="/user/profile/' +
-				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+				jd 'span(data-href="/user/status/' + status._id + '") ' +
 					text
 			]
 		commentatorsFriends = commentator.friends.column 'hashedId'
@@ -79,8 +83,9 @@ CommentPackage =
 		if status.comments
 			otherCommentators = []
 			for comment in status.comments
-				if ![status.author.hashedId, status.at.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
-					otherCommentators.push comment.author.hashedId
+				if ![status.author.hashedId, status.at.hashedId, commentator.hashedId].contains(comment.author.hashedId) and !otherCommentators.contains(comment.author.hashedId)
+					if !comment.author.accountConfidentiality is "public" or commentator.friends.column('hashedId').contains comment.author.hashedId
+						otherCommentators.push comment.author.hashedId
 
 			notice = generateNotice s("{username} a également commenté une publication.", username: commentator.name.full)
 
@@ -117,12 +122,18 @@ CommentPackage =
 								result = {}
 								comments.each ->
 									comment = @toObject()
-									comment.isMine = equals @author, req.user._id
+									comment.isMine = if req.user
+										equals @author, req.user._id
+									else
+										false
 									for status in statusList
 										if equals status._id, @attachedStatus
 											comment.attachedStatus = status
 											statusAt = status.at || status.author
-											comment.onMyWall = equals statusAt, req.user._id
+											comment.onMyWall = if req.user
+												equals statusAt, req.user._id
+											else
+												false
 											break
 									comment.author = usersMap[comment.author].publicInformations()
 									(result[comment.attachedStatus._id] ||= []).push comment

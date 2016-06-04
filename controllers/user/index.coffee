@@ -10,8 +10,21 @@ UserErrors =
 
 module.exports = (router) ->
 
+	directoryPublicUsers = []
+	directoryLastRetreive = 0
 	templateFolder = 'user'
 	signinUrl = '/user/signin'
+
+
+	if config.env.development
+		router.get '/test/sms', (req, res) ->
+			titre = "Super Event Trop Genial"
+			url = "https://www.wornet.fr/move/event/98413141316987"
+			NoticePackage.notify [req.user._id], null,
+				action: 'sms'
+				author: req.user._id
+				notice: ["Je viens de créer l'évènement " + titre + " rejoins moi vite en cliquant ici : " + url, "sms"]
+
 
 	pm = new PagesManager router, templateFolder
 
@@ -83,55 +96,88 @@ module.exports = (router) ->
 				req.flash 'signinErrors', UserErrors.MISSING_SEX
 				res.redirect signinUrl
 			else
-				# A full name must contains a space but is not needed at the first step
-				User.create
-					name:
-						first: req.body['name.first']
-						last: req.body['name.last']
-					registerDate: new Date
-					email: req.body.email
-					password: req.body.password
-					sex: req.body.sex
-					birthDate: inputDate req.body.birthDate
-				, (saveErr, user) ->
-					if saveErr
-						switch (saveErr.code || 0)
-							when Errors.DUPLICATE_KEY
-								req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+				createURLID = (next) ->
+					urlIdTotest = replaceAccent (req.body['name.first'] + '.' + req.body['name.last']).toLowerCase() + '.' + Math.floor Math.random() * config.wornet.limits.urlId
+					User.count
+						uniqueURLID: urlIdTotest
+					, (err, count) ->
+						warn err if err
+						if count
+							createURLID next
+						else
+							next urlIdTotest
+				User.count
+					uniqueURLID: replaceAccent (req.body['name.first'] + '.' + req.body['name.last']).toLowerCase()
+				, (err, count) ->
+					warn err if err
+					next = (urlId) ->
+						# A full name must contains a space but is not needed at the first step
+						User.create
+							name:
+								first: req.body['name.first']
+								last: req.body['name.last']
+							registerDate: new Date
+							email: req.body.email
+							password: req.body.password
+							sex: req.body.sex
+							birthDate: inputDate req.body.birthDate
+							uniqueURLID: urlId
+						, (saveErr, user) ->
+							if saveErr
+								switch (saveErr.code || 0)
+									when Errors.DUPLICATE_KEY
+										req.flash 'signinErrors', UserErrors.WRONG_EMAIL
+									else
+										err = saveErr.err || strval(saveErr)
+										valErr = 'ValidationError:'
+										if err.indexOf(valErr) is 0
+											err = s("Erreur de validation :") + err.substr(valErr.length)
+											errors =
+												'invalid first name': s("prénom invalide")
+												'invalid last name': s("nom invalide")
+												'invalid birth date': s("date de naissance invalide")
+												'invalid phone number': s("numéro de téléphone invalide")
+												'invalid e-mail address': s("adresse e-mail invalide")
+											for code, message of errors
+												err = err.replace code, message
+										req.flash 'signinErrors', err
+								res.redirect signinUrl
 							else
-								err = saveErr.err || strval(saveErr)
-								valErr = 'ValidationError:'
-								if err.indexOf(valErr) is 0
-									err = s("Erreur de validation :") + err.substr(valErr.length)
-									errors =
-										'invalid first name': s("prénom invalide")
-										'invalid last name': s("nom invalide")
-										'invalid birth date': s("date de naissance invalide")
-										'invalid phone number': s("numéro de téléphone invalide")
-										'invalid e-mail address': s("adresse e-mail invalide")
-									for code, message of errors
-										err = err.replace code, message
-								req.flash 'signinErrors', err
-						res.redirect signinUrl
+								Album.create
+									name: "Téléchargements"
+									user: user._id
+								, (err, album) ->
+									warn err if err
+									if album
+										User.update
+											_id: user._id
+										,
+											photoUploadAlbumId: album._id
+										, (err, nbModif) ->
+											warn err if err
+											user.photoUploadAlbumId = album._id
+											# if "Se souvenir de moi" est coché
+											if req.body.remember?
+												auth.remember res, user._id
+											# Put user in session
+											auth.auth req, res, user, ->
+												res.redirect if user then '/user/welcome' else signinUrl
+												unless user.role is 'confirmed'
+													confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
+													confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
+													message = jdMail 'welcome',
+														email: email
+														url: confirmUrl
+													MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
+											emailUnsubscribed email, (err, unsub) ->
+												if unsub
+													Counter.findOne name: 'resubscribe', (err, counter) ->
+														if counter
+															counter.inc()
+					if count
+						createURLID next
 					else
-						# if "Se souvenir de moi" est coché
-						if req.body.remember?
-							auth.remember res, user._id
-						# Put user in session
-						auth.auth req, res, user, ->
-							res.redirect if user then '/user/welcome' else signinUrl
-							unless user.role is 'confirmed'
-								confirmUrl = config.wornet.protocole +  '://' + req.getHeader 'host'
-								confirmUrl += '/user/confirm/' + user.hashedId + '/' + user.token
-								message = jdMail 'welcome',
-									email: email
-									url: confirmUrl
-								MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
-						emailUnsubscribed email, (err, unsub) ->
-							if unsub
-								Counter.findOne name: 'resubscribe', (err, counter) ->
-									if counter
-										counter.inc()
+						next replaceAccent (req.body['name.first'] + '.' + req.body['name.last']).toLowerCase()
 		else
 			res.redirect signinUrl
 		# res.render templateFolder + '/signin', model
@@ -221,45 +267,141 @@ module.exports = (router) ->
 					else
 						fail s("Lien invalide ou expiré")
 
-	pm.page '/welcome', (req) ->
-		hasGoingTo: (!empty(req.session.goingTo) and req.session.goingTo isnt '/')
-		goingTo: req.goingTo()
+	router.get '/welcome', (req, res) ->
+		UserPackage.randomPublicUsers req.user.id, true, 20, (publicUsers) ->
+			res.render "user/welcome",
+				welcomeSuggest: publicUsers
 
-	pm.page '/settings', (req) ->
-		settingsAlerts: req.getAlerts 'settings'
-		userTexts: userTexts()
+	router.put '/welcome', (req, res) ->
+		usersHashedId = req.data.usersHashedId
+		if usersHashedId and usersHashedId.length
+			objectsToCreate = []
+			for hashedId in usersHashedId
+				objectsToCreate.push
+					follower: req.user.id
+					followed: cesarRight hashedId
+
+			Follow.create objectsToCreate, (err) ->
+				warn err if err
+				res.json()
+		else
+			res.json()
+
+	router.get '/settings', (req, res) ->
+		CertificationAsk.count
+			user: req.user._id
+			status: $in: ["pending", "approved"]
+		, (err, certif) ->
+			warn err if err
+			res.render 'user/settings',
+				settingsAlerts: req.getAlerts 'settings'
+				userTexts: userTexts()
+				certifPendingOrApproved: !!certif
+
 
 	router.post '/settings', (req, res) ->
+
+
 		userModifications = UserPackage.getUserModificationsFromRequest req
+		publicDataError = false
+		newUrlId = replaceAccent req.body.uniqueURLID
 		###
 		for setting in ['newsletter', 'noticeFriendAsk', 'noticePublish', 'noticeMessage']
 			userModifications[setting] = !! req.body[setting]
 		###
-		updateUser req, userModifications, (err) ->
-			err = humanError err
-			save = ->
-				if userModifications.password
-					delete userModifications.password
-			if req.xhr
-				if err
-					res.serverError err
-				else
-					save()
-					res.json()
-			else
-				if err
-					if err instanceof PublicError
-						req.flash 'settingsErrors', err.toString()
+		next = ->
+			updateUser req, userModifications, (err) ->
+				err = humanError err
+				cache "publicAccountByHashedId-" + req.user.hashedId, null, (dataCache) ->
+
+					oldUrlId = dataCache["publicAccountByHashedId-" + req.user.hashedId]
+					memDel "publicAccountByUrlId-" + oldUrlId
+					memSet "publicAccountByUrlId-" + newUrlId, req.user.hashedId
+					memSet "publicAccountByHashedId-" + req.user.hashedId, newUrlId
+
+					save = ->
+						if userModifications.password
+							delete userModifications.password
+					if req.xhr
+						if err
+							res.serverError err
+						else
+							save()
+							res.json()
 					else
-						switch err.code
-							when 11000
-								req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
+						if err or publicDataError
+							if err instanceof PublicError
+								req.flash 'settingsErrors', err.toString()
+							else if err
+								switch err.code
+									when 11000
+										req.flash 'settingsErrors', s("Adresse e-mail non disponible.")
+									else
+										req.flash 'settingsErrors', s("Erreur d'enregistrement.")
 							else
 								req.flash 'settingsErrors', s("Erreur d'enregistrement.")
+						else
+							save()
+							req.flash 'settingsSuccess', s("Modifications enregistrées.")
+						res.redirect '/user/settings'
+
+		treatPublic = ->
+			if userModifications.accountConfidentiality is "public"
+				userModifications.maskFollowList = false
+				userModifications.maskFriendList = false
+				unless newUrlId is req.user.uniqueURLID
+					if /^[a-zA-Z0-9_.]*$/.test newUrlId
+						User.count
+							uniqueURLID: newUrlId
+						, (err, count) ->
+							warn err if err
+							if count is 0
+								userModifications.uniqueURLID = newUrlId
+							else
+								publicDataError = true
+								req.flash 'settingsErrors', s("Personnalisation URL: Non disponible")
+							next()
+					else
+						publicDataError = true
+						req.flash 'settingsErrors', s("Personnalisation URL: Caractères acceptés : lettres non accentuées, chiffres, points et undescores")
+						next()
 				else
-					save()
-					req.flash 'settingsSuccess', s("Modifications enregistrées.")
-				res.redirect '/user/settings'
+					next()
+			else
+				userModifications.allowFriendPostOnMe = true
+				if req.user.certifiedAccount is true
+					CertificationAsk.update
+						user: req.user.id
+					,
+						status: "refused"
+					,
+						multi: true
+					, (err, certif) ->
+						warn err if err
+						userModifications.certifiedAccount = false
+				Follow.remove
+					followed: req.user._id
+				, (err) ->
+					warn err if err
+				next()
+
+		if !empty(req.body.actualPassword) and !empty(req.body.newPassword) and !empty(req.body.newPasswordAgain)
+			if req.body.newPassword isnt req.body.newPasswordAgain
+				publicDataError = true
+				req.flash 'settingsErrors', s("Les nouveaux mots de passe ne correspondent pas.")
+				treatPublic()
+			User.findOne
+				_id: req.user._id
+			, (err, user) ->
+				req.tryPassword user, req.body.actualPassword, (ok) ->
+					if !ok
+						publicDataError = true
+						req.flash 'settingsErrors', s("Mot de passe actuel incorrect.")
+					else
+						userModifications.password = req.body.newPassword
+					treatPublic()
+		else
+			treatPublic()
 
 	toggleShutter = (req, res, opened) ->
 		updateUser req, openedShutter: opened, (err) ->
@@ -291,10 +433,13 @@ module.exports = (router) ->
 
 	router.get '/albums', (req, res) ->
 		# Get albums list from the user logged in
-		UserPackage.getAlbums [req.user.id], (err, albums) ->
-			res.json
-				err: err
-				albums: albums[req.user.id]
+		if req.user
+			UserPackage.getAlbums [req.user.id], (err, albums) ->
+				res.json
+					err: err
+					albums: albums[req.user.id]
+		else
+			res.json()
 
 	router.get '/albums/medias/:hashedId', (req, res) ->
 		# hashedId is me or at (of a friend)
@@ -430,7 +575,7 @@ module.exports = (router) ->
 							done = ->
 								UserAlbums.removeAlbum req.user, id, (err) ->
 									req.flash 'profileSuccess', s("Album supprimé")
-									res.json goingTo: '/user/profile'
+									res.json goingTo: '/' + req.user.uniqueURLID
 							if strval(req.user.photoAlbumId) is strval(id)
 								updateUser req, photoAlbumId: null, done
 							else if strval(req.user.sharedAlbumId) is strval(id)
@@ -494,18 +639,21 @@ module.exports = (router) ->
 
 	router.put '/video/add', (req, res) ->
 		# Create a new video
-		video = extend user: req.user._id, req.body.video
+		video = extend user: req.user._id, req.data.video
 		Video.create video, ->
 			res.json()
 
 	router.put '/link/add', (req, res) ->
 		# Create a new link
-		link = extend user: req.user._id, req.body.link
-		Link.create link, ->
-			res.json()
+		link = extend user: req.user._id, req.data.link
+		Link.create link, (err, link)->
+			res.json link: link
 
 	router.get '/photo/:id', (req, res) ->
-		me = req.user._id
+		me = if req.user
+			req.user._id
+		else
+			null
 		Photo.findById req.params.id, (err, photo) ->
 			if err
 				res.serverError err
@@ -722,7 +870,7 @@ module.exports = (router) ->
 			else
 				if users.length
 					user = users[0]
-					res.redirect '/user/profile/' + user.hashedId + '/' + encodeURIComponent user.name.full
+					res.redirect '/' + user.uniqueURLID
 				else
 					res.notFound()
 
@@ -746,9 +894,13 @@ module.exports = (router) ->
 					res.json users: friends.unique('id').map (user) ->
 						user = objectToUser user
 						isAFriend = (req.session.friends || []).has id: user.id
+						isAFollower = (req.session.follower || []).contains user._id, equals
+						isAFollowing = (req.session.following || []).contains user._id, equals
 						extend user.publicInformations(),
 							isAFriend: isAFriend
 							askedForFriend: ! isAFriend and (req.session.friendAsks || {}).has hashedId: user.hashedId
+							isAFollower: isAFollower
+							isAFollowing: isAFollowing
 				if friends.length >= 8
 					friends = friends.slice 0, limit
 					done()
@@ -818,3 +970,252 @@ module.exports = (router) ->
 					res.json()
 		else
 			res.serverError new PublicError s("Vous n'avez choisi aucun son.")
+
+	router.get '/checkURLID/:id', (req, res) ->
+		id = req.params.id
+		if id
+			if id is req.user.uniqueURLID
+				res.json err: "same"
+			else
+				User.count
+					uniqueURLID: id
+				, (err, count) ->
+					warn err if err
+					res.json isAvailable: (if count then false else true)
+
+	router.post '/certification', (req, res) ->
+		if req.body and req.user and req.files and req.files.proof
+			certification = req.body
+			proof = req.files.proof
+			certif = {
+				user: req.user._id
+				userType: certification.userType
+				userFirstName: certification.firstName
+				userLastName: certification.lastName
+				userEmail: certification.email
+				userTelephone: certification.telephone
+				proof: name: proof.name
+				status: "pending"
+			}.with if certification.userType is "business" or certification.userType is "association"
+				businessName: certification.entrepriseName
+				message: certification.message
+
+
+			if (['application/pdf', 'image/png', 'image/jpeg']).contains proof.type
+				ext = if proof.type is 'application/pdf'
+					".pdf"
+				else
+					".jpg"
+
+				fileDirectory = __dirname + '/../../public/img/certification/'
+				fileName = codeId() + time() + ext
+				dst = fileDirectory + fileName
+				certif.proof.src = '/img/certification/' + fileName
+				fs.exists proof.path, (exists) ->
+					if exists
+						fs.readFile proof.path, (err, data) ->
+							warn err if err
+							if data
+								fs.writeFile dst, data, (err) ->
+									warn err if err
+						CertificationAsk.create	certif, (err, certificationAsk) ->
+							warn err if err
+							email = config.wornet.admin.certifier
+							subject = s("Une nouvelle demande de certification est en attente.")
+							message = s("Un utilisateur vient de soumettre une demande de certification. Merci de la traiter.")
+							MailPackage.send email, subject, message
+							res.json()
+					else
+						res.serverError new PublicError s("Le justificatif n'existe pas.")
+			else
+				res.serverError new PublicError s("Le justificatif n'est pas dans un format accepté (png, jpeg, pdf)")
+		else
+			res.serverError new PublicError s("Veuillez renseigner les champs obligatoires")
+		res.json()
+
+	router.post '/following/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
+				if isAPublicAccount or isAFriend or isMe
+					where = follower: cesarRight userHashedId
+					.with if offset
+						_id: $lt: new ObjectId(offset).path
+					Follow.find where
+						.limit config.wornet.limits.followingsPageCount
+						.sort _id: 'desc'
+						.exec (err, follows) ->
+							warn err if err
+							followingIds = follows.column 'followed'
+							User.find
+								_id: $in: followingIds
+							, (err, followings) ->
+								warn err if err
+								sortedFollowings = []
+								for follow in follows
+									for following in followings
+										if equals(following._id, follow.followed)
+											sortedFollowings.push following
+								res.json followings: sortedFollowings.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for follow in follows
+										if equals follow.followed, userId
+											user.followId = follow._id
+									user
+
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les abonnements de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.post '/follower/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: cesarRight userHashedId
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
+				if isAPublicAccount or isAFriend or isMe
+					where = followed: cesarRight userHashedId
+					.with if offset
+						_id: $lt: new ObjectId(offset).path
+					Follow.find where
+						.limit config.wornet.limits.followersPageCount
+						.sort _id: 'desc'
+						.exec (err, follows) ->
+							warn err if err
+							followerIds = follows.column 'follower'
+							User.find
+								_id: $in: followerIds
+							, (err, followers) ->
+								warn err if err
+								sortedFollowers = []
+								for follow in follows
+									for follower in followers
+										if equals(follower._id, follow.follower)
+											sortedFollowers.push follower
+								res.json followers: sortedFollowers.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for follow in follows
+										if equals follow.follower, userId
+											user.followId = follow._id
+									user
+
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les abonnés de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.post '/friend/list', (req, res) ->
+		userHashedId = req.data.userHashedId
+		offset = req.data.offset
+		id = cesarRight userHashedId
+		if userHashedId
+			isAFriend = (req.session.friends || []).has id: id
+			isMe = if req.user
+				userHashedId is req.user.hashedId
+			else
+				false
+			isAPublicAccount req, userHashedId, true, (err, isAPublicAccount) ->
+				if isAPublicAccount or isAFriend or isMe
+					offsetObj = new ObjectId(offset).path
+					where = {
+						status: 'accepted'
+						$or: [
+							askedFrom: id
+
+						,
+							askedTo: id
+						]
+					}.with if offset
+						_id: $lt: offsetObj
+
+					Friend.find where
+						.limit config.wornet.limits.friendsPageCount
+						.sort _id: 'desc'
+						.exec (err, friendsObj) ->
+							warn err if err
+							userIds = []
+							for friend in friendsObj
+								if !equals friend._id, offsetObj
+									if equals id, friend.askedFrom
+										userIds.push friend.askedTo
+									else
+										userIds.push friend.askedFrom
+
+							User.find
+								_id: $in: userIds
+							, (err, friends) ->
+								warn err if err
+								sortedFriends = []
+								for friend in friendsObj
+									for userFriend in friends
+										if equals(friend.askedFrom, userFriend._id) or equals(friend.askedTo, userFriend._id)
+											sortedFriends.push userFriend
+								res.json friends: sortedFriends.map (user) ->
+									userId = user._id
+									user = user.publicInformations()
+									for friend in friendsObj
+										if equals(userId, friend.askedFrom) or equals(userId, friend.askedTo)
+											user.idFriend =  friend._id
+									user
+				else
+					res.serverError new PublicError s("Vous ne pouvez pas voir les amis de ce compte.")
+		else
+			res.serverError new PublicError s("L'utilisateur est introuvable.")
+
+	router.get '/directory', (req, res) ->
+		now = time()
+		if now - directoryLastRetreive > 30.minutes
+			directoryLastRetreive = now
+			User.find
+				accountConfidentiality: "public"
+			, (err, users) ->
+				warn err if err
+				directoryPublicUsers = users
+				res.render 'user/directory', publicUsers: users
+		else
+			res.render 'user/directory', publicUsers: directoryPublicUsers
+
+	router.post '/share/list', (req, res) ->
+		StatusPackage.getOriginalStatus req.data.status, (err, originalStatus) =>
+			warn err if err
+			if originalStatus
+				if originalStatus.shares.length
+					Status.find
+						_id: $in: originalStatus.shares
+					, (err, shareList) ->
+						warn err if err
+						if shareList
+							userIds = []
+							sharers = {}
+							results = []
+							for share in shareList
+								if !sharers[share.author]
+									sharers[share.author] = {user: share.author, nbShare: 1}
+								else
+									sharers[share.author].nbShare++
+								userIds.push share.author
+							User.find
+								_id: $in: userIds
+							, (err, users) ->
+								warn err if err
+								for sharer of sharers
+									for user in users
+										if equals user._id, sharer
+											userObj = user.publicInformations()
+											userObj.nbShare = sharers[sharer].nbShare
+											results.push userObj
+
+								res.json sharers: results

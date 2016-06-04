@@ -5,7 +5,7 @@ block body
 	- var middleClass = ""
 	- var largeSideClass = ""
 	- var largeMiddleClass = ""
-	if isAFriend || isMe
+	if isAFriend || isMe || isAPublicAccount
 		- sideClass = "col-sm-3"
 		- middleClass = "col-md-6"
 		- largeSideClass = "col-sm-offset-1"
@@ -16,7 +16,7 @@ block body
 		- largeSideClass = ""
 		- largeMiddleClass = ""
 	.col-xs-12(class=sideClass check-screen-width large-size=largeSideClass)
-		if isAFriend || isMe
+		if isAFriend || isMe || isAPublicAccount
 			//- Photos/Videos
 			include ../includes/medias
 		else
@@ -26,15 +26,19 @@ block body
 		+alert(profileAlerts)
 		//- Profile
 		include ../includes/profile
-		if isAFriend || isMe
+		if isAFriend || isMe || isAPublicAccount
 			//- Publications
 			include ../includes/status
 			
-	if (isAFriend || isMe) && !profile.maskFriendList
+	if (isAFriend || isMe || isAPublicAccount)
 		.col-xs-12(class=sideClass)
-			//- Friends
-			include ../includes/friends
-			include ../includes/asks-for-friend
+			if !profile.maskFriendList || isMe
+				//- Friends
+				include ../includes/friends
+				include ../includes/asks-for-friend
+			if !profile.maskFollowList || isMe
+				include ../includes/following
 
 	+data('at', profile.hashedId)
 	+data('sharedAlbumId', profile.sharedAlbumId)
+	+data('photoUploadAlbumId', profile.photoUploadAlbumId)

@@ -50,6 +50,7 @@ NoticePackage =
 				launcher: data.notice[2]
 				attachedStatus: data.notice[3]
 				place: data.notice[4]
+				count: data.notice[5]
 			, (err, notice) ->
 				if err
 					warn err
@@ -129,6 +130,22 @@ NoticePackage =
 				if ! err and notices
 					for notice in notices
 						notice.remove()
+
+	updateNotice: (userIds, err, groupData) ->
+		userIds.each ->
+			userId = strval @
+			if /^[0-9a-f]+$/ig.test userId
+				data = groupData.copy()
+				redisClientEmitter.publish config.wornet.redis.defaultChannel,
+					JSON.stringify(
+						type: "hasWaiter",
+						message:
+							userId: userId,
+							err: err,
+							data: data,
+							noticeId: uniqueId()
+					)
+				true
 
 	# Delete a notification if id is specified or all the notifications to a user if not
 	remove: (userId, id = null) ->

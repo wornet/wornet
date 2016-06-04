@@ -6,7 +6,7 @@
 ###
 
 OwnedSchema = ->
-	throw new Error "BaseSchema is an abstract class and cannot be instancied"
+	throw new Error "OwnedSchema is an abstract class and cannot be instancied"
 
 ###
 @abstract

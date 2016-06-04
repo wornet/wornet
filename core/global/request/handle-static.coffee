@@ -64,8 +64,8 @@ module.exports = (app) ->
 					return res.end 'OK'
 				when '/alive'
 					if User
-						User.find().limit(1).exec (err, user) ->
-							if user and ! err
+						User.find().limit(1).exec (err, users) ->
+							if users.length and ! err
 								res.end 'alive'
 					return
 
@@ -189,9 +189,9 @@ module.exports = (app) ->
 						req.url = req.originalUrl
 					req.url = profilePhotoUrl req.url
 					photoId = PhotoPackage.urlToId req.url
-					if photoId and PhotoPackage.restricted req, photoId
-						res.notFound()
-						return
+					# if photoId and PhotoPackage.restricted req, photoId
+					# 	res.notFound()
+					# 	return
 					if isMobile
 						path = mobilePath req.url
 						fs.exists __dirname + '/../../../public' + path, (exists) ->

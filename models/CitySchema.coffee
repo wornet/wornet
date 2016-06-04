@@ -1,6 +1,6 @@
 'use strict'
 
-citySchema = new Schema
+citySchema = LocationSchema.extend
 	name:
 		type: String
 		required: true
@@ -8,21 +8,6 @@ citySchema = new Schema
 		type: String
 		required: true
 		index: true
-	latitude:
-		type: Number
-		required: true
-	longitude:
-		type: Number
-		required: true
-	latitudeSector:
-		type: Number
-		required: true
-	longitudeSector:
-		type: Number
-		required: true
-	sector:
-		type: Number
-		required: true
 	country:
 		type: String
 		required: true
@@ -51,16 +36,6 @@ citySchema.statics.startWith = (country, query, done) ->
 	if country
 		where.country = country
 	@find where, done
-
-citySchema.methods.closest = (distance, done) ->
-	GeoPackage.closestCities @latitude, @longitude, distance, done
-
-citySchema.methods.toCloseCity = (lat, long) ->
-	city = @toObject()
-	delete city._id
-	delete city.__v
-	city.distance = GeoPackage.distance @latitude, @longitude, lat, long
-	city
 
 citySchema.index
 		code: 1

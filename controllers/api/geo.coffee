@@ -137,7 +137,7 @@ module.exports = (router) ->
 					where =
 						code: req.params.long.accents()
 						country: req.params.lat.accents()
-					City.findOne where, (err, city) ->
+					City.find(where).limit(1).exec (err, city) ->
 						if err
 							res.serverError err
 						else if city

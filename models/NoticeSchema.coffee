@@ -26,6 +26,8 @@ noticeSchema = OwnedSchema.extend
 			'bouger'
 		]
 		default: 'espacePersonnel'
+	count:
+		type: Number
 
 noticeSchema.virtual('isUnread').get ->
 	@status is readOrUnread.unread

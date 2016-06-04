@@ -3,9 +3,9 @@
 module.exports = (router) ->
 
 	pm = new PagesManager router
-		.page '/newsroom'
-		.page '/jobs'
-		.page '/legals'
+		#.page '/newsroom'
+		#.page '/jobs'
+		.page '/static/legals'
 		.page '/robots.txt'
 
 
@@ -133,6 +133,18 @@ module.exports = (router) ->
 						throw err
 					else
 						console['log'] info
+
+	router.get '/:urlId', (req, res) ->
+		urlId = req.params.urlId
+		if urlId and /^[a-zA-Z0-9_.]*$/.test(urlId)
+			isAPublicAccount req, urlId, false, (err, publicAccount, hashedId, user) ->
+				if publicAccount or (user and user.accountConfidentiality is "private" and req.user)
+					res.locals.friendAsked = req.flash 'friendAsked'
+					UserPackage.renderProfile req, res, hashedId
+				else
+					res.redirect '/'
+		else
+			res.redirect '/'
 
 	alias =
 		'user/login': ''

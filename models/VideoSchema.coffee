@@ -10,5 +10,8 @@ videoSchema = BaseSchema.extend
 	album:
 		type: ObjectId
 		ref: 'AlbumSchema'
+	referencedStatus:
+		type: ObjectId
+		ref: 'StatusSchema'
 
 module.exports = videoSchema

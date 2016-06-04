@@ -8,7 +8,7 @@ textReplacements = (text, replacements, count = null) ->
 				texts.unshift texts[0]
 			count = Math.abs Math.floor count
 			count = Math.min count, texts.length - 1
-			text = texts[count]
+			text = texts[count] || texts[0]
 	for key, value of replacements
 		text = text.replace(new RegExp('\\{' + key + '\\}', 'g'), value)
 	text
@@ -107,17 +107,27 @@ do (d = Date) ->
 			s("Il y a {minutes} minutes", { minutes: Math.max(1, (new d).getMinutes() - @getMinutes()) })
 		else
 			s("Maintenant")
-	prototype.humanDateTime = (plain) ->
-		if plain or @ < (new d).yesterday().midnight()
-			@toString s("DD/MM/YYYY à HH:ii")
+	prototype.humanDateTime = (inPhrase, plain) ->
+		if "boolean" isnt typeof inPhrase
+			plain = inPhrase
+			inPhrase = false
+		toReturn = if plain or @ < (new d).yesterday().midnight()
+			toReturn = @toString s("DD/MM/YYYY à HH:ii")
 		else if @ < (new d).midnight()
-			s("Hier à {time}", { time: @toString(s("HH:ii")) })
+			toReturn = s("Hier à {time}", { time: @toString(s("HH:ii")) })
 		else if @ < (new d).subMinutes 50
-			s("Aujourd'hui à {time}", { time: @toString(s("HH:ii")) })
+			toReturn = s("Aujourd'hui à {time}", { time: @toString(s("HH:ii")) })
 		else if @ < (new d).subSeconds 40
-			s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
+			toReturn = s("Il y a {minutes} minutes", { minutes: Math.max(1, Math.ceil(((new d).getTime() - @getTime()) / 60000)) })
 		else
-			s("Maintenant")
+			if inPhrase
+				toReturn = s("à l'instant")
+			else
+				toReturn = s("Maintenant")
+		if inPhrase
+			toReturn.toLowerCase()
+		else
+			toReturn
 	prototype.age = (now) ->
 		unless now instanceof Date and now.isValid()
 			now = new d

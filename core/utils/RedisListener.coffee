@@ -48,8 +48,21 @@ module.exports = ->
 								delete NoticePackage.notificationsToSend[userId]
 						true
 					when "addPhoto"
-						PhotoPackage.photos[messageObj.message.photoId] = messageObj.message.token
+						PhotoPackage.photos[messageObj.message.photoId] = PhotoPackage.photosForCookieChecking[messageObj.message.photoId] = messageObj.message.token
 					when "deletePhoto"
 						PhotoPackage.delete messageObj.message.photoId
+					when "delPhoto"
+						delete PhotoPackage.photos[messageObj.message.photoId]
+						delete PhotoPackage.photosForCookieChecking[messageObj.message.photoId]
+					when "addHiddenSuggest"
+						if UserPackage.hiddenSuggests[messageObj.message.me]
+							UserPackage.hiddenSuggests[messageObj.message.me].push cesarRight messageObj.message.userHashedId
+						else
+							UserPackage.hiddenSuggests[messageObj.message.me] = [cesarRight messageObj.message.userHashedId]
+						delay config.wornet.suggests.removeHiddenSuggest.minutes, ->
+							if UserPackage.hiddenSuggests[messageObj.message.me]
+								index = UserPackage.hiddenSuggests[messageObj.message.me].indexOf cesarRight messageObj.message.userHashedId
+								if index > -1
+									UserPackage.hiddenSuggests[messageObj.message.me].splice index, 1
 			else
 				warn new serverError("missformed message")
