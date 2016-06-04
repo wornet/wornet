@@ -183,7 +183,7 @@ module.exports = (app, port) ->
 				warning: @flash key + 'Warnings'
 			# get id from hashed or the id of the user logged in if it's null
 			getRequestedUserId: (id) ->
-				if id is null
+				if id is null and @user
 					@user.id
 				else
 					cesarRight id
@@ -241,8 +241,10 @@ module.exports = (app, port) ->
 			getFriends: (done, forceReload = false) ->
 				if ! forceReload and @session.friends and @session.friendAsks
 					done null, @session.friends, @session.friendAsks
-				else
+				else if @user
 					@user.getFriends done, forceReload
+				else
+					done null, [], []
 			# get friends of the user logged in
 			getFriendsFromDataBase: (done) ->
 				@getFriends done, true
@@ -307,9 +309,9 @@ module.exports = (app, port) ->
 						done err, null, false
 					else
 						ids.each ->
-							user = (if @ is currentUser.id
+							user = (if currentUser and @ is currentUser.id
 								currentUser
-							else
+							else if friends
 								friends.findOne id: @
 							)
 							if user
@@ -348,7 +350,7 @@ module.exports = (app, port) ->
 				if user = @user
 					sessionInfos = @session.columns ['notifications', 'friendAsks', 'friends']
 					userId = user._id
-					Notice.find user: userId
+					Notice.find {user: userId, type: $nin: ["chatMessage", "sms"]}
 						.sort _id: 'desc'
 						.limit config.wornet.limits.notifications
 						.exec (err, coreNotifications) =>

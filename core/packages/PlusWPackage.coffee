@@ -6,66 +6,106 @@ PlusWPackage =
 
 	put: (req, res, end) ->
 		statusReq = req.data.status
-		idStatus = req.data.status._id
-		hashedIdUser = req.user.hashedId
-		at = if req.data.at
-			req.data.at
-		else if req.data.status and req.data.status.at and req.data.status.at.hashedId
-			req.data.status.at.hashedId
-		else null
 
-		if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
-			locks[hashedIdUser + '-' + idStatus] = true
-			@checkRights req, res, req.data.status, true, (err, ok) =>
-				if ok
-					PlusW.create
-						user: req.user._id
-						status: idStatus
-					, (err, plusW) =>
+		next = (status, isAShare = false) =>
+			idStatus = status._id
+			hashedIdUser = req.user.hashedId
+			at = if req.data.at
+				req.data.at
+			else if status and status.at and status.at.hashedId
+				status.at.hashedId
+			else null
+
+			if 'undefined' is typeof locks[hashedIdUser + '-' + idStatus]
+				locks[hashedIdUser + '-' + idStatus] = true
+				@checkRights req, res, status, true, false, isAShare, (err, ok) =>
+					if ok
+						PlusW.create
+							user: req.user._id
+							status: idStatus
+						, (err, plusW) =>
+							delete locks[hashedIdUser + '-' + idStatus]
+							usersToNotify = []
+							hashedIdAuthor = status.author.hashedId
+							#usersToNotify contains hashedIds tests in notify.
+							#It will be transformed just before NoticePackage calling
+							unless equals hashedIdUser, hashedIdAuthor
+								if !status.author.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains hashedIdAuthor
+									usersToNotify.push hashedIdAuthor
+							unless [null, hashedIdAuthor, hashedIdUser].contains at
+								if status.at and !status.at.accountConfidentiality is "public" or req.user.friends.column('hashedId').contains at
+									usersToNotify.push at
+							unless empty usersToNotify
+								@notify usersToNotify, statusReq, req.user
+							end null
+					else
 						delete locks[hashedIdUser + '-' + idStatus]
-						usersToNotify = []
-						hashedIdAuthor = statusReq.author.hashedId
-						#usersToNotify contains hashedIds tests in notify.
-						#It will be transformed just before NoticePackage calling
-						unless equals hashedIdUser, hashedIdAuthor
-							usersToNotify.push hashedIdAuthor
-						unless [null, hashedIdAuthor, hashedIdUser].contains at
-							usersToNotify.push at
-						unless empty usersToNotify
-							@notify usersToNotify, statusReq, req.user
-						end null
+						end err
+			else
+				end null
+
+		if statusReq.isAShare and statusReq.referencedStatus
+			Status.findOne
+				_id: statusReq.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				unless originalStatus
+					res.serverError new PublicError "Le status originel est introuvable."
 				else
-					delete locks[hashedIdUser + '-' + idStatus]
-					end err
+					originalStatus.populateUsers (statusPopulated) ->
+						next statusPopulated, true
 		else
-			end null
+			next statusReq
+
+
 
 	delete: (req, res, end) ->
-		idStatus = req.data.status._id
-		idUser = req.user._id
-		@checkRights req, res, req.data.status, false, (err, ok) =>
-			if ok
-				PlusW.remove
-					user: idUser
-					status: idStatus
-				, (err) ->
-					if err
-						end err
-					else
-						NoticePackage.unnotify
-							action: 'notice'
-							notice:
-								type: 'like'
-								launcher: idUser
-								status: idStatus
-						end null
-			else
-				end err
+		statusReq = req.data.status
 
-	checkRights: (req, res, status, liking, onlySeeing = false, done) ->
+		next = (status, isAShare) =>
+			idStatus = status._id
+			idUser = req.user._id
+			@checkRights req, res, status, false, false, isAShare, (err, ok) =>
+				if ok
+					PlusW.remove
+						user: idUser
+						status: idStatus
+					, (err) ->
+						if err
+							end err
+						else
+							NoticePackage.unnotify
+								action: 'notice'
+								notice:
+									type: 'like'
+									launcher: idUser
+									status: idStatus
+							end null
+				else
+					end err
+
+		if statusReq.isAShare and statusReq.referencedStatus
+			Status.findOne
+				_id: statusReq.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				unless originalStatus
+					res.serverError new PublicError "Le status originel est introuvable."
+				else
+					originalStatus.populateUsers (statusPopulated) ->
+						next statusPopulated, true
+		else
+			next statusReq
+
+
+	checkRights: (req, res, status, liking, onlySeeing = false, isAShare = false, done) ->
 		if 'function' is typeof onlySeeing
 			done = onlySeeing
 			onlySeeing = false
+			isAShare = false
+		if 'function' is typeof isAShare
+			done = isAShare
+			isAShare = false
 
 		idStatus = status._id
 		#already liked or disliked?
@@ -75,9 +115,18 @@ PlusWPackage =
 				status: idStatus
 			PlusW.count wherePlus, (err, count) ->
 				done null, !err and liking is !count
-
 		#if the status is mine or on my wall
-		if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId))
+		right = if req.user
+			if (status.author and equals(status.author.hashedId, req.user.hashedId)) or (status.at and equals(status.at.hashedId, req.user.hashedId)) or isAShare
+				true
+			else
+				false
+		else
+			if status.at
+				status.at.accountConfidentiality is 'public'
+			else
+				status.author.accountConfidentiality is 'public'
+		if right
 			if onlySeeing
 				done null, true
 			else
@@ -85,24 +134,32 @@ PlusWPackage =
 		else
 			req.getFriends (err, friends, friendAsks) ->
 				friendsList = friends.column('_id')
-				#The status is owned by one of my friends or on his wall
-				whereStatus =
-					_id: idStatus
-					$or: [
-						author: $in: friendsList
-					,
-						at: $in: friendsList
-					]
-				Status.count whereStatus, (err, countStatut) ->
-					if err
-						done err, false
-					else if !countStatut
-						done new PublicError s("Vous n'avez accès à ce statut"), false
-					else
-						if onlySeeing
-							done null, true
+				Follow.find
+					follower: req.user._id
+				, (err, follows) ->
+					warn err if err
+					followed = follows.column('followed')
+					friendsListWithFollow = friendsList.copy()
+					friendsListWithFollow.merge followed
+					#The status is on the wall of a friend or a following
+					whereStatus =
+						_id: idStatus
+						$or: [
+							at: $in: friendsListWithFollow
+						,
+							at: null
+							author: $in: friendsListWithFollow
+						]
+					Status.count whereStatus, (err, countStatut) ->
+						if err
+							done err, false
+						else if !countStatut
+							done new PublicError s("Vous n'avez pas accès à ce statut"), false
 						else
-							next()
+							if onlySeeing
+								done null, true
+							else
+								next()
 
 	notify: (usersToNotify, status, liker) ->
 
@@ -111,8 +168,7 @@ PlusWPackage =
 		generateNotice = (text) ->
 			[
 				img +
-				jd 'span(data-href="/user/profile/' +
-				statusPlace.hashedId + '/' + encodeURIComponent(statusPlace.name.full) + '#' + status._id + '") ' +
+				jd 'span(data-href="/user/status/' + status._id + '") ' +
 					text
 			]
 		likersFriends = liker.friends.column 'hashedId'
@@ -136,39 +192,42 @@ PlusWPackage =
 
 
 	get: (req, res, status, done) ->
-		@checkRights req, res, status, false, true, (err, ok) ->
-			if !err and ok
-				offset = req.data.offset
-				where = status: status._id
-				.with if offset
-				    _id: $gt: new ObjectId(offset).path
-				PlusW.find where
-					.limit config.wornet.limits.likersPageCount
-					.sort createdAt: 'desc'
-					.exec (err, plusWs) ->
-						if err
-							done err
-						else if !plusWs or !plusWs.length
-							done null, []
-						else
-							likersId = plusWs.map (plusW) ->
-								plusW.user
-							User.find
-								_id: $in: likersId
-							, (err, users) ->
-								if err
-									done err
-								else if !users or !users.length
-									done null, []
-								else
-									users = users.map (user) ->
-										user.publicInformations()
-									for user in users
-										for plusW in plusWs
-											if strval(plusW.user) is strval(cesarRight(user.hashedId))
-												user.plusWId = plusW._id
-									done null, users
-			else
-				done err
+		StatusPackage.getOriginalStatus status, (err, originalStatus) =>
+			warn err if err
+			@checkRights req, res, originalStatus, false, true, status.isAShare, (err, ok) ->
+				if !err and ok
+					status = originalStatus
+					offset = req.data.offset
+					where = status: status._id
+					.with if offset
+					    _id: $gt: new ObjectId(offset).path
+					PlusW.find where
+						.limit config.wornet.limits.likersPageCount
+						.sort createdAt: 'desc'
+						.exec (err, plusWs) ->
+							if err
+								done err
+							else if !plusWs or !plusWs.length
+								done null, []
+							else
+								likersId = plusWs.map (plusW) ->
+									plusW.user
+								User.find
+									_id: $in: likersId
+								, (err, users) ->
+									if err
+										done err
+									else if !users or !users.length
+										done null, []
+									else
+										users = users.map (user) ->
+											user.publicInformations()
+										for user in users
+											for plusW in plusWs
+												if strval(plusW.user) is strval(cesarRight(user.hashedId))
+													user.plusWId = plusW._id
+										done null, users
+				else
+					done err
 
 module.exports = PlusWPackage

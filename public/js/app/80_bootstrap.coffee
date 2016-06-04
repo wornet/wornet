@@ -171,13 +171,13 @@ Wornet = angular.module 'Wornet', [
 		else
 			$document
 		lock = false
+
 		$scrollable.scroll ->
 			scrollTopMax = $scrollable[0].scrollHeight
 			if !$attributes.scrollable
 				scrollTopMax = document.body.scrollHeight - document.body.offsetHeight
 			else
 				scrollTopMax -= $scrollable[0].offsetHeight
-
 			if $scrollable.scrollTop() > (scrollTopMax - gap) and offset = getOffset()
 				data = {}
 				if offset
@@ -227,6 +227,19 @@ Wornet = angular.module 'Wornet', [
 		height = $element.innerWidth() * (270 / 480)
 		$element.css 'height', height + 'px'
 		return
+
+.directive 'chunkPerLine', ->
+	link: ($scope, $element, $attributes) ->
+		$element.addClass "loading"
+		# Without it, $element.width() give errored value
+		delay 1, ->
+			containerWidth = $element.width()
+			chunkWidth = $attributes.chunkWidth * 1
+			minimalMargin = ($attributes.minimalMargin || 10) * 1
+			chunkPerLine = Math.floor containerWidth / ( chunkWidth + minimalMargin )
+			$element.attr 'chunkPerLine', chunkPerLine
+			$element.attr 'optimalMargin', Math.floor ( containerWidth / chunkPerLine ) - chunkWidth
+			$scope.$eval $attributes.adjustChunks
 
 .filter 'urlencode', ->
 	window.encodeURIComponent

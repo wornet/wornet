@@ -1,0 +1,18 @@
+#following-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="FollowingListCtrl" tabindex="-1")
+	.modal-dialog: .modal-content
+		.modal-header
+			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+			h4.modal-title
+				=s("Abonnements")
+		.modal-body
+			.following(ng-repeat='following in followings' data-id='{{ following.hashedId }}')
+				img(ng-src="{{ following.thumb50 }}" alt="{{ following.name.full }}" data-id="{{ following.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ following.name.full }}").thumb
+				a(ng-class="" href="/{{ following.uniqueURLID }}")
+					.user-name
+						| {{ following.name.full }}
+				.user-points
+					| {{ following.points }}
+					=' '+s("points")
+				.cb
+			div(scroll-detect verify-to-load="followingRemaining()" gap="300" url="getLoadUrl()" offset="getfollowingsOffset()" callback="loadfollowingsList" additionnal-data="getAdditionnalData('" + profile.hashedId + "')" scrollable="#following-list .modal-body")
+			+data('followingsPageCount', config.wornet.limits.followingsPageCount)

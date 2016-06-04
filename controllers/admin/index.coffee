@@ -12,19 +12,11 @@ module.exports = (router) ->
 				else
 					res.notFound()
 
-	godOnly = only [
-		'kylekatarnls@gmail.com'
-		'jeremy.bayle87@hotmail.fr'
-		'jeremy.bayle@wornet.fr'
-	]
+	godOnly = only config.wornet.admin.god
 
-	adminOnly = only [
-		'manuel.costes@gmail.com'
-		'bastien.miclo@gmail.com'
-		'kylekatarnls@gmail.com'
-		'jeremy.bayle87@hotmail.fr'
-		'jeremy.bayle@wornet.fr'
-	]
+	adminOnly = only config.wornet.admin.admin
+
+	certifierOnly = only config.wornet.admin.certifier
 
 	if config.env.development
 
@@ -33,7 +25,7 @@ module.exports = (router) ->
 			id = cesarRight req.params.hashedId
 			User.findById id, (err, user) ->
 				auth.auth req, res, user
-				res.redirect '/user/profile'
+				res.redirect '/' + user.uniqueURLID
 
 		# http links to https
 		adminOnly '/users', (info) ->
@@ -49,6 +41,104 @@ module.exports = (router) ->
 	# http links to https
 	adminOnly '/', (info, req, res) ->
 		res.render 'admin/menu'
+
+	certifierOnly '/certification', (info, req, res) ->
+		CertificationAsk.count
+			status: "pending"
+		, (err, count) ->
+			res.render 'admin/certification',
+				nbPendingCertification: count
+
+	certifierOnly '/certification/list', (info, req, res) ->
+		renderCertification req, res, false
+
+
+	certifierOnly '/certification/pending', (info, req, res) ->
+		renderCertification req, res, true
+
+	renderCertification = (req, res, isPendingPage) ->
+		status = if isPendingPage
+			"pending"
+		else
+			"approved"
+		CertificationAsk.find
+			status: status
+		, (err, certifs) ->
+			userToFind = []
+			for certif in certifs
+				userToFind.push certif.user
+			User.find
+				_id: $in: userToFind
+			, (err, users) ->
+				warn err if err
+				if users
+					certifsToRender = []
+					for certif in certifs
+						certifObj = certif.toObject()
+						for user in users
+							if strval(user._id) is strval certifObj.user
+								certifObj.user = user.publicInformations()
+						certifsToRender.push certifObj
+					res.render 'admin/certificationList',
+						certifications: certifsToRender
+						isPendingPage: isPendingPage
+						userTexts: userTexts()
+
+	certifierOnly '/certification/remove/:certifId', (info, req, res) ->
+		id = req.params.certifId
+		CertificationAsk.findOneAndUpdate
+			_id: id
+		,
+			status: "refused"
+		, (err, certif) ->
+			warn err if err
+			User.update
+				_id: certif.user
+			,
+				certifiedAccount: false
+			, (err, users) ->
+				if req.user and equals certif.user, req.user._id
+					req.user.certifiedAccount = false
+				warn err if err
+				res.json()
+
+	certifierOnly '/certification/accept/:certifId', (info, req, res) ->
+		id = req.params.certifId
+		CertificationAsk.findOneAndUpdate
+			_id: id
+		,
+			status: "approved"
+		, (err, certif) ->
+			warn err if err
+			isAPublicAccount req, cesarLeft(certif.user), true, (err, isAPublicAccount) ->
+				if isAPublicAccount
+					User.findOneAndUpdate
+						_id: certif.user
+					,
+						certifiedAccount: true
+					, (err, user) ->
+						if req.user
+							req.user.certifiedAccount = true
+						warn err if err
+						img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: user
+						NoticePackage.notify [certif.user], null,
+							action: 'notice'
+							author: certif.user
+							notice: [
+								img +
+								jd 'span(data-href="/' +
+								user.uniqueURLID + '") ' +
+								s("Félicitations, votre demande de certification a été acceptée.")
+							, 'certificationApproved', req.user._id, null, null
+							]
+						res.json()
+				else
+					CertificationAsk.update
+						_id: id
+					,
+						status: "refused"
+					, (err, result) ->
+						res.json err: new PublicError s("Ce compte n'est plus un compte public. Certification refusée")
 
 	# http links to https
 	adminOnly '/port', (info) ->
@@ -153,7 +243,7 @@ module.exports = (router) ->
 			photos: Photo.count.bind Photo
 			liens: Link.count.bind Link
 			'vidéos': Video.count.bind Video
-			'mesages de chat': Message.count.bind Message
+			'messages de chat': Message.count.bind Message
 			notifications: Notice.count.bind Notice
 			'événements': Event.count.bind Event
 			invitations: Invitation.count.bind Invitation

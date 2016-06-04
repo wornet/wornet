@@ -4,7 +4,10 @@
 			=s("Mes medias").toUpperCase() + ' '
 			a.album-number(href="/user/albums/{{ profileHashedId }}" ng-bind-html="nbAlbum()")
 		else
-			=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
+			if profile.publicName
+				=s("Medias de {profileName}", { profileName: profile.publicName}).toUpperCase() + ' '
+			else
+				=s("Medias de {profileName}", { profileName: profile.firstName}).toUpperCase() + ' '
 			a.album-number(href="/user/albums/{{ profileHashedId }}" ng-bind-html="nbAlbum()")
 	hr
 	div(ng-if="!isMe && nbNonEmptyAlbums === 0"): h6

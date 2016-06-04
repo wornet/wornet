@@ -39,7 +39,7 @@ do ->
 	.on 'touchstart mousedown', (e) ->
 		p = pointer e
 		_x = x = p.pageX
-		_y = y = p.pageY - $document.scrollTop()
+		_y = y = p.pageY # - $document.scrollTop()
 		touch = $.now()
 		touchTarget = e.target
 		return
@@ -53,7 +53,7 @@ do ->
 		if ax > 50 or ay > 50
 			$(touchTarget)
 				.trigger 'swipe', [dx, dy, isTouchEvent]
-				.trigger if ax > ay
+				.trigger if ax > (ay * (window.innerHeight / window.innerWidth))
 					if dx > 0
 						'swiperight'
 					else
@@ -100,7 +100,7 @@ do ->
 		return
 
 	.on 'swiperight', (e, isTouchEvent) ->
-		if isTouchEvent and exists '#shutter'
+		if isTouchEvent and (! exists '#media-viewer:visible') and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').removeClass 'opened-shutter'
 			$('#directives-calendar > .well').removeClass 'col-xs-9'
 			syncShutter()
@@ -109,7 +109,7 @@ do ->
 			true
 
 	.on 'swipeleft', (e, isTouchEvent) ->
-		if isTouchEvent and exists '#shutter'
+		if isTouchEvent and (! exists '#media-viewer:visible') and exists '#shutter'
 			$('.wornet-navbar, #wrap, #shutter').addClass 'opened-shutter'
 			$('#directives-calendar > .well').addClass 'col-xs-9'
 			syncShutter()
@@ -355,7 +355,7 @@ do ->
 			'upload'
 			'.status-images'
 			($form, e, body) ->
-				$form.find('input[type="submit"]').prop 'disabled', false
+				$('.publish input').prop 'disabled', false
 				$container = $form.find '.upload-container'
 				$container.html $container.data 'save-html'
 				$scope = $form.scope()
@@ -384,7 +384,7 @@ do ->
 			'.status-images'
 			($form, e) ->
 				enable = (enabled = true) ->
-					$form.find('input[type="submit"]').prop 'disabled', ! enabled
+					$('.publish input').prop 'disabled', ! enabled
 				enable false
 				$container = $form.find '.upload-container'
 				$container.data 'save-html', $container.html()
@@ -398,6 +398,7 @@ do ->
 					$.each $form.find('input[type="file"]')[0].files, (index) ->
 						formData.append 'photo', @
 						return
+
 					formData.append 'album', $scope.currentAlbum._id || "new"
 					formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
 
@@ -405,6 +406,9 @@ do ->
 
 					complete = ->
 						enable()
+						$label
+							.css 'font-size', '58px'
+							.text '+'
 						delay 1000, ->
 							$input.show()
 
@@ -412,7 +416,10 @@ do ->
 						if e.lengthComputable
 							percent = Math.round(e.loaded * 100 / e.total) + '%'
 							$progress.css width: percent
-							$label.text percent
+							$label
+								.css "font-size": "30px"
+								.css "margin-top": "20px"
+								.text percent
 						return
 
 					xhr.onerror = ->
@@ -424,6 +431,7 @@ do ->
 						complete()
 						$form.trigger 'upload', [@responseText]
 						return
+
 					return
 		]
 		[
@@ -518,6 +526,34 @@ do ->
 		]
 		[
 			click
+			'[data-follow]'
+			($btn, e) ->
+				id = $btn.data 'follow'
+				Ajax.put '/user/profile/follow',
+					data: hashedId: id
+					success: (data) ->
+						$('.follow').hide()
+						$('.unfollow').show()
+						$btn.hide()
+						$('.search-unfollow[data-unfollow="' + id + '"]').removeClass("ng-hide").show()
+				prevent e
+		]
+		[
+			click
+			'[data-unfollow]'
+			($btn, e) ->
+				id = $btn.data 'unfollow'
+				Ajax.delete '/user/profile/follow',
+					data: hashedId: id
+					success: (data) ->
+						$('.follow').show()
+						$('.unfollow').hide()
+						$btn.hide()
+						$('.search-follow[data-follow="' + id + '"]').removeClass("ng-hide").show()
+				prevent e
+		]
+		[
+			click
 			'.accept-friend, .ignore-friend'
 			($btn, e) ->
 				$message = $btn.parents '.friend-ask'
@@ -565,6 +601,11 @@ do ->
 			click + " mousedown"
 			'.notifications ul a:not(".activities, .read-all-notifs"), .notifications-mobile ul a:not(".activities, .read-all-notifs"), #notification-list a'
 			($a, e) ->
+				target = $(e.target)
+				isFriendAskButton = target.hasClass("ignore-friend") || target.hasClass("accept-friend")
+				if isFriendAskButton
+					cancel e
+					return true
 				href = $a.find('[data-href]').data 'href'
 				id = $a.parents('li:first').attr 'data-id'
 				if href
@@ -624,6 +665,8 @@ do ->
 			'.profile-edit-btn'
 			($a, e) ->
 				$('.profile-display').toggle()
+				if window.isMobile()
+					$('.profile-photos-btn').toggle()
 				$('.profile-edit').toggleClass 'hidden'
 				cancel e
 		]
@@ -797,6 +840,83 @@ do ->
 				Ajax.get '/user/chat/list', (chat) ->
 					chatListScope.chatList = chat.chatList
 					refreshScope chatListScope
+		]
+		[
+			'change'
+			'#account-confidentiality'
+			($select, e) ->
+				privateFields = ['.account-confidentiality-hint-private', '.confidentialityFollowList', '#certification-warning', '.confidentialityFriendList']
+				publicFields = ['.account-confidentiality-hint-public', '#allowFriendPostOnMe', '#urlIdDisponibility', '#urlIdContainer', '.certification-link', "#publicName"]
+				if $select.val() is "private"
+					$('#followed-warning').removeClass("hidden")
+					for field in privateFields
+						$(field).removeClass("hidden")
+					for field in publicFields
+						$(field).addClass("hidden")
+					if $select.data("certified-account") is true
+						$('#certification-warning').removeClass("hidden")
+					else
+						$('#certification-warning').addClass("hidden")
+
+				else
+					$('#followed-warning').addClass("hidden")
+					for field in privateFields
+						$(field).addClass("hidden")
+					for field in publicFields
+						$(field).removeClass("hidden")
+		]
+		[
+			'submit'
+			'#certification-form'
+			($form, e) ->
+				s = textReplacements
+				$scope = $form.scope()
+				formData = new FormData()
+				certification = $scope.certification
+				if $('input[name="proof"]')[0].files.length
+					certification.proof = $('input[name="proof"]')[0].files[0]
+				switch $scope.certification.userType
+					when "particular"
+						requiredFields =
+							userType: 'Type'
+							firstName: 'Prénom'
+							lastName: 'Nom'
+							email: 'Email'
+							telephone: 'Téléphone'
+							proof: 'Justificatif'
+					when "business", "association"
+						requiredFields =
+							userType: 'Type'
+							entrepriseName: "Nom de l'entreprise"
+							firstName: 'Prénom'
+							lastName: 'Nom'
+							email: 'Email'
+							telephone: 'Téléphone'
+							proof: 'Justificatif'
+
+				missingFields = []
+				for fieldToTest, userError of requiredFields
+					if !certification[fieldToTest]
+						missingFields.push userError
+
+
+				if missingFields.length
+					$('#certification-error')
+						.html s("Veuillez renseigner les champs suivants : ") + missingFields.join ', '
+						.show()
+					cancel e
+				else
+					withFormData (formData, xhr) ->
+						prevent e
+						for key, val of certification
+							formData.append key, val
+						formData.append '_csrf', $('head meta[name="_csrf"]').attr('content')
+						xhr.open 'POST', $form.prop('action'), true
+						xhr.onload = ->
+							toastr.success s("Votre demande de certification a bien été envoyée. Merci !"), s("C'est fait")
+							$('#certification [data-dismiss="modal"]:first').click()
+							$('.certification-link').hide()
+							$scope.initModal()
 		]
 	], ->
 		params = @

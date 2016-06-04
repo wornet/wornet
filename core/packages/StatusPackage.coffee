@@ -9,8 +9,8 @@ StatusPackage =
 	getRecentStatus: (req, res, id = null, data = {}, onProfile = false, updatedAt = null) ->
 		id = req.getRequestedUserId id
 		next = _next = =>
-			if data.recentStatus and data.chat
-				if (! onProfile or equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3
+			if data.recentStatus and (data.chat or !req.user)
+				if req.user and (onProfile and equals id, req.user._id) and ! req.user.firstStepsDisabled and data.recentStatus.length < 3 and !req.data.offset
 					data.recentStatus.push @defaultStatus()
 
 				if res.endAt
@@ -23,7 +23,7 @@ StatusPackage =
 				req.session.reload (err) ->
 					warn err if err
 					_next()
-		unless data.chat
+		if !data.chat and req.user
 			updatedAt *= 1
 			# to prevent duplicate the last message from which the updatedAt is extracted
 			updatedAt += 1000
@@ -41,9 +41,8 @@ StatusPackage =
 				else
 					data.chat = chat
 					next()
-		req.getFriends (err, friends, friendAsks) =>
-			connectedPeople = friends.column 'id'
-			connectedPeopleAndMe = connectedPeople.with req.user.id
+
+		getStatus = (connectedPeopleAndMe, followed, onProfile) =>
 			where = @where id, connectedPeopleAndMe, onProfile
 			limit = config.wornet.limits.statusPageCount
 			if req.data.offset
@@ -51,79 +50,247 @@ StatusPackage =
 				_objectId = req.data.offset
 				if /^[0-9a-fA-F]{24}$/.test _objectId
 					where._id = $lt: new ObjectId(_objectId).path
-			if connectedPeopleAndMe.contains id
-				Status.find where
-					.skip 0
-					.limit limit
-					.sort date: 'desc'
-					.select '_id date author at content status images videos links album albumName pointsValue nbLike'
-					.exec (err, recentStatus) ->
-						if err
-							res.serverError err
-						else
-							missingIds = []
-							recentStatusPublicData = []
-							if recentStatus and typeof recentStatus is 'object'
-								add = (val) ->
-									val = strval val
-									if val is 'undefined'
-										throw new Error 'val must not be undefined'
-									unless missingIds.contains val
-										missingIds.push val
-								recentStatus.each ->
-									if @at
-										add @at
-									add @author
-								searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
-								done = (err, usersMap) ->
-									if err
-										res.serverError err
-									else
-										idsStatus = recentStatus.column '_id'
-										likedStatus = {}
-										PlusW.find
-											status: $in: idsStatus
-										, (err, result) ->
-											tabLike = []
-											for idStatus in idsStatus
-												tabLike[idStatus] ||= {likedByMe: false, nbLike: 0}
-											for like in result
-												tabLike[like.status].nbLike++
-												if equals req.user.id, like.user
-													tabLike[like.status].likedByMe = true
-
-											recentStatus.each ->
-												status = @toObject()
-												if @at is @author
-													@at = null
-												status.author = usersMap[strval @author].publicInformations()
-												if @at
-													status.at = usersMap[strval @at].publicInformations()
-												status.concernMe = [@at, @author].contains req.user.id, equals
-												if status.concernMe and status.images.length and ! equals req.user.id, @author
-													ids = status.images.column('src').map PhotoPackage.urlToId
-													(req.session.photosAtMe ||= []).merge ids, 'add'
-													next = nextWithSession
-												status.status = @status
-												if @status is 'blocked'
-													status.content = ''
-												status.likedByMe = tabLike[status._id].likedByMe
-												status.nbLike = tabLike[status._id].nbLike
-												status.nbImages = status.images.length
-												if status.images.length
-													status.images = [status.images[0]]
-													if -1 isnt status.images[0].src.indexOf "200x"
-														status.images[0].src = status.images[0].src.replace "200x", ""
-												recentStatusPublicData.push status
-											data.recentStatus = recentStatusPublicData
-											next()
-								req.getUsersByIds missingIds, done #, searchInDataBase
+			isAPublicAccount req, cesarLeft(id), true, (err, isAPublicAccount) =>
+				if isAPublicAccount || connectedPeopleAndMe.contains id
+					Status.find where
+						.skip 0
+						.limit limit
+						.sort date: 'desc'
+						.select '_id date author at content status images videos links album albumName pointsValue nbLike shares isAShare referencedStatus'
+						.exec (err, recentStatus) ->
+							if err
+								res.serverError err
 							else
-								data.recentStatus = recentStatusPublicData
-								next()
-			else
-				warn [connectedPeopleAndMe, 'does not contains', id]
-				res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
+								missingIds = []
+								recentStatusPublicData = []
+								if recentStatus and typeof recentStatus is 'object'
+									add = (val) ->
+										val = strval val
+										if val is 'undefined'
+											throw new Error 'val must not be undefined'
+										unless missingIds.contains val
+											missingIds.push val
+									recentStatus.each ->
+										if @at
+											add @at
+										add @author
+									searchInDataBase = !! config.wornet.onlyAuthoredByAFriend
+									done = (err, usersMap) ->
+										if err
+											res.serverError err
+										else
+											originalStatusToSearch = []
+											for aStatus in recentStatus
+												if aStatus.isAShare
+													originalStatusToSearch.push aStatus.referencedStatus
+
+											Status.find
+												_id: $in: originalStatusToSearch
+											, (err, originalStatus) ->
+												warn err if err
+												newMissingIds = []
+												for anOriginalStatus in originalStatus
+													newMissingIds.push(anOriginalStatus.author) if anOriginalStatus.author
+													newMissingIds.push(anOriginalStatus.at) if anOriginalStatus.at
+												req.getUsersByIds newMissingIds, (err, missingUsers) ->
+													warn err if err
+													usersMap.merge missingUsers
+													idsStatus = recentStatus.column('_id').merge originalStatus.column '_id'
+													likedStatus = {}
+													PlusW.find
+														status: $in: idsStatus
+													, (err, result) ->
+														tabLike = []
+														for idStatus in idsStatus
+															tabLike[idStatus] ||= {likedByMe: false, nbLike: 0, likers:[]}
+														for like in result
+															tabLike[like.status].nbLike++
+															tabLike[like.status].likers.push like.user
+															if req.user
+																if equals req.user.id, like.user
+																	tabLike[like.status].likedByMe = true
+															else
+																tabLike[like.status].likedByMe = false
+														Link.find
+															referencedStatus: $in: idsStatus
+														, (err, links) ->
+															Video.find
+																referencedStatus: $in: idsStatus
+															, (err, videos) ->
+																statusConcernedByLink = links.column 'referencedStatus'
+																statusConcernedByVideo = links.column 'referencedStatus'
+																newRecentStatus = []
+																for status in recentStatus
+																	status = status.toObject()
+																	if statusConcernedByLink.contains status._id, equals
+																		status.links = []
+																	if statusConcernedByVideo.contains status._id, equals
+																		status.videos = []
+																	newRecentStatus.push status
+																for status in newRecentStatus
+																	for link in links
+																		if equals status._id, link.referencedStatus
+																			status.links.push link
+																	for video in videos
+																		if equals status._id, video.referencedStatus
+																			video = video.toObject()
+																			video.href = video.url
+																			status.videos.push video
+																recentStatus = newRecentStatus
+
+																UserPackage.refreshFollows req, (err) ->
+																	warn err if err
+																	treatStatus = (i) ->
+																		statusToTreat = recentStatus[i]
+																		i++
+																		status = statusToTreat.copy()
+
+																		commonProcess = (status) ->
+																			status.nbImages = status.images.length
+																			status.concernMe = req.user and [statusToTreat.at, statusToTreat.author].contains req.user.id, equals
+																			status.isPlaceFollowed = if status.at and req.user
+																				req.user.followings.contains cesarRight(status.at.hashedId), equals
+																			else if req.user
+																				req.user.followings.contains cesarRight(status.author.hashedId), equals
+																			else
+																				false
+																			status.isMineOrAFriends = connectedPeopleAndMe.contains id
+																			status.nbShare = if status.shares
+																				status.shares.length
+																			else
+																				0
+																			if status.images.length
+																				Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
+																					warn err if err
+																					if photo
+																						PhotoPackage.fromAlbum photo.album, (err, photos) ->
+																							warn err if err
+																							photoToDisplay = null
+																							if photos and photos.length
+																								for photoAlbum in photos
+																									for photoStatus in status.images
+																										if PhotoPackage.urlToId(photoAlbum.thumb50) is PhotoPackage.urlToId(photoStatus.src)
+																											photoToDisplay = photoStatus
+																											break
+																							if !photoToDisplay
+																								photoToDisplay = status.images[0]
+																							status.images = [photoToDisplay]
+																							if -1 isnt photoToDisplay.src.indexOf "200x"
+																								photoToDisplay.src = photoToDisplay.src.replace "200x", ""
+																							recentStatusPublicData.push status
+																							if recentStatusPublicData.length is recentStatus.length
+																								data.recentStatus = recentStatusPublicData
+																								next()
+																							else
+																								treatStatus i
+																			else
+																				recentStatusPublicData.push status
+																				if recentStatusPublicData.length is recentStatus.length
+																					data.recentStatus = recentStatusPublicData
+																					next()
+																				else
+																					treatStatus i
+
+																		if statusToTreat.isAShare
+																			theOriginalStatus = null
+																			for anOriginalStatus in originalStatus
+																				if equals anOriginalStatus._id, statusToTreat.referencedStatus
+																					theOriginalStatus = anOriginalStatus
+																			if !theOriginalStatus
+																				res.serverError new PublicError s("Statut originel introuvable")
+																			else
+																				status.sharer = usersMap[strval status.author].publicInformations()
+																				status.author = usersMap[strval theOriginalStatus.author].publicInformations()
+																				if theOriginalStatus.at
+																					status.at = usersMap[strval theOriginalStatus.at].publicInformations()
+																				status.content = theOriginalStatus.content
+																				status.images = theOriginalStatus.images
+																				status.videos = theOriginalStatus.videos
+																				# status.links = theOriginalStatus.links
+																				if theOriginalStatus.status is 'blocked'
+																					status.status = 'blocked'
+																					status.content = ''
+																				status.likedByMe = tabLike[theOriginalStatus._id].likedByMe
+																				status.nbLike = tabLike[theOriginalStatus._id].nbLike
+																				status.shares = theOriginalStatus.shares
+																				status.shareDate = status.date
+																				status.date = theOriginalStatus.date
+																				if status.nbLike
+																					User.find
+																						_id: $in: tabLike[theOriginalStatus._id].likers
+																					.skip 0
+																					.limit config.wornet.limits.maxLikersPhotoDisplayed
+																					.exec (err, likers) ->
+																						warn err if err
+																						if likers
+																							status.likers = likers.map (user) ->
+																								user.publicInformations()
+																							commonProcess status
+																						else
+																							status.likers = []
+																							commonProcess status
+																				else
+																					status.likers = []
+																					commonProcess status
+																		else
+																			if statusToTreat.at is statusToTreat.author
+																				statusToTreat.at = null
+																			status.author = usersMap[strval statusToTreat.author].publicInformations()
+																			if statusToTreat.at
+																				status.at = usersMap[strval statusToTreat.at].publicInformations()
+
+																			if status.concernMe and status.images.length and req.user and ! equals req.user.id, @author
+																				ids = status.images.column('src').map PhotoPackage.urlToId
+																				(req.session.photosAtMe ||= []).merge ids, 'add'
+																				next = nextWithSession
+																			status.status = statusToTreat.status
+																			if statusToTreat.status is 'blocked'
+																				status.content = ''
+																			status.likedByMe = tabLike[status._id].likedByMe
+																			status.nbLike = tabLike[status._id].nbLike
+																			if status.nbLike
+																				User.find
+																					_id: $in: tabLike[status._id].likers
+																				.skip 0
+																				.limit config.wornet.limits.maxLikersPhotoDisplayed
+																				.exec (err, likers) ->
+																					warn err if err
+																					if likers.length
+																						status.likers = likers.map (user) ->
+																							user.publicInformations()
+																						commonProcess status
+																					else
+																						status.likers = []
+																						commonProcess status
+																			else
+																				status.likers = []
+																				commonProcess status
+																	if recentStatus.length
+																		treatStatus 0
+																	else
+																		data.recentStatus = recentStatusPublicData
+																		next()
+									req.getUsersByIds missingIds, done #, searchInDataBase
+								else
+									data.recentStatus = recentStatusPublicData
+									next()
+				else
+					warn [connectedPeopleAndMe, 'does not contains', id]
+					res.serverError new PublicError s("Vous ne pouvez pas voir les statuts de ce profil")
+		if req.user
+			req.getFriends (err, friends, friendAsks) =>
+				Follow.find
+					follower: req.user.id
+				, (err, follows) =>
+					followed = follows.column 'followed'
+					connectedPeople = friends.column 'id'
+					connectedPeopleAndMe = connectedPeople.merge(followed).unique().with req.user.id
+					getStatus connectedPeopleAndMe, followed, onProfile
+		else
+			connectedPeopleAndMe = []
+			followed = []
+			onProfile = true
+			getStatus connectedPeopleAndMe, followed, onProfile
 
 	where: (id, connectedPeopleAndMe, onProfile) ->
 		if onProfile
@@ -148,41 +315,54 @@ StatusPackage =
 			else
 				albums = []
 				count = status.images.length
+				lastSelectedAlbum = req.data.status.lastSelectedAlbum
+				dataAlbum = req.data.album
 				if count
-					status.images.each ->
-						photoId = PhotoPackage.urlToId @src
-						PhotoPackage.publish req, photoId, status._id, (err, photo) ->
-							warn err if err
-							if photo and ! albums.contains photo.album, equals
-								albums.push photo.album
-							unless --count
-								if albums.length
-									Album.find _id: $in: albums, (err, albums) ->
-										if albums and albums.length
-											if originalStatus
-												originalStatus.album = albums[0]._id
-												originalStatus.albumName = albums[0].name
-												originalStatus.save()
-											count = albums.length
-											albums.each (key, album) ->
-												req.getUserById album.user, (err, user) =>
-													UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
-														if err
-															warn err
-													@refreshPreview (err) ->
-														if err
-															warn err
-														unless --count
-															done status
-										else
-											done status
-								else
-									done status
+					next = (album) ->
+						status.images.each ->
+							photoId = PhotoPackage.urlToId @src
+							PhotoPackage.publish req, photoId, status._id, album, (err, photo) ->
+								warn err if err
+								if photo and ! albums.contains photo.album, equals
+									albums.push photo.album
+								unless --count
+									if albums.length
+										Album.find _id: $in: albums, (err, albums) ->
+											if albums and albums.length
+												if originalStatus
+													originalStatus.album = albums[0]._id
+													originalStatus.albumName = albums[0].name
+													originalStatus.save()
+												count = albums.length
+												albums.each (key, album) ->
+													req.getUserById album.user, (err, user) =>
+														UserAlbums.touchAlbum user || req.user, @_id, (err, result) ->
+															if err
+																warn err
+														@refreshPreview (err) ->
+															if err
+																warn err
+															unless --count
+																done status
+											else
+												done status
+									else
+										done status
+					if lastSelectedAlbum._id is "new" and dataAlbum and dataAlbum.name
+						Album.create
+							name: dataAlbum.name
+							description: dataAlbum.description
+							user: req.user._id
+						, (err, album) ->
+							next album
+					else
+						next lastSelectedAlbum
 				else
 					done status
 
 	add: (req, done) ->
 		if req.data.status
+			scannedLink = req.data.scannedLink
 			try
 				medias = req.data.medias || {}
 				at = req.data.at || null
@@ -190,7 +370,6 @@ StatusPackage =
 					at = cesarRight at
 
 				pointsValue = @calculatePoints medias, req.user.numberOfFriends
-
 				Status.create
 					author: req.user._id
 					at: at
@@ -201,9 +380,19 @@ StatusPackage =
 					pointsValue: pointsValue
 				, (err, originalStatus) =>
 					unless err
-
 						status = originalStatus.toObject()
 						status.author = req.user.publicInformations()
+						newLinks = []
+						if status.links.length
+							for link in status.links
+								link.href = link.href.replace /^https?:\/\//g, ''
+								if 0 < link.href.indexOf '/'
+									link.href = link.href.substring 0, link.href.indexOf '/'
+								if scannedLink and scannedLink.link is link.href
+									link.url = scannedLink.originalLink.replace /^https?:\/\//g, ''
+									link.metaData = scannedLink
+								newLinks.push link
+						status.links = newLinks
 
 						next = (usersToNotify) =>
 							place = status.at or status.author
@@ -220,8 +409,7 @@ StatusPackage =
 								forBestFriends: at is null
 								notice: [
 									img +
-									jd 'span(data-href="/user/profile/' +
-									place.hashedId + '/' + encodeURIComponent(place.name.full) + '#' + status._id + '") ' +
+									jd 'span(data-href="/user/status/' + status._id + '") ' +
 									if at is null
 										s("{username} a publié un statut.", username: req.user.fullName)
 									else
@@ -258,10 +446,11 @@ StatusPackage =
 		place = place.hashedId or place
 		status.nbLike = 0
 		status.nbComment = 0
+		status.nbShare = 0
+		status.isPlaceFollowed = true
 		NoticePackage.notifyPlace place, null,
 			action: 'status'
 			status: status
-
 
 	calculatePoints: (medias, nbOfFriends) ->
 		points = 1 # simple status
@@ -332,10 +521,40 @@ StatusPackage =
 				, done
 
 	checkRightToSee: (req, status) ->
-		me = req.user.id
-		myFriendsId = req.user.friends.map (friend) ->
-			friend._id
-		(equals(status.author, me) or equals(status.at, me) or (myFriendsId.contains(status.author, equals) && (status.at is null or myFriendsId.contains(status.at, equals))) or myFriendsId.contains status.at, equals)
+		if (status.at and status.at.accountConfidentiality is "public") or (!status.at and status.author.accountConfidentiality is "public")
+			true
+		else
+			if req.user
+				me = req.user.hashedId
+				myFriendsId = req.user.friends.map (friend) ->
+					friend.hashedId
+			else
+				me = null
+				myFriendsId = []
+			atHashedId = if status.at
+				status.at.hashedId
+			else
+				null
+			(equals(status.author.hashedId, me) or (me and equals(atHashedId, me)) or (myFriendsId.contains(status.author.hashedId, equals) && (!status.at or myFriendsId.contains(atHashedId, equals))) or myFriendsId.contains atHashedId, equals)
+
+	getOriginalStatus: (status, done) ->
+		if !status.isAShare or !status.referencedStatus
+			if status.populateUsers
+				status.populateUsers (populatedStatus) ->
+					done null, populatedStatus
+			else
+				done null, status
+		else
+			Status.findOne
+				_id: status.referencedStatus
+			, (err, originalStatus) ->
+				warn err if err
+				if originalStatus
+					originalStatus.populateUsers (populatedStatus) ->
+						done null, populatedStatus
+				else
+					done new PublicError s('Le statut originel est introuvable')
+
 
 	DEFAULT_STATUS_ID: "100000000000000000000001"
 

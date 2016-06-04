@@ -6,14 +6,36 @@ $photoHeight = 200px
 $photoRadius = false
 $progressRadialWidth = 4px
 
+.profile
+	float left
+	width 100%
+	.profile-confidentiality
+		text-align center
+		margin $bigPadding
+
+	.profile-banner
+		border-top 1px solid $gray
+		padding-top $mainPadding
+		p
+			text-align center
+			margin 0
+			font-size 12px
+
+		div
+			cursor pointer
+
+		.right-separator
+			border-right 1px solid $lightGray
+
 .profile a:not(.add-friend)
 	color $linkColor
 
 .profile-edit-btn.aside
-	width 180px
+	width 30px
 
 .profile-edit
 .settings-edit
+.certification-admin
 	.alert-info
 		padding $smallPadding
 		.halflings
@@ -53,12 +75,35 @@ $progressRadialWidth = 4px
 		margin-left $photoWidth + $mainPadding
 	.missing-sex
 		margin $mainPadding 0 0 0
+	.profile-btn
+		width 50%
+		&.add-friend
+			padding 4px 12px
+		&.follow
+		&.unfollow
+			margin-bottom $mainPadding
 	.add-friend
 		padding-left $bigPadding + $mainPadding
 		.halflings
 			line-height 20px
 			padding 2px 0
 			margin-left $mainPadding
+	label
+		input.form-control
+		select.form-control
+		textarea.form-control
+			width 100%
+
+	.btn-group
+		margin-bottom $mainPadding
+
+	.biography
+		word-wrap break-word
+
+	.private-profil
+		color $mediumGray
+		.glyphicons
+			margin-right $smallPadding
 
 .about-user
 	margin $smallPadding 0 $smallPadding $photoWidth + $mainPadding
@@ -73,11 +118,13 @@ $progressRadialWidth = 4px
 .photo-options
 	float left
 	margin 0 $mainPadding 0 0
-
+	max-width $photoWidth
 	.btn
 		margin $smallPadding 0 0
 		width 100%
 
+.certification-glyph
+	color $blue
 
 #profile-photo
 	size($photoWidth, $photoHeight)
@@ -118,6 +165,14 @@ $progressRadialWidth = 4px
 			rel()
 			background-color white
 
+.friends-block
+.following-block
+	a
+		color $linkColor
+
+.profile-photos-btn
+	display none
+
 @media (max-width: 927px)
 	.profile-edit label
 		span
@@ -135,10 +190,11 @@ $progressRadialWidth = 4px
 		size($photoWidth / 2, $photoHeight / 2)
 		.btn
 			width calc(100% - 8px)
+			padding $smallPadding
+			span.halflings
+				margin-right 4px
 			i
 				display none
-	.photo-options .btn
-		width ($photoWidth / 2)
 	.profile-edit
 		.long
 			display none
@@ -154,6 +210,28 @@ $progressRadialWidth = 4px
 				width 100%
 		.biography
 			margin-left 0
+		.add-friend.add-private-friend
+			padding-left 30px
+		.add-friend
+			padding 4px $smallPadding
+
+
+	.profile
+		padding-bottom $smallPadding
+		.profile-confidentiality
+			margin $mainPadding 0
+		.profile-banner
+			padding-top $smallPadding
+			p
+				font-size 10px
+
+	.action-col
+		padding 0
+		a
+			margin $smallPadding 0
+
+	.profile-photos-btn
+		display block
 
 @media (max-width: 414px)
 	.profile-edit
@@ -170,5 +248,11 @@ $progressRadialWidth = 4px
 
 	.photo-options
 		float none
-		width ($photoWidth / 2)
+		width 150px
 		margin 0 auto 10px
+
+	#profile-photo
+		margin auto
+
+	.photo-options .unfollow
+		width auto

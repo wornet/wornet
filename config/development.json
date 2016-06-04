@@ -5,6 +5,16 @@
 
     "wornet": {
 
+        "admin": {
+            "certifier": [
+                "manuel.costes@gmail.com",
+                "manuel.costes@wornet.fr",
+                "jeremy.bayle@wornet.fr",
+                "bastien.miclo@gmail.com",
+                "kylekatarnls@gmail.com"
+            ]
+        },
+
         "bigImagesServer": "",
 
         "cache": {

@@ -18,6 +18,8 @@ userSchema = BaseSchema.extend
 			]
 			trim: true
 			required: true
+		public:
+			type: String
 	sex:
 		type: String
 		enum: [
@@ -72,6 +74,9 @@ userSchema = BaseSchema.extend
 		type: Boolean
 		default: false
 	maskFriendList:
+		type: Boolean
+		default: false
+	maskFollowList:
 		type: Boolean
 		default: false
 	phone:
@@ -157,6 +162,26 @@ userSchema = BaseSchema.extend
 		ref: 'AlbumSchema'
 	lastLeave:
 		type: Date
+	accountConfidentiality:
+		type: String
+		enum: [
+			'private'
+			'public'
+		]
+		required: true
+		default: 'private'
+	allowFriendPostOnMe:
+		type: Boolean
+		default: true
+	uniqueURLID:
+		type: String
+	photoUploadAlbumId:
+		type: ObjectId
+		ref: 'AlbumSchema'
+	certifiedAccount:
+		type: Boolean
+		required: true
+		default: false
 ,
 	toObject:
 		virtuals: false
@@ -183,16 +208,19 @@ getFullName = ->
 	if typeof @name isnt 'object'
 		anonymous
 	else
-		f = empty @name.first
-		l = empty @name.last
-		if f and l
-			anonymous
-		else if f
-			@name.last.ucFirst()
-		else if l
-			@name.first.ucFirst()
+		if @accountConfidentiality is "public" and !empty @name.public
+			@name.public.ucFirst()
 		else
-			@name.first.ucFirst() + ' ' + @name.last.ucFirst()
+			f = empty @name.first
+			l = empty @name.last
+			if f and l
+				anonymous
+			else if f
+				@name.last.ucFirst()
+			else if l
+				@name.first.ucFirst()
+			else
+				@name.first.ucFirst() + ' ' + @name.last.ucFirst()
 
 
 for key in ['name.full', 'fullName']
@@ -212,6 +240,11 @@ userSchema.virtual('firstName').get ->
 	@name.first
 userSchema.virtual('lastName').get ->
 	@name.last
+userSchema.virtual('publicName').get ->
+	if @accountConfidentiality is "public"
+		@name.public
+	else
+		null
 
 
 userSchema.virtual('photoUpdateAt').get ->
@@ -248,6 +281,17 @@ config.wornet.thumbSizes.each ->
 userSchema.virtual('present').get ->
 	NoticePackage.isPresent @id
 
+userSchema.virtual('followers')
+	.get ->
+		@_followers ||= {}
+	.set (followers) ->
+		@_followers = followers
+userSchema.virtual('followings')
+	.get ->
+		@_followings ||= {}
+	.set (followings) ->
+		@_followings = followings
+
 preRegistration = null
 
 extend userSchema.methods,
@@ -265,6 +309,11 @@ extend userSchema.methods,
 			'sex'
 			'photoAlbumId'
 			'sharedAlbumId'
+			'photoUploadAlbumId'
+			'accountConfidentiality'
+			'uniqueURLID'
+			'certifiedAccount'
+			'biography'
 		]
 		if thumbSizes is null
 			thumbSizes = [50, 90, 200]

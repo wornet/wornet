@@ -57,72 +57,82 @@ module.exports =
 	@param function to pass the result
 	###
 	memGet: (key, done) ->
-		mem.get key, (err, result) ->
-			if !err and result is false
-				err = 'not found'
+		redis.get key, (err, result) ->
+			if !err and result is null
+				done null, null
 			else
 				try
 					result = objectResolve JSON.parse result
 				catch e
 					result = null
 					err = 'json: ' + e
-			done err, result
+				done err, result
 	###
 	Set a cached mixed value
-	@param string key for cached value in memcached store engine
-	@param int time to keep the value in cache before calculate it again (seconds)
+	@param string key for cached value in redis store engine
 	@param mixed value
-	@param function to pass the result
 	###
-	memSet: (key, value, lifetime, done) ->
+	memSet: (key, value) ->
 		try
 			value = JSON.stringify value
-			mem.set key, value, lifetime, done
+			redis.set key, value
 		catch e
 			done 'json: ' + e
+
+	###
+	Delete a cached mixed value
+	@param String key for cached value
+	###
+	memDel: (key) ->
+		try
+			redis.del key
+		catch e
+			warn e
+
 	###
 	Cache a value
-	@param string key for cached value in memcached store engine
-	@param int time to keep the value in cache before calculate it again (seconds)
+	@param array keys for cached values in redis store engine
 	@param function to execute to calculate value when it's not in cache
 	@param function to pass the result
 	###
-	cache: (key, lifetime, calculate, done) ->
+	cache: (keys, calculate, done) ->
 		if typeof(key) is 'function'
-			done = lifetime
+			done = calculate
 			calculate = key
 			key = codeId()
-			lifetime = 0
-		else if typeof(lifetime) is 'function'
-			done = calculate
-			calculate = lifetime
-			lifetime = 0
-		else
-			lifetime = if lifetime instanceof Date
-				Math.round((time() - time(lifetime)) / 1000)
-			else
-				intval lifetime
-		if lifetime < 1
-			lifetime = config.wornet.cache.defaultLifetime
+		if typeof(key) isnt 'object'
+			keys = [keys]
 		if config.wornet.cache.enabled
-			memGet key, (err, result) ->
-				if err or result is false
-					calculate (value) ->
-						if value is false
-							console.warn "[memcached] cannot store a false value"
-							console.trace()
-						done value, false
-						memSet key, value, lifetime, (err) ->
-							if err
-								console.warn "[memcached] " + err
+			parallelTab = {}
+			for key in keys
+				parallelTab[key] = (next) ->
+					memGet key, next
+			parallel parallelTab
+			, (data) ->
+				if !data or !data.length
+					if calculate
+						calculate (value) ->
+							if value is null
+								console.warn "[redis] cannot store a null value"
 								console.trace()
+							for key in keys
+								memSet key, value, (err) ->
+									if err
+										console.warn "[redis] " + err
+										console.trace()
+							done value, false
+					else
+						done {}, false
 				else
-					done result, true
+					done {}, true
 				null
-		else
+		else if calculate
 			calculate (value) ->
 				done value, false
+		else
+			done {}, false
 		null
+
 	###
 	Unlink file and handle errors
 	###
@@ -279,12 +289,6 @@ module.exports =
 						writable: true
 						configurable: true
 
-
-
-
-
-
-
 	###
 	make content for notice
 
@@ -296,54 +300,70 @@ module.exports =
 		if (!notice.place or !notice.type) and notice.content
 			done notice.content
 		else
-			generateNotice = (launcher, place, userToNotify, attachedStatus, text) ->
+			generateNotice = (launcher, place, userToNotify, attachedStatus, text, displayFollowerList = false) ->
 				img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: launcher
 				done img +
-				jd 'span(data-href="/user/profile/' +
-				place.hashedId + '/' + encodeURIComponent(place.name.full) + (if attachedStatus then '#' + attachedStatus._id else '') + '") ' +
+				if attachedStatus
+					jd 'span(data-href="/user/status/' + attachedStatus._id + '") ' +
 					text
-
+				else if displayFollowerList
+					jd 'span(ng-click="displayFollowerList(\'' + userToNotify.hashedId + '\', true)") ' +
+					text
+				else
+					jd 'span(data-href="/' +
+					place.uniqueURLID + '") ' +
+					text
 			if notice.user and notice.place and notice.launcher
 				userToNotify = notice.user
 				place = notice.place
 				launcher = notice.launcher
 				launcherFriends = notice.launcherFriends
-				if notice.attachedStatus and notice.type isnt 'birthday'
-					statusAuthorHashedId = cesarLeft notice.attachedStatus.author
-					switch notice.type
-						when 'status'
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, if notice.attachedStatus.at is null
-								s("{username} a publié un statut.", username: launcher.fullName)
-							else
-								s("{username} a publié un statut sur votre profil.", username: launcher.fullName)
-						when 'comment'
-							if userToNotify.hashedId is place.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
-							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
-									s("{username} a commenté votre publication.", username: launcher.name.full)
-								else
-									s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
-							else
-								done null
-						when 'othercomments'
-							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: launcher.name.full)
-						when 'like'
-							if userToNotify.hashedId is place.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
-							else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
-								generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
-									s("{username} a aimé votre publication.", username: launcher.name.full)
-								else
-									s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
-							else
-								done null
-						else
-							done notice.content
-				else if notice.type is 'birthday'
-					generateNotice launcher, place, userToNotify, null, s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: launcher.name.full)
+				statusAuthorHashedId = if notice.attachedStatus
+					cesarLeft notice.attachedStatus.author
 				else
-					done notice.content
+					null
+				switch notice.type
+					when 'status'
+						generateNotice launcher, place, userToNotify, notice.attachedStatus, if notice.attachedStatus.at is null
+							s("{username} a publié un statut.", username: launcher.fullName)
+						else
+							s("{username} a publié un statut sur votre profil.", username: launcher.fullName)
+					when 'comment'
+						if userToNotify.hashedId is place.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a commenté une publication de votre profil.", username: launcher.name.full)
+						else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+								s("{username} a commenté votre publication.", username: launcher.name.full)
+							else
+								s("{username}, ami de {placename}, a commenté votre publication.", {username: launcher.name.full, placename:place.name.full })
+						else
+							done null
+					when 'othercomments'
+						generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a également commenté une publication.", username: launcher.name.full)
+					when 'like'
+						if userToNotify.hashedId is place.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{username} a aimé une publication de votre profil.", username: launcher.name.full)
+						else if userToNotify.hashedId is statusAuthorHashedId and userToNotify.hashedId isnt launcher.hashedId
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, if launcherFriends.contains userToNotify.hashedId
+								s("{username} a aimé votre publication.", username: launcher.name.full)
+							else
+								s("{username}, ami de {placename}, a aimé votre publication.", {username: launcher.name.full, placename:place.name.full })
+						else
+							done null
+					when 'share_count'
+						if notice.count
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("L'une de vos publications a été partagée {count} fois.", count: notice.count)
+						else
+							done null
+					when 'follow_count'
+						if notice.count
+							generateNotice launcher, place, userToNotify, notice.attachedStatus, s("{count} personnes ont commencé à vous suivre.", count: notice.count), true
+						else
+							done null
+					when 'birthday'
+						generateNotice launcher, place, userToNotify, null, s("Aujourd'hui c'est l'anniversaire de votre ami {username}.", username: launcher.name.full)
+					else
+						done notice.content
 			else
 				done notice.content
 
@@ -1439,3 +1459,54 @@ module.exports =
 
 	getBrowserInformations: (req) ->
 		ua = global.uaparser req.headers['user-agent']
+
+
+	###
+	Convert accentuated string into normal string
+	@param string accentuated string
+
+	@return string non accentuated string
+	###
+
+	replaceAccent: (text) ->
+		TabSpec = {"à":"a","á":"a","â":"a","ã":"a","ä":"a","å":"a","ò":"o","ó":"o","ô":"o","õ":"o","ö":"o","ø":"o","è":"e","é":"e","ê":"e","ë":"e","ç":"c","ì":"i","í":"i","î":"i","ï":"i","ù":"u","ú":"u","û":"u","ü":"u","ÿ":"y","ñ":"n","-":" ","_":" "}
+		reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_-]/gi
+		if text
+			text.replace( reg, ->
+				TabSpec[arguments[0].toLowerCase()]
+			).replace(/\s/g, "").toLowerCase()
+		else
+			''
+
+	###
+	check if the specified account is public
+	@param req
+	@param id urlId or hashedId
+	@param boolean specify if id is an hashedId or ulrId
+
+	@return Boolean
+	@return hashedId
+	@return user
+	###
+	isAPublicAccount: (req, id, isHashedId, done) ->
+		cache [if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id], null, (dataCache) ->
+			if dataCache[if isHashedId then "publicAccountByHashedId-" + id else "publicAccountByUrlId-" + id]
+				done null, true, if isHashedId then id else dataCache["publicAccountByUrlId-" + id]
+			else
+				where = if isHashedId
+					_id: cesarRight id
+				else
+					uniqueURLID: id
+				User.findOne where, (err, user) ->
+					warn err if err
+					if user
+						if user.accountConfidentiality is "public"
+							memSet "publicAccountByHashedId-" + user.hashedId, user.uniqueURLID
+							memSet "publicAccountByUrlId-" + user.uniqueURLID, user.hashedId
+							done null, true, user.hashedId
+						else
+							memDel "publicAccountByHashedId-" + user.hashedId
+							memDel "publicAccountByUrlId-" + user.uniqueURLID
+							done null, false, user.hashedId, user
+					else
+						done new Error('NOTAUSERID'), false, null, null

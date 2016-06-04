@@ -34,6 +34,8 @@ block footer
 			span.copytag.col-sm-3.col-xs-4(data="right")
 				!=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
 				=mainTitle
+			a.google-link(href="/user/directory")
+				=s("Directory")
 
 
 block cookie-banner

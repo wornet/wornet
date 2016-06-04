@@ -141,13 +141,13 @@ GeoPackage =
 			do inc
 		sectors
 
-	closestCities: (lat, long, distance, done) ->
+	closestModels: (model, lat, long, distance, done) ->
 		if 'function' is typeof distance
 			done = distance
 			distance = @unit
 		sectors = for sector in @closestSectors lat, long, distance
 			@sectorToIdentifier sector
-		City.find sector: $in: sectors, (err, cities) ->
+		model.find sector: $in: sectors, (err, cities) ->
 			if err
 				done err
 			else
@@ -164,6 +164,12 @@ GeoPackage =
 						else
 							-1
 				)
+
+	closestCities: (lat, long, distance, done) ->
+		@closestModels City, lat, long, distance, done
+
+	closestEvents: (lat, long, distance, done) ->
+		@closestModels Event, lat, long, distance, done
 
 	countryCode: (name) ->
 		name = name.accents()

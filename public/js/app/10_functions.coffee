@@ -526,7 +526,7 @@ withFormData = ($form, done) ->
 					input.files.length
 				else
 					1
-			$form.find('.upload-label').text if sum > 1
+			$form.find('.upload-label').css('font-size', '16px').text if sum > 1
 				s("Envoi des images en cours...")
 			else
 				s("Envoi de l\'image en cours...")
@@ -713,7 +713,11 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 			else
 				$scope.medias.videos.push
 					href: video
-			Ajax.put '/user/video/add', video: url: video
+			Ajax.put '/user/video/add',
+				data:
+					video:
+						url: video
+						referencedStatus: $scope.newStatusId || null
 			return
 		else
 			# '<a href=' + JSON.stringify(video) + '>' + s("Voir la vidéo") + '</a>'
@@ -743,10 +747,15 @@ scanLink = ($scope, href, sendMedia = true, displayVideoLink = false, status = n
 				$scope.medias.links.push
 					href: href
 					https: https
-			Ajax.put '/user/link/add', link:
-				name: href
-				url: href
-				https: https
+			Ajax.put '/user/link/add',
+				data:
+					link:
+						name: href
+						url: href
+						https: https
+						referencedStatus: $scope.newStatusId || null
+						metaData: $scope.scannedLink
+
 			return
 		else
 			hrefToDisplay = if href.length > 34

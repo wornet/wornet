@@ -536,22 +536,6 @@ input.glued
 fieldset.tab .btn
 	margin-bottom 0
 
-span.image-box
-	rel()
-
-span.image-box span.halflings
-	abs()
-	float left
-	margin 2px 2px 0 0px
-	color rgba(255,255,255,.6)
-	font-size 19px
-	cursor pointer
-	right 5px
-	top -35px
-
-	&:hover
-		color white
-
 
 .chat-list
 
@@ -637,13 +621,14 @@ span.image-box span.halflings
 
 #media-viewer
 	.modal-dialog
-		width 300px
+		min-width 300px
 		height auto
 		max-width 70%
 		max-height 90%
 		transition(all, .1s)
 
 	.modal-body
+		background-color $nearlyBlack
 		text-align center
 	.modal-footer .info
 	a.prev
@@ -750,10 +735,19 @@ a.mobile-video
 		margin $mainPadding
 
 #contact-error
+#certification-error
 	display none
 
 #liker-list
+#friend-list
+#follower-list
+#following-list
+#sharer-list
 	.liker
+	.friend
+	.follower
+	.following
+	.sharer
 		.user-points
 			font-size 10px
 		a
@@ -763,6 +757,8 @@ a.mobile-video
 	.modal-body
 		max-height (($thumbHeight + ($smallPadding * 2)) * $numberOfLikerDisplayed) + $bigPadding
 		overflow auto
+	.nb-share
+		font-size 10px
 
 .center-bloc
 	padding 0
@@ -798,6 +794,111 @@ a.mobile-video
 
 .modal .modal-header h4
 	color $orange
+
+#glyph-certification
+	font-size 128px
+	color $blue
+
+.certification-table
+	width 100%
+
+	td
+	th
+		border 1px solid $nearlyBlack
+		padding $mainPadding
+		text-align center
+
+		a
+			color $linkColor
+		.glyphicons
+			margin $smallPadding
+			&.glyphicons-circle-ok
+				color green
+			&.glyphicons-circle-remove
+				color red
+
+#public-suggestions
+	ul
+		padding $smallPadding
+		li
+			list-style none
+			.thumb
+			.follow-suggest
+			.suggest-name
+				float left
+			.hide-suggest
+				float right
+			.follow-suggest
+				margin 8px $smallPadding
+				background-color $nearlyWhite
+				border 1px solid $orange
+				border-radius(4px)
+				color $darkGray
+			.suggest-name
+				margin 0 $smallPadding
+			a
+				color $linkColor
+
+.facebookExemple
+	font-size 12px
+
+.welcome-suggests
+	padding 0
+	margin 0 20%
+	list-style none
+	li
+		a
+			color $orange
+		.biography
+			color $darkGray
+			font-size 12px
+		.welcome-follow:not(:checked)
+		.welcome-follow:checked
+			abs()
+			left -9999px
+
+		.welcome-follow:not(:checked) + label
+		.welcome-follow:checked + label
+			rel()
+			cursor pointer
+			float right
+			margin-right 25px
+
+		.welcome-follow:not(:checked) + label:before
+		.welcome-follow:checked + label:before
+			content ''
+			abs(2px, 0)
+			size(25px, 25px)/* dim. de la case */
+			border 1px solid #aaa
+			background #f8f8f8
+			border-radius(3px) /* angles arrondis */
+			box-shadow inset 0 1px 3px rgba(0,0,0,.3) /* légère ombre interne */
+
+		.welcome-follow:not(:checked) + label:after
+		.welcome-follow:checked + label:after
+			content '✔'
+			abs(0, 4px)
+			font-size 20px
+			color #09ad7e
+			transition(all .2s) /* on prévoit une animation */
+
+		.welcome-follow:not(:checked) + label:after
+			opacity(0)
+			transform scale(0)
+
+		.welcome-follow:checked + label:after
+			opacity(1)
+			transform scale(1)
+
+.welcome-next
+	float right
+	margin-right 20%
+
+.signin-information
+	margin-left 15px
+
+.google-link
+	display none
 
 // Imports.
 @import "includes/tooltip"
@@ -878,6 +979,8 @@ a.mobile-video
 	.invite-block
 	.friends-block
 	.medias-block
+	#public-suggestions
+	.following-block
 		display none
 
 	// #wrap
@@ -953,6 +1056,11 @@ a.mobile-video
 			right $mainPadding
 			ul
 				margin-left -230px
+
+	.welcome-next
+		margin-right 0
+	.welcome-suggests
+		margin 0
 
 @media (min-width: 768px)
 	.pad-right

@@ -17,10 +17,15 @@ class Waiter
 			Waiter.watchPlace watchPlace, @
 		else
 			watchPlace.getFriendsIds (err, friendIds) =>
-				@watchPlaces = friendIds.map cesarLeft
-					.with watchPlace.hashedId
-				each @watchPlaces, (_, id) =>
-					Waiter.watchPlace id, @
+				Follow.find
+					follower: cesarRight watchPlace.hashedId
+				, (err, follows) =>
+					if follows and follows.length
+						@watchPlaces = friendIds.merge(follows.column('followed')).map cesarLeft
+							.with watchPlace.hashedId
+							.unique()
+						each @watchPlaces, (_, id) =>
+							Waiter.watchPlace id, @
 
 	unwatch: ->
 		each @watchPlaces, (_, place) ->

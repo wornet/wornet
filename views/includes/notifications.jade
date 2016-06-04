@@ -31,7 +31,8 @@ mixin notifications(classes, mobile)
 					img(ng-src="{{ notification[1].thumb50 }}" alt="{{ notification[1].name.full }}" data-id="{{ notification[1].hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ notification[1].name.full }}").thumb
 					=" "
 					- var dataWithUser = { username: jd('span.username {{ notification[1].name.full }}') }
-					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+					span(data-href="/{{ notification[1].uniqueURLID }}")
+						!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 					i.mobile-notification-date.date(data-date="{{ notification[0] }}")
 						|&nbsp;
 					.notification-date: i.date(data-date="{{ notification[0] }}")
@@ -59,7 +60,7 @@ mixin notifications(classes, mobile)
 								img(src=askingFriend.thumb50 alt=askingFriend.name.full data-id=askingFriend.hashedId data-toggle="tooltip" data-placement="top" title=askingFriend.name.full).thumb
 								=" "
 								- var dataWithUser = { username: jd('span.username ' + ucfirst(askingFriend.name.full)) }
-								span
+								span(data-href="/" + askingFriend.uniqueURLID)
 									!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
 								| &nbsp;
 								i.mobile-notification-date.date(data-date=trim(notification[0], '"'))
