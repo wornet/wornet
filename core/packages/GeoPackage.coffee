@@ -1,5 +1,8 @@
 'use strict'
 
+zlib = require 'zlib'
+http = require 'http'
+
 loadedAtInit = 0
 
 loadCounter = 0
@@ -228,9 +231,36 @@ GeoPackage =
             if err or count < @citiesCount
                 @seed count
 
+    getLocalFile: ->
+        __dirname + '/../system/cities.csv'
     seed: (offset) ->
+        file = @getLocalFile()
+        fs.exists file, (exists) =>
+            if exists
+                @seedWithLocalFile()
+            else
+                gzFile = file + '.gz'
+                http.get 'http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz', (res) =>
+                    length = res.headers['content-length']
+                    downloaded = 0
+                    output = fs.createWriteStream file
+                    res.pipe(zlib.createGunzip()).pipe(output)
+
+                    res.on 'data', (chunk) ->
+                        downloaded += chunk.length
+                        console['log'] 'downloaded worldcitiespop %d%', Math.round(downloaded * 1000 / length) / 10
+
+                    res.on 'error', (err) ->
+                        throw err
+
+                    res.on 'close', =>
+                        fs.unlink gzFile
+                        @seedWithLocalFile()
+
+    seedWithLocalFile: (offset) ->
+        file = @getLocalFile()
         Reader = require 'line-by-line'
-        lines = new Reader __dirname + '/../system/cities.csv',
+        lines = new Reader file,
             encoding: 'utf-8'
             skipEmptyLines: true
         header = true
