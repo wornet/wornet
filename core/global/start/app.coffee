@@ -16,8 +16,8 @@ module.exports = (defer, start) ->
     global.redis = redisStore.client
 
     redisOnly = require 'redis'
-    global.redisClientEmitter = redisOnly.createClient()
-    global.redisClientReciever = redisOnly.createClient()
+    global.redisClientEmitter = redisOnly.createClient process.env.REDIS_URL
+    global.redisClientReciever = redisOnly.createClient process.env.REDIS_URL
 
     redisClientReciever.subscribe config.wornet.redis.defaultChannel
 
