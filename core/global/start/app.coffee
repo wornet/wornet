@@ -11,10 +11,6 @@ module.exports = (defer, start) ->
     if https = config.wornet.protocole is 'https'
         app.set 'trust proxy', 1
 
-    # Get a memcached client to use cache
-    memStore = new MemcachedStore
-    global.mem = memStore.client
-
     # Use redis for sessions
     redisStore = new RedisStore
     global.redis = redisStore.client
