@@ -1,6 +1,6 @@
 
 fs = require 'fs'
-command = require __dirname + "/../system/command.js"
+command = require __dirname + '/../system/command.js'
 
 process.chdir __dirname + '/../..'
 
@@ -9,6 +9,7 @@ fs.exists 'mongod.lnk', (exists) ->
         command 'mongod.lnk'
 
 # Build coffee scripts
-command 'coffee -bcw -o public/js --join app public/js/app/'
-command 'coffee -bcw -o public/js --join test public/js/test/'
+coffee = fs.realpathSync __dirname + '/../../node_modules/.bin/coffee'
+command coffee + ' -bcw -o public/js --join app public/js/app/'
+command coffee + ' -bcw -o public/js --join test public/js/test/'
 # command 'grunt build'
