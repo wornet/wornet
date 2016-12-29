@@ -1,21 +1,21 @@
 #sharer-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="ShareListCtrl" tabindex="-1")
-	.modal-dialog: .modal-content
-		.modal-header
-			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
-			h4.modal-title
-				=s("Partages")
-		.modal-body
-			.sharer(ng-repeat='sharer in sharers' data-id='{{ sharer.hashedId }}')
-				img(ng-src="{{ sharer.thumb50 }}" alt="{{ sharer.name.full }}" data-id="{{ sharer.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ sharer.name.full }}").thumb
-				a(ng-class="" href="/{{ sharer.uniqueURLID }}")
-					.user-name
-						| {{ sharer.name.full }}
-				.user-points
-					| {{ sharer.points }}
-					=' '+s("points")
-				.nb-share(ng-if="sharer.nbShare > 1")
-					| ({{ sharer.nbShare }}
-					=s(' fois)')
-				.cb
-			div(scroll-detect verify-to-load="sharersRemaining()" gap="300" url="getLoadUrl()" offset="getsharersOffset()" callback="loadsharersList" scrollable="#sharer-list .modal-body" additionnal-data="getAdditionnalData()").sharers-loading
-			+data('sharersPageCount', config.wornet.limits.sharersPageCount)
+    .modal-dialog: .modal-content
+        .modal-header
+            button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+            h4.modal-title
+                =s("Partages")
+        .modal-body
+            .sharer(ng-repeat='sharer in sharers' data-id='{{ sharer.hashedId }}')
+                img(ng-src="{{ sharer.thumb50 }}" alt="{{ sharer.name.full }}" data-id="{{ sharer.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ sharer.name.full }}").thumb
+                a(ng-class="" href="/{{ sharer.uniqueURLID }}")
+                    .user-name
+                        | {{ sharer.name.full }}
+                .user-points
+                    | {{ sharer.points }}
+                    =' '+s("points")
+                .nb-share(ng-if="sharer.nbShare > 1")
+                    | ({{ sharer.nbShare }}
+                    =s(' fois)')
+                .cb
+            div(scroll-detect verify-to-load="sharersRemaining()" gap="300" url="getLoadUrl()" offset="getsharersOffset()" callback="loadsharersList" scrollable="#sharer-list .modal-body" additionnal-data="getAdditionnalData()").sharers-loading
+            +data('sharersPageCount', config.wornet.limits.sharersPageCount)

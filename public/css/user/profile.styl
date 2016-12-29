@@ -7,252 +7,252 @@ $photoRadius = false
 $progressRadialWidth = 4px
 
 .profile
-	float left
-	width 100%
-	.profile-confidentiality
-		text-align center
-		margin $bigPadding
+    float left
+    width 100%
+    .profile-confidentiality
+        text-align center
+        margin $bigPadding
 
-	.profile-banner
-		border-top 1px solid $gray
-		padding-top $mainPadding
-		p
-			text-align center
-			margin 0
-			font-size 12px
+    .profile-banner
+        border-top 1px solid $gray
+        padding-top $mainPadding
+        p
+            text-align center
+            margin 0
+            font-size 12px
 
-		div
-			cursor pointer
+        div
+            cursor pointer
 
-		.right-separator
-			border-right 1px solid $lightGray
+        .right-separator
+            border-right 1px solid $lightGray
 
 .profile a:not(.add-friend)
-	color $linkColor
+    color $linkColor
 
 .profile-edit-btn.aside
-	width 30px
+    width 30px
 
 .profile-edit
 .settings-edit
 .certification-admin
-	.alert-info
-		padding $smallPadding
-		.halflings
-			top 2px
-	.btn-group
-		float right
-		.btn
-			margin-bottom 0
+    .alert-info
+        padding $smallPadding
+        .halflings
+            top 2px
+    .btn-group
+        float right
+        .btn
+            margin-bottom 0
 
-	.static-tooltip
-		margin-left 50%
+    .static-tooltip
+        margin-left 50%
 
-	input[type=radio]
-		margin-right $mainPadding
+    input[type=radio]
+        margin-right $mainPadding
 
-	label
-		display block
-		position relative
-		span
-			display block
-			float left
-			width 50%
-			padding-top 2px
-		textarea.form-control
-		select.form-control
-		input.form-control
-			min-width 170px
-			width 50%
-		&:first-of-type .form-control
-			margin-top 0
+    label
+        display block
+        position relative
+        span
+            display block
+            float left
+            width 50%
+            padding-top 2px
+        textarea.form-control
+        select.form-control
+        input.form-control
+            min-width 170px
+            width 50%
+        &:first-of-type .form-control
+            margin-top 0
 
 .profile-edit
-	.short
-		display none
-	label
-	.alert-info
-		margin-left $photoWidth + $mainPadding
-	.missing-sex
-		margin $mainPadding 0 0 0
-	.profile-btn
-		width 50%
-		&.add-friend
-			padding 4px 12px
-		&.follow
-		&.unfollow
-			margin-bottom $mainPadding
-	.add-friend
-		padding-left $bigPadding + $mainPadding
-		.halflings
-			line-height 20px
-			padding 2px 0
-			margin-left $mainPadding
-	label
-		input.form-control
-		select.form-control
-		textarea.form-control
-			width 100%
+    .short
+        display none
+    label
+    .alert-info
+        margin-left $photoWidth + $mainPadding
+    .missing-sex
+        margin $mainPadding 0 0 0
+    .profile-btn
+        width 50%
+        &.add-friend
+            padding 4px 12px
+        &.follow
+        &.unfollow
+            margin-bottom $mainPadding
+    .add-friend
+        padding-left $bigPadding + $mainPadding
+        .halflings
+            line-height 20px
+            padding 2px 0
+            margin-left $mainPadding
+    label
+        input.form-control
+        select.form-control
+        textarea.form-control
+            width 100%
 
-	.btn-group
-		margin-bottom $mainPadding
+    .btn-group
+        margin-bottom $mainPadding
 
-	.biography
-		word-wrap break-word
+    .biography
+        word-wrap break-word
 
-	.private-profil
-		color $mediumGray
-		.glyphicons
-			margin-right $smallPadding
+    .private-profil
+        color $mediumGray
+        .glyphicons
+            margin-right $smallPadding
 
 .about-user
-	margin $smallPadding 0 $smallPadding $photoWidth + $mainPadding
-	> div
-		padding 0
-	span.halflings
-		color $lightOrange
-		margin-right $mainPadding
-		float left
-		font-size 18px
+    margin $smallPadding 0 $smallPadding $photoWidth + $mainPadding
+    > div
+        padding 0
+    span.halflings
+        color $lightOrange
+        margin-right $mainPadding
+        float left
+        font-size 18px
 
 .photo-options
-	float left
-	margin 0 $mainPadding 0 0
-	max-width $photoWidth
-	.btn
-		margin $smallPadding 0 0
-		width 100%
+    float left
+    margin 0 $mainPadding 0 0
+    max-width $photoWidth
+    .btn
+        margin $smallPadding 0 0
+        width 100%
 
 .certification-glyph
-	color $blue
+    color $blue
 
 #profile-photo
-	size($photoWidth, $photoHeight)
-	rel()
+    size($photoWidth, $photoHeight)
+    rel()
 
-	.btn
-		abs()
-		bottom 0
-		margin $progressRadialWidth
-		width $photoWidth - 4 * $progressRadialWidth
-		color $nearlyWhite
-		background-color rgba(115,100,95,.5)
+    .btn
+        abs()
+        bottom 0
+        margin $progressRadialWidth
+        width $photoWidth - 4 * $progressRadialWidth
+        color $nearlyWhite
+        background-color rgba(115,100,95,.5)
 
-	.progress-radial
-	.progress-radial .overlay
-	img.upload-thumb
-	input.upload
-	.loader
-		abs()
-		size(100%)
+    .progress-radial
+    .progress-radial .overlay
+    img.upload-thumb
+    input.upload
+    .loader
+        abs()
+        size(100%)
 
-	input.upload
-		cursor pointer
-		opacity(0)
+    input.upload
+        cursor pointer
+        opacity(0)
 
-	.progress-radial
-	.progress-radial .overlay
-	img.upload-thumb
-		cursor pointer
-		if $photoRadius
-			border-radius($photoRadius)
-		transition(all .2s)
+    .progress-radial
+    .progress-radial .overlay
+    img.upload-thumb
+        cursor pointer
+        if $photoRadius
+            border-radius($photoRadius)
+        transition(all .2s)
 
-	.progress-radial
-		padding $progressRadialWidth
-		background-color $darkOrange
-		.overlay
-			rel()
-			background-color white
+    .progress-radial
+        padding $progressRadialWidth
+        background-color $darkOrange
+        .overlay
+            rel()
+            background-color white
 
 .friends-block
 .following-block
-	a
-		color $linkColor
+    a
+        color $linkColor
 
 .profile-photos-btn
-	display none
+    display none
 
 @media (max-width: 927px)
-	.profile-edit label
-		span
-		textarea.form-control
-		select.form-control
-		input.form-control
-			width 100%
+    .profile-edit label
+        span
+        textarea.form-control
+        select.form-control
+        input.form-control
+            width 100%
 
 @media (max-width: 767px)
-	.about-user
-	.profile-edit label
-	.profile-edit .alert-info
-		margin-left ($photoWidth / 2) + $mainPadding
-	#profile-photo
-		size($photoWidth / 2, $photoHeight / 2)
-		.btn
-			width calc(100% - 8px)
-			padding $smallPadding
-			span.halflings
-				margin-right 4px
-			i
-				display none
-	.profile-edit
-		.long
-			display none
-		.short
-			display inline
-		label
-			span
-				float none
-			span
-			textarea.form-control
-			select.form-control
-			input.form-control
-				width 100%
-		.biography
-			margin-left 0
-		.add-friend.add-private-friend
-			padding-left 30px
-		.add-friend
-			padding 4px $smallPadding
+    .about-user
+    .profile-edit label
+    .profile-edit .alert-info
+        margin-left ($photoWidth / 2) + $mainPadding
+    #profile-photo
+        size($photoWidth / 2, $photoHeight / 2)
+        .btn
+            width calc(100% - 8px)
+            padding $smallPadding
+            span.halflings
+                margin-right 4px
+            i
+                display none
+    .profile-edit
+        .long
+            display none
+        .short
+            display inline
+        label
+            span
+                float none
+            span
+            textarea.form-control
+            select.form-control
+            input.form-control
+                width 100%
+        .biography
+            margin-left 0
+        .add-friend.add-private-friend
+            padding-left 30px
+        .add-friend
+            padding 4px $smallPadding
 
 
-	.profile
-		padding-bottom $smallPadding
-		.profile-confidentiality
-			margin $mainPadding 0
-		.profile-banner
-			padding-top $smallPadding
-			p
-				font-size 10px
+    .profile
+        padding-bottom $smallPadding
+        .profile-confidentiality
+            margin $mainPadding 0
+        .profile-banner
+            padding-top $smallPadding
+            p
+                font-size 10px
 
-	.action-col
-		padding 0
-		a
-			margin $smallPadding 0
+    .action-col
+        padding 0
+        a
+            margin $smallPadding 0
 
-	.profile-photos-btn
-		display block
+    .profile-photos-btn
+        display block
 
 @media (max-width: 414px)
-	.profile-edit
-		h5, p
-			font-size 10px
-		h3.important
-			font-size 14px
+    .profile-edit
+        h5, p
+            font-size 10px
+        h3.important
+            font-size 14px
 
 @media (max-width: 423px)
-	.about-user
-	.profile-edit label
-	.profile-edit .alert-info
-		margin-left 0
+    .about-user
+    .profile-edit label
+    .profile-edit .alert-info
+        margin-left 0
 
-	.photo-options
-		float none
-		width 150px
-		margin 0 auto 10px
+    .photo-options
+        float none
+        width 150px
+        margin 0 auto 10px
 
-	#profile-photo
-		margin auto
+    #profile-photo
+        margin auto
 
-	.photo-options .unfollow
-		width auto
+    .photo-options .unfollow
+        width auto

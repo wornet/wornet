@@ -45,8 +45,8 @@
             doy: 4
         }
     });
-	/*
-	e.fullCalendar.datepickerLang("fr", "fr", {
+    /*
+    e.fullCalendar.datepickerLang("fr", "fr", {
         closeText: "Fermer",
         prevText: "Précédent",
         nextText: "Suivant",
@@ -71,5 +71,5 @@
         },
         allDayHTML: "Toute&nbsp;la journée"
     });
-	*/
+    */
 });

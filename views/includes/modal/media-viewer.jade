@@ -1,44 +1,44 @@
 #media-viewer.modal.fade: .modal-dialog: .modal-content(ng-controller="MediaViewerCtrl")
-	.modal-header
-		button.close(type='button', data-dismiss='modal' aria-label=s("Fermer")): span(aria-hidden='true') ×
-		h4.modal-title
-			span(ng-if="loadedMedia.album")
-				a(href="/user/album/{{ loadedMedia.album.id }}")
-					| {{ loadedMedia.album.name }}
-				if config.wornet.media.displayPhotoTitle
-					=" > "
-			if config.wornet.media.displayPhotoTitle
-				| {{ loadedMedia.name }}
-	.modal-body(ng-switch="loadedMedia.type")
-		div(ng-switch-when="image")
-			img.prev(ng-src="{{ mediaPrev.src }}" alt="{{ mediaPrev.name }}")
-			img.next(ng-src="{{ mediaNext.src }}" alt="{{ mediaNext.name }}")
-			img.big(ng-src="{{ loadedMedia.src }}" alt="{{ loadedMedia.name }}")
-			span.img-buttons
-				a.prev(ng-click="prev()" ng-class="{ disabled: loadedMedia.first }")
-					+half('circle-arrow-left')
-				a.next(ng-click="next()" ng-class="{ disabled: loadedMedia.last }")
-					+half('circle-arrow-right')
-		iframe(ng-switch-when="video" ng-src="{{ videoHref() }}" frameborder="0" allowfullscreen data-ratio="1.7778")
-		div(ng-switch-default)=s("Format de média inconnu")
-	.modal-footer
-		span.info(ng-if="loadedMedia.user")
-			a(href="/{{ loadedMedia.user.uniqueURLID }}")
-				img.thumb(ng-src="{{ loadedMedia.user.thumb50 }}" alt="{{ loadedMedia.user.name.full }}")
-				| &nbsp; {{ loadedMedia.user.name.full }}
-			| &nbsp; | &nbsp; 
-		.date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
-			|&nbsp;
-		
-		.large-dropdown.settings(ng-if="loadedMedia.concernMe" ng-class="{ dropup: isMobile }")
-			a.dropdown-toggle(data-toggle="dropdown")
-				+half('cog')
-			ul.dropdown-menu(role="menu")
-				li: a(ng-click="setAsProfilePhoto()")
-					+half('glyph-wrench')
-					| &nbsp;
-					=s("Définir comme photo de profil")
-				li: a(ng-click="deleteMedia()")
-					+half('trash')
-					| &nbsp;
-					=s("Supprimer ce média")
+    .modal-header
+        button.close(type='button', data-dismiss='modal' aria-label=s("Fermer")): span(aria-hidden='true') ×
+        h4.modal-title
+            span(ng-if="loadedMedia.album")
+                a(href="/user/album/{{ loadedMedia.album.id }}")
+                    | {{ loadedMedia.album.name }}
+                if config.wornet.media.displayPhotoTitle
+                    =" > "
+            if config.wornet.media.displayPhotoTitle
+                | {{ loadedMedia.name }}
+    .modal-body(ng-switch="loadedMedia.type")
+        div(ng-switch-when="image")
+            img.prev(ng-src="{{ mediaPrev.src }}" alt="{{ mediaPrev.name }}")
+            img.next(ng-src="{{ mediaNext.src }}" alt="{{ mediaNext.name }}")
+            img.big(ng-src="{{ loadedMedia.src }}" alt="{{ loadedMedia.name }}")
+            span.img-buttons
+                a.prev(ng-click="prev()" ng-class="{ disabled: loadedMedia.first }")
+                    +half('circle-arrow-left')
+                a.next(ng-click="next()" ng-class="{ disabled: loadedMedia.last }")
+                    +half('circle-arrow-right')
+        iframe(ng-switch-when="video" ng-src="{{ videoHref() }}" frameborder="0" allowfullscreen data-ratio="1.7778")
+        div(ng-switch-default)=s("Format de média inconnu")
+    .modal-footer
+        span.info(ng-if="loadedMedia.user")
+            a(href="/{{ loadedMedia.user.uniqueURLID }}")
+                img.thumb(ng-src="{{ loadedMedia.user.thumb50 }}" alt="{{ loadedMedia.user.name.full }}")
+                | &nbsp; {{ loadedMedia.user.name.full }}
+            | &nbsp; | &nbsp; 
+        .date.info(ng-if="loadedMedia.date" data-date="{{ loadedMedia.date }}" data-date-delay="180")
+            |&nbsp;
+        
+        .large-dropdown.settings(ng-if="loadedMedia.concernMe" ng-class="{ dropup: isMobile }")
+            a.dropdown-toggle(data-toggle="dropdown")
+                +half('cog')
+            ul.dropdown-menu(role="menu")
+                li: a(ng-click="setAsProfilePhoto()")
+                    +half('glyph-wrench')
+                    | &nbsp;
+                    =s("Définir comme photo de profil")
+                li: a(ng-click="deleteMedia()")
+                    +half('trash')
+                    | &nbsp;
+                    =s("Supprimer ce média")

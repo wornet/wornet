@@ -6,7 +6,7 @@
 ###
 
 LocationSchema = ->
-	throw new Error "LocationSchema is an abstract class and cannot be instancied"
+    throw new Error "LocationSchema is an abstract class and cannot be instancied"
 
 ###
 @abstract
@@ -14,35 +14,35 @@ LocationSchema = ->
 ###
 
 LocationSchema.extend = (columns, options) ->
-	extend columns,
-		latitude:
-			type: Number
-			required: true
-		longitude:
-			type: Number
-			required: true
-		latitudeSector:
-			type: Number
-			required: true
-		longitudeSector:
-			type: Number
-			required: true
-		sector:
-			type: Number
-			required: true
+    extend columns,
+        latitude:
+            type: Number
+            required: true
+        longitude:
+            type: Number
+            required: true
+        latitudeSector:
+            type: Number
+            required: true
+        longitudeSector:
+            type: Number
+            required: true
+        sector:
+            type: Number
+            required: true
 
-	schema = new Schema columns, options
+    schema = new Schema columns, options
 
-	schema.methods.closest = (distance, done) ->
-		GeoPackage.closestCities @latitude, @longitude, distance, done
+    schema.methods.closest = (distance, done) ->
+        GeoPackage.closestCities @latitude, @longitude, distance, done
 
-	schema.methods.toCloseCity = (lat, long) ->
-		city = @toObject()
-		delete city._id
-		delete city.__v
-		city.distance = GeoPackage.distance @latitude, @longitude, lat, long
-		city
+    schema.methods.toCloseCity = (lat, long) ->
+        city = @toObject()
+        delete city._id
+        delete city.__v
+        city.distance = GeoPackage.distance @latitude, @longitude, lat, long
+        city
 
-	schema
+    schema
 
 module.exports = LocationSchema

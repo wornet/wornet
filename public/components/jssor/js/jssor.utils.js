@@ -570,8 +570,8 @@ var $JssorUtils$ = window.$JssorUtils$ = new function () {
         try {
             // Not own constructor property must be Object
             if (obj.constructor &&
-				!hasOwn.call(obj, "constructor") &&
-				!hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+                !hasOwn.call(obj, "constructor") &&
+                !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
                 return false;
             }
         } catch (e) {
@@ -899,20 +899,20 @@ var $JssorUtils$ = window.$JssorUtils$ = new function () {
     //};
 
     function Css(elmt, name, value) {
-        ///	<summary>
-        ///		access css
+        ///    <summary>
+        ///        access css
         ///     $JssorUtils$.$Css(elmt, name);         //get css value
         ///     $JssorUtils$.$Css(elmt, name, value);  //set css value
-        ///	</summary>
-        ///	<param name="elmt" type="HTMLElement">
-        ///		the element to access css
-        ///	</param>
-        ///	<param name="name" type="String">
-        ///		the name of css property
-        ///	</param>
-        ///	<param name="value" type="Number" optional="true">
-        ///		the value to set
-        ///	</param>
+        ///    </summary>
+        ///    <param name="elmt" type="HTMLElement">
+        ///        the element to access css
+        ///    </param>
+        ///    <param name="name" type="String">
+        ///        the name of css property
+        ///    </param>
+        ///    <param name="value" type="Number" optional="true">
+        ///        the value to set
+        ///    </param>
         if (value != undefined) {
             elmt.style[name] = value;
         }
@@ -931,20 +931,20 @@ var $JssorUtils$ = window.$JssorUtils$ = new function () {
     }
 
     function CssN(elmt, name, value, isDimensional) {
-        ///	<summary>
-        ///		access css as numeric
+        ///    <summary>
+        ///        access css as numeric
         ///     $JssorUtils$.$CssN(elmt, name);         //get css value
         ///     $JssorUtils$.$CssN(elmt, name, value);  //set css value
-        ///	</summary>
-        ///	<param name="elmt" type="HTMLElement">
-        ///		the element to access css
-        ///	</param>
-        ///	<param name="name" type="String">
-        ///		the name of css property
-        ///	</param>
-        ///	<param name="value" type="Number" optional="true">
-        ///		the value to set
-        ///	</param>
+        ///    </summary>
+        ///    <param name="elmt" type="HTMLElement">
+        ///        the element to access css
+        ///    </param>
+        ///    <param name="name" type="String">
+        ///        the name of css property
+        ///    </param>
+        ///    <param name="value" type="Number" optional="true">
+        ///        the value to set
+        ///    </param>
         if (value != undefined) {
             isDimensional && (value += "px");
             Css(elmt, name, value);
@@ -955,33 +955,33 @@ var $JssorUtils$ = window.$JssorUtils$ = new function () {
     }
 
     function CssP(elmt, name, value) {
-        ///	<summary>
-        ///		access css in pixel as numeric, like 'top', 'left', 'width', 'height'
+        ///    <summary>
+        ///        access css in pixel as numeric, like 'top', 'left', 'width', 'height'
         ///     $JssorUtils$.$CssP(elmt, name);         //get css value
         ///     $JssorUtils$.$CssP(elmt, name, value);  //set css value
-        ///	</summary>
-        ///	<param name="elmt" type="HTMLElement">
-        ///		the element to access css
-        ///	</param>
-        ///	<param name="name" type="String">
-        ///		the name of css property
-        ///	</param>
-        ///	<param name="value" type="Number" optional="true">
-        ///		the value to set
-        ///	</param>
+        ///    </summary>
+        ///    <param name="elmt" type="HTMLElement">
+        ///        the element to access css
+        ///    </param>
+        ///    <param name="name" type="String">
+        ///        the name of css property
+        ///    </param>
+        ///    <param name="value" type="Number" optional="true">
+        ///        the value to set
+        ///    </param>
         return CssN(elmt, name, value, true);
     }
 
     function CssProxy(name, numericOrDimension) {
-        ///	<summary>
-        ///		create proxy to access css, CssProxy(name[, numericOrDimension]);
-        ///	</summary>
-        ///	<param name="elmt" type="HTMLElement">
-        ///		the element to access css
-        ///	</param>
-        ///	<param name="numericOrDimension" type="Number" optional="true">
-        ///		not set: access original css, 1: access css as numeric, 2: access css in pixel as numeric
-        ///	</param>
+        ///    <summary>
+        ///        create proxy to access css, CssProxy(name[, numericOrDimension]);
+        ///    </summary>
+        ///    <param name="elmt" type="HTMLElement">
+        ///        the element to access css
+        ///    </param>
+        ///    <param name="numericOrDimension" type="Number" optional="true">
+        ///        not set: access original css, 1: access css as numeric, 2: access css in pixel as numeric
+        ///    </param>
         var isDimensional = numericOrDimension & 2;
         var cssAccessor = numericOrDimension ? CssN : Css;
         return function (elmt, value) {
@@ -1786,10 +1786,10 @@ var $JssorUtils$ = window.$JssorUtils$ = new function () {
         }
 
         _Self.$MouseUp = function () {
-            ///	<summary>
-            ///		Internal member function, do not use it.
-            ///	</summary>
-            ///	<private />
+            ///    <summary>
+            ///        Internal member function, do not use it.
+            ///    </summary>
+            ///    <private />
 
             _IsMouseDown = false;
 
@@ -2210,16 +2210,16 @@ $JssorAnimator$ = function (delay, duration, options, elmt, fromStyles, toStyles
     }
 
     function Join(animator, combineMode) {
-        ///	<summary>
-        ///		Combine another animator as nested animator
-        ///	</summary>
-        ///	<param name="animator" type="$JssorAnimator$">
-        ///		An instance of $JssorAnimator$
-        ///	</param>
-        ///	<param name="combineMode" type="int">
-        ///		0: parallel - place the animator parallel to this animator.
-        ///		1: chain - chain the animator at the _Position_InnerEnd of this animator.
-        ///	</param>
+        ///    <summary>
+        ///        Combine another animator as nested animator
+        ///    </summary>
+        ///    <param name="animator" type="$JssorAnimator$">
+        ///        An instance of $JssorAnimator$
+        ///    </param>
+        ///    <param name="combineMode" type="int">
+        ///        0: parallel - place the animator parallel to this animator.
+        ///        1: chain - chain the animator at the _Position_InnerEnd of this animator.
+        ///    </param>
         $JssorDebug$.$Execute(function () {
             if (combineMode !== 0 && combineMode !== 1)
                 $JssorDebug$.$Fail("Argument out of range, the value of 'combineMode' should be either 0 or 1.");
@@ -2355,58 +2355,58 @@ $JssorAnimator$ = function (delay, duration, options, elmt, fromStyles, toStyles
     _This.$Join = Join;
 
     _This.$Combine = function (animator) {
-        ///	<summary>
-        ///		Combine another animator parallel to this animator
-        ///	</summary>
-        ///	<param name="animator" type="$JssorAnimator$">
-        ///		An instance of $JssorAnimator$
-        ///	</param>
+        ///    <summary>
+        ///        Combine another animator parallel to this animator
+        ///    </summary>
+        ///    <param name="animator" type="$JssorAnimator$">
+        ///        An instance of $JssorAnimator$
+        ///    </param>
         Join(animator, 0);
     };
 
     _This.$Chain = function (animator) {
-        ///	<summary>
-        ///		Chain another animator at the _Position_InnerEnd of this animator
-        ///	</summary>
-        ///	<param name="animator" type="$JssorAnimator$">
-        ///		An instance of $JssorAnimator$
-        ///	</param>
+        ///    <summary>
+        ///        Chain another animator at the _Position_InnerEnd of this animator
+        ///    </summary>
+        ///    <param name="animator" type="$JssorAnimator$">
+        ///        An instance of $JssorAnimator$
+        ///    </param>
         Join(animator, 1);
     };
 
     _This.$GetPosition_InnerBegin = function () {
-        ///	<summary>
-        ///		Internal member function, do not use it.
-        ///	</summary>
-        ///	<private />
-        ///	<returns type="int" />
+        ///    <summary>
+        ///        Internal member function, do not use it.
+        ///    </summary>
+        ///    <private />
+        ///    <returns type="int" />
         return _Position_InnerBegin;
     };
 
     _This.$GetPosition_InnerEnd = function () {
-        ///	<summary>
-        ///		Internal member function, do not use it.
-        ///	</summary>
-        ///	<private />
-        ///	<returns type="int" />
+        ///    <summary>
+        ///        Internal member function, do not use it.
+        ///    </summary>
+        ///    <private />
+        ///    <returns type="int" />
         return _Position_InnerEnd;
     };
 
     _This.$GetPosition_OuterBegin = function () {
-        ///	<summary>
-        ///		Internal member function, do not use it.
-        ///	</summary>
-        ///	<private />
-        ///	<returns type="int" />
+        ///    <summary>
+        ///        Internal member function, do not use it.
+        ///    </summary>
+        ///    <private />
+        ///    <returns type="int" />
         return _Position_OuterBegin;
     };
 
     _This.$GetPosition_OuterEnd = function () {
-        ///	<summary>
-        ///		Internal member function, do not use it.
-        ///	</summary>
-        ///	<private />
-        ///	<returns type="int" />
+        ///    <summary>
+        ///        Internal member function, do not use it.
+        ///    </summary>
+        ///    <private />
+        ///    <returns type="int" />
         return _Position_OuterEnd;
     };
 

@@ -1,143 +1,143 @@
 
 describe "Signin", ->
 
-	w = null
-	$tester = null
-	shouldExists = _shouldExists
-	shouldNotExists = _shouldNotExists
-	click = null
+    w = null
+    $tester = null
+    shouldExists = _shouldExists
+    shouldNotExists = _shouldNotExists
+    click = null
 
-	testWith '/user/logout', (a, b, c, d) ->
-		$tester = a
-		w = b
-		shouldExists = c
-		shouldNotExists = d
-		click = (selector) ->
-			w.$(selector)[0].click()
+    testWith '/user/logout', (a, b, c, d) ->
+        $tester = a
+        w = b
+        shouldExists = c
+        shouldNotExists = d
+        click = (selector) ->
+            w.$(selector)[0].click()
 
-	describe "Logout", ->
+    describe "Logout", ->
 
-		it "should redirect to the home page", (done) ->
+        it "should redirect to the home page", (done) ->
 
-			signinUrl = '/user/signin'
+            signinUrl = '/user/signin'
 
-			sequence (fulfill, reject) ->
-				expect(url w).toBe '/'
-				shouldExists '.tooltip:hidden'
-				shouldNotExists '.tooltip:visible'
-				$form = w.$ '#login-signin'
-				$form.find('input[name="email"]').set('invalid@wornet.fr').focus().click()
-				existsNow = w.exists '.tooltip:visible'
-				shouldExists '.tooltip:visible'
-				$form.find('.sign-in').click()
-				$tester.page fulfill, reject
+            sequence (fulfill, reject) ->
+                expect(url w).toBe '/'
+                shouldExists '.tooltip:hidden'
+                shouldNotExists '.tooltip:visible'
+                $form = w.$ '#login-signin'
+                $form.find('input[name="email"]').set('invalid@wornet.fr').focus().click()
+                existsNow = w.exists '.tooltip:visible'
+                shouldExists '.tooltip:visible'
+                $form.find('.sign-in').click()
+                $tester.page fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid@wornet.fr'
-				shouldExists 'input[name="birthDate"]:visible'
-				$tester.src signinUrl, fulfill, reject
+            .then (fulfill, reject) ->
+                expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid@wornet.fr'
+                shouldExists 'input[name="birthDate"]:visible'
+                $tester.src signinUrl, fulfill, reject
 
-			.then (fulfill, reject) ->
-				shouldExists 'input[name="birthDate"]:visible'
-				$tester.form fulfill, reject
+            .then (fulfill, reject) ->
+                shouldExists 'input[name="birthDate"]:visible'
+                $tester.form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe signinUrl
-				$tester.complete
-					email: 'unit-test@selfbuild.fr'
-					password: 'azer8TyG'
-					passwordCheck: 'azer8Ty'
-					'name.first': 'Bob'
-					'name.last': 'Dylan'
-					birthDate: '1990-01-07'
-					legals: true
-				.form fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe signinUrl
+                $tester.complete
+                    email: 'unit-test@selfbuild.fr'
+                    password: 'azer8TyG'
+                    passwordCheck: 'azer8Ty'
+                    'name.first': 'Bob'
+                    'name.last': 'Dylan'
+                    birthDate: '1990-01-07'
+                    legals: true
+                .form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe signinUrl
-				$tester.complete
-					email: 'unit-test@selfbuild.fr'
-					password: 'azer8Ty'
-					passwordCheck: 'azer8Ty'
-					'name.first': 'Bob'
-					'name.last': 'Dylan'
-					birthDate: '1850-01-07'
-					legals: true
-				.form fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe signinUrl
+                $tester.complete
+                    email: 'unit-test@selfbuild.fr'
+                    password: 'azer8Ty'
+                    passwordCheck: 'azer8Ty'
+                    'name.first': 'Bob'
+                    'name.last': 'Dylan'
+                    birthDate: '1850-01-07'
+                    legals: true
+                .form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe signinUrl
-				$tester.complete
-					email: 'unit-test@selfbuild.fr'
-					password: 'azer8Ty'
-					passwordCheck: 'azer8Ty'
-					'name.first': 'Bob'
-					'name.last': 'Dylan'
-					birthDate: '1990-01-07'
-					legals: false
-				.form fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe signinUrl
+                $tester.complete
+                    email: 'unit-test@selfbuild.fr'
+                    password: 'azer8Ty'
+                    passwordCheck: 'azer8Ty'
+                    'name.first': 'Bob'
+                    'name.last': 'Dylan'
+                    birthDate: '1990-01-07'
+                    legals: false
+                .form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe signinUrl
-				$tester.complete
-					email: 'unit-test@selfbuild.fr'
-					password: 'azer8Ty'
-					passwordCheck: 'azer8Ty'
-					'name.first': 'Bob'
-					'name.last': 'Dylan'
-					birthDate: '1990-01-07'
-					legals: true
-				.form fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe signinUrl
+                $tester.complete
+                    email: 'unit-test@selfbuild.fr'
+                    password: 'azer8Ty'
+                    passwordCheck: 'azer8Ty'
+                    'name.first': 'Bob'
+                    'name.last': 'Dylan'
+                    birthDate: '1990-01-07'
+                    legals: true
+                .form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe signinUrl
-				$tester.complete
-					email: 'unit-test@selfbuild.fr'
-					password: 'azer8Ty'
-					passwordCheck: 'azer8Ty'
-					'name.first': 'Bob'
-					'name.last': 'Dylan'
-					sex: "man"
-					birthDate: '1990-01-07'
-					legals: true
-				.form fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe signinUrl
+                $tester.complete
+                    email: 'unit-test@selfbuild.fr'
+                    password: 'azer8Ty'
+                    passwordCheck: 'azer8Ty'
+                    'name.first': 'Bob'
+                    'name.last': 'Dylan'
+                    sex: "man"
+                    birthDate: '1990-01-07'
+                    legals: true
+                .form fulfill, reject
 
-			.then (fulfill, reject) ->
-				expect(url w).toBe '/user/welcome'
-				shouldNotExists '.alert-danger'
-				shouldExists 'a[href~="/user/profile"]'
-				$tester.link 'a[href~="/user/profile"]', fulfill, reject
+            .then (fulfill, reject) ->
+                expect(url w).toBe '/user/welcome'
+                shouldNotExists '.alert-danger'
+                shouldExists 'a[href~="/user/profile"]'
+                $tester.link 'a[href~="/user/profile"]', fulfill, reject
 
-			.then (fulfill, reject) ->
-				shouldExists '.dropdown-toggle:icontains("Bob")'
-				shouldExists 'h3:icontains("Bob Dylan")'
-				shouldExists '#shutter:hidden'
-				click 'li.open-shutter a'
-				delay 200, ->
-					shouldExists '#shutter:visible'
-					shouldExists 'a[href~="/user/settings"]:visible'
-					$tester.link 'a[href~="/user/settings"]', fulfill, reject
+            .then (fulfill, reject) ->
+                shouldExists '.dropdown-toggle:icontains("Bob")'
+                shouldExists 'h3:icontains("Bob Dylan")'
+                shouldExists '#shutter:hidden'
+                click 'li.open-shutter a'
+                delay 200, ->
+                    shouldExists '#shutter:visible'
+                    shouldExists 'a[href~="/user/settings"]:visible'
+                    $tester.link 'a[href~="/user/settings"]', fulfill, reject
 
-			.then (fulfill, reject) ->
-				shouldExists '#delete-account:visible'
-				shouldNotExists '#delete-account-password'
-				click '#delete-account:visible'
-				delay 200, ->
-					shouldExists '#delete-account-password:visible'
-					w.$('#delete-account-password').val('azer8Ty')
-						.parents('.modal-content:first')
-						.find('.btn-primary:last')[0]
-						.click()
-					$tester.page fulfill, reject
+            .then (fulfill, reject) ->
+                shouldExists '#delete-account:visible'
+                shouldNotExists '#delete-account-password'
+                click '#delete-account:visible'
+                delay 200, ->
+                    shouldExists '#delete-account-password:visible'
+                    w.$('#delete-account-password').val('azer8Ty')
+                        .parents('.modal-content:first')
+                        .find('.btn-primary:last')[0]
+                        .click()
+                    $tester.page fulfill, reject
 
-			.then ->
-				expect(url w).toBe '/'
-				shouldExists '#login-signin'
-				done()
+            .then ->
+                expect(url w).toBe '/'
+                shouldExists '#login-signin'
+                done()
 
-			.catch (error) ->
-				if error instanceof Error
-					delay 1, ->
-						throw error
-				expect('Page loading').toBe 'ok'
-				done()
+            .catch (error) ->
+                if error instanceof Error
+                    delay 1, ->
+                        throw error
+                expect('Page loading').toBe 'ok'
+                done()

@@ -2,169 +2,169 @@
 @import "../includes/config"
 
 #chat
-	display none
-	position fixed
-	right 0
-	bottom $chatHeight
-	width 100%
-	height 0
-	z-index 3
-	margin $smallPadding $smallPadding 0 $smallPadding
+    display none
+    position fixed
+    right 0
+    bottom $chatHeight
+    width 100%
+    height 0
+    z-index 3
+    margin $smallPadding $smallPadding 0 $smallPadding
 
-	.chat
-		float right
-		size($chatWidth, $chatHeight)
-		margin 0 $smallPadding
-		// border 1px solid $gray
-		border-bottom none
-		box-shadow(0 0 2px $darkGray)
-		border-radius(2px 2px 0 0)
-		background white
+    .chat
+        float right
+        size($chatWidth, $chatHeight)
+        margin 0 $smallPadding
+        // border 1px solid $gray
+        border-bottom none
+        box-shadow(0 0 2px $darkGray)
+        border-radius(2px 2px 0 0)
+        background white
 
-		&.minimized
-			margin-top $chatHeight - $chatTitleHeight
+        &.minimized
+            margin-top $chatHeight - $chatTitleHeight
 
-		img
-			width $chatThumbWidth
-			height $chatThumbHeight
-			margin 0 $smallPadding
-			border-radius(2px)
-		h4
-			margin 0
-			padding 0 2px 0 4px
-			font-size 16px
-			height $chatTitleHeight
-			line-height $chatTitleHeight
-			vertical-align middle
-			background $orange
-			border-radius(2px 2px 0 0)
-			color white
+        img
+            width $chatThumbWidth
+            height $chatThumbHeight
+            margin 0 $smallPadding
+            border-radius(2px)
+        h4
+            margin 0
+            padding 0 2px 0 4px
+            font-size 16px
+            height $chatTitleHeight
+            line-height $chatTitleHeight
+            vertical-align middle
+            background $orange
+            border-radius(2px 2px 0 0)
+            color white
 
-			a
-				color white
+            a
+                color white
 
-			.close
-				float right
-				display block
-				padding $smallPadding
-				background $orange
-				font-size 14px
-				border-radius(2px)
-				transition(background .2s)
-				opacity(0.6)
-				&:hover
-					opacity(0.8)
+            .close
+                float right
+                display block
+                padding $smallPadding
+                background $orange
+                font-size 14px
+                border-radius(2px)
+                transition(background .2s)
+                opacity(0.6)
+                &:hover
+                    opacity(0.8)
 
-		.messages
-			height $chatHeight - 24px - 38px
-			overflow auto
-			background $lightGray
+        .messages
+            height $chatHeight - 24px - 38px
+            overflow auto
+            background $lightGray
 
-			.date
-				margin $smallPadding 0
-				font-size $dateSize
-			.date-right
-				text-align right
-				margin-right $mainPadding
-			.date-left
-				text-align left
-				margin-left 35px
-			.message
-				clear both
+            .date
+                margin $smallPadding 0
+                font-size $dateSize
+            .date-right
+                text-align right
+                margin-right $mainPadding
+            .date-left
+                text-align left
+                margin-left 35px
+            .message
+                clear both
 
-				.content
-					border 1px solid #ddd
-					border-radius(4px)
-					margin $smallPadding
-					padding $smallPadding
-					position relative
+                .content
+                    border 1px solid #ddd
+                    border-radius(4px)
+                    margin $smallPadding
+                    padding $smallPadding
+                    position relative
 
-					a
-						color $linkColor
+                    a
+                        color $linkColor
 
-					&.received
-						margin-left $chatThumbWidth + $smallPadding * 2
-						background $nearlyWhite
-						&:before
-							content ''
-							position absolute
-							left -6px
-							top 2px
-							width 6px
-							height 13px
-							background url(png(gray-beak-left)) left top no-repeat
+                    &.received
+                        margin-left $chatThumbWidth + $smallPadding * 2
+                        background $nearlyWhite
+                        &:before
+                            content ''
+                            position absolute
+                            left -6px
+                            top 2px
+                            width 6px
+                            height 13px
+                            background url(png(gray-beak-left)) left top no-repeat
 
-					&.sent
-						background $ultraLightOrange
-						&:after
-							content ''
-							position absolute
-							right -6px
-							top 2px
-							width 6px
-							height 13px
-							background url(png(orange-beak-right)) left top no-repeat
+                    &.sent
+                        background $ultraLightOrange
+                        &:after
+                            content ''
+                            position absolute
+                            right -6px
+                            top 2px
+                            width 6px
+                            height 13px
+                            background url(png(orange-beak-right)) left top no-repeat
 
-			.ok
-				float right
-				color $lightGray
-				margin 3px $mainPadding 3px 0
-				font-size 12px
+            .ok
+                float right
+                color $lightGray
+                margin 3px $mainPadding 3px 0
+                font-size 12px
 
-			img
-				width $chatThumbWidth
-				height $chatThumbHeight
-				margin 0 $smallPadding
-				border-radius(2px)
-				&.sent
-					float right
-				&.received
-					float left
+            img
+                width $chatThumbWidth
+                height $chatThumbHeight
+                margin 0 $smallPadding
+                border-radius(2px)
+                &.sent
+                    float right
+                &.received
+                    float left
 
-	form
-		position relative
+    form
+        position relative
 
-		textarea
-		input
-			border-radius(0)
-			margin 0
-			border none
-			border-top 1px solid $ultraLightGray
+        textarea
+        input
+            border-radius(0)
+            margin 0
+            border none
+            border-top 1px solid $ultraLightGray
 
-		textarea
-			padding 6px
-			width calc(100% - 1px)
-			height $chatMultiligneFormHeight - 1px
-			resize(none)
+        textarea
+            padding 6px
+            width calc(100% - 1px)
+            height $chatMultiligneFormHeight - 1px
+            resize(none)
 
-		input
-			height 30px
+        input
+            height 30px
 
-		::-webkit-input-placeholder
-			rel(-1px, 0)
-			overflow visible
-		:-moz-placeholder
-			rel(-1px, 0)
-			overflow visible
-		::-moz-placeholder
-			rel(-1px, 0)
-			overflow visible
-		:-ms-input-placeholder
-			rel(-1px, 0)
-			overflow visible
-		:placeholder
-			rel(-1px, 0)
-			overflow visible
+        ::-webkit-input-placeholder
+            rel(-1px, 0)
+            overflow visible
+        :-moz-placeholder
+            rel(-1px, 0)
+            overflow visible
+        ::-moz-placeholder
+            rel(-1px, 0)
+            overflow visible
+        :-ms-input-placeholder
+            rel(-1px, 0)
+            overflow visible
+        :placeholder
+            rel(-1px, 0)
+            overflow visible
 
-		button
-			appearance(none)
-			background none
-			border none
-			position absolute
-			right 2px
-			bottom 1px
+        button
+            appearance(none)
+            background none
+            border none
+            position absolute
+            right 2px
+            bottom 1px
 
 
 #chat.multiline
-	.messages
-		height $chatHeight - $chatTitleHeight - $chatMultiligneFormHeight
+    .messages
+        height $chatHeight - $chatTitleHeight - $chatMultiligneFormHeight

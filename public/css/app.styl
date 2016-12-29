@@ -5,7 +5,7 @@
 @import "includes/mixins"
 
 *
-	box-sizing(border-box)
+    box-sizing(border-box)
 
 input
 .btn
@@ -16,234 +16,234 @@ input
 .alert
 .wornet-navbar
 .dropdown-menu
-	border-radius(0)
+    border-radius(0)
 
 // Clear both
 .cb
-	clear both
+    clear both
 
 html
 body
-	// Tailles, marges interne et externe.
-	size(100%)
-	margin 0
-	padding 0
+    // Tailles, marges interne et externe.
+    size(100%)
+    margin 0
+    padding 0
 
 body
-	// Police de charactères.
-	font 14px/1.4 $fonts
-	padding-bottom $footerHeight
-	background $lightGray
-	// Bloquage de la séléction sur tous les navigateurs.
-	// -webkit-touch-callout none
-	// user-select(none)
+    // Police de charactères.
+    font 14px/1.4 $fonts
+    padding-bottom $footerHeight
+    background $lightGray
+    // Bloquage de la séléction sur tous les navigateurs.
+    // -webkit-touch-callout none
+    // user-select(none)
 
-	&.openingTemplate
+    &.openingTemplate
 
-		#wrap
-			padding-top 35px
+        #wrap
+            padding-top 35px
 
-		// Paramètres du fond de la page.
-		background no-repeat center fixed
-		background-size(cover)
-		transition background-image 1s ease-in-out
+        // Paramètres du fond de la page.
+        background no-repeat center fixed
+        background-size(cover)
+        transition background-image 1s ease-in-out
 
-		&.bg1
-			cover('background-image/big/1')
+        &.bg1
+            cover('background-image/big/1')
 
-		&.bg2
-			cover('background-image/big/2')
+        &.bg2
+            cover('background-image/big/2')
 
-		&.bg3
-			cover('background-image/big/3')
+        &.bg3
+            cover('background-image/big/3')
 
-		&.bg4
-			cover('background-image/big/4')
+        &.bg4
+            cover('background-image/big/4')
 
-		&.bg5
-			cover('background-image/big/5')
+        &.bg5
+            cover('background-image/big/5')
 
-		&.bg6
-			cover('background-image/big/6')
+        &.bg6
+            cover('background-image/big/6')
 
 
 .well
-	padding $mainPadding
-	background white
+    padding $mainPadding
+    background white
 
-	&.macro
-		background $ultraLight
+    &.macro
+        background $ultraLight
 
 h3
-	margin 0 0 $mainPadding
-	color $orange
-	text-shadow 0 1px 1px white
-	font-size 18px
-	font-weight normal
+    margin 0 0 $mainPadding
+    color $orange
+    text-shadow 0 1px 1px white
+    font-size 18px
+    font-weight normal
 
-	&.important
-		font-weight bold
+    &.important
+        font-weight bold
 
 h5
-	color $mediumGray
-	text-transform uppercase
+    color $mediumGray
+    text-transform uppercase
 
 i
-	font-style normal
+    font-style normal
 
 hr
-	margin 5px 0
+    margin 5px 0
 
 .alert-warning
-	background $warningColor
+    background $warningColor
 .alert-success
-	background $successColor
+    background $successColor
 .alert-info
-	background $infoColor
+    background $infoColor
 .alert-danger
-	background $dangerColor
+    background $dangerColor
 
 #logo-content
 .main-padding
-	padding $mainPadding
+    padding $mainPadding
 
 #logo-content
-	height 40px
+    height 40px
 
 .block
-	display block
-	.halflings
-		top 3px
+    display block
+    .halflings
+        top 3px
 
 iframe
-	display block
-	size(100%, 0px)
-	border none
+    display block
+    size(100%, 0px)
+    border none
 
 .loader
 .loading
-	background-image url(gif(loader))
-	background-position center center
-	background-repeat no-repeat
+    background-image url(gif(loader))
+    background-position center center
+    background-repeat no-repeat
 
 .loader
-	fix(0px, 0px)
-	size(100%)
-	opacity(1)
-	overflow hidden
-	background-color rgba(0, 0, 0, .2)
-	transition(opacity .4s)
-	&.preload
-		opacity(0)
-		height 0
+    fix(0px, 0px)
+    size(100%)
+    opacity(1)
+    overflow hidden
+    background-color rgba(0, 0, 0, .2)
+    transition(opacity .4s)
+    &.preload
+        opacity(0)
+        height 0
 
 .loading
-	min-height 36px
+    min-height 36px
 
 .loading *
-	visibility hidden
+    visibility hidden
 
 .loading.loading-big-height
-	max-height 300px
+    max-height 300px
 
 .status-loading
-	rel(-$smallPadding)
+    rel(-$smallPadding)
 
 #wrap
-	min-height 100%
-	height auto !important
-	height 100%
-	margin 0 auto -$footerHeight
-	padding $headerHeight 0 $footerHeight
+    min-height 100%
+    height auto !important
+    height 100%
+    margin 0 auto -$footerHeight
+    padding $headerHeight 0 $footerHeight
 
 footer
-	// Tailles du pied de page.
-	size(100%, $footerHeight)
+    // Tailles du pied de page.
+    size(100%, $footerHeight)
 
-	// Paramètres relatif au texte. (Hérite de body)
-	text-align center
+    // Paramètres relatif au texte. (Hérite de body)
+    text-align center
 
-	// Fond du pied de page.
-	background-color $footerBackground
+    // Fond du pied de page.
+    background-color $footerBackground
 
-	a.link
-	.copytag
-		// Marges interne et externe des liens du pied de page (footer)
-		display block
-		//margin-top $bigPadding
-		padding $mainPadding
-		color $nearlyBlack
+    a.link
+    .copytag
+        // Marges interne et externe des liens du pied de page (footer)
+        display block
+        //margin-top $bigPadding
+        padding $mainPadding
+        color $nearlyBlack
 
-	a.link
-		// Marges interne et externe des liens du pied de page (footer)
-		display block
-		padding $mainPadding
+    a.link
+        // Marges interne et externe des liens du pied de page (footer)
+        display block
+        padding $mainPadding
 
-		// Type de container
-		display inline-block
+        // Type de container
+        display inline-block
 
-		// Paramètres relatif au texte.
-		font-weight $linkWeight
+        // Paramètres relatif au texte.
+        font-weight $linkWeight
 
-		// Liens du pied de page au passage de la souris.
-		&:hover
-			text-decoration underline
+        // Liens du pied de page au passage de la souris.
+        &:hover
+            text-decoration underline
 
 
 a
 .btn
-	cursor pointer
+    cursor pointer
 
 
 .dropdown-menu
-	border none
+    border none
 
 .flattenable
-	overflow hidden
-	transition(all .2s)
-	transition-property(height, min-height, margin-top, margin-bottom)
+    overflow hidden
+    transition(all .2s)
+    transition-property(height, min-height, margin-top, margin-bottom)
 
-	&.flattened
-		height 0
-		min-height 0
-		margin-top 0
-		margin-bottom 0
+    &.flattened
+        height 0
+        min-height 0
+        margin-top 0
+        margin-bottom 0
 
 .pill
-	display inline-block
-	background white
-	color $orange
-	font-size 12px
-	line-height 20px
-	padding 1px 8px 1px 7px
-	border-radius(100%)
+    display inline-block
+    background white
+    color $orange
+    font-size 12px
+    line-height 20px
+    padding 1px 8px 1px 7px
+    border-radius(100%)
 
 #search
-	margin 2px 0 -1px
-	height 32px
+    margin 2px 0 -1px
+    height 32px
 
 .ref-color
-	color $orange
+    color $orange
 
 .errors
-	margin 0 15px
+    margin 0 15px
 
 .well .errors
-	margin 0 $mainPadding
+    margin 0 $mainPadding
 
 .inline-button
-	margin 0 $smallPadding
-	padding 0 $mainPadding
-	position relative
-	img
-	span
-		position absolute
-		left 2px
-		top 0
+    margin 0 $smallPadding
+    padding 0 $mainPadding
+    position relative
+    img
+    span
+        position absolute
+        left 2px
+        top 0
 
 
 blockquote
-	font-size 14px
+    font-size 14px
 
 
 span.form-control
@@ -253,652 +253,652 @@ button.form-control
 input.form-control
 select.form-control
 .btn
-	padding $fieldVPadding $fieldHPadding
-	margin $mainPadding 0
-	line-height $fieldLineHeight * 0.7
-	transition(all .2s)
+    padding $fieldVPadding $fieldHPadding
+    margin $mainPadding 0
+    line-height $fieldLineHeight * 0.7
+    transition(all .2s)
 
-	height $fieldLineHeight + 2 * $fieldVPadding + 2
+    height $fieldLineHeight + 2 * $fieldVPadding + 2
 
 .btn
-	.halflings
-		margin 1px 7px -1px 0
-		&:last-child
-			margin-right 0
+    .halflings
+        margin 1px 7px -1px 0
+        &:last-child
+            margin-right 0
 
 .btn.bar
-	display block
-	margin 0 $mainPadding
+    display block
+    margin 0 $mainPadding
 
 .form-control
-	border 1px solid rgba(156, 156, 156, 0.35)
-	padding $fieldVPadding - 1 $fieldHPadding - 1
-	font-family $fonts
+    border 1px solid rgba(156, 156, 156, 0.35)
+    padding $fieldVPadding - 1 $fieldHPadding - 1
+    font-family $fonts
 
 select.form-control
-	padding $fieldVPadding 40px $fieldVPadding $smallPadding
+    padding $fieldVPadding 40px $fieldVPadding $smallPadding
 
 ::-webkit-input-placeholder
-	line-height $fieldLineHeight
+    line-height $fieldLineHeight
 
 :-moz-placeholder
-	line-height $fieldLineHeight
+    line-height $fieldLineHeight
 
 ::-moz-placeholder
-	line-height $fieldLineHeight
+    line-height $fieldLineHeight
 
 :-ms-input-placeholder
-	line-height $fieldLineHeight
+    line-height $fieldLineHeight
 
 .btn:focus
 .btn-primary:focus
 .btn:hover
 .btn-primary:hover
 .form-control:focus
-	outline(none)
-	border-color #D7752E
-	box-shadow(0px 0px 3px 1px #F7852E)
+    outline(none)
+    border-color #D7752E
+    box-shadow(0px 0px 3px 1px #F7852E)
 
 .btn:focus
 .btn-primary:focus
 .btn:hover
 .btn-primary:hover
-	background $gray
+    background $gray
 
 .btn
 .btn-primary
-	line-height 18px
+    line-height 18px
 
-	// Bordures.
-	border none
+    // Bordures.
+    border none
 
-	// Paramètres relatif au texte.
-	font-weight bold
-	color white
+    // Paramètres relatif au texte.
+    font-weight bold
+    color white
 
-	// Fond
-	background $darkGray
+    // Fond
+    background $darkGray
 
-	&.btn-plain
-		width 100%
+    &.btn-plain
+        width 100%
 
 .btn-primary
-	background $primaryColor
+    background $primaryColor
 
 // Image logo.
 img#logo
-	size(50px)
-	abs()
-	top -35px
-	margin 0 auto
-	position relative
+    size(50px)
+    abs()
+    top -35px
+    margin 0 auto
+    position relative
 
 .sign-in-overlay-container
-	abs(45%)
+    abs(45%)
 .sign-in-overlay
-	background-color rgba(0,0,0,0.6)
-	border-radius(10px)
-	top (-310px/2)
-	width 100%
-	@media (max-width: 768px)
-		top (-336px/2)
-		height 370px
-	@media (max-width: 414px)
-		height 350px
+    background-color rgba(0,0,0,0.6)
+    border-radius(10px)
+    top (-310px/2)
+    width 100%
+    @media (max-width: 768px)
+        top (-336px/2)
+        height 370px
+    @media (max-width: 414px)
+        height 350px
 
 .std-line
-	display inline-block
-	line-height 14px
-	vertical-align bottom
+    display inline-block
+    line-height 14px
+    vertical-align bottom
 
 label
-	font-weight normal
-	// color $linkColor
-	input[type="checkbox"]
-		position relative
-		top 2px
-		margin-right $smallPadding
+    font-weight normal
+    // color $linkColor
+    input[type="checkbox"]
+        position relative
+        top 2px
+        margin-right $smallPadding
 
 #shutter
-	position fixed
-	top 0
-	right 0
-	size(0, 100%)
-	overflow hidden
-	transition(width .2s)
+    position fixed
+    top 0
+    right 0
+    size(0, 100%)
+    overflow hidden
+    transition(width .2s)
 
-	&.opened-shutter
-	.inner-shutter
-	.nav
-	.inner-shutter > a
-	ul a
-		width $shutterWidth
+    &.opened-shutter
+    .inner-shutter
+    .nav
+    .inner-shutter > a
+    ul a
+        width $shutterWidth
 
-	.inner-shutter > a
-	ul a
-		display block
-		background white
-		transition(background .2s)
-		color $nearlyBlack
-		padding $mainPadding
-		&:hover
-			text-decoration none
-			background $gray
+    .inner-shutter > a
+    ul a
+        display block
+        background white
+        transition(background .2s)
+        color $nearlyBlack
+        padding $mainPadding
+        &:hover
+            text-decoration none
+            background $gray
 
-	.nav
-		margin 0
-		a
-			color white
-			background $nearlyBlack
-			transition(background .2s)
-			&:hover
-				background lighten($nearlyBlack, 10%)
-			height $headerHeight
-			line-height 32px
-			text-align right
-			font-size 18px
-			// border-left $shutterBorderWidth solid $darkOrange
-			.halflings
-				line-height 30px
+    .nav
+        margin 0
+        a
+            color white
+            background $nearlyBlack
+            transition(background .2s)
+            &:hover
+                background lighten($nearlyBlack, 10%)
+            height $headerHeight
+            line-height 32px
+            text-align right
+            font-size 18px
+            // border-left $shutterBorderWidth solid $darkOrange
+            .halflings
+                line-height 30px
 
-	.inner-shutter
-		height 100%
-		background white
-		// border-left $shutterBorderWidth solid $darkGray
+    .inner-shutter
+        height 100%
+        background white
+        // border-left $shutterBorderWidth solid $darkGray
 
-	.footer
-		font-size 13px
-		color $darkGray
-		border 1px solid $lightGray
-		// border-radius(4px)
-		padding $mainPadding
-		margin $mainPadding
+    .footer
+        font-size 13px
+        color $darkGray
+        border 1px solid $lightGray
+        // border-radius(4px)
+        padding $mainPadding
+        margin $mainPadding
 
 // Formulaire de connexion.
 form#login-signin
-	padding $mainPadding 0
-	.narrow
-		padding 0 $smallPadding
+    padding $mainPadding 0
+    .narrow
+        padding 0 $smallPadding
 
 // Lien d'oublie du mot de passe.
 a#forget-it
-	float right
-	color $orange
-	margin-bottom $mainPadding
-	// Lien d'oublie du mot de passe au passage de la souris.
-	&:hover
-		text-decoration none
+    float right
+    color $orange
+    margin-bottom $mainPadding
+    // Lien d'oublie du mot de passe au passage de la souris.
+    &:hover
+        text-decoration none
 
 .invite-message
-	color $nearlyWhite
-	text-align center
-	@media (max-width: 768px)
-		padding-top 40px
+    color $nearlyWhite
+    text-align center
+    @media (max-width: 768px)
+        padding-top 40px
 
 h2
-	// Paramètres relatif au texte. (Hérite de body)
-	color #5f5f5f
-	font-weight bold
-	font-size 20px
-	text-align center
+    // Paramètres relatif au texte. (Hérite de body)
+    color #5f5f5f
+    font-weight bold
+    font-size 20px
+    text-align center
 
-	// Marges externes et type d'élément.
-	margin $smallPadding
-	display block
+    // Marges externes et type d'élément.
+    margin $smallPadding
+    display block
 
 
 .big-line
-	line-height 28px
+    line-height 28px
 
 
 .description
-	font-size 11px
+    font-size 11px
 
 .edit-album-name
 .edit-album-description
 .edit-album-actions
-	margin 0 0 $mainPadding
-	input
-	textarea
-		margin 0
+    margin 0 0 $mainPadding
+    input
+    textarea
+        margin 0
 
 .settings .halflings-cog
-	color $mediumGray
+    color $mediumGray
 
-	&:hover
-		color $linkColor
+    &:hover
+        color $linkColor
 
 .cancel
-	background $mediumGray
+    background $mediumGray
 @media (max-width: 767px)
-	.edit-album-actions .cancel
-		margin-bottom $smallPadding
-	.edit-album-actions .btn+.btn
-		margin-left 0
+    .edit-album-actions .cancel
+        margin-bottom $smallPadding
+    .edit-album-actions .btn+.btn
+        margin-left 0
 
 #createAccountTitle
-	padding-top $mainPadding
-	padding-bottom 2 * $bigPadding
+    padding-top $mainPadding
+    padding-bottom 2 * $bigPadding
 
 .player
-	margin auto
-	height auto
+    margin auto
+    height auto
 
 ul.photos-thumbs
-	list-style none
-	padding 0
-	li
-		display block
+    list-style none
+    padding 0
+    li
+        display block
 
 .thumb
-	display block
-	float left
-	margin $smallPadding
+    display block
+    float left
+    margin $smallPadding
 
 .thumb
 .thumb img
-	width $thumbWidth
-	height $thumbHeight
+    width $thumbWidth
+    height $thumbHeight
 
 .date
-	color $darkGray
+    color $darkGray
 
 .android input[type="date"].empty:before
-	content attr(placeholder)
-	rel(2px)
+    content attr(placeholder)
+    rel(2px)
 
 .friend-ask
-	// .if-accepted
-	// 	display none
-	// .if-accepted
-	.shift
-		margin-left $thumbWidth + $bigPadding
-		.username
-			font-weight bold
-		.btn
-			margin $smallPadding 0 0
+    // .if-accepted
+    //     display none
+    // .if-accepted
+    .shift
+        margin-left $thumbWidth + $bigPadding
+        .username
+            font-weight bold
+        .btn
+            margin $smallPadding 0 0
 
 
 .headband
-	padding $smallPadding 0
+    padding $smallPadding 0
 
 .fit
-	padding 0
+    padding 0
 
 .fit-to-bottom
-	padding-bottom 0
+    padding-bottom 0
 
 .glued
 .btn.glued
 input.glued
-	margin 0
+    margin 0
 
 fieldset.tab .btn
-	margin-bottom 0
+    margin-bottom 0
 
 
 .chat-list
 
-	.user-chat
-		rel()
-		.thumb
-			margin $smallPadding $mainPadding $smallPadding (- $smallPadding)
+    .user-chat
+        rel()
+        .thumb
+            margin $smallPadding $mainPadding $smallPadding (- $smallPadding)
 
-	a
-		text-decoration none
-		color $nearlyBlack
-		display block
-		&:hover
-			background $lightGray
+    a
+        text-decoration none
+        color $nearlyBlack
+        display block
+        &:hover
+            background $lightGray
 
-	a.delete-chat
-		text-align center
-		background $orange
-		min-height $thumbHeight + 10
-		height calc(100% - 21px)
-		abs(0, false)
-		right 0
+    a.delete-chat
+        text-align center
+        background $orange
+        min-height $thumbHeight + 10
+        height calc(100% - 21px)
+        abs(0, false)
+        right 0
 
-		&:hover
-			background lighten($orange, 20%)
+        &:hover
+            background lighten($orange, 20%)
 
-		.halflings
-			margin-top 23px
-			margin-left 0
-			color $nearlyWhite
-	.date
-		font-size $dateSize
+        .halflings
+            margin-top 23px
+            margin-left 0
+            color $nearlyWhite
+    .date
+        font-size $dateSize
 
 
 .cookiesWarning .navbar-right
-	text-align right
+    text-align right
 
 .aside
-	text-align right
-	float right
-	width 200px
-	&.continue
-		clear right
-		position relative
-		.dropdown-menu
-			position absolute
-			top $smallPadding
-			right $smallPadding
+    text-align right
+    float right
+    width 200px
+    &.continue
+        clear right
+        position relative
+        .dropdown-menu
+            position absolute
+            top $smallPadding
+            right $smallPadding
 
 .large-dropdown
-	position relative
-	text-align right
-	float right
-	width 250px
-	ul
-		width 235px
+    position relative
+    text-align right
+    float right
+    width 250px
+    ul
+        width 235px
 
 .word-wrap
-	overflow-wrap break-word
-	white-space -moz-pre-wrap
-	white-space -pre-wrap
-	white-space -o-pre-wrap
-	white-space pre-wrap
-	word-wrap break-word
-	// word-break break-all
+    overflow-wrap break-word
+    white-space -moz-pre-wrap
+    white-space -pre-wrap
+    white-space -o-pre-wrap
+    white-space pre-wrap
+    word-wrap break-word
+    // word-break break-all
 
 .tab
-	padding $mainPadding
-	margin-bottom $mainPadding
-	background white
-	border 1px solid #ddd
-	border-top-color transparent
-	// border-radius(0 0 4px 4px)
+    padding $mainPadding
+    margin-bottom $mainPadding
+    background white
+    border 1px solid #ddd
+    border-top-color transparent
+    // border-radius(0 0 4px 4px)
 
 .modal-footer .btn
-	margin 0
+    margin 0
 
 #delete-account
-	color red
+    color red
 
 .after-form
-	padding-top 15px
+    padding-top 15px
 
 #media-viewer
-	.modal-dialog
-		min-width 300px
-		height auto
-		max-width 70%
-		max-height 90%
-		transition(all, .1s)
+    .modal-dialog
+        min-width 300px
+        height auto
+        max-width 70%
+        max-height 90%
+        transition(all, .1s)
 
-	.modal-body
-		background-color $nearlyBlack
-		text-align center
-	.modal-footer .info
-	a.prev
-	a.next
-		float left
-		display block
-	.modal-footer
-			clear left
-		a.info
-			clear left
-			cursor pointer
-		img.thumb
-			size(20px)
-			margin 0
-		.settings ul a
-			color $nearlyBlack
-	img
-		&.big
-			max-width 100%
-		&.prev
-		&.next
-			display none
-	.img-buttons
-		display block
-		margin auto
-	a
-		color $orange
-	a.prev
-	a.next
-		max-width 50%
-		cursor pointer
-		color white
-		text-shadow 0 0 5px black
-		vertical-align middle
-		opacity(0)
-		transition(all .2s)
-		&:hover
-			opacity(0.5)
-		&.disabled
-			cursor inherit
-			opacity(0)
+    .modal-body
+        background-color $nearlyBlack
+        text-align center
+    .modal-footer .info
+    a.prev
+    a.next
+        float left
+        display block
+    .modal-footer
+            clear left
+        a.info
+            clear left
+            cursor pointer
+        img.thumb
+            size(20px)
+            margin 0
+        .settings ul a
+            color $nearlyBlack
+    img
+        &.big
+            max-width 100%
+        &.prev
+        &.next
+            display none
+    .img-buttons
+        display block
+        margin auto
+    a
+        color $orange
+    a.prev
+    a.next
+        max-width 50%
+        cursor pointer
+        color white
+        text-shadow 0 0 5px black
+        vertical-align middle
+        opacity(0)
+        transition(all .2s)
+        &:hover
+            opacity(0.5)
+        &.disabled
+            cursor inherit
+            opacity(0)
 
 #signin
 #login-signin
-	label
-		font-size 12px
-		display block
+    label
+        font-size 12px
+        display block
 
 #remember-me
-	color $nearlyWhite
+    color $nearlyWhite
 
 .scroll-cursor
-	rel(-100px, 0)
+    rel(-100px, 0)
 
 .fade-on-load
-	transition all .2s
-	&.not-loaded
-		opacity(0)
+    transition all .2s
+    &.not-loaded
+        opacity(0)
 
 .fit-bar div
-	padding 0 $mainPadding
-	&:first-child
-		padding-left 0
-	&:last-child
-		padding-right 0
+    padding 0 $mainPadding
+    &:first-child
+        padding-left 0
+    &:last-child
+        padding-right 0
 
 .slogan-message
-	color $nearlyWhite
-	text-align center
-	text-transform initial
+    color $nearlyWhite
+    text-align center
+    text-transform initial
 
 .firstName
-	padding-left 0
+    padding-left 0
 .lastName
-	padding-right 0
+    padding-right 0
 
 iframe.app
-	margin-top - $bigPadding
-	padding 0
-	blur(5px)
+    margin-top - $bigPadding
+    padding 0
+    blur(5px)
 
 #legals
-	.modal-dialog
-		width 70%
-		@media (max-width: 768px)
-			width calc(100% - 20px)
+    .modal-dialog
+        width 70%
+        @media (max-width: 768px)
+            width calc(100% - 20px)
 
 a.mobile-video
-	size($mobilePlayerWidth, $mobilePlayerHeight)
-	overflow hidden
-	rel()
-	img.video-preview
-		rel(($mobilePlayerHeight - $mobilePosterHeight) / 2)
-	.halflings
-		opacity(.7)
-		abs(($mobilePlayerHeight - $playConfigSize) / 2, ($mobilePlayerWidth - $playConfigSize) / 2)
-		color white
-		font-size $playConfigSize
+    size($mobilePlayerWidth, $mobilePlayerHeight)
+    overflow hidden
+    rel()
+    img.video-preview
+        rel(($mobilePlayerHeight - $mobilePosterHeight) / 2)
+    .halflings
+        opacity(.7)
+        abs(($mobilePlayerHeight - $playConfigSize) / 2, ($mobilePlayerWidth - $playConfigSize) / 2)
+        color white
+        font-size $playConfigSize
 
 #notification-list
-	a
-		color $linkColor
-	.notice
-		margin $mainPadding
+    a
+        color $linkColor
+    .notice
+        margin $mainPadding
 
 #contact-error
 #certification-error
-	display none
+    display none
 
 #liker-list
 #friend-list
 #follower-list
 #following-list
 #sharer-list
-	.liker
-	.friend
-	.follower
-	.following
-	.sharer
-		.user-points
-			font-size 10px
-		a
-			color $linkColor
-		.user-name
-			display inline
-	.modal-body
-		max-height (($thumbHeight + ($smallPadding * 2)) * $numberOfLikerDisplayed) + $bigPadding
-		overflow auto
-	.nb-share
-		font-size 10px
+    .liker
+    .friend
+    .follower
+    .following
+    .sharer
+        .user-points
+            font-size 10px
+        a
+            color $linkColor
+        .user-name
+            display inline
+    .modal-body
+        max-height (($thumbHeight + ($smallPadding * 2)) * $numberOfLikerDisplayed) + $bigPadding
+        overflow auto
+    .nb-share
+        font-size 10px
 
 .center-bloc
-	padding 0
+    padding 0
 
 .invite-block
-	.invite-facebook
-	.invite-yahoo
-	.invite-gmail
-	.invite-microsoft
-		background-size 30px
-		size(30px, 30px)
-		padding 0
-		margin 0
-		cursor pointer
-		margin 0 $smallPadding
-		&:hover
-			box-shadow none
+    .invite-facebook
+    .invite-yahoo
+    .invite-gmail
+    .invite-microsoft
+        background-size 30px
+        size(30px, 30px)
+        padding 0
+        margin 0
+        cursor pointer
+        margin 0 $smallPadding
+        &:hover
+            box-shadow none
 
-	.invite-facebook
-		background url(png("fb"))
+    .invite-facebook
+        background url(png("fb"))
 
-	.invite-gmail
-		background url(png("gmail"))
+    .invite-gmail
+        background url(png("gmail"))
 
-	.invite-yahoo
-		background url(png("yahoo"))
+    .invite-yahoo
+        background url(png("yahoo"))
 
-	.invite-microsoft
-		background url(png("microsoft"))
+    .invite-microsoft
+        background url(png("microsoft"))
 
 #facebookPostMessage
-	width 100%
+    width 100%
 
 .modal .modal-header h4
-	color $orange
+    color $orange
 
 #glyph-certification
-	font-size 128px
-	color $blue
+    font-size 128px
+    color $blue
 
 .certification-table
-	width 100%
+    width 100%
 
-	td
-	th
-		border 1px solid $nearlyBlack
-		padding $mainPadding
-		text-align center
+    td
+    th
+        border 1px solid $nearlyBlack
+        padding $mainPadding
+        text-align center
 
-		a
-			color $linkColor
-		.glyphicons
-			margin $smallPadding
-			&.glyphicons-circle-ok
-				color green
-			&.glyphicons-circle-remove
-				color red
+        a
+            color $linkColor
+        .glyphicons
+            margin $smallPadding
+            &.glyphicons-circle-ok
+                color green
+            &.glyphicons-circle-remove
+                color red
 
 #public-suggestions
-	ul
-		padding $smallPadding
-		li
-			list-style none
-			.thumb
-			.follow-suggest
-			.suggest-name
-				float left
-			.hide-suggest
-				float right
-			.follow-suggest
-				margin 8px $smallPadding
-				background-color $nearlyWhite
-				border 1px solid $orange
-				border-radius(4px)
-				color $darkGray
-			.suggest-name
-				margin 0 $smallPadding
-			a
-				color $linkColor
+    ul
+        padding $smallPadding
+        li
+            list-style none
+            .thumb
+            .follow-suggest
+            .suggest-name
+                float left
+            .hide-suggest
+                float right
+            .follow-suggest
+                margin 8px $smallPadding
+                background-color $nearlyWhite
+                border 1px solid $orange
+                border-radius(4px)
+                color $darkGray
+            .suggest-name
+                margin 0 $smallPadding
+            a
+                color $linkColor
 
 .facebookExemple
-	font-size 12px
+    font-size 12px
 
 .welcome-suggests
-	padding 0
-	margin 0 20%
-	list-style none
-	li
-		a
-			color $orange
-		.biography
-			color $darkGray
-			font-size 12px
-		.welcome-follow:not(:checked)
-		.welcome-follow:checked
-			abs()
-			left -9999px
+    padding 0
+    margin 0 20%
+    list-style none
+    li
+        a
+            color $orange
+        .biography
+            color $darkGray
+            font-size 12px
+        .welcome-follow:not(:checked)
+        .welcome-follow:checked
+            abs()
+            left -9999px
 
-		.welcome-follow:not(:checked) + label
-		.welcome-follow:checked + label
-			rel()
-			cursor pointer
-			float right
-			margin-right 25px
+        .welcome-follow:not(:checked) + label
+        .welcome-follow:checked + label
+            rel()
+            cursor pointer
+            float right
+            margin-right 25px
 
-		.welcome-follow:not(:checked) + label:before
-		.welcome-follow:checked + label:before
-			content ''
-			abs(2px, 0)
-			size(25px, 25px)/* dim. de la case */
-			border 1px solid #aaa
-			background #f8f8f8
-			border-radius(3px) /* angles arrondis */
-			box-shadow inset 0 1px 3px rgba(0,0,0,.3) /* légère ombre interne */
+        .welcome-follow:not(:checked) + label:before
+        .welcome-follow:checked + label:before
+            content ''
+            abs(2px, 0)
+            size(25px, 25px)/* dim. de la case */
+            border 1px solid #aaa
+            background #f8f8f8
+            border-radius(3px) /* angles arrondis */
+            box-shadow inset 0 1px 3px rgba(0,0,0,.3) /* légère ombre interne */
 
-		.welcome-follow:not(:checked) + label:after
-		.welcome-follow:checked + label:after
-			content '✔'
-			abs(0, 4px)
-			font-size 20px
-			color #09ad7e
-			transition(all .2s) /* on prévoit une animation */
+        .welcome-follow:not(:checked) + label:after
+        .welcome-follow:checked + label:after
+            content '✔'
+            abs(0, 4px)
+            font-size 20px
+            color #09ad7e
+            transition(all .2s) /* on prévoit une animation */
 
-		.welcome-follow:not(:checked) + label:after
-			opacity(0)
-			transform scale(0)
+        .welcome-follow:not(:checked) + label:after
+            opacity(0)
+            transform scale(0)
 
-		.welcome-follow:checked + label:after
-			opacity(1)
-			transform scale(1)
+        .welcome-follow:checked + label:after
+            opacity(1)
+            transform scale(1)
 
 .welcome-next
-	float right
-	margin-right 20%
+    float right
+    margin-right 20%
 
 .signin-information
-	margin-left 15px
+    margin-left 15px
 
 .google-link
-	display none
+    display none
 
 // Imports.
 @import "includes/tooltip"
@@ -914,179 +914,179 @@ a.mobile-video
 @import "move"
 
 @media (max-width: 414px)
-	.nav-tabs.nav>li>a
-		font-size 13px
+    .nav-tabs.nav>li>a
+        font-size 13px
 
-	.invite-block
-	.medias-block
-	.friends-block
-	.slogan-message
-	.tooltip-arrow
-	.tooltip-inner
-		display none
+    .invite-block
+    .medias-block
+    .friends-block
+    .slogan-message
+    .tooltip-arrow
+    .tooltip-inner
+        display none
 
-	.date
-		font-size $dateSize
+    .date
+        font-size $dateSize
 
 // Iphone 6 Plus and smaller mobiles in landscape orientation
 @media (max-width: 736px) and (orientation: landscape)
-	.tooltip-arrow
-	.tooltip-inner
-	.slogan-message
-		display none
+    .tooltip-arrow
+    .tooltip-inner
+    .slogan-message
+        display none
 
-	.sign-in-overlay
-		margin-top 35px
+    .sign-in-overlay
+        margin-top 35px
 
-	footer
-		margin-top 90px
+    footer
+        margin-top 90px
 
 // tablets in portrait
 @media (max-width: 991px) and (orientation: portrait)
-	.medias-block
-	.friends-block
-	.invite-block
-	#they-use-wornet
-		display none
+    .medias-block
+    .friends-block
+    .invite-block
+    #they-use-wornet
+        display none
 
 // Media Queries.
 @media (max-width: 767px)
-	.xs-margin-up
-		margin-top $mainPadding
-	body.openingTemplate
+    .xs-margin-up
+        margin-top $mainPadding
+    body.openingTemplate
 
-		&.bg1
-			cover('background-image/small/1')
+        &.bg1
+            cover('background-image/small/1')
 
-		&.bg2
-			cover('background-image/small/2')
+        &.bg2
+            cover('background-image/small/2')
 
-		&.bg3
-			cover('background-image/small/3')
+        &.bg3
+            cover('background-image/small/3')
 
-		&.bg4
-			cover('background-image/small/4')
+        &.bg4
+            cover('background-image/small/4')
 
-		&.bg5
-			cover('background-image/small/5')
+        &.bg5
+            cover('background-image/small/5')
 
-		&.bg6
-			cover('background-image/small/6')
+        &.bg6
+            cover('background-image/small/6')
 
-	// #shutter
-	// li.open-shutter
-	#they-use-wornet
-	.invite-block
-	.friends-block
-	.medias-block
-	#public-suggestions
-	.following-block
-		display none
+    // #shutter
+    // li.open-shutter
+    #they-use-wornet
+    .invite-block
+    .friends-block
+    .medias-block
+    #public-suggestions
+    .following-block
+        display none
 
-	// #wrap
-	// 	&.opened-shutter
-	// 		margin-right 0
+    // #wrap
+    //     &.opened-shutter
+    //         margin-right 0
 
-	#createAccountTitle
-		padding-bottom $bigPadding
+    #createAccountTitle
+        padding-bottom $bigPadding
 
-	#slogan
-		padding-top $bigPadding * 1.5
-		padding-bottom $smallPadding
+    #slogan
+        padding-top $bigPadding * 1.5
+        padding-bottom $smallPadding
 
-	.mobile-field
-		padding $fieldVPadding $fieldHPadding
-		margin $mainPadding 0
-		line-height $fieldLineHeight + $mobileIncrease*0.5
-		display block
-		background rgba(255, 255, 255, 0.8)
-		// border-radius(4px)
+    .mobile-field
+        padding $fieldVPadding $fieldHPadding
+        margin $mainPadding 0
+        line-height $fieldLineHeight + $mobileIncrease*0.5
+        display block
+        background rgba(255, 255, 255, 0.8)
+        // border-radius(4px)
 
-	span.form-control
-	div.form-control
-	a.form-control
-	button.form-control
-	input.form-control
-	.btn
-		line-height $fieldLineHeight + $mobileIncrease*0.5
-		height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2
+    span.form-control
+    div.form-control
+    a.form-control
+    button.form-control
+    input.form-control
+    .btn
+        line-height $fieldLineHeight + $mobileIncrease*0.5
+        height $fieldLineHeight + 2 * $fieldVPadding + $mobileIncrease + 2
 
-	.icon-bar
-		background white
+    .icon-bar
+        background white
 
-	footer
-		.row
-			margin 0
-			padding-top 3px
+    footer
+        .row
+            margin 0
+            padding-top 3px
 
-		a.link
-		.copytag
-			padding $smallPadding
-			margin $smallPadding 0 0
+        a.link
+        .copytag
+            padding $smallPadding
+            margin $smallPadding 0 0
 
-	.fit-bar div
-		padding 0
+    .fit-bar div
+        padding 0
 
-	.forget-it
-		margin-bottom $mainPadding
+    .forget-it
+        margin-bottom $mainPadding
 
-	.firstName
-		padding-right 0
-		input
-			margin 0
-	.lastName
-		padding-left 0
+    .firstName
+        padding-right 0
+        input
+            margin 0
+    .lastName
+        padding-left 0
 
-	#media-viewer
-		.modal-dialog
-			height 100%
-			width calc(100% - 20px)
-			max-height 100%
-			max-width 100%
-			margin 0
-		.modal-header
-		.modal-footer
-			padding $smallPadding 15px
-		.modal-body
-			background-color $nearlyBlack
-			padding 0
-		.settings
-			width 20px
-			abs()
-			right $mainPadding
-			ul
-				margin-left -230px
+    #media-viewer
+        .modal-dialog
+            height 100%
+            width calc(100% - 20px)
+            max-height 100%
+            max-width 100%
+            margin 0
+        .modal-header
+        .modal-footer
+            padding $smallPadding 15px
+        .modal-body
+            background-color $nearlyBlack
+            padding 0
+        .settings
+            width 20px
+            abs()
+            right $mainPadding
+            ul
+                margin-left -230px
 
-	.welcome-next
-		margin-right 0
-	.welcome-suggests
-		margin 0
+    .welcome-next
+        margin-right 0
+    .welcome-suggests
+        margin 0
 
 @media (min-width: 768px)
-	.pad-right
-		padding-right $mainPadding
+    .pad-right
+        padding-right $mainPadding
 
-	.pad-left
-		padding-left $mainPadding
+    .pad-left
+        padding-left $mainPadding
 
-	.mobile
-	.nav>li.mobile
-		display none
+    .mobile
+    .nav>li.mobile
+        display none
 
-	.sign-in-overlay
-		padding 0 50px
+    .sign-in-overlay
+        padding 0 50px
 
 
 @media (max-width: 991px)
-	footer
-		// Tailles du pied de page.
-		size(100%, $mobileFooterHeight)
+    footer
+        // Tailles du pied de page.
+        size(100%, $mobileFooterHeight)
 
 @media (max-width: 1024px)
-	.wornet-navbar .dropdown-menu>li>a
-		height 36px
-		line-height 28px
+    .wornet-navbar .dropdown-menu>li>a
+        height 36px
+        line-height 28px
 
-	#wrap.opened-shutter
-	#wrap.opened-shutter .wornet-navbar
-		margin-left - $shutterWidth
+    #wrap.opened-shutter
+    #wrap.opened-shutter .wornet-navbar
+        margin-left - $shutterWidth

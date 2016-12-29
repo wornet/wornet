@@ -1,18 +1,18 @@
 #liker-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="PlusWListCtrl" tabindex="-1")
-	.modal-dialog: .modal-content
-		.modal-header
-			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
-			h4.modal-title
-				=s("Mention j'aime")
-		.modal-body
-			.liker(ng-repeat='liker in likers' data-id='{{ liker.hashedId }}')
-				img(ng-src="{{ liker.thumb50 }}" alt="{{ liker.name.full }}" data-id="{{ liker.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ liker.name.full }}").thumb
-				a(ng-class="" href="/{{ liker.uniqueURLID }}")
-					.user-name
-						| {{ liker.name.full }}
-				.user-points
-					| {{ liker.points }}
-					=' '+s("points")
-				.cb
-			div(scroll-detect verify-to-load="likersRemaining()" gap="300" url="getLoadUrl()" offset="getlikersOffset()" callback="loadlikersList" scrollable="#liker-list .modal-body" additionnal-data="getAdditionnalData()").likers-loading
-			+data('likersPageCount', config.wornet.limits.likersPageCount)
+    .modal-dialog: .modal-content
+        .modal-header
+            button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+            h4.modal-title
+                =s("Mention j'aime")
+        .modal-body
+            .liker(ng-repeat='liker in likers' data-id='{{ liker.hashedId }}')
+                img(ng-src="{{ liker.thumb50 }}" alt="{{ liker.name.full }}" data-id="{{ liker.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ liker.name.full }}").thumb
+                a(ng-class="" href="/{{ liker.uniqueURLID }}")
+                    .user-name
+                        | {{ liker.name.full }}
+                .user-points
+                    | {{ liker.points }}
+                    =' '+s("points")
+                .cb
+            div(scroll-detect verify-to-load="likersRemaining()" gap="300" url="getLoadUrl()" offset="getlikersOffset()" callback="loadlikersList" scrollable="#liker-list .modal-body" additionnal-data="getAdditionnalData()").likers-loading
+            +data('likersPageCount', config.wornet.limits.likersPageCount)

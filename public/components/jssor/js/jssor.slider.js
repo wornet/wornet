@@ -2282,16 +2282,16 @@ new function () {
         }
 
         function PlayTo(slideIndex, slideDuration, relative) {
-            ///	<summary>
-            ///		PlayTo( slideIndex [, slideDuration] ); //Play slider to position 'slideIndex' within a period calculated base on 'slideDuration'.
-            ///	</summary>
-            ///	<param name="slideIndex" type="Number">
-            ///		slide slideIndex or position will be playing to
-            ///	</param>
-            ///	<param name="slideDuration" type="Number" optional="true">
-            ///		base slide duration in milliseconds to calculate the whole duration to complete this play request.
-            ///	    default value is '$SlideDuration' value which is specified when initialize the slider.
-            ///	</param>
+            ///    <summary>
+            ///        PlayTo( slideIndex [, slideDuration] ); //Play slider to position 'slideIndex' within a period calculated base on 'slideDuration'.
+            ///    </summary>
+            ///    <param name="slideIndex" type="Number">
+            ///        slide slideIndex or position will be playing to
+            ///    </param>
+            ///    <param name="slideDuration" type="Number" optional="true">
+            ///        base slide duration in milliseconds to calculate the whole duration to complete this play request.
+            ///        default value is '$SlideDuration' value which is specified when initialize the slider.
+            ///    </param>
             /// http://msdn.microsoft.com/en-us/library/vstudio/bb385682.aspx
             /// http://msdn.microsoft.com/en-us/library/vstudio/hh542720.aspx
             if (_CarouselEnabled && (!_IsDragging || _Options.$NaviQuitDrag)) {
@@ -2338,37 +2338,37 @@ new function () {
         _SelfSlider.$PlayTo = PlayTo;
 
         _SelfSlider.$GoTo = function (slideIndex) {
-            ///	<summary>
-            ///		instance.$GoTo( slideIndex );   //Go to the specifed slide immediately with no play.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$GoTo( slideIndex );   //Go to the specifed slide immediately with no play.
+            ///    </summary>
             PlayTo(slideIndex, 1);
         };
 
         _SelfSlider.$Next = function () {
-            ///	<summary>
-            ///		instance.$Next();   //Play the slider to next slide.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$Next();   //Play the slider to next slide.
+            ///    </summary>
             PlayToOffset(1);
         };
 
         _SelfSlider.$Prev = function () {
-            ///	<summary>
-            ///		instance.$Prev();   //Play the slider to previous slide.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$Prev();   //Play the slider to previous slide.
+            ///    </summary>
             PlayToOffset(-1);
         };
 
         _SelfSlider.$Pause = function () {
-            ///	<summary>
-            ///		instance.$Pause();   //Pause the slider, prevent it from auto playing.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$Pause();   //Pause the slider, prevent it from auto playing.
+            ///    </summary>
             _AutoPlay = false;
         };
 
         _SelfSlider.$Play = function () {
-            ///	<summary>
-            ///		instance.$Play();   //Start auto play if the slider is currently paused.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$Play();   //Start auto play if the slider is currently paused.
+            ///    </summary>
             if (!_AutoPlay) {
                 _AutoPlay = true;
                 _SlideItems[_CurrentSlideIndex] && _SlideItems[_CurrentSlideIndex].$TryActivate();
@@ -2376,9 +2376,9 @@ new function () {
         };
 
         _SelfSlider.$SetSlideshowTransitions = function (transitions) {
-            ///	<summary>
-            ///		instance.$SetSlideshowTransitions( transitions );   //Reset slideshow transitions for the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$SetSlideshowTransitions( transitions );   //Reset slideshow transitions for the slider.
+            ///    </summary>
             $JssorDebug$.$Execute(function () {
                 if (!transitions || !transitions.length) {
                     $JssorDebug$.$Error("Can not set slideshow transitions, no transitions specified.");
@@ -2389,9 +2389,9 @@ new function () {
         };
 
         _SelfSlider.$SetCaptionTransitions = function (transitions) {
-            ///	<summary>
-            ///		instance.$SetCaptionTransitions( transitions );   //Reset caption transitions for the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$SetCaptionTransitions( transitions );   //Reset caption transitions for the slider.
+            ///    </summary>
             $JssorDebug$.$Execute(function () {
                 if (!transitions || !transitions.length) {
                     $JssorDebug$.$Error("Can not set caption transitions, no transitions specified");
@@ -2403,86 +2403,86 @@ new function () {
         };
 
         _SelfSlider.$SlidesCount = function () {
-            ///	<summary>
-            ///		instance.$SlidesCount();   //Retrieve slides count of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$SlidesCount();   //Retrieve slides count of the slider.
+            ///    </summary>
             return _SlideElmts.length;
         };
 
         _SelfSlider.$CurrentIndex = function () {
-            ///	<summary>
-            ///		instance.$CurrentIndex();   //Retrieve current slide index of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$CurrentIndex();   //Retrieve current slide index of the slider.
+            ///    </summary>
             return _CurrentSlideIndex;
         };
 
         _SelfSlider.$IsAutoPlaying = function () {
-            ///	<summary>
-            ///		instance.$IsAutoPlaying();   //Retrieve auto play status of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$IsAutoPlaying();   //Retrieve auto play status of the slider.
+            ///    </summary>
             return _AutoPlay;
         };
 
         _SelfSlider.$IsDragging = function () {
-            ///	<summary>
-            ///		instance.$IsDragging();   //Retrieve drag status of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$IsDragging();   //Retrieve drag status of the slider.
+            ///    </summary>
             return _IsDragging;
         };
 
         _SelfSlider.$IsSliding = function () {
-            ///	<summary>
-            ///		instance.$IsSliding();   //Retrieve right<-->left sliding status of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$IsSliding();   //Retrieve right<-->left sliding status of the slider.
+            ///    </summary>
             return _IsSliding;
         };
 
         _SelfSlider.$IsMouseOver = function () {
-            ///	<summary>
-            ///		instance.$IsMouseOver();   //Retrieve mouse over status of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$IsMouseOver();   //Retrieve mouse over status of the slider.
+            ///    </summary>
             return !_HoverStatus;
         };
 
         _SelfSlider.$LastDragSucceded = function () {
-            ///	<summary>
-            ///		instance.$IsLastDragSucceded();   //Retrieve last drag succeded status, returns 0 if failed, returns drag offset if succeded
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$IsLastDragSucceded();   //Retrieve last drag succeded status, returns 0 if failed, returns drag offset if succeded
+            ///    </summary>
             return _LastDragSucceded;
         };
 
         _SelfSlider.$GetOriginalWidth = function () {
-            ///	<summary>
-            ///		instance.$GetOriginalWidth();   //Retrieve original width of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$GetOriginalWidth();   //Retrieve original width of the slider.
+            ///    </summary>
             return $JssorUtils$.$CssWidth(_ScaleWrapper || elmt);
         };
 
         _SelfSlider.$GetOriginalHeight = function () {
-            ///	<summary>
-            ///		instance.$GetOriginalWidth();   //Retrieve original height of the slider.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$GetOriginalWidth();   //Retrieve original height of the slider.
+            ///    </summary>
             return $JssorUtils$.$CssHeight(_ScaleWrapper || elmt);
         };
 
         _SelfSlider.$GetScaleWidth = function () {
-            ///	<summary>
-            ///		instance.$GetScaleWidth();   //Retrieve scaled width the slider currently displays.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$GetScaleWidth();   //Retrieve scaled width the slider currently displays.
+            ///    </summary>
             return $JssorUtils$.$CssWidth(elmt);
         };
 
         _SelfSlider.$GetScaleHeight = function () {
-            ///	<summary>
-            ///		instance.$GetScaleHeight();   //Retrieve scaled height the slider currently displays.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$GetScaleHeight();   //Retrieve scaled height the slider currently displays.
+            ///    </summary>
             return $JssorUtils$.$CssHeight(elmt);
         };
 
         _SelfSlider.$SetScaleWidth = function (width) {
-            ///	<summary>
-            ///		instance.$SetScaleWidth( width );   //Scale the slider to new width and keep aspect ratio.
-            ///	</summary>
+            ///    <summary>
+            ///        instance.$SetScaleWidth( width );   //Scale the slider to new width and keep aspect ratio.
+            ///    </summary>
             $JssorDebug$.$Execute(function () {
                 if (!width || width < 0) {
                     $JssorDebug$.$Fail("'$SetScaleWidth' error, 'width' should be positive value.");
@@ -2635,7 +2635,7 @@ new function () {
             $SlideDuration: 500,            //[Optional] Specifies default duration (swipe) for slide in milliseconds, default value is 400
             $SlideEasing: $JssorEasing$.$EaseOutQuad,   //[Optional] Specifies easing for right to left animation, default value is $JssorEasing$.$EaseOutQuad
             $MinDragOffsetToSlide: 20,      //[Optional] Minimum drag offset that trigger slide, default value is 20
-            $SlideSpacing: 0, 				//[Optional] Space between each slide in pixels, default value is 0
+            $SlideSpacing: 0,                 //[Optional] Space between each slide in pixels, default value is 0
             $DisplayPieces: 1,              //[Optional] Number of pieces to display (the slideshow would be disabled if the value is set to greater than 1), default value is 1
             $ParkingPosition: 0,            //[Optional] The offset position to park slide (this options applys only when slideshow disabled), default value is 0.
             $UISearchMode: 1,               //[Optional] The way (0 parellel, 1 recursive, default value is recursive) to search UI components (slides container, loading screen, navigator container, arrow navigator container, thumbnail navigator container etc.
@@ -3995,23 +3995,23 @@ var $JssorCaptionSlider$ = window.$JssorCaptionSlider$ = function (container, ca
 
 //Event Table
 
-//$EVT_CLICK = 21;			    function(slideIndex[, event])
-//$EVT_DRAG_START = 22;		    function(position[, virtualPosition, event])
-//$EVT_DRAG_END = 23;		    function(position, startPosition[, virtualPosition, virtualStartPosition, event])
-//$EVT_SWIPE_START = 24;		function(position[, virtualPosition])
-//$EVT_SWIPE_END = 25;		    function(position[, virtualPosition])
+//$EVT_CLICK = 21;                function(slideIndex[, event])
+//$EVT_DRAG_START = 22;            function(position[, virtualPosition, event])
+//$EVT_DRAG_END = 23;            function(position, startPosition[, virtualPosition, virtualStartPosition, event])
+//$EVT_SWIPE_START = 24;        function(position[, virtualPosition])
+//$EVT_SWIPE_END = 25;            function(position[, virtualPosition])
 
-//$EVT_LOAD_START = 26;			function(slideIndex)
-//$EVT_LOAD_END = 27;			function(slideIndex)
+//$EVT_LOAD_START = 26;            function(slideIndex)
+//$EVT_LOAD_END = 27;            function(slideIndex)
 
-//$EVT_POSITION_CHANGE = 202;	function(position, fromPosition[, virtualPosition, virtualFromPosition])
-//$EVT_PARK = 203;			    function(slideIndex, fromIndex)
+//$EVT_POSITION_CHANGE = 202;    function(position, fromPosition[, virtualPosition, virtualFromPosition])
+//$EVT_PARK = 203;                function(slideIndex, fromIndex)
 
-//$EVT_PROGRESS_CHANGE = 208;	function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
-//$EVT_STATE_CHANGE = 209;	    function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
+//$EVT_PROGRESS_CHANGE = 208;    function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
+//$EVT_STATE_CHANGE = 209;        function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
 
-//$EVT_ROLLBACK_START = 210;	function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
-//$EVT_ROLLBACK_END = 211;	    function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
+//$EVT_ROLLBACK_START = 210;    function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
+//$EVT_ROLLBACK_END = 211;        function(slideIndex, progress[, progressBegin, idleBegin, idleEnd, progressEnd])
 
 //$EVT_SLIDESHOW_START = 206;   function(slideIndex[, progressBegin, slideshowBegin, slideshowEnd, progressEnd])
 //$EVT_SLIDESHOW_END = 207;     function(slideIndex[, progressBegin, slideshowBegin, slideshowEnd, progressEnd])

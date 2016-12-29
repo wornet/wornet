@@ -1,22 +1,22 @@
 +standardBlock(s("Inviter vos amis sur Wornet")).invite-block(ng-controller="InviteCtrl")
-	+form("/invite", "PUT")
-		label
-			=s("Indiquez les adresses électroniques de vos amis (séparées par des virgules) afin qu'ils puissent vous rejoindre sur le réseau social.")
-			.input-group
-				+formControl().do-not-loose(
-					name="emails"
-					required
-					pattern=pattern('emailMultiple')
-					placeholder=s("Ex: dupont@gmail.com, hercule@live.fr")
-				)
-				span.input-group-btn
-					input(type="submit" value=s("Inviter")).btn.btn-primary
+    +form("/invite", "PUT")
+        label
+            =s("Indiquez les adresses électroniques de vos amis (séparées par des virgules) afin qu'ils puissent vous rejoindre sur le réseau social.")
+            .input-group
+                +formControl().do-not-loose(
+                    name="emails"
+                    required
+                    pattern=pattern('emailMultiple')
+                    placeholder=s("Ex: dupont@gmail.com, hercule@live.fr")
+                )
+                span.input-group-btn
+                    input(type="submit" value=s("Inviter")).btn.btn-primary
 
-	if config.wornet.enableInvite.facebook
-		span.btn.invite-facebook(ng-click="inviteFacebook()")
-	if config.wornet.enableInvite.gmail
-		span.btn.invite-gmail(ng-click="")
-	if config.wornet.enableInvite.yahoo
-		span.btn.invite-yahoo(ng-click="")
-	if config.wornet.enableInvite.microsoft
-		span.btn.invite-microsoft(ng-click="")
+    if config.wornet.enableInvite.facebook
+        span.btn.invite-facebook(ng-click="inviteFacebook()")
+    if config.wornet.enableInvite.gmail
+        span.btn.invite-gmail(ng-click="")
+    if config.wornet.enableInvite.yahoo
+        span.btn.invite-yahoo(ng-click="")
+    if config.wornet.enableInvite.microsoft
+        span.btn.invite-microsoft(ng-click="")

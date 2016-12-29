@@ -1,18 +1,18 @@
 #friend-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="FriendListCtrl" tabindex="-1")
-	.modal-dialog: .modal-content
-		.modal-header
-			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
-			h4.modal-title
-				=s("Amis")
-		.modal-body
-			.friend(ng-repeat='friend in friends' data-id='{{ friend.hashedId }}')
-				img(ng-src="{{ friend.thumb50 }}" alt="{{ friend.name.full }}" data-id="{{ friend.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ friend.name.full }}").thumb
-				a(ng-class="" href="/{{ friend.uniqueURLID }}")
-					.user-name
-						| {{ friend.name.full }}
-				.user-points
-					| {{ friend.points }}
-					=' '+s("points")
-				.cb
-			div(scroll-detect verify-to-load="friendRemaining()" gap="300" url="getLoadUrl()" offset="getfriendsOffset()" callback="loadfriendsList" additionnal-data="getAdditionnalData('" + profile.hashedId + "')" scrollable="#friend-list .modal-body")
-			+data('friendsPageCount', config.wornet.limits.friendsPageCount)
+    .modal-dialog: .modal-content
+        .modal-header
+            button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+            h4.modal-title
+                =s("Amis")
+        .modal-body
+            .friend(ng-repeat='friend in friends' data-id='{{ friend.hashedId }}')
+                img(ng-src="{{ friend.thumb50 }}" alt="{{ friend.name.full }}" data-id="{{ friend.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ friend.name.full }}").thumb
+                a(ng-class="" href="/{{ friend.uniqueURLID }}")
+                    .user-name
+                        | {{ friend.name.full }}
+                .user-points
+                    | {{ friend.points }}
+                    =' '+s("points")
+                .cb
+            div(scroll-detect verify-to-load="friendRemaining()" gap="300" url="getLoadUrl()" offset="getfriendsOffset()" callback="loadfriendsList" additionnal-data="getAdditionnalData('" + profile.hashedId + "')" scrollable="#friend-list .modal-body")
+            +data('friendsPageCount', config.wornet.limits.friendsPageCount)

@@ -1,459 +1,459 @@
 .wornet-navbar
-	font-size 17px
-	color white
-	border-bottom 0
+    font-size 17px
+    color white
+    border-bottom 0
 
-	a
-		color inherit
-		text-decoration none
-		display inline
-		transition(all .2s)
-		&:not(.banner):hover
-			background $darkOrange
+    a
+        color inherit
+        text-decoration none
+        display inline
+        transition(all .2s)
+        &:not(.banner):hover
+            background $darkOrange
 
-	h1
-		margin 4px 0 (- $headerHeight) 0
-		padding-left 30px
-		text-align center
+    h1
+        margin 4px 0 (- $headerHeight) 0
+        padding-left 30px
+        text-align center
 
 
 .wornet-navbar-fixed-top
-	fix()
-	top 0
-	right 0
-	left 0
-	z-index 1030
+    fix()
+    top 0
+    right 0
+    left 0
+    z-index 1030
 
 #wrap
 .wornet-navbar
-	transition margin-right .2s
+    transition margin-right .2s
 
-	&.opened-shutter
-		margin-right $shutterWidth
+    &.opened-shutter
+        margin-right $shutterWidth
 
 .wornet-navbar
-	font-size 14px
-	background $orange
-	height $headerHeight
+    font-size 14px
+    background $orange
+    height $headerHeight
 
-	.mainLinks
-		height $headerHeight
-		padding 0
-		ul
-			line-height $headerHeight
-			list-style none
-			padding 0
+    .mainLinks
+        height $headerHeight
+        padding 0
+        ul
+            line-height $headerHeight
+            list-style none
+            padding 0
 
-			&.user
-				padding 5px 0
-				li
-					height auto
-				a
-					display block
-					height auto
-					padding: 3px 20px;
+            &.user
+                padding 5px 0
+                li
+                    height auto
+                a
+                    display block
+                    height auto
+                    padding: 3px 20px;
 
 
-			li
-				&.left
-					float left
+            li
+                &.left
+                    float left
 
-				&.right
-					float right
+                &.right
+                    float right
 
-				a
-					display block
-					height $headerHeight
-					padding 0 15px
+                a
+                    display block
+                    height $headerHeight
+                    padding 0 15px
 
-					.halflings
-					.glyphicons
-						line-height $headerHeight
-						top 0
+                    .halflings
+                    .glyphicons
+                        line-height $headerHeight
+                        top 0
 
-	.container-fluid
-		padding 0
+    .container-fluid
+        padding 0
 
-	.open > a
-		background $darkOrange
+    .open > a
+        background $darkOrange
 
-	.dropdown-menu
-		margin-top 0
-		background $darkOrange
-		&.right
-			right 0
-			left auto
-		&.left
-			left 0
-			right auto
+    .dropdown-menu
+        margin-top 0
+        background $darkOrange
+        &.right
+            right 0
+            left auto
+        &.left
+            left 0
+            right auto
 
-		a
-			&:hover
-			&:focus
-			&:active
-				background lighten($darkOrange, 20%)
+        a
+            &:hover
+            &:focus
+            &:active
+                background lighten($darkOrange, 20%)
 
-		li a
-			color white
-			padding 3px 20px
-			display block
-			clear both
+        li a
+            color white
+            padding 3px 20px
+            display block
+            clear both
 
-	.banner
-		z-index 1
-		rel(1px, 0)
-		background none
+    .banner
+        z-index 1
+        rel(1px, 0)
+        background none
 
 #underbar
-	font-size 14px
-	background $nearlyBlack
-	box-shadow(inset 0 1px 4px -2px $black)
-	color white
-	height $headerHeight
-	margin-bottom $bigPadding
-	ul.navbar-right
-		margin-right 0
-	.navbar-form label
-		display block
-	.halflings
-	.glyphicons
-		color $lightOrange
-		&.certification-glyph
-			color $blue
-	.dropdown-menu
-	.open > a
-	a:hover
-	a:focus
-	a:active
-		text-decoration none
-		background $hoverGray
-	& li > a
-	.open > a
-		color white
-	& li > a
-		&:hover
-		&:focus
-		&:active
-			background lighten($hoverGray, 10%)
-	.date
-		color white
-		.halflings
-			color white
+    font-size 14px
+    background $nearlyBlack
+    box-shadow(inset 0 1px 4px -2px $black)
+    color white
+    height $headerHeight
+    margin-bottom $bigPadding
+    ul.navbar-right
+        margin-right 0
+    .navbar-form label
+        display block
+    .halflings
+    .glyphicons
+        color $lightOrange
+        &.certification-glyph
+            color $blue
+    .dropdown-menu
+    .open > a
+    a:hover
+    a:focus
+    a:active
+        text-decoration none
+        background $hoverGray
+    & li > a
+    .open > a
+        color white
+    & li > a
+        &:hover
+        &:focus
+        &:active
+            background lighten($hoverGray, 10%)
+    .date
+        color white
+        .halflings
+            color white
 
-	.dropdown-menu a
-		&:hover
-		&:focus
-		&:active
-			background lighten($hoverGray, 20%)
+    .dropdown-menu a
+        &:hover
+        &:focus
+        &:active
+            background lighten($hoverGray, 20%)
 
-	.loggedFriends-list a
-		padding-right $bigPadding * 2
+    .loggedFriends-list a
+        padding-right $bigPadding * 2
 
-	.divider
-		margin 0
+    .divider
+        margin 0
 
-	.notification-list
-		padding 0
+    .notification-list
+        padding 0
 
-	.notification-list a
-		padding-right $bigPadding * 2 + $smallPadding
-		height $notificationThumbHeight + $mainPadding
-		&.friend-ask
-			height $notificationThumbHeight + $bigPadding
-		&.read-all-notifs
-		&.activities
-			float right
-			height $notificationThumbHeight - $mainPadding
-			padding 3px 40px
-		.thumb
-			float left
-		span
-			font-size 14px
-		.notification-date
-			line-height $dateSize
-		.date
-			font-size $dateSize
-		.accept-friend
-			margin -15px 0 0 120px
-		.ignore-friend
-			margin -15px 0 0 0
+    .notification-list a
+        padding-right $bigPadding * 2 + $smallPadding
+        height $notificationThumbHeight + $mainPadding
+        &.friend-ask
+            height $notificationThumbHeight + $bigPadding
+        &.read-all-notifs
+        &.activities
+            float right
+            height $notificationThumbHeight - $mainPadding
+            padding 3px 40px
+        .thumb
+            float left
+        span
+            font-size 14px
+        .notification-date
+            line-height $dateSize
+        .date
+            font-size $dateSize
+        .accept-friend
+            margin -15px 0 0 120px
+        .ignore-friend
+            margin -15px 0 0 0
 
-	.select-chat-sound a
-		display inline
-		color $lightOrange
-		line-height 30px
-		padding 5px 30px
+    .select-chat-sound a
+        display inline
+        color $lightOrange
+        line-height 30px
+        padding 5px 30px
 
-		.halflings-ok-circle
-			color $nearlyBlack
-		.halflings
-			line-height 30px
-			top 0
+        .halflings-ok-circle
+            color $nearlyBlack
+        .halflings
+            line-height 30px
+            top 0
 
 .suggests
 #underbar .suggests
-	position relative
-	top -3px
+    position relative
+    top -3px
 
-	ul
-		display block
-		position absolute
-		padding 0 $mainPadding
-		background $ultraLight
-		box-shadow(inset 0 2px -2px $gray)
-		box-shadow(0 0 4px $darkGray)
-		width 100%
-		z-index 4
-		min-width 360px
-		@media (max-width: 360px)
-			min-width 0
+    ul
+        display block
+        position absolute
+        padding 0 $mainPadding
+        background $ultraLight
+        box-shadow(inset 0 2px -2px $gray)
+        box-shadow(0 0 4px $darkGray)
+        width 100%
+        z-index 4
+        min-width 360px
+        @media (max-width: 360px)
+            min-width 0
 
-		li
-			display block
-			clear both
+        li
+            display block
+            clear both
 
-			a
-				height $thumbHeight + 2 * $smallPadding
-				display block
-				padding 0
-				//line-height 58px
-				border-bottom 1px solid $gray
-				margin 0 0 -1px -1px
-				color $nearlyBlack
-				&:hover
-					background $lightGray
-				&.no-suggest
-					margin $mainPadding
-					height auto
+            a
+                height $thumbHeight + 2 * $smallPadding
+                display block
+                padding 0
+                //line-height 58px
+                border-bottom 1px solid $gray
+                margin 0 0 -1px -1px
+                color $nearlyBlack
+                &:hover
+                    background $lightGray
+                &.no-suggest
+                    margin $mainPadding
+                    height auto
 
-			a.suggest-action
-				text-align center
-				padding-top 15px
+            a.suggest-action
+                text-align center
+                padding-top 15px
 
-				.halflings
-					margin-left 0
+                .halflings
+                    margin-left 0
 
-			.user-name
-				margin-top $mainPadding
+            .user-name
+                margin-top $mainPadding
 
-			.user-points
-				font-size 10px
-				color $darkGray
+            .user-points
+                font-size 10px
+                color $darkGray
 
-		li:last-child a
-			border-bottom none
+        li:last-child a
+            border-bottom none
 
 .notifications
-	.read
-		background $nearlyBlack
-	.thumb
-		size($notificationThumbWidth, $notificationThumbHeight)
-		margin 0 5px 0 -5px
-	.pill
-		visibility hidden
+    .read
+        background $nearlyBlack
+    .thumb
+        size($notificationThumbWidth, $notificationThumbHeight)
+        margin 0 5px 0 -5px
+    .pill
+        visibility hidden
 
 .loggedFriends li
-	.thumb
-		float left
-		margin 0
-		size($notificationThumbWidth, $notificationThumbHeight)
-	.halflings
-		color #35AC19
+    .thumb
+        float left
+        margin 0
+        size($notificationThumbWidth, $notificationThumbHeight)
+    .halflings
+        color #35AC19
 
 .loggedFriends-list
 .notification-list
-	border-radius(0 0 2px 2px)
+    border-radius(0 0 2px 2px)
 
 .notification-list
 .notification-list-mobile
-	overflow-y auto
-	overflow-x hidden
+    overflow-y auto
+    overflow-x hidden
 
 .notification-list
-	max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
+    max-height (($notificationThumbHeight + $mainPadding) * $numberOfNoticeBeforeScrollBar) + (($notificationThumbHeight - $mainPadding) * 2) + $smallPadding
 
 .notification-list-mobile
-	max-height ((36px + 3px) * $numberOfNoticeBeforeScrollBar) + ((20px) * 2) + $mainPadding
-	@media (max-width: 321px)
-		max-height (36px * $iphone4NumberOfNoticeBeforeScrollBar) + 20px + $mainPadding
+    max-height ((36px + 3px) * $numberOfNoticeBeforeScrollBar) + ((20px) * 2) + $mainPadding
+    @media (max-width: 321px)
+        max-height (36px * $iphone4NumberOfNoticeBeforeScrollBar) + 20px + $mainPadding
 
 .loggedFriends-list
-	left 0
-	li a
-		line-height 35px
-		.halflings
-			line-height 35px
+    left 0
+    li a
+        line-height 35px
+        .halflings
+            line-height 35px
 
 @media (min-width: 768px)
-	.mobile-device
-	.mobile-notification-date
-		display none
-	.standard-device
-		display block
+    .mobile-device
+    .mobile-notification-date
+        display none
+    .standard-device
+        display block
 
-	.navbar-form
-		margin-bottom 0
-		margin-top 9px
-		border-top 0
-		width 33.33333333%
+    .navbar-form
+        margin-bottom 0
+        margin-top 9px
+        border-top 0
+        width 33.33333333%
 
-		label
-		.form-control
-			width 100%
+        label
+        .form-control
+            width 100%
 
-		.halflings
-			top 7px
-			margin-left -28px
-			line-height 22px
-		.suggests .halflings
-			top 0
+        .halflings
+            top 7px
+            margin-left -28px
+            line-height 22px
+        .suggests .halflings
+            top 0
 
 // @media (min-width: 768px) and (orientation: portrait)
-// 	.wornet-navbar
-// 		&.opened-shutter
-// 			margin 0
-// 		li.open-shutter
-// 			display none
-// 	#wrap.opened-shutter
-// 		margin 0
-// 	#shutter.opened-shutter
-// 		width 0
+//     .wornet-navbar
+//         &.opened-shutter
+//             margin 0
+//         li.open-shutter
+//             display none
+//     #wrap.opened-shutter
+//         margin 0
+//     #shutter.opened-shutter
+//         width 0
 
 @media (max-width: 767px)
-	.mobile-device
-		display block
-	.standard-device
-	ul.loggedFriends
-	ul.notifications
-	.notification-date
-		display none
+    .mobile-device
+        display block
+    .standard-device
+    ul.loggedFriends
+    ul.notifications
+    .notification-date
+        display none
 
-	.mobile-notification-date
-		display inline
+    .mobile-notification-date
+        display inline
 
-	.btn-notification-mobile
-		background url(png("W25x25"))
-		@media (-webkit-min-device-pixel-ratio:1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)
-			background url(png("W50x50"))
-			background-size(25px 25px)
-		size(25px, 25px)
-		margin-top 15px
+    .btn-notification-mobile
+        background url(png("W25x25"))
+        @media (-webkit-min-device-pixel-ratio:1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-resolution: 1.5dppx)
+            background url(png("W50x50"))
+            background-size(25px 25px)
+        size(25px, 25px)
+        margin-top 15px
 
-	.navbar-form
-		margin 0
+    .navbar-form
+        margin 0
 
-		.search
-			.halflings
-				margin 0 6px -999px
-				top -25px
-				float right
-				line-height 22px
+        .search
+            .halflings
+                margin 0 6px -999px
+                top -25px
+                float right
+                line-height 22px
 
-	.wornet-navbar
-		.mobile-device
-			text-align center
-			margin 0
-		.notifications-mobile .dropdown-menu>li>a
-			line-height $mobileNotificationTextSize
-		.dropdown-menu
-			width calc(100% - 10px)
-			margin 0 $smallPadding
-			&.notification-list-mobile
-				li
-					background-color $orange
-					&.read
-						background-color $darkOrange
-					&.activities-list
-					&.read-all
-						a
-							height 20px
-							float right
-			span
-				white-space pre-line
-				font-size $mobileNotificationTextSize
-			.date
-				font-size $mobileNotificationDateSize
-				color white
+    .wornet-navbar
+        .mobile-device
+            text-align center
+            margin 0
+        .notifications-mobile .dropdown-menu>li>a
+            line-height $mobileNotificationTextSize
+        .dropdown-menu
+            width calc(100% - 10px)
+            margin 0 $smallPadding
+            &.notification-list-mobile
+                li
+                    background-color $orange
+                    &.read
+                        background-color $darkOrange
+                    &.activities-list
+                    &.read-all
+                        a
+                            height 20px
+                            float right
+            span
+                white-space pre-line
+                font-size $mobileNotificationTextSize
+            .date
+                font-size $mobileNotificationDateSize
+                color white
 
-			.friend-ask
-				height 55px
+            .friend-ask
+                height 55px
 
-			.accept-friend
-			.ignore-friend
-				font-size 10px
-				height 20px
-				line-height 10px
-				float right
-				margin-top 15px
-			.ignore-friend
-				margin-right $smallPadding
+            .accept-friend
+            .ignore-friend
+                font-size 10px
+                height 20px
+                line-height 10px
+                float right
+                margin-top 15px
+            .ignore-friend
+                margin-right $smallPadding
 
-		.nav-icon
-			line-height $headerHeight
-			padding 0
-			position static
-			text-align center
+        .nav-icon
+            line-height $headerHeight
+            padding 0
+            position static
+            text-align center
 
-			a
-				display block
-				height $headerHeight
+            a
+                display block
+                height $headerHeight
 
-				.glyphicons
-					line-height $headerHeight
-					font-size 25px
+                .glyphicons
+                    line-height $headerHeight
+                    font-size 25px
 
-			.user
-				width 50%
+            .user
+                width 50%
 
-	.navthumb
-		overflow hidden
-		border-radius(100%)
-		size(50px, 50px)
+    .navthumb
+        overflow hidden
+        border-radius(100%)
+        size(50px, 50px)
 
-	.mobile-device
-		.halflings
-			line-height $headerHeight
-			font-size 25px
+    .mobile-device
+        .halflings
+            line-height $headerHeight
+            font-size 25px
 
-		.notification-list
-			.halflings
-				font-size $mobileNavDropdownGlyphSize
-				line-height $mobileNavDropdownGlyphSize
+        .notification-list
+            .halflings
+                font-size $mobileNavDropdownGlyphSize
+                line-height $mobileNavDropdownGlyphSize
 
-			.thumb
-				size($mobileNotificationThumbHeight, $mobileNotificationThumbWidth)
-				margin 0 5px 0 -5px
-		.loggedFriends-list
-			a
-				font-size $mobileNotificationTextSize
-				height 30px
-				span
-					line-height 25px
-				.halflings
-					font-size $mobileNavDropdownGlyphSize
+            .thumb
+                size($mobileNotificationThumbHeight, $mobileNotificationThumbWidth)
+                margin 0 5px 0 -5px
+        .loggedFriends-list
+            a
+                font-size $mobileNotificationTextSize
+                height 30px
+                span
+                    line-height 25px
+                .halflings
+                    font-size $mobileNavDropdownGlyphSize
 
-			.thumb
-				size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
-				margin 0 5px 0 -5px
+            .thumb
+                size($mobileNotificationThumbWidth, $mobileNotificationThumbWidth)
+                margin 0 5px 0 -5px
 
-	.mobile-pill
-		abs()
-		top 30px
-		font-size 8px
-		line-height 16px
+    .mobile-pill
+        abs()
+        top 30px
+        font-size 8px
+        line-height 16px
 
-	.notifications-mobile
-	.loggedFriends-mobile
-		padding 0
-		margin 0
-		list-style none
-		margin-right 15px
+    .notifications-mobile
+    .loggedFriends-mobile
+        padding 0
+        margin 0
+        list-style none
+        margin-right 15px
 
-	.loggedFriends-mobile .pill.mobile-pill
-		background-color $green
-		color $nearlyWhite
+    .loggedFriends-mobile .pill.mobile-pill
+        background-color $green
+        color $nearlyWhite
 
-	.notifications-list-mobile
-	.loggedFriends-mobile .loggedFriends-list
-		.halflings
-			font-size 14px
+    .notifications-list-mobile
+    .loggedFriends-mobile .loggedFriends-list
+        .halflings
+            font-size 14px

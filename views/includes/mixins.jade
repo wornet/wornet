@@ -1,120 +1,120 @@
 mixin ie(condition)
-	| <!--[!{condition}]>
-	block
-	| <![endif]-->
+    | <!--[!{condition}]>
+    block
+    | <![endif]-->
 
 mixin non-ie()
-	| <!--[if !IE]><!-->
-	block
-	| <!--<![endif]-->
+    | <!--[if !IE]><!-->
+    block
+    | <!--<![endif]-->
 
 mixin meta(name, content)
-	meta(name=name content=content)&attributes(attributes)
+    meta(name=name content=content)&attributes(attributes)
 
 mixin link(href, name)
-	a.link&attributes(attributes)(href=href)
-		=(name || href)
+    a.link&attributes(attributes)(href=href)
+        =(name || href)
 
 mixin script(src)
-	script(src=src)
+    script(src=src)
 
 mixin style(href)
-	link(media="all" rel="stylesheet" href=href)
+    link(media="all" rel="stylesheet" href=href)
 
 mixin redirectHome()
-	p
-		!=s("Vous allez être redirigé vers {link}", { link: jd('a(href="/").\n\t' + s("www.wornet.fr")) })
-	!=jd('script\n\t:coffee-script\n\t\tsetTimeout ->\n\t\t\tlocation.href = \'/\'\n\t\t, ' + config.wornet.redirectionDelay)
+    p
+        !=s("Vous allez être redirigé vers {link}", { link: jd('a(href="/").\n\t' + s("www.wornet.fr")) })
+    !=jd('script\n\t:coffee-script\n\t\tsetTimeout ->\n\t\t\tlocation.href = \'/\'\n\t\t, ' + config.wornet.redirectionDelay)
 
 mixin data(name, value)
-	!=data(name, value)
+    !=data(name, value)
 
 mixin csrf()
-	input(type="hidden" name="_csrf" value=_csrf)
+    input(type="hidden" name="_csrf" value=_csrf)
 
 mixin glyph(type)
-	span&attributes(attributes)(class="glyphicons glyphicons-" + type)
+    span&attributes(attributes)(class="glyphicons glyphicons-" + type)
 
 mixin half(type)
-	span&attributes(attributes)(class="halflings halflings-" + type)
+    span&attributes(attributes)(class="halflings halflings-" + type)
 
 mixin social(type)
-	span&attributes(attributes)(class="social social-" + type)
-	
+    span&attributes(attributes)(class="social social-" + type)
+    
 mixin filetype(type)
-	span&attributes(attributes)(class="filetypes filetypes-" + type)
+    span&attributes(attributes)(class="filetypes filetypes-" + type)
 
 mixin alert(data)
-	if data && typeof(data) === 'object'
-		each key in ['danger', 'success', 'info', 'warning']
-			if data[key]
-				each alert in data[key]
-					.alert.alert-dismissible(class="alert-" + key role=key)
-						if strval(alert).substr(0, 4) === '<ul>'
-							!=alert
-						else
-							=alert
+    if data && typeof(data) === 'object'
+        each key in ['danger', 'success', 'info', 'warning']
+            if data[key]
+                each alert in data[key]
+                    .alert.alert-dismissible(class="alert-" + key role=key)
+                        if strval(alert).substr(0, 4) === '<ul>'
+                            !=alert
+                        else
+                            =alert
 
 mixin form(url, method)
 
-	- var enctype, _method, maxsize = -1
-	unless method
-		- method = "POST"
-	- method = strtoupper(method)
-	if ["PUT", "DELETE"].indexOf(method) !== -1
-		- _method = method
-		- method = "POST"
-	if method == "FILE"
-		- enctype = "multipart/form-data"
-		- method = "POST"
+    - var enctype, _method, maxsize = -1
+    unless method
+        - method = "POST"
+    - method = strtoupper(method)
+    if ["PUT", "DELETE"].indexOf(method) !== -1
+        - _method = method
+        - method = "POST"
+    if method == "FILE"
+        - enctype = "multipart/form-data"
+        - method = "POST"
 
-	if attributes.maxsize
-		- maxsize = intval(attributes.maxsize)
-		- delete attributes.maxsize
-	else if enctype == "multipart/form-data"
-		- maxsize = config.wornet.upload.maxsize
+    if attributes.maxsize
+        - maxsize = intval(attributes.maxsize)
+        - delete attributes.maxsize
+    else if enctype == "multipart/form-data"
+        - maxsize = config.wornet.upload.maxsize
 
-	form&attributes(attributes)(action=url method=method enctype=enctype)
-		div
-			+csrf()
-			if _method
-				input(type="hidden" name="_method" value=_method)
-			if maxsize > 0
-				input(type="hidden" name="MAX_FILE_SIZE" value=maxsize)
-		block
+    form&attributes(attributes)(action=url method=method enctype=enctype)
+        div
+            +csrf()
+            if _method
+                input(type="hidden" name="_method" value=_method)
+            if maxsize > 0
+                input(type="hidden" name="MAX_FILE_SIZE" value=maxsize)
+        block
 
 mixin formControl(type)
-	if attributes.tooltip
-		.tooltip.tooltip-focus(class=(attributes.tooltip[2] || "left"))
-			.tooltip-arrow
-			.tooltip-inner
-				h4
-					!=attributes.tooltip[0]
-				p
-					!=attributes.tooltip[1]
-		- delete attributes.tooltip
-	if type !== "textarea"
-		input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
-	else
-		textarea&attributes(attributes).form-control(spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+    if attributes.tooltip
+        .tooltip.tooltip-focus(class=(attributes.tooltip[2] || "left"))
+            .tooltip-arrow
+            .tooltip-inner
+                h4
+                    !=attributes.tooltip[0]
+                p
+                    !=attributes.tooltip[1]
+        - delete attributes.tooltip
+    if type !== "textarea"
+        input&attributes(attributes).form-control(type=(type||"text") spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
+    else
+        textarea&attributes(attributes).form-control(spellcheck!=(attributes.spellcheck || "false") autocomplete=(attributes.autocomplete || "off"))
 
 mixin standardBlock(title)
-	.well.loading&attributes(attributes)
-		h3=strtoupper(title)
-		hr
-		block
+    .well.loading&attributes(attributes)
+        h3=strtoupper(title)
+        hr
+        block
 
 mixin simpleModal(title)
-	.modal.fade&attributes(attributes): .modal-dialog: .modal-content
-		.modal-header
-			button.close(type='button', data-dismiss='modal')
-				span(aria-hidden='true') ×
-				span.sr-only
-					=s("Fermer")
-			h4.modal-title
-				=title
-		.modal-body
-			block
-		.modal-footer
-			button.btn(type='button', data-dismiss='modal')
-				=s("Fermer")
+    .modal.fade&attributes(attributes): .modal-dialog: .modal-content
+        .modal-header
+            button.close(type='button', data-dismiss='modal')
+                span(aria-hidden='true') ×
+                span.sr-only
+                    =s("Fermer")
+            h4.modal-title
+                =title
+        .modal-body
+            block
+        .modal-footer
+            button.btn(type='button', data-dismiss='modal')
+                =s("Fermer")

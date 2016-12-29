@@ -1,4 +1,4 @@
 'use strict'
 
 app.onready ->
-	GeoPackage.init()
+    GeoPackage.init()

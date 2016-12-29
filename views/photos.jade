@@ -1,15 +1,15 @@
 extends layouts/wornet
 
 block append css
-	link(rel="stylesheet" href="//rawgithub.com/ashleydw/lightbox/master/dist/ekko-lightbox.css")
+    link(rel="stylesheet" href="//rawgithub.com/ashleydw/lightbox/master/dist/ekko-lightbox.css")
 
 block append js
-	script(type="text/javascript" src="//rawgithub.com/ashleydw/lightbox/master/dist/ekko-lightbox.js")
+    script(type="text/javascript" src="//rawgithub.com/ashleydw/lightbox/master/dist/ekko-lightbox.js")
 
 block body
-	if err
-		.alert.alert-danger
-			=err
-	each photo in photos
-		a(href=photo.photo data-toggle="lightbox" data-gallery="photos" + photo.album data-title=photo.name onclick="return false;")
-			img(src=photo.thumb alt=photo.name)
+    if err
+        .alert.alert-danger
+            =err
+    each photo in photos
+        a(href=photo.photo data-toggle="lightbox" data-gallery="photos" + photo.album data-title=photo.name onclick="return false;")
+            img(src=photo.thumb alt=photo.name)

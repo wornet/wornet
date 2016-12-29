@@ -1,18 +1,18 @@
 +standardBlock(s("Suggestions"))#public-suggestions(ng-controller="SuggestsCtrl" ng-init="publicUsers=" + JSON.stringify(publicUsers))
-	ul
-		li.cb(ng-if="!publicUsers || !publicUsers.length")
-			span
-				=s("Nous n'avons plus de compte à vous suggérer pour le moment.")
-		li.cb(ng-repeat="user in publicUsers" data-hashedId="{{ user.hashedId }}")
-			a(href="/{{ user.uniqueURLID }}" data-toggle="tooltip" data-placement="top" title="{{ user.fullName }}").thumb
-				img(ng-src="{{ user.thumb50 }}" alt="{{ user.fullName }}" data-id="{{ user.hashedId }}")
-			a.suggest-name(href="/{{ user.uniqueURLID }}")
-				| {{ user.name.full }}
-				| &nbsp;
-				+glyph('circle-ok').certification-glyph(ng-show="user.certifiedAccount")
-			a.hide-suggest(ng-click="hideSuggest(user.hashedId)")
-				| x
-			br
-			button.btn.follow-suggest(ng-click="follow(user.hashedId)")
-				=s("Suivre")
-		.cb
+    ul
+        li.cb(ng-if="!publicUsers || !publicUsers.length")
+            span
+                =s("Nous n'avons plus de compte à vous suggérer pour le moment.")
+        li.cb(ng-repeat="user in publicUsers" data-hashedId="{{ user.hashedId }}")
+            a(href="/{{ user.uniqueURLID }}" data-toggle="tooltip" data-placement="top" title="{{ user.fullName }}").thumb
+                img(ng-src="{{ user.thumb50 }}" alt="{{ user.fullName }}" data-id="{{ user.hashedId }}")
+            a.suggest-name(href="/{{ user.uniqueURLID }}")
+                | {{ user.name.full }}
+                | &nbsp;
+                +glyph('circle-ok').certification-glyph(ng-show="user.certifiedAccount")
+            a.hide-suggest(ng-click="hideSuggest(user.hashedId)")
+                | x
+            br
+            button.btn.follow-suggest(ng-click="follow(user.hashedId)")
+                =s("Suivre")
+        .cb

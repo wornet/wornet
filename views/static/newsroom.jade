@@ -1,97 +1,97 @@
 extends ../layouts/wornet
 
 block append css
-	link(rel="stylesheet" href=style("newsroom"))
+    link(rel="stylesheet" href=style("newsroom"))
 
 block append js
-	script(type="text/javascript" src="/components/jssor/js/jquery-1.9.1.min.js")
-	//- use jssor.slider.mini.js (39KB) or jssor.sliderc.mini.js (31KB, with caption, no slideshow) or jssor.sliders.mini.js (26KB, no caption, no slideshow) instead for release -->
-	//- jssor.slider.mini.js = jssor.sliderc.mini.js = jssor.sliders.mini.js = (jssor.core.js + jssor.utils.js + jssor.slider.js) -->
-	script(type="text/javascript" src="/components/jssor/js/jssor.core.js")
-	script(type="text/javascript" src="/components/jssor/js/jssor.utils.js")
-	script(type="text/javascript" src="/components/jssor/js/jssor.slider.js")
-	script(type="text/javascript" src="/components/jssor/newsroom-slider.js")
-	//- Jssor Slider Begin
-	//- You can move inline styles to css file or css block.
+    script(type="text/javascript" src="/components/jssor/js/jquery-1.9.1.min.js")
+    //- use jssor.slider.mini.js (39KB) or jssor.sliderc.mini.js (31KB, with caption, no slideshow) or jssor.sliders.mini.js (26KB, no caption, no slideshow) instead for release -->
+    //- jssor.slider.mini.js = jssor.sliderc.mini.js = jssor.sliders.mini.js = (jssor.core.js + jssor.utils.js + jssor.slider.js) -->
+    script(type="text/javascript" src="/components/jssor/js/jssor.core.js")
+    script(type="text/javascript" src="/components/jssor/js/jssor.utils.js")
+    script(type="text/javascript" src="/components/jssor/js/jssor.slider.js")
+    script(type="text/javascript" src="/components/jssor/newsroom-slider.js")
+    //- Jssor Slider Begin
+    //- You can move inline styles to css file or css block.
 
 block nav
-	nav#navbar.navbar.navbar-fixed-top
-		#navbar-left-menu.col-sm-3.col-xs-3
-			a(href="#")
-				=s("Accueil")
-			a(href="#")
-				=s("L'entreprise")
+    nav#navbar.navbar.navbar-fixed-top
+        #navbar-left-menu.col-sm-3.col-xs-3
+            a(href="#")
+                =s("Accueil")
+            a(href="#")
+                =s("L'entreprise")
 
-		#navbar-logo-content.col-sm-6.col-xs-4
+        #navbar-logo-content.col-sm-6.col-xs-4
 
-		#navbar-right-menu.col-sm-3.col-xs-5
+        #navbar-right-menu.col-sm-3.col-xs-5
 
-			a(href="#")
-				=s("Contactez-nous")
+            a(href="#")
+                =s("Contactez-nous")
 block body
-	#container
-		div(style="position: relative; top: 0px; left: 0px; width: 900px; height: 350px; ")#slider1_container
-			//- Slides Container
-			div(u="slides" style="position: absolute; left: 0px; top: 0px;  width:900px; height: 350px; overflow: hidden;")
-				div
-					img(u="image" src=png("slider-1"))
-				div
-					img(u="image" src="/components/jssor/img/photography/003.jpg")
-				div
-					img(u="image" src="/components/jssor/img/photography/004.jpg")
-				div
-					img(u="image" src="/components/jssor/img/photography/005.jpg")
-				div
-					img(u="image" src="/components/jssor/img/photography/006.jpg")
-				div
-					img(u="image" src="/components/jssor/img/photography/007.jpg")
-				div
-					img(u="image" src="/components/jssor/img/photography/008.jpg")
+    #container
+        div(style="position: relative; top: 0px; left: 0px; width: 900px; height: 350px; ")#slider1_container
+            //- Slides Container
+            div(u="slides" style="position: absolute; left: 0px; top: 0px;  width:900px; height: 350px; overflow: hidden;")
+                div
+                    img(u="image" src=png("slider-1"))
+                div
+                    img(u="image" src="/components/jssor/img/photography/003.jpg")
+                div
+                    img(u="image" src="/components/jssor/img/photography/004.jpg")
+                div
+                    img(u="image" src="/components/jssor/img/photography/005.jpg")
+                div
+                    img(u="image" src="/components/jssor/img/photography/006.jpg")
+                div
+                    img(u="image" src="/components/jssor/img/photography/007.jpg")
+                div
+                    img(u="image" src="/components/jssor/img/photography/008.jpg")
 
-			<!-- Arrow Left -->
-			span(u="arrowleft" style="width: 55px; height: 55px; top: 123px; left: 8px;").jssora03l
+            <!-- Arrow Left -->
+            span(u="arrowleft" style="width: 55px; height: 55px; top: 123px; left: 8px;").jssora03l
 
-			<!-- Arrow Right -->
-			span(u="arrowright" style="width: 55px; height: 55px; top: 123px; right: 8px").jssora03r
+            <!-- Arrow Right -->
+            span(u="arrowright" style="width: 55px; height: 55px; top: 123px; right: 8px").jssora03r
 
-		.content.row
-			.dialog.col-lg-8
-				h3
-					=s("Message du directeur")
-				.profile-content
-					img(src=jpg("mcostes") alt="Manuel Costes")
-					cite
-						=s("Manuel Costes")
-				#arrow
-				article
-					p
-						=s("Wornet vous donnera la possibilité de contrôler la porter de vos informations. Nous voulons imposer auprès des différents acteurs  du marché une certaine éthique dans l'utilisation des données personnelles. Nous ne souhaitons pas freiner l'innovation, au contraire, nous souhaitons simplement lui donner un cadre plus protecteur vis-à-vis des consommateurs.")
-					footer
-						cite(title="Manuel Costes est le fondateur de Wornet")
-							=s("Manuel Costes")
-						=s(", directeur, Wornet")
-			.articles-content.col-lg-4
-				h3
-					=s("Actualité")
-				#articles
-					a(href="#")
-						=s("ARTICLE 1")
-					a(href="#")
-						=s("ARTICLE 2")
-					a(href="#")
-						=s("ARTICLE 3")
-					a(href="#")
-						=s("ARTICLE 4")
-					a(href="#")
-						=s("ARTICLE 5")
-		#partenariat
-			h2
-				=s("Nos partenaires")
-			center
-					img(src=png("partenariat/logo1"))
+        .content.row
+            .dialog.col-lg-8
+                h3
+                    =s("Message du directeur")
+                .profile-content
+                    img(src=jpg("mcostes") alt="Manuel Costes")
+                    cite
+                        =s("Manuel Costes")
+                #arrow
+                article
+                    p
+                        =s("Wornet vous donnera la possibilité de contrôler la porter de vos informations. Nous voulons imposer auprès des différents acteurs  du marché une certaine éthique dans l'utilisation des données personnelles. Nous ne souhaitons pas freiner l'innovation, au contraire, nous souhaitons simplement lui donner un cadre plus protecteur vis-à-vis des consommateurs.")
+                    footer
+                        cite(title="Manuel Costes est le fondateur de Wornet")
+                            =s("Manuel Costes")
+                        =s(", directeur, Wornet")
+            .articles-content.col-lg-4
+                h3
+                    =s("Actualité")
+                #articles
+                    a(href="#")
+                        =s("ARTICLE 1")
+                    a(href="#")
+                        =s("ARTICLE 2")
+                    a(href="#")
+                        =s("ARTICLE 3")
+                    a(href="#")
+                        =s("ARTICLE 4")
+                    a(href="#")
+                        =s("ARTICLE 5")
+        #partenariat
+            h2
+                =s("Nos partenaires")
+            center
+                    img(src=png("partenariat/logo1"))
 
-					img(src=jpg("partenariat/logo2"))
+                    img(src=jpg("partenariat/logo2"))
 
-					img(src=jpg("partenariat/logo3"))
+                    img(src=jpg("partenariat/logo3"))
 
-					img(src=jpg("partenariat/logo4"))
+                    img(src=jpg("partenariat/logo4"))
