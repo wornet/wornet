@@ -1,122 +1,122 @@
 
 #wrap(class=((!statusCode || statusCode <= 200) && user && user.openedShutter ? 'opened-shutter' : null))
-	block nav
-	+ie('if lte IE 8')
-		.alert.alert-danger
-			- var upgradeUrl = "http://rowsehappy.com/"
-			- var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"
-			- var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Téléchargez un autre navigateur") + '"')
-			- var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("installez Google Chrome Frame") + '"')
-			!=s("Votre navigateur est obsolète. {upgradeYourBrowser} ou {installIeFrame} pour profiter de Wornet.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
-	noscript
-		.alert.alert-danger
-			=s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
+    block nav
+    +ie('if lte IE 8')
+        .alert.alert-danger
+            - var upgradeUrl = "http://rowsehappy.com/"
+            - var ieFrameUrl = "http://wbww.google.com/chromeframe/?redirect=true"
+            - var upgradeLink = jd('a(href="' + upgradeUrl + '")\n\t="' + s("Téléchargez un autre navigateur") + '"')
+            - var ieFrameLink = jd('a(href="' + ieFrameUrl + '")\n\t="' + s("installez Google Chrome Frame") + '"')
+            !=s("Votre navigateur est obsolète. {upgradeYourBrowser} ou {installIeFrame} pour profiter de Wornet.", { upgradeYourBrowser: upgradeLink, installIeFrame: ieFrameLink })
+    noscript
+        .alert.alert-danger
+            =s("Pour une meilleure utilisation de Wornet, activez JavaScript dans votre navigateur")
 
-	.errors
-		if profileErrors
-			each error in list(profileErrors)
-				.alert.alert-danger
-					=error
+    .errors
+        if profileErrors
+            each error in list(profileErrors)
+                .alert.alert-danger
+                    =error
 
-	div(role="main")
-		block body
+    div(role="main")
+        block body
 
 
 block footer
-	footer
-		.row.col-sm-8
-			a.link.col-sm-3.col-xs-4(href="http://blog.wornet.fr/")
-				=s("Blog")
-			//- a.link.col-sm-3.col-xs-6(href="/jobs")
-				=s("Offres d'emplois")
-			a.link.col-sm-3.col-xs-4(data-toggle="modal" data-target="#legals")
-				=s("Mentions légales")
-			span.copytag.col-sm-3.col-xs-4(data="right")
-				!=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
-				=mainTitle
-			a.google-link(href="/user/directory")
-				=s("Directory")
+    footer
+        .row.col-sm-8
+            a.link.col-sm-3.col-xs-4(href="http://blog.wornet.fr/")
+                =s("Blog")
+            //- a.link.col-sm-3.col-xs-6(href="/jobs")
+                =s("Offres d'emplois")
+            a.link.col-sm-3.col-xs-4(data-toggle="modal" data-target="#legals")
+                =s("Mentions légales")
+            span.copytag.col-sm-3.col-xs-4(data="right")
+                !=s("{copytag} {year} ", { copytag: "&#169;", year: Date.year() })
+                =mainTitle
+            a.google-link(href="/user/directory")
+                =s("Directory")
 
 
 block cookie-banner
-	if isNewVisitor
-		mixin cookiesWarning(fixed)
-			.cookiesWarning.well.glued(class=fixed ? 'navbar-fixed-bottom' : null)
-				.headband.navbar-left
-					=s("En poursuivant votre navigation sur notre site, vous acceptez notre utilisation des cookies.")
-				.navbar-right
-					a.btn.glued(data-toggle="modal" data-target="#cookiesInfo")
-						=s("En savoir plus")
-					| &nbsp;
-					a.btn.glued.ok
-						=s("OK")
-		block cookie-banner-under
-			+cookiesWarning()
-		block cookie-banner-over
-			+cookiesWarning(true)
-			#cookiesInfo.modal.fade: .modal-dialog: .modal-content
-				.modal-header
-					button.close(type='button', data-dismiss='modal')
-						span(aria-hidden='true') ×
-						span.sr-only
-							=s("Fermer")
-					h4.modal-title
-						=s("Informations sur les cookies")
-				.modal-body
-					h4 w
-					!=md(s("Le cookie **w** assure le bon fonctionnement du site, il vous permet de vous connecter à Wornet."))
-					!=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
-					!=md(s("Ce cookie expire (est supprimé) lorsque vous cliquez à la fin de votre session (sur la plupart des navigateurs paramétrés par défaut, cela correspond au moment ou vous quittez votre navigateur internet) ou lorsque vous videz manuellement vos cookies."))
+    if isNewVisitor
+        mixin cookiesWarning(fixed)
+            .cookiesWarning.well.glued(class=fixed ? 'navbar-fixed-bottom' : null)
+                .headband.navbar-left
+                    =s("En poursuivant votre navigation sur notre site, vous acceptez notre utilisation des cookies.")
+                .navbar-right
+                    a.btn.glued(data-toggle="modal" data-target="#cookiesInfo")
+                        =s("En savoir plus")
+                    | &nbsp;
+                    a.btn.glued.ok
+                        =s("OK")
+        block cookie-banner-under
+            +cookiesWarning()
+        block cookie-banner-over
+            +cookiesWarning(true)
+            #cookiesInfo.modal.fade: .modal-dialog: .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal')
+                        span(aria-hidden='true') ×
+                        span.sr-only
+                            =s("Fermer")
+                    h4.modal-title
+                        =s("Informations sur les cookies")
+                .modal-body
+                    h4 w
+                    !=md(s("Le cookie **w** assure le bon fonctionnement du site, il vous permet de vous connecter à Wornet."))
+                    !=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
+                    !=md(s("Ce cookie expire (est supprimé) lorsque vous cliquez à la fin de votre session (sur la plupart des navigateurs paramétrés par défaut, cela correspond au moment ou vous quittez votre navigateur internet) ou lorsque vous videz manuellement vos cookies."))
 
-					h4 r
-					!=md(s("Le cookie **r** permet de mémoriser votre choix lorsque vous cochez la case **Se souvenir de moi**."))
-					!=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
-					!=md(s("Ce cookie expire (est supprimé) après 6 mois ou lorsque vous videz manuellement vos cookies."))
+                    h4 r
+                    !=md(s("Le cookie **r** permet de mémoriser votre choix lorsque vous cochez la case **Se souvenir de moi**."))
+                    !=md(s("Ce cookie est réinitialisé lorsque vous cliquez sur **Déconnexion**."))
+                    !=md(s("Ce cookie expire (est supprimé) après 6 mois ou lorsque vous videz manuellement vos cookies."))
 
-					h4=s("Chiffrement des données")
-					!=md(s("Les cookies sont chiffrés de sorte que seul **Wornet** peut en déchiffrer le contenu."))
-					
-					h4=s("Autres données stockées localement")
-					!=md(s("Nous utilisons également le stockage local pour accélerer le fonctionnement de certains modules (chat, albums, etc.). Toutes les données personnelles sont supprimées lorsque vous cliquez sur **Déconnexion**. Les données stockées hors-connexion sont anonymisées."))
-				.modal-footer
-					button.btn(type='button', data-dismiss='modal')
-						=s("Fermer")
+                    h4=s("Chiffrement des données")
+                    !=md(s("Les cookies sont chiffrés de sorte que seul **Wornet** peut en déchiffrer le contenu."))
+                    
+                    h4=s("Autres données stockées localement")
+                    !=md(s("Nous utilisons également le stockage local pour accélerer le fonctionnement de certains modules (chat, albums, etc.). Toutes les données personnelles sont supprimées lorsque vous cliquez sur **Déconnexion**. Les données stockées hors-connexion sont anonymisées."))
+                .modal-footer
+                    button.btn(type='button', data-dismiss='modal')
+                        =s("Fermer")
 
 
 +simpleModal(s("Mentions légales"))#legals
-	div(lang-template="cgu")
-	
+    div(lang-template="cgu")
+    
 
 #contact.modal.fade: .modal-dialog: .modal-content
-	div(lang-template="contact")
+    div(lang-template="contact")
 
 if allData
-	each value, name in allData
-		+data(name, value)
+    each value, name in allData
+        +data(name, value)
 +data('thumbSizes', config.wornet.thumbSizes)
 if trackers.piwik || trackers.googleAnalytics
-	+data("vars", vars)
+    +data("vars", vars)
 if trackers.piwik
-	noscript: p: img(width="1" height="1" src=(trackers.piwik.host || '') + "/stat?idsite=" + (trackers.id || 1) style="border:0;" alt="")
-	+data("piwik", trackers.piwik)
+    noscript: p: img(width="1" height="1" src=(trackers.piwik.host || '') + "/stat?idsite=" + (trackers.id || 1) style="border:0;" alt="")
+    +data("piwik", trackers.piwik)
 if trackers.googleAnalytics
-	+data("googleAnalytics", trackers.googleAnalytics)
+    +data("googleAnalytics", trackers.googleAnalytics)
 
 //- .loader sera utilisé si je parviens à faire un système de navigation
 //- AJAX compatible Angular
 .loader.preload
 
 block js
-	each script in options.js().main
-		if typeof(script) === 'object'
-			if script[0] === 'non-ie'
-				+non-ie()
-					+script(script[1])
-			else if style[0] === 'ios-app'
-				if iosApp
-					+script(script[1])
-			else
-				+ie(script[0])
-					+script(script[1])
-		else
-			+script(script)
+    each script in options.js().main
+        if typeof(script) === 'object'
+            if script[0] === 'non-ie'
+                +non-ie()
+                    +script(script[1])
+            else if style[0] === 'ios-app'
+                if iosApp
+                    +script(script[1])
+            else
+                +ie(script[0])
+                    +script(script[1])
+        else
+            +script(script)

@@ -1,162 +1,162 @@
 
 .photo-options-media
-	float left
-	margin 0 $mainPadding 0 0
-	width 100%
+    float left
+    margin 0 $mainPadding 0 0
+    width 100%
 
-	.btn
-		margin $smallPadding 0 0
-		width 100%
+    .btn
+        margin $smallPadding 0 0
+        width 100%
 
 @media (max-width: 767px)
-	.photo-options-media .btn
-		width ($photoWidth / 2)
-	#profile-photo-media
-		size($photoWidth / 2, $photoHeight / 2)
-		.btn
-			width calc(100% - 8px)
-			i
-				display none
+    .photo-options-media .btn
+        width ($photoWidth / 2)
+    #profile-photo-media
+        size($photoWidth / 2, $photoHeight / 2)
+        .btn
+            width calc(100% - 8px)
+            i
+                display none
 
 @media (max-width: 423px)
-	.photo-options-media
-		float none
-		width ($photoWidth / 2)
-		margin 0 auto 10px
+    .photo-options-media
+        float none
+        width ($photoWidth / 2)
+        margin 0 auto 10px
 
 #add-profile-photo
-	display none
+    display none
 
 #profile-photo-media
-	size(100%, 50px)
-	rel()
+    size(100%, 50px)
+    rel()
 
-	span
-		margin-top $mainPadding
-		abs()
-		width 100%
-		left 0
+    span
+        margin-top $mainPadding
+        abs()
+        width 100%
+        left 0
 
-	.progress-radial
-	.progress-radial .overlay
-	img.upload-thumb
-	input.upload
-	.loader
-		abs()
-		left 0
-		size(100%)
+    .progress-radial
+    .progress-radial .overlay
+    img.upload-thumb
+    input.upload
+    .loader
+        abs()
+        left 0
+        size(100%)
 
-	input.upload
-		cursor pointer
-		opacity(0)
+    input.upload
+        cursor pointer
+        opacity(0)
 
-	.progress-radial
-	.progress-radial .overlay
-	img.upload-thumb
-		cursor pointer
-		if $photoRadius
-			border-radius($photoRadius)
-		transition(all .2s)
+    .progress-radial
+    .progress-radial .overlay
+    img.upload-thumb
+        cursor pointer
+        if $photoRadius
+            border-radius($photoRadius)
+        transition(all .2s)
 
-	img.upload-thumb
-		display none
+    img.upload-thumb
+        display none
 
-	.progress-radial
-		padding $progressRadialWidth
-		background-color $darkOrange
-		.overlay
-			rel()
-			background-color white
-			text-align center
-			vertical-align middle
+    .progress-radial
+        padding $progressRadialWidth
+        background-color $darkOrange
+        .overlay
+            rel()
+            background-color white
+            text-align center
+            vertical-align middle
 
 
 .album
-	// background $ultraLightOrange
-	// border-radius(4px)
-	width 100%
-	padding 0 $smallPadding $smallPadding 0
-	transition(.2s all)
-	margin 0 $mainPadding $mainPadding 0
-	//cursor pointer
-	float left
+    // background $ultraLightOrange
+    // border-radius(4px)
+    width 100%
+    padding 0 $smallPadding $smallPadding 0
+    transition(.2s all)
+    margin 0 $mainPadding $mainPadding 0
+    //cursor pointer
+    float left
 
-	//&:hover
-	//	background $lightOrange
+    //&:hover
+    //    background $lightOrange
 
-	h4
-		font-size 16px
-		margin 0 0 $smallPadding
+    h4
+        font-size 16px
+        margin 0 0 $smallPadding
 
-	.description
-		margin 2px 0 0
+    .description
+        margin 2px 0 0
 
-	.preview
-		size(100%)
-		padding 0
-		img
-			display block
-			float left
-			margin $smallPadding 0 0 $smallPadding
-			size($thumbWidth, $thumbHeight)
-			cursor pointer
-	.album-name
-		color $linkColor
+    .preview
+        size(100%)
+        padding 0
+        img
+            display block
+            float left
+            margin $smallPadding 0 0 $smallPadding
+            size($thumbWidth, $thumbHeight)
+            cursor pointer
+    .album-name
+        color $linkColor
 
 .album-block .medias img
-	size(90px)
+    size(90px)
 
 .medias
 .medias-block
-	h3
-		clear left
-		margin 0
-		padding-top $mainPadding
+    h3
+        clear left
+        margin 0
+        padding-top $mainPadding
 
-	img
-		width 100%
-		margin 0 $smallPadding $smallPadding 0
+    img
+        width 100%
+        margin 0 $smallPadding $smallPadding 0
 
-	img.video-preview
-		size(240px, 180px)
+    img.video-preview
+        size(240px, 180px)
 
-	a:not(.album-name, .album-number)
-		display block
-	a
-		color $linkColor
-		&.all-albums
-			float right
-		&.album-name
-			font-size 16px
+    a:not(.album-name, .album-number)
+        display block
+    a
+        color $linkColor
+        &.all-albums
+            float right
+        &.album-name
+            font-size 16px
 
 .medias-uploaded
-	img
-		size(90px)
-		margin 0 $smallPadding $smallPadding 0
+    img
+        size(90px)
+        margin 0 $smallPadding $smallPadding 0
 
 .media-image
-	rel()
+    rel()
 a.nb-image
-	display block
-	size(60px, 60px)
-	abs()
-	right 0
-	bottom 0
-	margin-bottom $smallPadding
-	line-height 60px
-	border-radius(5px, 0, 0, 0)
-	text-align center
-	background-color $nearlyWhite
-	opacity(0.85)
+    display block
+    size(60px, 60px)
+    abs()
+    right 0
+    bottom 0
+    margin-bottom $smallPadding
+    line-height 60px
+    border-radius(5px, 0, 0, 0)
+    text-align center
+    background-color $nearlyWhite
+    opacity(0.85)
 
 #all-albums
-	.preview img
-		size(90px)
+    .preview img
+        size(90px)
 
 @media (max-width: 991px)
-	.album
-		h4
-			font-size 13px
+    .album
+        h4
+            font-size 13px
 
-		.preview img
-			size(30px)
+        .preview img
+            size(30px)

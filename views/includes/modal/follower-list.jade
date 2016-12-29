@@ -1,18 +1,18 @@
 #follower-list.modal.fade.loading(role="dialog" aria-hidden="true" ng-controller="FollowerListCtrl" tabindex="-1")
-	.modal-dialog: .modal-content
-		.modal-header
-			button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
-			h4.modal-title
-				=s("Abonnés")
-		.modal-body
-			.follower(ng-repeat='follower in followers' data-id='{{ follower.hashedId }}')
-				img(ng-src="{{ follower.thumb50 }}" alt="{{ follower.name.full }}" data-id="{{ follower.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ follower.name.full }}").thumb
-				a(ng-class="" href="/{{ follower.uniqueURLID }}")
-					.user-name
-						| {{ follower.name.full }}
-				.user-points
-					| {{ follower.points }}
-					=' '+s("points")
-				.cb
-			div(scroll-detect verify-to-load="followerRemaining()" gap="300" url="getLoadUrl()" offset="getfollowersOffset()" callback="loadfollowersList" additionnal-data="getAdditionnalData('" + profile.hashedId + "')" scrollable="#follower-list .modal-body" )
-			+data('followersPageCount', config.wornet.limits.followersPageCount)
+    .modal-dialog: .modal-content
+        .modal-header
+            button.close(type="button" data-dismiss="modal" aria-label=s("Fermer")): span(aria-hidden='true') ×
+            h4.modal-title
+                =s("Abonnés")
+        .modal-body
+            .follower(ng-repeat='follower in followers' data-id='{{ follower.hashedId }}')
+                img(ng-src="{{ follower.thumb50 }}" alt="{{ follower.name.full }}" data-id="{{ follower.hashedId }}" data-toggle="tooltip" data-placement="top" title="{{ follower.name.full }}").thumb
+                a(ng-class="" href="/{{ follower.uniqueURLID }}")
+                    .user-name
+                        | {{ follower.name.full }}
+                .user-points
+                    | {{ follower.points }}
+                    =' '+s("points")
+                .cb
+            div(scroll-detect verify-to-load="followerRemaining()" gap="300" url="getLoadUrl()" offset="getfollowersOffset()" callback="loadfollowersList" additionnal-data="getAdditionnalData('" + profile.hashedId + "')" scrollable="#follower-list .modal-body" )
+            +data('followersPageCount', config.wornet.limits.followersPageCount)

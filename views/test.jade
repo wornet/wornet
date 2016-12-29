@@ -1,25 +1,25 @@
 include includes/mixins
 doctype html
 html
-	head
-		meta(charset="UTF-8")
-		title
-			=mainTitle
-		+meta("_csrf", _csrf)
-		link(rel="shortcut icon" href="/favicon.ico")
-		+style('/components/jasmine/css/jasmine.css')
-		style(type="text/css")
-			:stylus
-				iframe
-					display block
-					margin 0
-					padding 0
-					border none
-					width 800px
-					height 0
-	body
-		+script('/components/jasmine/js/jasmine.js')
-		+script('/components/jasmine/js/jasmine-html.js')
-		+script('/components/jasmine/js/boot.js')
-		+script('/components/jquery/js/jquery-2.js')
-		+script('/js/test.js') 
+    head
+        meta(charset="UTF-8")
+        title
+            =mainTitle
+        +meta("_csrf", _csrf)
+        link(rel="shortcut icon" href="/favicon.ico")
+        +style('/components/jasmine/css/jasmine.css')
+        style(type="text/css")
+            :stylus
+                iframe
+                    display block
+                    margin 0
+                    padding 0
+                    border none
+                    width 800px
+                    height 0
+    body
+        +script('/components/jasmine/js/jasmine.js')
+        +script('/components/jasmine/js/jasmine-html.js')
+        +script('/components/jasmine/js/boot.js')
+        +script('/components/jquery/js/jquery-2.js')
+        +script('/js/test.js') 

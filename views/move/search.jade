@@ -1,61 +1,61 @@
 extends layout
 
 block body
-	.well.move
-		.move-search-banner(ng-controller="MoveSearchCtrl")
-			h1
-				=s('Bougez avec Wornet').toUpperCase()
-			h3
-				=s("Le principe est simple : chacun propose des sorties qui l'intéressent en fonction de ses hobbies et ses projets.")
-			input.btn.create-event.open-event-form(data-toggle="modal" data-target="#modal-event-form" type="button" value=s('Créer un événement'))
-			.search-bloc.cb
-				.search-title
-					=s('Recherchez vos événements')
-				.search-form
-					+form()
-					.col-sm-6.tag-bloc
-						label
-							=s("Insérez vos tags : ")
-						ul#tag-list
-						label
-							=s("Tags les plus utilisés : ")
-						ul.tagit.popularTags
-							li.tagit-choice.ui-widget-content.ui-state-default.ui-corner-all.tagit-choice-editable(ng-repeat="tag in popularTags")
-								span.tagit-label(ng-bind-html="tag" ng-click="createTag(tag)")
-					.col-sm-3.location-bloc
-						+glyph('google-maps')
-						input.city(placeholder=s("Ville"))
-						input(placeholder=s("France (par défaut)"))
-						select.distance
-							option(value="")
-								=s('Distance')
-							each distance in config.wornet.geo.distances
-								option(value=distance)
-									=distance + s(' km')
-					.col-sm-3.date-bloc
-						+glyph('calendar')
-						+formControl(type="date" name="eventSearchDate" value=(new Date().toString('YYYY-MM-DD'))).search-date
-					input.btn.send-search(type="button" value=s('Rechercher'))
+    .well.move
+        .move-search-banner(ng-controller="MoveSearchCtrl")
+            h1
+                =s('Bougez avec Wornet').toUpperCase()
+            h3
+                =s("Le principe est simple : chacun propose des sorties qui l'intéressent en fonction de ses hobbies et ses projets.")
+            input.btn.create-event.open-event-form(data-toggle="modal" data-target="#modal-event-form" type="button" value=s('Créer un événement'))
+            .search-bloc.cb
+                .search-title
+                    =s('Recherchez vos événements')
+                .search-form
+                    +form()
+                    .col-sm-6.tag-bloc
+                        label
+                            =s("Insérez vos tags : ")
+                        ul#tag-list
+                        label
+                            =s("Tags les plus utilisés : ")
+                        ul.tagit.popularTags
+                            li.tagit-choice.ui-widget-content.ui-state-default.ui-corner-all.tagit-choice-editable(ng-repeat="tag in popularTags")
+                                span.tagit-label(ng-bind-html="tag" ng-click="createTag(tag)")
+                    .col-sm-3.location-bloc
+                        +glyph('google-maps')
+                        input.city(placeholder=s("Ville"))
+                        input(placeholder=s("France (par défaut)"))
+                        select.distance
+                            option(value="")
+                                =s('Distance')
+                            each distance in config.wornet.geo.distances
+                                option(value=distance)
+                                    =distance + s(' km')
+                    .col-sm-3.date-bloc
+                        +glyph('calendar')
+                        +formControl(type="date" name="eventSearchDate" value=(new Date().toString('YYYY-MM-DD'))).search-date
+                    input.btn.send-search(type="button" value=s('Rechercher'))
 
-			.themes.col-sm-12.cb
-				.col-sm-12.themes-title
-					h1
-						=s('Si vous sortiez ce week end ?')
-					h3
-						=s('Découvrez les événements les plus populaires de votre pays, de votre région ou votre ville.')
-				.col-xs-12.col-sm-6.sport
-					.theme-overlay
-						span
-							=s('Sport')
-				.col-xs-12.col-sm-6.music
-					.theme-overlay
-						span
-							=s('Musique')
-				.col-xs-12.col-sm-6.startup
-					.theme-overlay
-						span
-							=s('Startup')
-				.col-xs-12.col-sm-6.association
-					.theme-overlay
-						span
-							=s('Association')
+            .themes.col-sm-12.cb
+                .col-sm-12.themes-title
+                    h1
+                        =s('Si vous sortiez ce week end ?')
+                    h3
+                        =s('Découvrez les événements les plus populaires de votre pays, de votre région ou votre ville.')
+                .col-xs-12.col-sm-6.sport
+                    .theme-overlay
+                        span
+                            =s('Sport')
+                .col-xs-12.col-sm-6.music
+                    .theme-overlay
+                        span
+                            =s('Musique')
+                .col-xs-12.col-sm-6.startup
+                    .theme-overlay
+                        span
+                            =s('Startup')
+                .col-xs-12.col-sm-6.association
+                    .theme-overlay
+                        span
+                            =s('Association')

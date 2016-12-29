@@ -1,47 +1,47 @@
 
 meta(charset="UTF-8")
 title
-	block title
-		=mainTitle
+    block title
+        =mainTitle
 base(href="/")
 block meta
-	meta(http-equiv="X-UA-Compatible" content="IE=edge")
-	+meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
-	+meta("apple-mobile-web-app-capable", "yes")
-	+meta("format-detection", "telephone=no")
-	+meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture)…")
-	+meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
-	+meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
-	+meta("_csrf", _csrf)
-	+meta("facebook-image", "https://www.wornet.fr/img/wornet-thumb200.png")(property="og:image")
-	+meta("google-site-verification", "nZfteLZ64gML9RUcDzzFEgh6Rmgf6sWj-vM8oanlQl4")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    +meta("viewport", "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi")
+    +meta("apple-mobile-web-app-capable", "yes")
+    +meta("format-detection", "telephone=no")
+    +meta("description", "Wornet est un réseau social totalement repensé pour vous – et vos amis. Il intègre une plateforme de partage de contenu (Daily Capture)…")
+    +meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
+    +meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
+    +meta("_csrf", _csrf)
+    +meta("facebook-image", "https://www.wornet.fr/img/wornet-thumb200.png")(property="og:image")
+    +meta("google-site-verification", "nZfteLZ64gML9RUcDzzFEgh6Rmgf6sWj-vM8oanlQl4")
 block css
-	each style in options.css().main
-		if typeof(style) === 'object'
-			if style[0] === 'non-ie'
-				+non-ie()
-					+style(style[1])
-			else if style[0] === 'ios-app'
-				if iosApp
-					+style(style[1])
-			else
-				+ie(style[0])
-					+style(style[1])
-		else
-			+style(style)
+    each style in options.css().main
+        if typeof(style) === 'object'
+            if style[0] === 'non-ie'
+                +non-ie()
+                    +style(style[1])
+            else if style[0] === 'ios-app'
+                if iosApp
+                    +style(style[1])
+            else
+                +ie(style[0])
+                    +style(style[1])
+        else
+            +style(style)
 block link
-	link(rel="shortcut icon" href="/favicon.ico")
-	link(rel="apple-touch-icon" href=png("apple/touch-icon-iphone"))
-	link(rel="apple-touch-icon" sizes="76x76" href=png("apple/touch-icon-ipad"))
-	link(rel="apple-touch-icon" sizes="120x120" href=png("apple/touch-icon-iphone-retina"))
-	link(rel="apple-touch-icon" sizes="152x152" href=png("apple/touch-icon-ipad-retina"))
+    link(rel="shortcut icon" href="/favicon.ico")
+    link(rel="apple-touch-icon" href=png("apple/touch-icon-iphone"))
+    link(rel="apple-touch-icon" sizes="76x76" href=png("apple/touch-icon-ipad"))
+    link(rel="apple-touch-icon" sizes="120x120" href=png("apple/touch-icon-iphone-retina"))
+    link(rel="apple-touch-icon" sizes="152x152" href=png("apple/touch-icon-ipad-retina"))
 block id
-	+ie('if lte IE 8')
-		script
-			:coffee-script
-				((f) ->
-					f 'tabs'
-					f 'pane'
-					f 'ng-pluralize'
-				)(document.createElement)
+    +ie('if lte IE 8')
+        script
+            :coffee-script
+                ((f) ->
+                    f 'tabs'
+                    f 'pane'
+                    f 'ng-pluralize'
+                )(document.createElement)
 block head

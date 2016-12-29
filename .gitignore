@@ -8,3 +8,4 @@ node_modules/*
 views/testfb.jade
 Redis-server/*
 *.rdb
+processes-*.json

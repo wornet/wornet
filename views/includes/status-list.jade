@@ -1,189 +1,189 @@
 .status-block(ng-repeat="status in recentStatus" data-id="{{ status._id }}" ng-if="(status.images && status.images.length) || (status.links && status.links.length) || (status.videos && status.videos.length) || (status.content && status.content.length)")
-	a.google-link(ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
-	//- .nostyle(data-starpush="{{ status._id }}")
-	- var init = "status.edit = false;"
-	- init += "status.originalContent = status.content;"
-	.col-xs-12.share-message-block(ng-if="status.isAShare")
-		span
-			a(ng-bind="status.sharer.name.full" href="/{{ status.sharer.uniqueURLID }}")
-			| &nbsp;
-			=s("a partagé")
-			| &nbsp;
-			span(data-date="{{ status.shareDate }}" data-phrase="true")
-				| &nbsp;
-	.cb		
-	.aside.settings.continue(ng-init=init ng-if="status.author.hashedId && userConnected")
-		a.dropdown-toggle(data-toggle="dropdown")
-			+half('cog')
-		ul.dropdown-menu(role="menu")
-			li(ng-if="status.concernMe && status.isMine")
-				a.ajax(ng-click="toggleStatusState(status, true)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce contenu"))
-					+half('pencil')
-					| &nbsp; 
-					=s("Modifier")
-			li(ng-if="status.concernMe")
-				a.ajax(ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
-					+half('trash')
-					| &nbsp; 
-					=s("Supprimer")
-			li(ng-if="! status.reported")
-				a.ajax(href="/report/{{ status._id }}" ng-click="report(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
-					+half('exclamation-sign')
-					| &nbsp; 
-					=s("Signaler")
-	.aside.continue.settings(ng-if="! status.author.hashedId")
-		a.dropdown-toggle(data-toggle="dropdown")
-			+half('cog')
-		ul.dropdown-menu(role="menu")
-			li: a.ajax(ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
-				+half('trash')
-				| &nbsp; 
-				=s("Supprimer")
-	.status-author
-		.status-users-thumb
-			a(ng-href="/{{ status.author.uniqueURLID }}" ng-if="status.author.hashedId")
-				img(ng-src="{{ status.author.thumb50 }}" data-user-thumb="{{ status.author.hashedId }}" data-thumb-size="50")
-			a(ng-href="/{{ status.at.uniqueURLID }}" ng-if="status.at")
-				img(ng-src="{{ status.at.thumb50 }}" data-user-thumb="{{ status.at.hashedId }}" data-thumb-size="50")
-		div
-			+link("/{{ status.author.uniqueURLID }}", "{{ status.author.name.full }}")(ng-if="status.author.hashedId")
-			a(ng-if="! status.author.hashedId") {{ status.author.name.full }}
-		div(ng-if="status.at")
-			//- +half('chevron-right')
-			span.btn.icon-arrow-right
-			+link("/{{ status.at.uniqueURLID }}", "{{ status.at.name.full }}")
-	.date(data-date="{{ status.date }}" ng-if="status.author.hashedId")
-		|&nbsp;
-	.status-content
-		.alert.alert-info.glued(ng-if="status.status === 'blocked'")
-			=s("Ce contenu a été bloqué.")
-	.status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked' && !status.edit" ng-bind-html="status.content")
-	.status-content-edit(ng-if="status.edit")
-		+form()(ng-submit="status.edit = false; updateStatus(status); status.originalContent = status.content;").cb
-			textarea.form-control.counter(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5' maxlength=config.wornet.limits.displayStatusLength)
-			input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="toggleStatusState(status, false)" value=s("Annuler"))
-			input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
-	.medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
-		div(ng-if="status.images.length > 0")
-			//- h3(ng-if="status.album")
-			//- 	a.album-name(href="/user/album/{{ status.album }}")
-			//- 		+half('folder-open')
-			//- 		|&nbsp; {{ status.albumName }}
-			//- h3(ng-if="! status.album")
-			//- 	=s("Images")
-			.media-image(ng-repeat="image in status.images | orderBy: '-src'")
-				a(data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
-					img(ng-src="{{ image.src }}" alt="{{ image.name }}")
-				a.nb-image(ng-if="status.nbImages > 1" ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
-					span
-						| + {{ status.nbImages - 1 }}
-		div(ng-if="status.videos.length > 0")
-			//- h3=s("Vidéos")
-			div(ng-repeat="video in status.videos")
-				iframe.preview(ng-if="displayPlayer" ng-src="{{ video.href }}" frameborder="0" allowfullscreen resize-youtube-player)
-				//- a(ng-if="displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
-				//- 	=s("Plus")
-				a.mobile-video(ng-if="! displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
-					img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
-					+half('play')
-		div(ng-if="status.links.length > 0")
-			.status-link-preview-list(ng-if="status.links[0].metaData")
-				a.global-link-preview(ng-href="{{ status.links[0].https ? 'https' : 'http' }}://{{ status.links[0].url }}" target="_blank")
-					img.link-preview-image(ng-if="status.links[0].metaData.image" ng-src="{{ status.links[0].metaData.image }}")
-					span.link-preview-title(ng-bind-html="status.links[0].metaData.title")
-					br
-					span.link-preview-description(ng-bind-html="status.links[0].metaData.description")
-					.col-xs-12.status-link-preview-author
-						span.link-preview-link(ng-bind-html="status.links[0].metaData.link")
-						span.link-preview-author(ng-bind-html="status.links[0].metaData.author")
-					.cb
-			//- h3=s("Liens")
-			//- a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
-	.cb
-	.like-details(ng-if="status.nbLike")
-		.nb-like
-			| {{ nbLikeText(status) }}
-		.liker-photos(chunk-per-line chunk-width=30 adjust-chunks="adjustLikers('{{ status._id }}')")
-			a(ng-repeat="liker in status.likers" ng-href="/{{ liker.uniqueURLID }}")
-				img.likers-photo( ng-src="{{ liker.thumb50 }}" data-thumb-size="50"  title="{{ liker.name.full }}")
-			
-	div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends || status.isAShare || !userConnected)")
-		if config.wornet.comments.enabled || config.wornet.plusW.enabled
-			.col-xs-12.status-actions
-				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
-					if config.wornet.plusW.enabled
-						span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe, disabled: !userConnected }" ng-click="toggleLike(status)")
-				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
-					if config.wornet.comments.enabled
-						span.btn-action-comment(ng-click="toggleCommentBlock(status)")
-							span.btn.icon(ng-class="{ disabled: !userConnected }")
-				.col-xs-4(ng-if="isShareable(status)")
-					if config.wornet.comments.enabled
-						span.btn.btn-action-share(ng-click="share(status)" ng-class="{ disabled: !userConnected }")
-							span.icon
-								+glyph('share')
-			.col-xs-12.status-actions-text
-				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
-					if config.wornet.plusW.enabled
-						span.like-zone
-							//- =s("J'aime")
-							//- br
-							| {{ status.nbLike }}
-				div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
-					if config.wornet.comments.enabled
-						span.btn-action-comment(ng-click="toggleCommentBlock(status)")
-							span
-								//- | {{ nbCommentText(status) }}
-								//- br
-								| {{ status.nbComment }}
-				.col-xs-4(ng-if="isShareable(status)")
-					if config.wornet.shares.enabled
-						span.btn-action-share
-							span(ng-click="displaySharerList(status)")
-								//- | {{ nbShareText(status) }}
-								//- br
-								| {{ status.nbShare }}
-	
-			.cb
-		if config.wornet.comments.enabled
-			.comment-list(ng-if="status.comments && status.comments.length && status.commentList")
-				.comment-block(ng-repeat="comment in status.comments" data-data="{{ comment._id }}")
-					- var init = "comment.edit = false;"
-					- init += "comment.originalContent = comment.content;"
-					.aside.settings.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
-						a.dropdown-toggle(data-toggle="dropdown")
-							+half('cog')
-						ul.dropdown-menu(role="menu")
-							li(ng-if="comment.isMine")
-								a.ajax(non-block-click="toggleCommentState(comment)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
-									+half('pencil')
-									| &nbsp; 
-									=s("Modifier")
-							li(ng-if="comment.isMine || comment.onMyWall")
-								a.ajax(ng-click="deleteComment(comment)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce commentaire"))
-									+half('trash')
-									| &nbsp; 
-									=s("Supprimer")
-					.comment-author
-						img(ng-src="{{ comment.author.thumb50 }}" data-user-thumb="{{ comment.author.hashedId }}" data-thumb-size="50")
-						+link("/{{ comment.author.uniqueURLID }}", "{{ comment.author.name.full }}")
-					.date(data-date="{{ comment.date }}")
-						|&nbsp;
-					.comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content")
-					.comment-edit(ng-if="comment.edit")
-						+form()(ng-submit="updateComment(comment)").cb
-							textarea.form-control(focus ng-model='comment.content' placeholder=s("Commentaire..."))
-							input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; toggleCommentState(comment)" value=s("Annuler"))
-							input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
-					.cb
-			.comment-form(ng-if="status.commentForm")
-				+form()(ng-submit="sendComment(status)").cb
-					textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
-					input.btn.btn-primary(type="submit" value=s("Envoyer"))
-					input.btn.cancel(type="button" ng-click="toggleCommentBlock(status)" value=s("Annuler"))
+    a.google-link(ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
+    //- .nostyle(data-starpush="{{ status._id }}")
+    - var init = "status.edit = false;"
+    - init += "status.originalContent = status.content;"
+    .col-xs-12.share-message-block(ng-if="status.isAShare")
+        span
+            a(ng-bind="status.sharer.name.full" href="/{{ status.sharer.uniqueURLID }}")
+            | &nbsp;
+            =s("a partagé")
+            | &nbsp;
+            span(data-date="{{ status.shareDate }}" data-phrase="true")
+                | &nbsp;
+    .cb        
+    .aside.settings.continue(ng-init=init ng-if="status.author.hashedId && userConnected")
+        a.dropdown-toggle(data-toggle="dropdown")
+            +half('cog')
+        ul.dropdown-menu(role="menu")
+            li(ng-if="status.concernMe && status.isMine")
+                a.ajax(ng-click="toggleStatusState(status, true)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce contenu"))
+                    +half('pencil')
+                    | &nbsp; 
+                    =s("Modifier")
+            li(ng-if="status.concernMe")
+                a.ajax(ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
+                    +half('trash')
+                    | &nbsp; 
+                    =s("Supprimer")
+            li(ng-if="! status.reported")
+                a.ajax(href="/report/{{ status._id }}" ng-click="report(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Signaler ce contenu comme inapproprié"))
+                    +half('exclamation-sign')
+                    | &nbsp; 
+                    =s("Signaler")
+    .aside.continue.settings(ng-if="! status.author.hashedId")
+        a.dropdown-toggle(data-toggle="dropdown")
+            +half('cog')
+        ul.dropdown-menu(role="menu")
+            li: a.ajax(ng-click="delete(status, $event)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce contenu"))
+                +half('trash')
+                | &nbsp; 
+                =s("Supprimer")
+    .status-author
+        .status-users-thumb
+            a(ng-href="/{{ status.author.uniqueURLID }}" ng-if="status.author.hashedId")
+                img(ng-src="{{ status.author.thumb50 }}" data-user-thumb="{{ status.author.hashedId }}" data-thumb-size="50")
+            a(ng-href="/{{ status.at.uniqueURLID }}" ng-if="status.at")
+                img(ng-src="{{ status.at.thumb50 }}" data-user-thumb="{{ status.at.hashedId }}" data-thumb-size="50")
+        div
+            +link("/{{ status.author.uniqueURLID }}", "{{ status.author.name.full }}")(ng-if="status.author.hashedId")
+            a(ng-if="! status.author.hashedId") {{ status.author.name.full }}
+        div(ng-if="status.at")
+            //- +half('chevron-right')
+            span.btn.icon-arrow-right
+            +link("/{{ status.at.uniqueURLID }}", "{{ status.at.name.full }}")
+    .date(data-date="{{ status.date }}" ng-if="status.author.hashedId")
+        |&nbsp;
+    .status-content
+        .alert.alert-info.glued(ng-if="status.status === 'blocked'")
+            =s("Ce contenu a été bloqué.")
+    .status-content.word-wrap(ng-if="status.content && status.content.length && status.status !== 'blocked' && !status.edit" ng-bind-html="status.content")
+    .status-content-edit(ng-if="status.edit")
+        +form()(ng-submit="status.edit = false; updateStatus(status); status.originalContent = status.content;").cb
+            textarea.form-control.counter(focus ng-model='status.content' placeholder=s("Vous n'avez rien à dire ? :O") rows='5' maxlength=config.wornet.limits.displayStatusLength)
+            input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="toggleStatusState(status, false)" value=s("Annuler"))
+            input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
+    .medias(ng-if="status.status !== 'blocked' && (status.images.length > 0 || status.videos.length > 0 || status.links.length > 0)")
+        div(ng-if="status.images.length > 0")
+            //- h3(ng-if="status.album")
+            //-     a.album-name(href="/user/album/{{ status.album }}")
+            //-         +half('folder-open')
+            //-         |&nbsp; {{ status.albumName }}
+            //- h3(ng-if="! status.album")
+            //-     =s("Images")
+            .media-image(ng-repeat="image in status.images | orderBy: '-src'")
+                a(data-toggle="modal" data-target="#media-viewer" ng-click="loadMedia('image', image)")
+                    img(ng-src="{{ image.src }}" alt="{{ image.name }}")
+                a.nb-image(ng-if="status.nbImages > 1" ng-href="/user/status/{{ status.isAShare ? status.referencedStatus : status._id }}")
+                    span
+                        | + {{ status.nbImages - 1 }}
+        div(ng-if="status.videos.length > 0")
+            //- h3=s("Vidéos")
+            div(ng-repeat="video in status.videos")
+                iframe.preview(ng-if="displayPlayer" ng-src="{{ video.href }}" frameborder="0" allowfullscreen resize-youtube-player)
+                //- a(ng-if="displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
+                //-     =s("Plus")
+                a.mobile-video(ng-if="! displayPlayer" data-toggle="modal" data-target="#status-view" ng-click="loadMedia('video', video)")
+                    img.video-preview(ng-src="{{ thumbnail(video.href) }}" width="240" height="180")
+                    +half('play')
+        div(ng-if="status.links.length > 0")
+            .status-link-preview-list(ng-if="status.links[0].metaData")
+                a.global-link-preview(ng-href="{{ status.links[0].https ? 'https' : 'http' }}://{{ status.links[0].url }}" target="_blank")
+                    img.link-preview-image(ng-if="status.links[0].metaData.image" ng-src="{{ status.links[0].metaData.image }}")
+                    span.link-preview-title(ng-bind-html="status.links[0].metaData.title")
+                    br
+                    span.link-preview-description(ng-bind-html="status.links[0].metaData.description")
+                    .col-xs-12.status-link-preview-author
+                        span.link-preview-link(ng-bind-html="status.links[0].metaData.link")
+                        span.link-preview-author(ng-bind-html="status.links[0].metaData.author")
+                    .cb
+            //- h3=s("Liens")
+            //- a(ng-repeat="link in status.links" target="_blank" ng-href="{{ link.https ? 'https' : 'http' }}://{{ link.href }}") {{ link.href.substr(0, 34) + (link.href.length > 34 ? '...': '') }}
+    .cb
+    .like-details(ng-if="status.nbLike")
+        .nb-like
+            | {{ nbLikeText(status) }}
+        .liker-photos(chunk-per-line chunk-width=30 adjust-chunks="adjustLikers('{{ status._id }}')")
+            a(ng-repeat="liker in status.likers" ng-href="/{{ liker.uniqueURLID }}")
+                img.likers-photo( ng-src="{{ liker.thumb50 }}" data-thumb-size="50"  title="{{ liker.name.full }}")
+            
+    div(ng-if="status._id !== '" + StatusPackage.DEFAULT_STATUS_ID + "' && ( status.isPlaceFollowed || status.isMine || status.concernMe || status.isMineOrAFriends || status.isAShare || !userConnected)")
+        if config.wornet.comments.enabled || config.wornet.plusW.enabled
+            .col-xs-12.status-actions
+                div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+                    if config.wornet.plusW.enabled
+                        span.btn.btn-action-plus-w(ng-class="{ full: status.likedByMe, disabled: !userConnected }" ng-click="toggleLike(status)")
+                div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+                    if config.wornet.comments.enabled
+                        span.btn-action-comment(ng-click="toggleCommentBlock(status)")
+                            span.btn.icon(ng-class="{ disabled: !userConnected }")
+                .col-xs-4(ng-if="isShareable(status)")
+                    if config.wornet.comments.enabled
+                        span.btn.btn-action-share(ng-click="share(status)" ng-class="{ disabled: !userConnected }")
+                            span.icon
+                                +glyph('share')
+            .col-xs-12.status-actions-text
+                div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+                    if config.wornet.plusW.enabled
+                        span.like-zone
+                            //- =s("J'aime")
+                            //- br
+                            | {{ status.nbLike }}
+                div(ng-class='{ "col-xs-4": isShareable(status), "col-xs-6": !isShareable(status) }')
+                    if config.wornet.comments.enabled
+                        span.btn-action-comment(ng-click="toggleCommentBlock(status)")
+                            span
+                                //- | {{ nbCommentText(status) }}
+                                //- br
+                                | {{ status.nbComment }}
+                .col-xs-4(ng-if="isShareable(status)")
+                    if config.wornet.shares.enabled
+                        span.btn-action-share
+                            span(ng-click="displaySharerList(status)")
+                                //- | {{ nbShareText(status) }}
+                                //- br
+                                | {{ status.nbShare }}
+    
+            .cb
+        if config.wornet.comments.enabled
+            .comment-list(ng-if="status.comments && status.comments.length && status.commentList")
+                .comment-block(ng-repeat="comment in status.comments" data-data="{{ comment._id }}")
+                    - var init = "comment.edit = false;"
+                    - init += "comment.originalContent = comment.content;"
+                    .aside.settings.continue(ng-init=init ng-if="comment.author.hashedId && (comment.isMine || comment.onMyWall)")
+                        a.dropdown-toggle(data-toggle="dropdown")
+                            +half('cog')
+                        ul.dropdown-menu(role="menu")
+                            li(ng-if="comment.isMine")
+                                a.ajax(non-block-click="toggleCommentState(comment)" data-toggle="tooltip" data-placement="top" title=s("Modifier ce commentaire"))
+                                    +half('pencil')
+                                    | &nbsp; 
+                                    =s("Modifier")
+                            li(ng-if="comment.isMine || comment.onMyWall")
+                                a.ajax(ng-click="deleteComment(comment)" data-toggle="tooltip" data-placement="top" title=s("Supprimer ce commentaire"))
+                                    +half('trash')
+                                    | &nbsp; 
+                                    =s("Supprimer")
+                    .comment-author
+                        img(ng-src="{{ comment.author.thumb50 }}" data-user-thumb="{{ comment.author.hashedId }}" data-thumb-size="50")
+                        +link("/{{ comment.author.uniqueURLID }}", "{{ comment.author.name.full }}")
+                    .date(data-date="{{ comment.date }}")
+                        |&nbsp;
+                    .comment-content.word-wrap(ng-if="comment.content && comment.content.length && comment.status !== 'blocked' && !comment.edit" ng-bind-html="comment.content")
+                    .comment-edit(ng-if="comment.edit")
+                        +form()(ng-submit="updateComment(comment)").cb
+                            textarea.form-control(focus ng-model='comment.content' placeholder=s("Commentaire..."))
+                            input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click="comment.content = comment.originalContent; toggleCommentState(comment)" value=s("Annuler"))
+                            input.btn.col-xs-12.col-sm-6.fit.btn-primary(type="submit" value=s("Envoyer"))
+                    .cb
+            .comment-form(ng-if="status.commentForm")
+                +form()(ng-submit="sendComment(status)").cb
+                    textarea.form-control(focus ng-model='status.newComment.content' placeholder=s("Ajouter un commentaire..."))
+                    input.btn.btn-primary(type="submit" value=s("Envoyer"))
+                    input.btn.cancel(type="button" ng-click="toggleCommentBlock(status)" value=s("Annuler"))
 
 div(scroll-detect verify-to-load="statusRemaining()" gap="300" url="getLoadUrl()" offset="getStatusOffset()" callback="loadStatusList").status-loading
 +data('statusPageCount', config.wornet.limits.statusPageCount)
 
 if config.wornet.comments.enabled
-	+data('commentsEnabled', true)
+    +data('commentsEnabled', true)

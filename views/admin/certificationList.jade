@@ -1,38 +1,38 @@
 extends ../layouts/user
 
 block body
-	.container: .well.certification-admin(ng-controller="AdminCertificationCtrl" ng-init="certificationPending=" + JSON.stringify(certifications))
-		a(href="/admin/certification")
-			=s("Retour aux certifications")
-		h2
-			if isPendingPage
-				=s("Demandes de certification")
-			else
-				=s("Liste des certificats distribués")
-		
-		br
-		#certification.modal.fade: .modal-dialog: .modal-content
-			include ../includes/certification-form
-		div.errors-certification
-		table.certification-table
-			tr
-				th
-					=s("Compte public certifié")
-				th
-					=s("Récapitulatif des informations transmises")
-				th
-					=s("Action")
-			for certif in certifications
-				tr(data-certif-id='#{certif._id}')
-					td
-						a(target="_blank" href="/" + certif.user.uniqueURLID)
-							=certif.user.name.full
-					td
-						a(ng-click="loadCertif('" + certif._id + "')")
-							=("Voir le formulaire")
-					td
-						if isPendingPage
-							a(ng-click="acceptCertification('" + certif._id + "')")
-								+glyph('circle-ok')
-						a(ng-click="removeCertification('" + certif._id + "')")
-							+glyph('circle-remove')
+    .container: .well.certification-admin(ng-controller="AdminCertificationCtrl" ng-init="certificationPending=" + JSON.stringify(certifications))
+        a(href="/admin/certification")
+            =s("Retour aux certifications")
+        h2
+            if isPendingPage
+                =s("Demandes de certification")
+            else
+                =s("Liste des certificats distribués")
+        
+        br
+        #certification.modal.fade: .modal-dialog: .modal-content
+            include ../includes/certification-form
+        div.errors-certification
+        table.certification-table
+            tr
+                th
+                    =s("Compte public certifié")
+                th
+                    =s("Récapitulatif des informations transmises")
+                th
+                    =s("Action")
+            for certif in certifications
+                tr(data-certif-id='#{certif._id}')
+                    td
+                        a(target="_blank" href="/" + certif.user.uniqueURLID)
+                            =certif.user.name.full
+                    td
+                        a(ng-click="loadCertif('" + certif._id + "')")
+                            =("Voir le formulaire")
+                    td
+                        if isPendingPage
+                            a(ng-click="acceptCertification('" + certif._id + "')")
+                                +glyph('circle-ok')
+                        a(ng-click="removeCertification('" + certif._id + "')")
+                            +glyph('circle-remove')

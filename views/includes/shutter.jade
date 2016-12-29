@@ -1,36 +1,36 @@
 #shutter(class=(user && user.openedShutter ? 'opened-shutter' : null)): .inner-shutter
-	ul.nav: li: a(href="/user/settings")
-		=s("Paramètres")
-		| &nbsp; 
-		+half('cog')
+    ul.nav: li: a(href="/user/settings")
+        =s("Paramètres")
+        | &nbsp; 
+        +half('cog')
 
-	if user
-		- var href = user.uniqueURLID
-	else
-		- var href = ""
-	a(href="/" + href)
-		+half('user')
-		| &nbsp; 
-		=s("Espace personnel")
+    if user
+        - var href = user.uniqueURLID
+    else
+        - var href = ""
+    a(href="/" + href)
+        +half('user')
+        | &nbsp; 
+        =s("Espace personnel")
 
-	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2016-2017"))
-		+half('envelope')
-		| &nbsp; 
-		=s("Espace professionnel")
+    a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2016-2017"))
+        +half('envelope')
+        | &nbsp; 
+        =s("Espace professionnel")
 
-	a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2017-2018"))
-		+half('glyph-camera')
-		| &nbsp; 
-		=s("Dailycapture")
+    a(data-toggle="tooltip" data-placement="top" title=s("Arrivée prévue en 2017-2018"))
+        +half('glyph-camera')
+        | &nbsp; 
+        =s("Dailycapture")
 
-	.footer
-		!=s("{copyright} Wornet {year}", { copyright: '&copy;', year: Date.year() })
-		| &nbsp;| &nbsp;
-		a(href="http://blog.wornet.fr/")
-			=s("Blog")
-		| &nbsp;| &nbsp;
-		a.legals(data-toggle="modal" data-target="#legals")
-			=s("Mentions légales")
-		| &nbsp;| &nbsp;
-		a.contact(data-toggle="modal" data-target="#contact")
-			=s("Nous contacter")
+    .footer
+        !=s("{copyright} Wornet {year}", { copyright: '&copy;', year: Date.year() })
+        | &nbsp;| &nbsp;
+        a(href="http://blog.wornet.fr/")
+            =s("Blog")
+        | &nbsp;| &nbsp;
+        a.legals(data-toggle="modal" data-target="#legals")
+            =s("Mentions légales")
+        | &nbsp;| &nbsp;
+        a.contact(data-toggle="modal" data-target="#contact")
+            =s("Nous contacter")

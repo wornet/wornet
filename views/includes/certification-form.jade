@@ -1,80 +1,80 @@
 div#certification(ng-controller="CertificationCtrl")
-	.modal-header
-		button.close(type='button', data-dismiss='modal')
-			span(aria-hidden='true') ×
-			span.sr-only
-				=s("Fermer")
-		h4.modal-title
-			=s("Certification")
+    .modal-header
+        button.close(type='button', data-dismiss='modal')
+            span(aria-hidden='true') ×
+            span.sr-only
+                =s("Fermer")
+        h4.modal-title
+            =s("Certification")
 
-	.modal-body
-		#certification-error.alert.alert-danger
-		+form("/user/certification", "FILE")#certification-form
-			label
-				span
-					=userTexts.userType
-				select.user-type(name="type" ng-change="toggleForm()" ng-model="certification.userType")
-					option(value="particular" selected)
-						=s("Un particulier")
-					option(value="business")
-						=s("Une entreprise")
-					option(value="association")
-						=s("Une association")
-			label.particulier
-				span
-					=userTexts.firstName
-				+formControl.firstName(name="name.first" required ng-model="certification.firstName")
-			label.particulier
-				span
-					=userTexts.lastName
-				+formControl.lastName(name="name.last" required ng-model="certification.lastName")
-			label.particulier
-				span
-					=userTexts.email
-				+formControl.email(autocomplete="off" name="email" pattern=pattern('email') required ng-model="certification.email")
-			label.particulier
-				span
-					=userTexts.telNumber
-				+formControl.telNumber(autocomplete="off" name="telephone" required ng-model="certification.telephone")
-			
-			//- ENTREPRISE
-			label.entreprise
-				span.entreprise-only
-					=userTexts.entrepriseName
-				span.association-only
-					=userTexts.associationName
-				+formControl.businessName(name="entrepriseName" required ng-model="certification.entrepriseName")
-			label.entreprise
-				span
-					=userTexts.entrepriseRepresentFirstName
-				+formControl.firstName(name="entrepriseRepresentFirstName" required ng-model="certification.firstName")
-			label.entreprise
-				span
-					=userTexts.entrepriseRepresentLastName
-				+formControl.lastName(name="entrepriseName" required ng-model="certification.lastName")
-			label.entreprise
-				span
-					=userTexts.email
-				+formControl.email(autocomplete="off" name="email" pattern=pattern('email') required ng-model="certification.email")
-			label.entreprise
-				span
-					=userTexts.telNumber
-				+formControl.telNumber(name="entrepriseTelephone" required ng-model="certification.telephone")
-			textarea.entreprise.form-control.message(name="message" autocomplete="off" title=title ng-model="certification.message" placeholder=s("Remarques...") rows="5")
-			br
-			label
-				span.particulier
-					=userTexts.identityCard
-				span.entreprise.entreprise-only
-					=userTexts.kbis
-				span.entreprise.association-only
-					=userTexts.recepEnreg
-				input.proof(type="file" name="proof")
-				a.proof-visu(target="_blank" href="")
-				
-			
-	.modal-footer
-		button.btn(type='button', data-dismiss='modal')
-			=s("Annuler")
-		button.btn.btn-primary(type='submit' ng-click="send()")
-			=s("Envoyer")
+    .modal-body
+        #certification-error.alert.alert-danger
+        +form("/user/certification", "FILE")#certification-form
+            label
+                span
+                    =userTexts.userType
+                select.user-type(name="type" ng-change="toggleForm()" ng-model="certification.userType")
+                    option(value="particular" selected)
+                        =s("Un particulier")
+                    option(value="business")
+                        =s("Une entreprise")
+                    option(value="association")
+                        =s("Une association")
+            label.particulier
+                span
+                    =userTexts.firstName
+                +formControl.firstName(name="name.first" required ng-model="certification.firstName")
+            label.particulier
+                span
+                    =userTexts.lastName
+                +formControl.lastName(name="name.last" required ng-model="certification.lastName")
+            label.particulier
+                span
+                    =userTexts.email
+                +formControl.email(autocomplete="off" name="email" pattern=pattern('email') required ng-model="certification.email")
+            label.particulier
+                span
+                    =userTexts.telNumber
+                +formControl.telNumber(autocomplete="off" name="telephone" required ng-model="certification.telephone")
+            
+            //- ENTREPRISE
+            label.entreprise
+                span.entreprise-only
+                    =userTexts.entrepriseName
+                span.association-only
+                    =userTexts.associationName
+                +formControl.businessName(name="entrepriseName" required ng-model="certification.entrepriseName")
+            label.entreprise
+                span
+                    =userTexts.entrepriseRepresentFirstName
+                +formControl.firstName(name="entrepriseRepresentFirstName" required ng-model="certification.firstName")
+            label.entreprise
+                span
+                    =userTexts.entrepriseRepresentLastName
+                +formControl.lastName(name="entrepriseName" required ng-model="certification.lastName")
+            label.entreprise
+                span
+                    =userTexts.email
+                +formControl.email(autocomplete="off" name="email" pattern=pattern('email') required ng-model="certification.email")
+            label.entreprise
+                span
+                    =userTexts.telNumber
+                +formControl.telNumber(name="entrepriseTelephone" required ng-model="certification.telephone")
+            textarea.entreprise.form-control.message(name="message" autocomplete="off" title=title ng-model="certification.message" placeholder=s("Remarques...") rows="5")
+            br
+            label
+                span.particulier
+                    =userTexts.identityCard
+                span.entreprise.entreprise-only
+                    =userTexts.kbis
+                span.entreprise.association-only
+                    =userTexts.recepEnreg
+                input.proof(type="file" name="proof")
+                a.proof-visu(target="_blank" href="")
+                
+            
+    .modal-footer
+        button.btn(type='button', data-dismiss='modal')
+            =s("Annuler")
+        button.btn.btn-primary(type='submit' ng-click="send()")
+            =s("Envoyer")

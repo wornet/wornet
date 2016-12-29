@@ -1,21 +1,21 @@
 #asks-for-friend
-	each friend, id in friendAsks
-		if friend.askedTo
-			.alert.alert-success.friend-ask(data-id=id)
-				a(href="/" + friend.uniqueURLID)
-					img(src=friend.thumb50 alt=friend.name.full data-id=friend.hashedId).thumb
-				- var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
-				.shift
-					i.date(data-date=trim(Date.fromId(id), '"'))
-						|&nbsp;
-					br
-					!=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
-					br
-					span.btn.accept-friend
-						=s("Accepter")
-					| &nbsp; 
-					span.btn.ignore-friend
-						=s("Ignorer")
-				//-.if-accepted
-				//-	!=s("Vous êtes dorénavant ami avec {username} !", dataWithUser)
-				.cb
+    each friend, id in friendAsks
+        if friend.askedTo
+            .alert.alert-success.friend-ask(data-id=id)
+                a(href="/" + friend.uniqueURLID)
+                    img(src=friend.thumb50 alt=friend.name.full data-id=friend.hashedId).thumb
+                - var dataWithUser = { username: jd('span.username ' + ucfirst(friend.name.full)) }
+                .shift
+                    i.date(data-date=trim(Date.fromId(id), '"'))
+                        |&nbsp;
+                    br
+                    !=s("{username} souhaite vous ajouter à ses amis.", dataWithUser)
+                    br
+                    span.btn.accept-friend
+                        =s("Accepter")
+                    | &nbsp; 
+                    span.btn.ignore-friend
+                        =s("Ignorer")
+                //-.if-accepted
+                //-    !=s("Vous êtes dorénavant ami avec {username} !", dataWithUser)
+                .cb

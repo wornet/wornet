@@ -1,5 +1,5 @@
 .well.loading.loading-big-height.fit-to-bottom.macro.all-status-block(ng-controller="StatusCtrl" ng-init="userConnected=" + !!user + ";myPublicInfos=" + JSON.stringify(myPublicInfos))
-	.cb
-	if isMe || (isAFriend && profile.allowFriendPostOnMe)
-		include ../includes/status-form.jade
-	include ../includes/status-list.jade
+    .cb
+    if isMe || (isAFriend && profile.allowFriendPostOnMe)
+        include ../includes/status-form.jade
+    include ../includes/status-list.jade

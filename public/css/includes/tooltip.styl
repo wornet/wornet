@@ -4,62 +4,62 @@
 
 // Infobulles (tooltip)
 .tooltip.fade.left.in
-	rel(0, 0)
-	width 0
+    rel(0, 0)
+    width 0
 
 .tooltip.top
-	margin-right -40px
+    margin-right -40px
 
 .tooltip-focus .tooltip-inner
-	text-align left
-	width $tooltipWidth
-	max-width $tooltipWidth - 5
+    text-align left
+    width $tooltipWidth
+    max-width $tooltipWidth - 5
 
 .tooltip-focus
-	display none
-	width $tooltipWidth
+    display none
+    width $tooltipWidth
 
 .tooltip.tooltip-focus.left .tooltip-arrow
 .tooltip.tooltip-focus.right .tooltip-arrow
-	margin-right -5px
-	top 15px
+    margin-right -5px
+    top 15px
 
 .tooltip-focus.left
-	margin-left - $tooltipWidth - $mainPadding
+    margin-left - $tooltipWidth - $mainPadding
 
 .tooltip-focus.right
-	right $mainPadding - $tooltipWidth
+    right $mainPadding - $tooltipWidth
 
 .tooltip.tooltip-focus.bottom
-	margin-top 28px
+    margin-top 28px
 
 .tooltip-inner
-	padding 0
-	background white
-	border 1px solid gray
-	// border-radius(5px)
-	border-right 1px solid gray
-	color $darkOrange
-	padding 2px 4px
+    padding 0
+    background white
+    border 1px solid gray
+    // border-radius(5px)
+    border-right 1px solid gray
+    color $darkOrange
+    padding 2px 4px
 
-	p
-		padding 6px 10px
-		margin -2px -4px
-	h4
-		padding 3px 10px 1px 35px
-		margin -2px -4px 0
-		color #fff
-		fonts $fonts 17px bold
-		background $orange url(png(i)) no-repeat 0px center
-		background-size(40px 40px)
-		border-bottom 1px solid gray
-		// border-radius(5px 5px 1px 1px)
+    p
+        padding 6px 10px
+        margin -2px -4px
+    h4
+        padding 3px 10px 1px 35px
+        margin -2px -4px 0
+        color #fff
+        fonts $fonts 17px bold
+        background $orange url(png(i)) no-repeat 0px center
+        background-size(40px 40px)
+        border-bottom 1px solid gray
+        // border-radius(5px 5px 1px 1px)
 
 .static-tooltip
-	position relative
+    position relative
 
-	.tooltip
-		opacity(1)
+    .tooltip
+        opacity(1)
 
-		&.top
-			bottom 0
+        &.top
+            bottom 0

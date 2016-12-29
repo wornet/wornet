@@ -1,3 +1,3 @@
 # Errors codes
 module.exports =
-	DUPLICATE_KEY: 11000
+    DUPLICATE_KEY: 11000

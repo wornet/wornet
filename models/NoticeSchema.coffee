@@ -1,38 +1,38 @@
 'use strict'
 
 noticeSchema = OwnedSchema.extend
-	content:
-		type: String
-		required: true
-		trim: true
-	status: readOrUnread.type
-	type:
-		type: String
-	launcher:
-		type: ObjectId
-		ref: 'UserSchema'
-	attachedStatus:
-		type: ObjectId
-		ref: 'StatusSchema'
-	place:
-		type: ObjectId
-		ref: 'UserSchema'
-	originService:
-		type: 'String'
-		enum: [
-			'espacePersonnel'
-			'espaceProfessionnel'
-			'dailyCapture'
-			'bouger'
-		]
-		default: 'espacePersonnel'
-	count:
-		type: Number
+    content:
+        type: String
+        required: true
+        trim: true
+    status: readOrUnread.type
+    type:
+        type: String
+    launcher:
+        type: ObjectId
+        ref: 'UserSchema'
+    attachedStatus:
+        type: ObjectId
+        ref: 'StatusSchema'
+    place:
+        type: ObjectId
+        ref: 'UserSchema'
+    originService:
+        type: 'String'
+        enum: [
+            'espacePersonnel'
+            'espaceProfessionnel'
+            'dailyCapture'
+            'bouger'
+        ]
+        default: 'espacePersonnel'
+    count:
+        type: Number
 
 noticeSchema.virtual('isUnread').get ->
-	@status is readOrUnread.unread
+    @status is readOrUnread.unread
 
 noticeSchema.virtual('isRead').get ->
-	! @isUnread
+    ! @isUnread
 
 module.exports = noticeSchema

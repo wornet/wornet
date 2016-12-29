@@ -6,7 +6,7 @@
 ###
 
 BaseSchema = ->
-	throw new Error "BaseSchema is an abstract class and cannot be instancied"
+    throw new Error "BaseSchema is an abstract class and cannot be instancied"
 
 ###
 @abstract
@@ -14,10 +14,10 @@ BaseSchema = ->
 ###
 
 BaseSchema.extend = (columns, options) ->
-	schema = new Schema columns, options
+    schema = new Schema columns, options
 
-	schema.plugin require '../plugins/createdAt'
-	schema.plugin require '../plugins/hashedId'
-	schema
+    schema.plugin require '../plugins/createdAt'
+    schema.plugin require '../plugins/hashedId'
+    schema
 
 module.exports = BaseSchema

@@ -1,49 +1,49 @@
 extends layouts/user
 
 block body
-	if err
-		.alert.alert-danger
-			=err
-	else
-		.container(ng-app)
-			section#directives-calendar(ng-controller='CalendarCtrl')
-				.well(class=(user && user.openedShutter ? "col-xs-9" : null)): .row-fluid
-					.col-sm-5
-						.btn-group.calTools
-							button.btn(type='button', ng-click='addEvent()')
-								=s("Ajouter un événement")
-						ul.events: li(ng-repeat='e in events'): .alert.alert-info
-							a.close(ng-click='remove(e)')
-								.glyphicon.glyphicon-trash
-							b
-								input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))
-							| {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
-					.col-sm-7
-						.alert.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
-							h4 {{alertMessage}}
-						.btn-toolbar: .btn-group
-							button.btn(ng-click='changeView("agendaDay", myCalendar1)')
-								=s("Jour")
-							button.btn(ng-click='changeView("agendaWeek", myCalendar1)')
-								=s("Semaine")
-							button.btn(ng-click='changeView("month", myCalendar1)')
-								=s("Mois")
-						.calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
-					.cb
+    if err
+        .alert.alert-danger
+            =err
+    else
+        .container(ng-app)
+            section#directives-calendar(ng-controller='CalendarCtrl')
+                .well(class=(user && user.openedShutter ? "col-xs-9" : null)): .row-fluid
+                    .col-sm-5
+                        .btn-group.calTools
+                            button.btn(type='button', ng-click='addEvent()')
+                                =s("Ajouter un événement")
+                        ul.events: li(ng-repeat='e in events'): .alert.alert-info
+                            a.close(ng-click='remove(e)')
+                                .glyphicon.glyphicon-trash
+                            b
+                                input.form-control(ng-model='e.title', ng-change="rename(e)", placeholder=s("Titre de l'événement"))
+                            | {{e.start | date:"dd MMM"}}{{e.end ? ' - ' : ''}}{{e.end | date:"dd MMM"}}
+                    .col-sm-7
+                        .alert.alert-success.calAlert(ng-show='alertMessage != undefined && alertMessage != ""')
+                            h4 {{alertMessage}}
+                        .btn-toolbar: .btn-group
+                            button.btn(ng-click='changeView("agendaDay", myCalendar1)')
+                                =s("Jour")
+                            button.btn(ng-click='changeView("agendaWeek", myCalendar1)')
+                                =s("Semaine")
+                            button.btn(ng-click='changeView("month", myCalendar1)')
+                                =s("Mois")
+                        .calendar(ng-model='eventSources', calendar='myCalendar1', config='uiConfig.calendar', ui-calendar='uiConfig.calendar')
+                    .cb
 
-				#eventContent.modal.fade: .modal-dialog: .modal-content
-					.modal-header
-						button.close(type='button', data-dismiss='modal')
-							span(aria-hidden='true') ×
-							span.sr-only
-								=s("Fermer")
-						h4.modal-title
-							| {{eventToEdit.title}}
-					.modal-body
-						p
-							textarea.form-control(ng-model='eventToEdit.content', placeholder=s("Description de l'événement"))
-					.modal-footer
-						button.btn(type='button', data-dismiss='modal')
-							=s("Fermer")
-						button.btn(type='button', data-dismiss='modal', ng-click='saveContent(eventToEdit)')
-							=s("Enregistrer les modifications ")
+                #eventContent.modal.fade: .modal-dialog: .modal-content
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            span(aria-hidden='true') ×
+                            span.sr-only
+                                =s("Fermer")
+                        h4.modal-title
+                            | {{eventToEdit.title}}
+                    .modal-body
+                        p
+                            textarea.form-control(ng-model='eventToEdit.content', placeholder=s("Description de l'événement"))
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal')
+                            =s("Fermer")
+                        button.btn(type='button', data-dismiss='modal', ng-click='saveContent(eventToEdit)')
+                            =s("Enregistrer les modifications ")

@@ -1,14 +1,14 @@
 doctype html
 html
-	body
-		each image in images
-			case image.error
-				when "size-exceeded"
-					.error=s("[{name}] Veuillez télécharger une image de moins de 5 Mo", { name: image.name })
-				when "wrong-format"
-					.error=s("[{name}] Veuillez entrer une image au format PNG ou JPEG", { name: image.name })
-				default
-					if image.error
-						.error= image.error
-					else
-						img(src=image.src alt=image.name data-created-album=image.createdAlbum)
+    body
+        each image in images
+            case image.error
+                when "size-exceeded"
+                    .error=s("[{name}] Veuillez télécharger une image de moins de 5 Mo", { name: image.name })
+                when "wrong-format"
+                    .error=s("[{name}] Veuillez entrer une image au format PNG ou JPEG", { name: image.name })
+                default
+                    if image.error
+                        .error= image.error
+                    else
+                        img(src=image.src alt=image.name data-created-album=image.createdAlbum)

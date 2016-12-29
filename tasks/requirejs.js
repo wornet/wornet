@@ -2,11 +2,11 @@
 
 
 module.exports = function requirejs(grunt) {
-	// Load task
-	grunt.loadNpmTasks('grunt-contrib-requirejs');
+    // Load task
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-	// Options
-	return {
+    // Options
+    return {
         build: {
             options: {
                 baseUrl: 'public/js',
@@ -17,5 +17,5 @@ module.exports = function requirejs(grunt) {
                 ]
             }
         }
-	};
+    };
 };

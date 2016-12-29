@@ -1,75 +1,75 @@
 extends ../layouts/user
 
 block body
-	.col-xs-12: .well.loading.album-block(ng-controller="AlbumCtrl")
-		+data('at', cesarLeft(strval(album.user)))
-		if album.isMine
-			.aside
-				- var message
-				if album.currentPhoto
-					- message = '<div class="alert alert-danger">' + s("Attention, cet album contient votre photo de profil actuelle.") + '</div>'
-					- message += s("Êtes-vous sûr de vouloir le supprimer ainsi que toutes les photos qu'il contient ?")
-				else
-					- message = s("Êtes-vous sûr de vouloir supprimer toutes les photos de cet album ?")
-				//-a(data-delete data-clear-storage="albums" data-message=message)
-					=s("Supprimer cet album")
-				.large-dropdown.settings
-					a.dropdown-toggle(data-toggle="dropdown")
-						+half('cog')
-					ul.dropdown-menu(role="menu")
-						if user.photoAlbumId ? album.id !== user.photoAlbumId : ! isPhotoDefaultName(album.name)
-							li
-								a.ajax(non-block-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
-									+half('pencil')
-									| &nbsp; 
-									=s("Modifier le titre de l'album")
-							li
-								if album.description
-									a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
-										+half('pencil')
-										| &nbsp; 
-										=s("Modifier la description")
-								else
-									a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
-										+half('plus')
-										| &nbsp; 
-										=s("Ajouter une description")
-						li
-							a(data-delete data-clear-storage="albums" data-message=message data-toggle="tooltip" data-placement="top" title=s("Supprimer cet album"))
-								+half('trash')
-								| &nbsp; 
-								=s("Supprimer cet album")
-		- var init = "album.id=" + JSON.stringify(album.id) + "; "
-		- init += "album.name.content = " + JSON.stringify(album.name) + "; "
-		- init += "album.name.originalContent = album.name.content; "
-		- init += "album.description.content = " + JSON.stringify(album.description) + "; "
-		- init += "album.description.originalContent = album.description.content; "
-		+form().col-xs-12.col-sm-6.fit(ng-submit="update(album); album.description.originalContent = album.description.content; album.name.originalContent = album.name.content;" ng-init=init)
-			h3(ng-if="! album.name.edit")
-				{{ album.name.content }}
-			.edit-album-name.form-group(ng-if="album.name.edit")
-				+formControl().do-not-loose.counter(
-					required
-					tabindex="101"
-					ng-model="album.name.content"
-					name="name"
-					id="album-name"
-					maxlength=config.wornet.limits.albumNameLength
-					placeholder=s("Nom de l'album")
-				)
-			p(ng-if="! album.description.edit" ng-bind-html="album.description.content | smilies")
-			.edit-album-description.form-group(ng-if="album.description.edit")
-				textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
-			.edit-album-actions.btn-group.col-xs-12.fit(ng-if="album.name.edit || album.description.edit")
-				- click = "album.description.content = album.description.originalContent;"
-				- click += "album.name.content = album.name.originalContent;"
-				- click += "album.name.edit = false;"
-				- click += "album.description.edit = false;"
-				input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click=click value=s("Annuler"))
-				input.btn.btn-primary.col-xs-12.col-sm-6.fit(type="submit" value=s("Enregistrer"))
-		.cb
-		.medias
-			each image in photos
-				a(data-current=equals(album.currentPhoto, image.id) data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
-					img(src=image.thumb50 alt=image.name)
-			.cb
+    .col-xs-12: .well.loading.album-block(ng-controller="AlbumCtrl")
+        +data('at', cesarLeft(strval(album.user)))
+        if album.isMine
+            .aside
+                - var message
+                if album.currentPhoto
+                    - message = '<div class="alert alert-danger">' + s("Attention, cet album contient votre photo de profil actuelle.") + '</div>'
+                    - message += s("Êtes-vous sûr de vouloir le supprimer ainsi que toutes les photos qu'il contient ?")
+                else
+                    - message = s("Êtes-vous sûr de vouloir supprimer toutes les photos de cet album ?")
+                //-a(data-delete data-clear-storage="albums" data-message=message)
+                    =s("Supprimer cet album")
+                .large-dropdown.settings
+                    a.dropdown-toggle(data-toggle="dropdown")
+                        +half('cog')
+                    ul.dropdown-menu(role="menu")
+                        if user.photoAlbumId ? album.id !== user.photoAlbumId : ! isPhotoDefaultName(album.name)
+                            li
+                                a.ajax(non-block-click="album.name.edit = true"  data-toggle="tooltip" data-placement="top" title=s("Modifier le titre de l'album"))
+                                    +half('pencil')
+                                    | &nbsp; 
+                                    =s("Modifier le titre de l'album")
+                            li
+                                if album.description
+                                    a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Modifier la description"))
+                                        +half('pencil')
+                                        | &nbsp; 
+                                        =s("Modifier la description")
+                                else
+                                    a.ajax(non-block-click="album.description.edit = true" data-toggle="tooltip" data-placement="top" title=s("Ajouter une description"))
+                                        +half('plus')
+                                        | &nbsp; 
+                                        =s("Ajouter une description")
+                        li
+                            a(data-delete data-clear-storage="albums" data-message=message data-toggle="tooltip" data-placement="top" title=s("Supprimer cet album"))
+                                +half('trash')
+                                | &nbsp; 
+                                =s("Supprimer cet album")
+        - var init = "album.id=" + JSON.stringify(album.id) + "; "
+        - init += "album.name.content = " + JSON.stringify(album.name) + "; "
+        - init += "album.name.originalContent = album.name.content; "
+        - init += "album.description.content = " + JSON.stringify(album.description) + "; "
+        - init += "album.description.originalContent = album.description.content; "
+        +form().col-xs-12.col-sm-6.fit(ng-submit="update(album); album.description.originalContent = album.description.content; album.name.originalContent = album.name.content;" ng-init=init)
+            h3(ng-if="! album.name.edit")
+                {{ album.name.content }}
+            .edit-album-name.form-group(ng-if="album.name.edit")
+                +formControl().do-not-loose.counter(
+                    required
+                    tabindex="101"
+                    ng-model="album.name.content"
+                    name="name"
+                    id="album-name"
+                    maxlength=config.wornet.limits.albumNameLength
+                    placeholder=s("Nom de l'album")
+                )
+            p(ng-if="! album.description.edit" ng-bind-html="album.description.content | smilies")
+            .edit-album-description.form-group(ng-if="album.description.edit")
+                textarea.form-control(ng-model="album.description.content" placeholder=s("Description de l'album"))
+            .edit-album-actions.btn-group.col-xs-12.fit(ng-if="album.name.edit || album.description.edit")
+                - click = "album.description.content = album.description.originalContent;"
+                - click += "album.name.content = album.name.originalContent;"
+                - click += "album.name.edit = false;"
+                - click += "album.description.edit = false;"
+                input.btn.col-xs-12.col-sm-6.fit.cancel(type="button" ng-click=click value=s("Annuler"))
+                input.btn.btn-primary.col-xs-12.col-sm-6.fit(type="submit" value=s("Enregistrer"))
+        .cb
+        .medias
+            each image in photos
+                a(data-current=equals(album.currentPhoto, image.id) data-toggle="modal" data-target="#media-viewer" data-load-media=['image', image, album.isMine])
+                    img(src=image.thumb50 alt=image.name)
+            .cb
