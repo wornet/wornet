@@ -30,7 +30,6 @@ do ->
     extend global, require coreDir + 'utils/functions'
     extend global,
         # Store engines
-        MemcachedStore: require('connect-memcached') session
         RedisStore: require('connect-redis') session
 
     # Config load

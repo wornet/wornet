@@ -30,17 +30,7 @@ module.exports = (app, port) ->
         app.use cookiesInit()
 
         # Check if user is authentificated and is allowed to access the requested URL
-        app.use auth.isAuthenticated
-
-        # Store sessions in Memcached
-        ###
-        app.use(session(
-            secret: config.session.module.arguments[0].secret
-            key: config.session.module.arguments[0].key
-            store: new MemcachedStore
-                hosts: ['127.0.0.1:11211']
-        ))
-        ###
+        app.use auth.isAuthent
 
     trackers: ->
         unless trackers
