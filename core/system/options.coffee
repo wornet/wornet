@@ -14,7 +14,10 @@ module.exports = (app, port) ->
     trackers = null
 
     cookiesInit = ->
-        cookieParser.apply app, config.middleware.cookieParser.module.arguments
+        cookieParserArguments = config.middleware.cookieParser.module.arguments
+        if process.env.COOKIE_PARSER_SECRET
+            cookieParserArguments[0] = process.env.COOKIE_PARSER_SECRET
+        cookieParser.apply app, cookieParserArguments
 
     # Trace the error in log when user(s) are not found
     someUsersNotFound = (req) ->

@@ -544,7 +544,7 @@ module.exports =
     ###
     sha1: (str, salt = null) ->
         if salt is null
-            salt = config.wornet.secret
+            salt = process.env.WORNET_SECRET or config.wornet.secret
         crypto.createHmac('sha1', salt).update(str).digest('hex')
 
     ###
@@ -581,7 +581,9 @@ module.exports =
     ###
     cesar: (input, factor = 1, key = null) ->
         unless isstring key
-            if config?
+            if process.env.HEX_SECRET?
+                key = process.env.HEX_SECRET
+            else if config?
                 key = config.wornet.hexSecret
             else
                 key = "d6f7b887265debac5120de672873"

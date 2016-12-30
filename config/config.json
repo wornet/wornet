@@ -314,15 +314,13 @@
             "enabled": true
         },
 
-        "protocole": "http",
+        "protocole": "https",
 
         "proxies" : [
             "wornet/wornet"
         ],
 
         "redirectionDelay": 9000,
-
-        "redirectToDefaultHost": "wornet.fr",
 
         "redis": {
             "defaultChannel": "dataSharingChannel"
