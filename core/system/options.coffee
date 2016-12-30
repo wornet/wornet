@@ -645,7 +645,11 @@ module.exports = (app, port) ->
             # require(__dirname + "/command")("jsdoc -c ./doc/conf.json -r -d ./doc/ .")
 
         # Initialize DB
-        mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename, (err) ->
+        mongoUri = process.env.MONGODB_URI || do ->
+            host = process.env.DB_HOST || config.wornet.db.host
+            basename = process.env.DB_BASENAME || config.wornet.db.basename
+            'mongodb://' + host + '/' + basename
+        mongoose.connect mongoUri, (err) ->
             if err
                 console['log'] config.wornet.db
                 console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
