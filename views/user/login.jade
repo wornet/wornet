@@ -15,7 +15,7 @@ block body
                     +alert(signinAlerts)
                 +form("/user/login")(ng-submit="submitLogin(user)" ng-controller="LoginAndSigninCtrl").loading#login-signin
                     if config.env.development
-                        .btn(ng-click="user.email='kylekatarnls@gmail.com'; user.password='azerty';")
+                        .btn(ng-click="user.email='wornet@selfbuild.fr'; user.password='azerty';")
                             | Fainéant
                     +formControl("email")(
                         title=s("Votre e-mail")
