@@ -239,7 +239,6 @@ GeoPackage =
             if exists
                 @seedWithLocalFile()
             else
-                gzFile = file + '.gz'
                 http.get 'http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz', (res) =>
                     length = res.headers['content-length']
                     downloaded = 0
@@ -254,7 +253,6 @@ GeoPackage =
                         throw err
 
                     res.on 'close', =>
-                        fs.unlink gzFile
                         @seedWithLocalFile()
 
     seedWithLocalFile: (offset) ->
