@@ -233,11 +233,12 @@ GeoPackage =
 
     getLocalFile: ->
         __dirname + '/../system/cities.csv'
+
     seed: (offset) ->
         file = @getLocalFile()
         fs.exists file, (exists) =>
             if exists
-                @seedWithLocalFile()
+                @seedWithLocalFile offset
             else
                 http.get 'http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz', (res) =>
                     length = res.headers['content-length']
@@ -253,7 +254,7 @@ GeoPackage =
                         throw err
 
                     res.on 'close', =>
-                        @seedWithLocalFile()
+                        @seedWithLocalFile offset
 
     seedWithLocalFile: (offset) ->
         file = @getLocalFile()
