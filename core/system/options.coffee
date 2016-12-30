@@ -616,24 +616,6 @@ module.exports = (app, port) ->
         # Available s() in stylus files
         stylus.functions.s = functions.s
 
-        # Copy hooks
-        if port is 8000 && config.env.development
-            [
-                #'config'
-                'hooks/pre-commit'
-                'hooks/pre-commit.bat'
-                'hooks/pre-push'
-                'hooks/pre-push.bat'
-                'hooks/post-receive'
-                'hooks/post-receive.bat'
-                'hooks/post-merge'
-                'hooks/post-merge.bat'
-            ].forEach (file) ->
-                copy 'setup/git/' + file, '.git/' + file
-                console['log'] 'setup/git/' + file + ' >>> .git/' + file
-            # To document with JsDoc
-            # require(__dirname + "/command")("jsdoc -c ./doc/conf.json -r -d ./doc/ .")
-
         # Initialize DB
         mongoUri = process.env.MONGODB_URI || do ->
             host = process.env.DB_HOST || config.wornet.db.host
