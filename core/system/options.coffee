@@ -30,7 +30,7 @@ module.exports = (app, port) ->
         app.use cookiesInit()
 
         # Check if user is authentificated and is allowed to access the requested URL
-        app.use auth.isAuthent
+        app.use auth.isAuthenticated
 
     trackers: ->
         unless trackers
