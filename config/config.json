@@ -2,7 +2,7 @@
 
     "express": {
         "view cache": true,
-        "view engine": "jade"
+        "view engine": "pug"
     },
 
     "middleware": {
@@ -129,7 +129,7 @@
             "renderer": "renderFile"
         },
 
-        "jade": {
+        "pug": {
             "module": "consolidate"
         },
 

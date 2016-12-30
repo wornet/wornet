@@ -109,7 +109,7 @@ module.exports = (app) ->
             if req.urlWithoutParams.startWith '/template/'
                 path = req.urlWithoutParams.substr 9
                 if path in templates
-                    fs.readFile __dirname + '/../../../views/templates' + path + '.jade', (err, contents) ->
+                    fs.readFile __dirname + '/../../../views/templates' + path + '.pug', (err, contents) ->
                         if err
                             res.notFound()
                         else

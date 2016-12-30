@@ -79,7 +79,7 @@ describe "functions", ->
 
     describe "jd", ->
 
-        it "must return html code from jade input", ->
+        it "must return html code from pug input", ->
             jd("p Some Text").toString().should.equal "<p>Some Text</p>"
             jd("#id\n\tul\n\t\tli=\"Quoted Text\"").toString().should.equal "<div id=\"id\"><ul><li>Quoted Text</li></ul></div>"
 

@@ -3,12 +3,12 @@ extends layouts/user
 block body
     .col-sm-3.col-xs-12(check-screen-width large-size="col-sm-offset-1")
         //- Users
-        include includes/users.jade
+        include includes/users
     .col-md-6.col-sm-12.center-bloc(check-screen-width medium-size="col-md-6" large-size="col-md-4")
         +alert(profileAlerts)
         //- Publications
-        include includes/status.jade
+        include includes/status
     .col-sm-3.col-xs-12
         //- Invite
-        include includes/invite.jade
-        include includes/random-publics.jade
+        include includes/invite
+        include includes/random-publics

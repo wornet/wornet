@@ -17,7 +17,7 @@ controllers/album.coffee
         # GET /album
         .get (req, res) ->
             Photo.find user: req.user._id, (dbError, photosList) ->
-                res.render 'album/photos' # Render Jade view
+                res.render 'album/photos' # Render Pug view
                     error: dbError
                     photos: photosList
         # POST /album

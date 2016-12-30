@@ -1206,30 +1206,30 @@ module.exports =
         'fr'
 
     ###
-    Return HTML from Jade code
-    @param string Jade input code
+    Return HTML from Pug code
+    @param string Pug input code
 
     @return string HTML rendered code
     ###
     jd: (code, locals = {}) ->
-        require('jade').render code, locals
+        require('pug').render code, locals
 
     ###
-    Return HTML from Jade file
-    @param string Jade input file path
+    Return HTML from Pug file
+    @param string Pug input file path
 
     @return string HTML rendered code
     ###
     jdFile: (file, replacements = {}) ->
-        html = jd fs.readFileSync __dirname + '/../../views/' + file + '.jade'
+        html = jd fs.readFileSync __dirname + '/../../views/' + file + '.pug'
         for from, to of replacements
             from = new RegExp '\\{' + from + '\\}', 'g'
             html = html.replace from, to
         html
 
     ###
-    Return HTML from Jade file with appropriate langage
-    @param string Jade input file path
+    Return HTML from Pug file with appropriate langage
+    @param string Pug input file path
 
     @return string HTML rendered code
     ###
@@ -1237,8 +1237,8 @@ module.exports =
         jdFile file + '/' + lang(), replacements
 
     ###
-    Return HTML from Jade file in mails directory
-    @param string Jade input file path
+    Return HTML from Pug file in mails directory
+    @param string Pug input file path
 
     @return string HTML rendered code
     ###
