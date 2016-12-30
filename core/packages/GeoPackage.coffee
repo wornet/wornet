@@ -269,7 +269,6 @@ GeoPackage =
         lines.on 'error', (err) ->
             warn err
 
-        offset = 0
         country = null
         lines.on 'line', (line) =>
             unless header
