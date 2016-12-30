@@ -53,7 +53,7 @@ module.exports =
         sha1(new Error().stack)
     ###
     Get a cached mixed value
-    @param string key for cached value in memcached store engine
+    @param string key for cached value in redis store engine
     @param function to pass the result
     ###
     memGet: (key, done) ->
