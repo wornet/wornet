@@ -257,6 +257,7 @@ GeoPackage =
                         @seedWithLocalFile offset
 
     seedWithLocalFile: (offset) ->
+        console['log'] 'Start import from offset ' + offset
         file = @getLocalFile()
         Reader = require 'line-by-line'
         lines = new Reader file,
