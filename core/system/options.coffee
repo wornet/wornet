@@ -14,7 +14,10 @@ module.exports = (app, port) ->
     trackers = null
 
     cookiesInit = ->
-        cookieParser.apply app, config.middleware.cookieParser.module.arguments
+        cookieParserArguments = config.middleware.cookieParser.module.arguments
+        if process.env.COOKIE_PARSER_SECRET
+            cookieParserArguments[0] = process.env.COOKIE_PARSER_SECRET
+        cookieParser.apply app, cookieParserArguments
 
     # Trace the error in log when user(s) are not found
     someUsersNotFound = (req) ->
@@ -30,7 +33,7 @@ module.exports = (app, port) ->
         app.use cookiesInit()
 
         # Check if user is authentificated and is allowed to access the requested URL
-        app.use auth.isAuthent
+        app.use auth.isAuthenticated
 
     trackers: ->
         unless trackers
@@ -616,26 +619,12 @@ module.exports = (app, port) ->
         # Available s() in stylus files
         stylus.functions.s = functions.s
 
-        # Copy hooks
-        if port is 8000 && config.env.development
-            [
-                #'config'
-                'hooks/pre-commit'
-                'hooks/pre-commit.bat'
-                'hooks/pre-push'
-                'hooks/pre-push.bat'
-                'hooks/post-receive'
-                'hooks/post-receive.bat'
-                'hooks/post-merge'
-                'hooks/post-merge.bat'
-            ].forEach (file) ->
-                copy 'setup/git/' + file, '.git/' + file
-                console['log'] 'setup/git/' + file + ' >>> .git/' + file
-            # To document with JsDoc
-            # require(__dirname + "/command")("jsdoc -c ./doc/conf.json -r -d ./doc/ .")
-
         # Initialize DB
-        mongoose.connect 'mongodb://' + config.wornet.db.host + '/' + config.wornet.db.basename, (err) ->
+        mongoUri = process.env.MONGODB_URI || do ->
+            host = process.env.DB_HOST || config.wornet.db.host
+            basename = process.env.DB_BASENAME || config.wornet.db.basename
+            'mongodb://' + host + '/' + basename
+        mongoose.connect mongoUri, (err) ->
             if err
                 console['log'] config.wornet.db
                 console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'

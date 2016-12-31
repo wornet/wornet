@@ -29,7 +29,7 @@ module.exports = (defer, start) ->
         # Express session options
         resave: false,
         saveUninitialized: false,
-        secret: "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
+        secret: process.env.SESSION_SECRET or "6qed36sQyAurbQCLNE3X6r6bbtSuDEcU"
         key: "w"
         store: redisStore
         proxy: https

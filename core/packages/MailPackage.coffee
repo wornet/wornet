@@ -9,7 +9,14 @@ transporter = null
 MailPackage =
 
     init: (options) ->
-        if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
+        if process.env.MAIL_SERVICE
+            options ||=
+                service: process.env.MAIL_SERVICE
+                auth:
+                    user: process.env.MAIL_AUTH_USER
+                    pass: process.env.MAIL_AUTH_PASS
+            transporter = nodemailer.createTransport options
+        else if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
             warn errorMessage
         else
             options ||=

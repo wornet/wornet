@@ -147,13 +147,13 @@
 
         "admin": {
             "god": [
-                "kylekatarnls@gmail.com"
+                "wornet@selfbuild.fr"
             ],
             "admin": [
-                "kylekatarnls@gmail.com"
+                "wornet@selfbuild.fr"
             ],
             "certifier": [
-                "kylekatarnls@gmail.com"
+                "wornet@selfbuild.fr"
             ]
         },
 
@@ -196,19 +196,19 @@
         "contact": {
             "emails": {
                 "suggestions": [
-                    "kylekatarnls@gmail.com"
+                    "wornet@selfbuild.fr"
                 ],
                 "bugs": [
-                    "kylekatarnls@gmail.com"
+                    "wornet@selfbuild.fr"
                 ],
                 "partenariats": [
-                    "kylekatarnls@gmail.com"
+                    "wornet@selfbuild.fr"
                 ],
                 "investissements": [
-                    "kylekatarnls@gmail.com"
+                    "wornet@selfbuild.fr"
                 ],
                 "autres": [
-                    "kylekatarnls@gmail.com"
+                    "wornet@selfbuild.fr"
                 ]
             }
         },
@@ -285,7 +285,7 @@
 
         "mail": {
             "hostsBlackList": ["yopmail.com", "jetable.org", "get2mail.fr", "mail-temporaire.fr", "0-mail.com", "appspotmail.com", "fakemail.fr", "haltospam.com", "filzmail.com", "brefemail.com", "mailincubator.com", "kurzepost.de", "proxymail.eu", "rcpt.at", "trash-mail.at", "trashmail.at", "trashmail.me", "trashmail.net", "wegwerfmail.net", "wegwerfmail.org", "nepwk.com", "10minutemail.com", "spamgourmet.com", "tempomail.fr", "meltmail.com", "anonymbox.com", "link2mail.net", "whyspamme.me", "amilegit.com", "sharklasers.com", "mailinator.com", "mailmetrash.com", "thankyou2010.com", "trash2009.com", "mt2009.com", "trashymail.com", "mytrashmail.com", "mailcatch.com", "spambox.us", "dispostable.com", "spamavert.co", "yxzx.net", "tempemail.net", "spamfree24.org", "spammotel.com", "e4ward.com", "spamcero.com", "mytempemail.com", "mailnull.com", "spamspot.com", "incognitomail.org", "spamobox.com", "deadaddress.com", "mailexpire.com", "soodonims.com", "wegwerfmail.de", "objectmail.comlroid.com", "mintemail.com", "nospamfor.us", "gishpuppy.com", "onewaymail.com", "makemetheking.com", "privy-mail.de", "privy-mail.com"],
-            "reportTo": "kylekatarnls@gmail.com",
+            "reportTo": "wornet@selfbuild.fr",
             "service": "Gmail",
             "auth": {
                 "user": "",
@@ -314,15 +314,13 @@
             "enabled": true
         },
 
-        "protocole": "http",
+        "protocole": "https",
 
         "proxies" : [
             "wornet/wornet"
         ],
 
         "redirectionDelay": 9000,
-
-        "redirectToDefaultHost": "wornet.fr",
 
         "redis": {
             "defaultChannel": "dataSharingChannel"

@@ -224,8 +224,16 @@ module.exports = (app) ->
             unless req.xhr
                 unless req.connection.remoteAddress is '127.0.0.1'
                     secure = req.secure or 'https' is req.getHeader 'x-forwarded-proto'
-                    if (config.wornet.protocole is 'https') isnt secure or config.wornet.redirectToDefaultHost is req.getHeader 'host'
-                        res.redirect config.wornet.protocole +  '://' + config.wornet.defaultHost + req.url
+                    protocoleOk = if process.env.FORCE_PROTOCOLE
+                        (process.env.FORCE_PROTOCOLE is 'https') is secure
+                    else
+                        true
+                    hostOk = if process.env.FORCE_HOSTNAME
+                        process.env.FORCE_HOSTNAME is req.getHeader 'host'
+                    else
+                        true
+                    unless protocoleOk and hostOk
+                        res.redirect process.env.FORCE_PROTOCOLE +  '://' + (process.env.FORCE_HOSTNAME or req.getHeader 'host') + req.url
                         return
                 # Do not re-open connection for resources
                 res.setHeader 'keep-alive', 'timeout=15, max=100'

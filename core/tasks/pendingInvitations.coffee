@@ -12,7 +12,7 @@ module.exports = regularTask 10.minutes, ->
                             war err
                         else if user
                             subject = s("{name} vous invite à rejoindre Wornet", name: user.fullName)
-                            signinUrl = config.wornet.protocole +  '://' + config.wornet.defaultHost
+                            signinUrl = config.wornet.protocole +  '://' + (process.env.DEFAULT_HOST or config.wornet.defaultHost)
                             signinUrl += '/user/signin/with/' + encodeURIComponent email
                             message = s("{name} vous invite à rejoindre Wornet, cliquez sur le lien ci-dessous ou copiez-le dans la barre d'adresse de votre navigateur.", name: user.fullName)
                             MailPackage.send email, subject, message + '\n\n' + signinUrl, message + '<br><br><a href="' + signinUrl + '">' + s("Devenir un wornet") + '</a>'

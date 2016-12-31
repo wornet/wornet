@@ -236,13 +236,13 @@ GeoPackage =
 
     getLocalFile: ->
         __dirname + '/../system/cities.csv'
+
     seed: (offset) ->
         file = @getLocalFile()
         fs.exists file, (exists) =>
             if exists
-                @seedWithLocalFile()
+                @seedWithLocalFile offset
             else
-                gzFile = file + '.gz'
                 http.get 'http://download.maxmind.com/download/worldcities/worldcitiespop.txt.gz', (res) =>
                     length = res.headers['content-length']
                     downloaded = 0
@@ -257,10 +257,10 @@ GeoPackage =
                         throw err
 
                     res.on 'close', =>
-                        fs.unlink gzFile
-                        @seedWithLocalFile()
+                        @seedWithLocalFile offset
 
     seedWithLocalFile: (offset) ->
+        console['log'] 'Start import from offset ' + offset
         file = @getLocalFile()
         Reader = require 'line-by-line'
         lines = new Reader file,
