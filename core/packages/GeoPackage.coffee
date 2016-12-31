@@ -217,8 +217,11 @@ GeoPackage =
 
         R * c
 
+    getCitiesCount: ->
+        process.env.CITIES_EXPECTED_COUNT or @citiesCount
+
     loaded: ->
-        (loadedAtInit + loadCounter) / @citiesCount
+        (loadedAtInit + loadCounter) / @getCitiesCount()
 
     init: ->
         arc = @distance @latitudeMin, 0, @latitudeMax, 0
@@ -228,7 +231,7 @@ GeoPackage =
         sectoreLatitudeMax = @sector(@latitudeMax, 0).latitude
         City.count (err, count) =>
             loadedAtInit = count
-            if err or count < @citiesCount
+            if err or count < @getCitiesCount()
                 @seed count
 
     getLocalFile: ->
@@ -269,7 +272,6 @@ GeoPackage =
         lines.on 'error', (err) ->
             warn err
 
-        offset = 0
         country = null
         lines.on 'line', (line) =>
             unless header
@@ -293,9 +295,10 @@ GeoPackage =
                     if city.country isnt country
                         country = city.country
                         console['log'] 'Load cities from country ' + @countryName country
-                    City.create city, (err) ->
-                        unless err
-                            loadCounter++
+                    unless process.env.CITIES_COUNTRY and process.env.CITIES_COUNTRY isnt country
+                        City.create city, (err) ->
+                            unless err
+                                loadCounter++
                 else
                     offset--
             else
