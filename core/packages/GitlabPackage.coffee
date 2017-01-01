@@ -34,7 +34,8 @@ GitlabPackage =
             .replace(
                 /(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):([0-9]+)):/g,
                 (all, path, _, env, file, line) ->
-                    '[' + path + '](' + host + '/' + process.env. + '/blob/' + head + '/' + file + '#L' + line + '):'
+                	repository = process.env.GITLAB_NAMESPACE + '/' + process.env.GITLAB_PROJECT
+                    '[' + path + '](' + host + '/' + repository + '/blob/' + head + '/' + file + '#L' + line + '):'
             )
     enabled: ->
         config.env.production and host
