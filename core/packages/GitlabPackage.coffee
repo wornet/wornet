@@ -4,7 +4,7 @@ logging = require 'gitlab-logging'
 
 pack = require __dirname + '/../../package.json'
 
-host = 'http://gitlab.selfbuild.fr'
+host = process.env.GITLAB_HOST
 
 head = 'master'
 
@@ -14,13 +14,14 @@ fs.readFile __dirname + '/../../.git/HEAD', (err, contents) ->
         unless contents.contains 'refs/heads/master'
             head = contents
 
-logging.configure
-    host: host
-    user: 'autoreporter'
-    token: 'H9bUs-NLqer7s9pHWETR'
-    project_id: 3
-    assignee_id: 2
-    environment: config.wornet.env || 'production'
+if host
+    logging.configure
+        host: host
+        user: 'autoreporter'
+        token: process.env.GITLAB_TOKEN
+        project_id: 3
+        assignee_id: 2
+        environment: config.wornet.env || 'production'
 
 errors = {}
 
@@ -33,10 +34,10 @@ GitlabPackage =
             .replace(
                 /(\/home\/[^\/]+\/((preprod|prod|production|stagging)\/)?([^:]+):([0-9]+)):/g,
                 (all, path, _, env, file, line) ->
-                    '[' + path + '](' + host + '/kylek/wornet/blob/' + head + '/' + file + '#L' + line + '):'
+                    '[' + path + '](' + host + '/' + process.env. + '/blob/' + head + '/' + file + '#L' + line + '):'
             )
     enabled: ->
-        config.env.production
+        config.env.production and host
     issue: (error) ->
         if GitlabPackage.enabled()
             logging.handle GitlabPackage.format error
