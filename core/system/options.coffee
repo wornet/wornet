@@ -450,6 +450,7 @@ module.exports = (app, port) ->
                     if typeof(model) is 'string' or model instanceof Error or model instanceof PublicError
                         model = err: model
                     err = ((@locals || {}).err || model.err) || new Error "Unknown " + val + " " + key.replace(/Error$/g, '').replace(/([A-Z])/g, ' $&').toLowerCase() + " error"
+                    console['log'] err
                     warn err, false, @req
                     unless noReport
                         GitlabPackage.error 'Error ' + val + '\n' + @req.url + '\n' + @req.getHeader('referrer') + '\n' + err
