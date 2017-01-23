@@ -625,11 +625,26 @@ module.exports = (app, port) ->
             host = process.env.DB_HOST || config.wornet.db.host
             basename = process.env.DB_BASENAME || config.wornet.db.basename
             'mongodb://' + host + '/' + basename
+        console['log'] 'Mongoose connection to ' + mongoUri.split(/\//g)[2]
         mongoose.connect mongoUri, (err) ->
             if err
-                console['log'] config.wornet.db
+                console['log'] mongoUri.split(/\//g)[2]
                 console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
                 console['warn'] err
+
+        mongoose.connection.on 'connected', ->
+            console['log'] 'Mongoose default connection open to ' + mongoUri
+
+        mongoose.connection.on 'error', (err) ->
+            console['log'] 'Mongoose default connection error: ' + err
+
+        mongoose.connection.on 'disconnected', ->
+            console['log'] 'Mongoose default connection disconnected'
+
+        process.on 'SIGINT', ->
+            mongoose.connection.close ->
+                console['log'] 'Mongoose default connection disconnected through app termination'
+                process.exit 0
 
         deepextend localConfig._store, middleware: logger: module: arguments: [
             "combined",
