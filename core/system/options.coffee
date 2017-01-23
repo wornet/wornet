@@ -632,8 +632,11 @@ module.exports = (app, port) ->
                 console['warn'] '\n\n-----------\nUnable to connect Mongoose. Is MongoDB installed and started?\n'
                 console['warn'] err
 
-        mongoose.connection.on 'connected', ->
+        mongoose.connection.on 'open', ->
             console['log'] 'Mongoose default connection open to ' + mongoUri
+
+        mongoose.connection.on 'connected', ->
+            console['log'] 'Mongoose default connection connected to ' + mongoUri
 
         mongoose.connection.on 'error', (err) ->
             console['log'] 'Mongoose default connection error: ' + err
