@@ -622,7 +622,7 @@ module.exports = (app, port) ->
 
         # Initialize DB
         mongoUri = process.env.MONGODB_URI || do ->
-            host = process.env.DB_HOST || config.wornet.db.host
+            host = (process.env.DB_HOST || config.wornet.db.host) + ':' + (process.env.DB_PORT || config.wornet.db.port || 27017)
             basename = process.env.DB_BASENAME || config.wornet.db.basename
             'mongodb://' + host + '/' + basename
         console['log'] 'Mongoose connection to ' + mongoUri.split(/\//g)[2]

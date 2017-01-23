@@ -41,7 +41,7 @@
     "localizr": "^0.1.0",
     "lusca": "~1.0.3",
     "method-override": "~1.0.0",
-    "mongodb": "~1.4.7",
+    "mongodb": "1.4.9",
     "mongoose": "~3.8.21",
     "mongoose-simple-random": "~0.3.0",
     "newrelic": "^1.36.0",
