@@ -65,7 +65,7 @@ module.exports = (defer, start) ->
                     files.map file ->
                         fs.readFileSync file, 'utf8'
             else
-                ['root.crt', 'intermediate.crt'].map file ->
+                ['root.crt', 'intermediate.crt'].map (file) ->
                     fs.readFileSync '/etc/ssl/' + file, 'utf8'
 
             options =
