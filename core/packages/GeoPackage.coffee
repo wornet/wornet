@@ -25,7 +25,7 @@ GeoPackage =
 
     radiusOfTheEarth: 6371000 # meters
 
-    citiesCount: 3170253
+    citiesCount: 3145045
 
     countries: require __dirname + '/../system/countries'
 
