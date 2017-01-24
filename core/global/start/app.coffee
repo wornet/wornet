@@ -89,8 +89,8 @@ module.exports = (defer, start) ->
                 res.redirect 'https://' + req.hostname + req.url
 
         #for http requests
-        listen 8001
+        listen process.env.HTTP_PORT or 80
         #for https requests
-        listen 8002
+        listen process.env.HTTPS_PORT or 443
     else
         listen config.port
