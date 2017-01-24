@@ -10,6 +10,8 @@ fs.exists 'mongod.lnk', (exists) ->
 
 # Build coffee scripts
 coffee = fs.realpathSync __dirname + '/../../node_modules/.bin/coffee'
-command coffee + ' -bcw -o public/js --join app public/js/app/'
-command coffee + ' -bcw -o public/js --join test public/js/test/'
-# command 'grunt build'
+if process.env.NODE_ENV is 'production'
+    command coffee + ' -bc -o public/js --join app public/js/app/'
+else
+    command coffee + ' -bcw -o public/js --join app public/js/app/'
+    command coffee + ' -bcw -o public/js --join test public/js/test/'
