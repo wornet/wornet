@@ -52,8 +52,11 @@ module.exports = (defer, start) ->
             files.forEach (file) ->
                 require file
 
+    httpsPort = process.env.HTTPS_PORT or 443
+    httpPort = process.env.HTTP_PORT or 80
+
     listen = (port) ->
-        unless port is 8002
+        unless port is httpsPort
             global.server = app.listen port, (err) ->
                 if err
                     throw err
@@ -80,7 +83,7 @@ module.exports = (defer, start) ->
                     console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
     # Handle errors and print in the console
-    if config.port is 443
+    if config.port is httpsPort
         global.httpsServer = require 'https'
         app.all '*', (req, res, next) ->
             if req.secure
@@ -88,9 +91,7 @@ module.exports = (defer, start) ->
             else
                 res.redirect 'https://' + req.hostname + req.url
 
-        #for http requests
-        listen process.env.HTTP_PORT or 80
-        #for https requests
-        listen process.env.HTTPS_PORT or 443
+        listen httpPort
+        listen httpsPort
     else
         listen config.port
