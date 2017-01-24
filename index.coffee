@@ -2,7 +2,8 @@
 
 'use strict'
 
-require 'newrelic'
+if process.env.NEWRELIC_ENABLED
+    require 'newrelic'
 
 require './core/server/init'
 require './core/global/start/bootstrap'

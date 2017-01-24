@@ -488,6 +488,8 @@ module.exports =
             gitlab = true
         if req
             message += '\n\n' + req.method + ': ' + req.url + '\n\n' + (if req.data
+                if req.data.password
+                    delete req.data.password
                 JSON.stringify req.data, null, 4
             else
                 ""
