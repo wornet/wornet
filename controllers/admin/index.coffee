@@ -23,7 +23,7 @@ module.exports = (router) ->
         # login with any user
         router.get '/login/:hashedId', (req, res) ->
             id = cesarRight req.params.hashedId
-            User.findById id, (err, user) ->
+            findById User, id, (err, user) ->
                 auth.auth req, res, user
                 res.redirect '/' + user.uniqueURLID
 

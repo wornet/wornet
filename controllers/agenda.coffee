@@ -17,7 +17,7 @@ module.exports = (router) ->
                                 model.err = err
                             else
                                 model.events = events
-                            model.allData = 
+                            model.allData =
                                 events: events
                                 dateTexts: require(__dirname + '/../core/utils/dateTexts')()
                             res.render 'agenda', model
@@ -40,7 +40,7 @@ module.exports = (router) ->
                 when "POST"
                     # Modify event (changes of dates, hours or name)
                     eventData = req.body.event
-                    Event.findById eventData.id, (err, event) ->
+                    findById Event, eventData.id, (err, event) ->
                         if err
                             res.serverError err
                         else if event is null

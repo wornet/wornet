@@ -37,7 +37,7 @@ module.exports = (router) ->
                     req.flash 'profileErrors', err
                 res.redirect '/' + req.user.uniqueURLID
             ###
-            User.findById req.user.id, (err, user) ->
+            findById User, req.user.id, (err, user) ->
                 if user
                     extend user, userModifications
                     user.save (err, user) ->

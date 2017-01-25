@@ -118,5 +118,5 @@ module.exports = (router) ->
                 req.flash 'friendAsked', s("Demande envoyée à " + escape(req.params.name))
             else
                 req.flash 'profileErrors', s("Erreur : " + data.err)
-            User.findById cesarRight(id), (err, user) ->
+            findById User, cesarRight(id), (err, user) ->
                 res.redirect '/' + user.uniqueURLID

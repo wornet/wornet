@@ -56,7 +56,7 @@ statusSchema.pre 'save', (next) ->
             next()
         else
             at = strval @at
-            User.findById @author, (err, user) ->
+            findById User, @author, (err, user) ->
                 if err
                     next err
                 else

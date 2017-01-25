@@ -269,7 +269,7 @@ UserPackage =
                                     user: req.user.publicInformations()
                                     id: data.friend.id
                         if empty data.err
-                            User.findById id, (err, user) ->
+                            findById User, id, (err, user) ->
                                 if err
                                     data.err = err
                                 if user
@@ -331,7 +331,7 @@ UserPackage =
                         delete req.session.friendAsks[id]
                         if status is 'accepted'
                             self.cacheFriends me, friend.askedFrom, true
-                            User.findById friend.askedFrom, (err, user) ->
+                            findById User, friend.askedFrom, (err, user) ->
                                 if user and !err
                                     sendNotice = (user, userId, notice) ->
                                         NoticePackage.notify [userId], null,
@@ -591,7 +591,7 @@ UserPackage =
                 if isMe
                     getFollowInformations me, false, done
                 else
-                    User.findById id, (err, user) ->
+                    findById User, id, (err, user) ->
                         if err
                             res.notFound()
                         else

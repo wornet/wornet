@@ -160,7 +160,7 @@ StatusPackage =
                                                                             else
                                                                                 0
                                                                             if status.images.length
-                                                                                Photo.findById PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
+                                                                                findById Photo, PhotoPackage.urlToId(status.images[0].src), (err, photo) ->
                                                                                     warn err if err
                                                                                     if photo
                                                                                         PhotoPackage.fromAlbum photo.album, (err, photos) ->
@@ -469,7 +469,7 @@ StatusPackage =
 
             pointsValue = status.pointsValue || 0
 
-            User.findById id, (err, user) =>
+            findById User, id, (err, user) =>
                 if err
                     done err
                 else if user

@@ -248,7 +248,7 @@ module.exports = (router) ->
                     token: req.params.token
                 , (err, reset) ->
                     if reset and ! err
-                        User.findById userId, (err, user) ->
+                        findById User, userId, (err, user) ->
                             if user and ! err
                                 user.password = req.body.password
                                 user.save (err) ->
@@ -444,7 +444,7 @@ module.exports = (router) ->
     router.get '/albums/medias/:hashedId', (req, res) ->
         # hashedId is me or at (of a friend)
         hashedId = req.params.hashedId
-        User.findById cesarRight(req.params.hashedId), (err, user) ->
+        findById User, cesarRight(req.params.hashedId), (err, user) ->
             UserPackage.getAlbumsForMedias req, hashedId, false, (err, albums, nbAlbums) ->
                 res.json
                     err: err
@@ -453,7 +453,7 @@ module.exports = (router) ->
                     user: user.publicInformations()
 
     router.get '/albums/:hashedId', (req, res) ->
-        User.findById cesarRight(req.params.hashedId), (err, user) ->
+        findById User, cesarRight(req.params.hashedId), (err, user) ->
             if user and ! err
                 res.render 'user/album-list',
                     profile: user
@@ -476,7 +476,7 @@ module.exports = (router) ->
             res.render templateFolder + '/album', model
         done = (model) ->
             if model.album and model.album.isMine and req.user.photoId
-                Photo.findById req.user.photoId, (err, photo) ->
+                findById Photo, req.user.photoId, (err, photo) ->
                     if err
                         warn err, req
                     else if photo
@@ -497,7 +497,7 @@ module.exports = (router) ->
                     album: album
                     photos: photos
         try
-            Album.findById id, (err, foundAlbum) ->
+            findById Album, id, (err, foundAlbum) ->
                 if err or ! foundAlbum
                     res.notFound()
                 else if equals foundAlbum.user, req.user.id
@@ -583,7 +583,7 @@ module.exports = (router) ->
                             else
                                 done()
 
-        Photo.findById req.user.photoId, (err, photo) ->
+        findById Photo, req.user.photoId, (err, photo) ->
             warn err, req if err
             if photo and ! err and equals photo.album, id
                 updateUser req, photoId: null, end
@@ -654,7 +654,7 @@ module.exports = (router) ->
             req.user._id
         else
             null
-        Photo.findById req.params.id, (err, photo) ->
+        findById Photo, req.params.id, (err, photo) ->
             if err
                 res.serverError err
             else if photo and photo.status is 'published'
@@ -666,7 +666,7 @@ module.exports = (router) ->
                         res.json info
                 if photo.album
                     count++
-                    Album.findById photo.album, (err, album) ->
+                    findById Album, photo.album, (err, album) ->
                         if album and ! err
                             info.album =
                                 id: album._id
@@ -773,7 +773,7 @@ module.exports = (router) ->
                 res.json()
         if media.statusId and media.mediaId
             count++
-            Status.findById media.statusId, (err, status) ->
+            findById Status, media.statusId, (err, status) ->
                 if ! err and status and status.values(['at', 'author']).contains(me, equals)
                     key = media.type + 's'
                     if status[key]
@@ -929,7 +929,7 @@ module.exports = (router) ->
             res.redirect '/'
 
     router.delete '/', (req, res) ->
-        User.findById req.user.id, (err, user) ->
+        findById User, req.user.id, (err, user) ->
             req.user = user
             req.tryPassword (ok) ->
                 if ok

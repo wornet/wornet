@@ -125,7 +125,7 @@ module.exports = (router) ->
         else
             res.render 'report'
         id = req.params.status
-        Status.findById id, (err, status) ->
+        findById Status, id, (err, status) ->
             if status
                 message = 'Un contenu a été signalé par ' + req.user.fullName + '. L\'id du contenu est : ' + id + '\nContenu :\n' + status.content
                 MailPackage.send config.wornet.mail.reportTo, "[Wornet] Contenu signalé", message, (err, info) ->

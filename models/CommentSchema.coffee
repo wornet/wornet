@@ -10,7 +10,7 @@ commentSchema.pre 'save', (next) ->
     if empty(@content) and empty(@images) and empty(@videos) and empty(@links)
         next new PublicError s("Ce commentaire est vide")
     else
-        Status.findById @attachedStatus, (err, status) =>
+        findById Status, @attachedStatus, (err, status) =>
             if err
                 next err
             else if status

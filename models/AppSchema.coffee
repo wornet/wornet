@@ -25,6 +25,8 @@ appSchema.methods.publicInformations = ->
     @columns ['name', 'description', 'url', 'publicKey']
 
 appSchema.statics.findByPublicKey = ->
-    @findById.apply @, arguments
+    args = Array::slice.call arguments
+    args.unshift @
+    findById args
 
 module.exports = appSchema

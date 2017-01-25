@@ -726,6 +726,17 @@ module.exports =
 
     @return promise
     ###
+    findById: (id, search, callback) ->
+        model = _id: id
+        findOne model, search, callback
+    ###
+    Workaround for Kareem bug in Mongoose findOne method
+    @param model
+    @param search
+    @param callback
+
+    @return promise
+    ###
     findOneDebounced: (model, search) ->
         findOne.bind model, search
 

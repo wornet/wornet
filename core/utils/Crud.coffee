@@ -23,7 +23,7 @@ controllers/album.coffee
         # POST /album
         .post (req, res) ->
             photoData = req.body.photo
-            Photo.findById photoData.id, (dbError, updatedPhoto) ->
+            findById Photo, photoData.id, (dbError, updatedPhoto) ->
                 res.json # AJAX response
                     error: dbError
                     photo: updatedPhoto

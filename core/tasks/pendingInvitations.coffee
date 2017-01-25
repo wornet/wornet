@@ -7,7 +7,7 @@ module.exports = regularTask 10.minutes, ->
             invitations.each ->
                 if count--
                     email = @email
-                    User.findById @host, (err, user) ->
+                    findById User, @host, (err, user) ->
                         if err
                             war err
                         else if user

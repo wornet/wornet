@@ -46,7 +46,7 @@ photoSchema.pre 'remove', (done) ->
             done()
     id = @id
     for statusId in @statusList
-        Status.findById statusId, (err, status) ->
+        findById Status, statusId, (err, status) ->
             if ! err and status
                 images = status.images.filter (image) ->
                     ! (new RegExp '[x/]' + id + '\.jpg$').test image.src

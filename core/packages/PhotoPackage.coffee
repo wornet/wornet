@@ -143,7 +143,7 @@ PhotoPackage =
         if albumRefreshes[albumId]
             clearTimeout albumRefreshes[albumId]
         albumRefreshes[albumId] = delay 500, ->
-            Album.findById albumId, (err, album) ->
+            findById Album, albumId, (err, album) ->
                 if err
                     warn err
                 if album

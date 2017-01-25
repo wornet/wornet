@@ -16,7 +16,7 @@ ObjectUtils =
         done ||= (err) ->
             if err
                 throw err
-        @findById id, (err, self) ->
+        findById @, id, (err, self) ->
             if err
                 done err
             else
