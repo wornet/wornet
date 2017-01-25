@@ -27,6 +27,8 @@
 
         "prettyHtml": true,
 
+        "protocole": "http",
+
         "staticServer": "",
 
         "contact": {
