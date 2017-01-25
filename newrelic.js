@@ -22,5 +22,10 @@ exports.config = {
      * production applications.
      */
     level: 'info'
+  },
+  rules : {
+    ignore : [
+      '^\/user\/notify(\/.*)?$'
+    ]
   }
 }
