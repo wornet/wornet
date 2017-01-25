@@ -12,7 +12,7 @@ userAlbumsSchema = BaseSchema.extend
 
 # UserAlbums.touchAlbum user, album.id, ->
 userAlbumsSchema.statics.touchAlbum = (user, albumId, done) ->
-    UserAlbums.findOne user: user.id, (err, userAlbums) ->
+    findOne UserAlbums, user: user.id, (err, userAlbums) ->
         toCreate = false
         if !userAlbums
             userAlbums = {}
@@ -54,7 +54,7 @@ userAlbumsSchema.statics.touchAlbum = (user, albumId, done) ->
                 UserAlbums.create userAlbums, done
 
 userAlbumsSchema.statics.removeAlbum = (user, albumId, done) ->
-    UserAlbums.findOne user: user.id, (err, userAlbums) ->
+    findOne UserAlbums, user: user.id, (err, userAlbums) ->
         if !err and userAlbums
             if !userAlbums.lastFour.contains albumId
                 done()

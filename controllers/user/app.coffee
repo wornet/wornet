@@ -43,7 +43,7 @@ module.exports = (router) ->
         data =
             _id: req.params.id
             user: req.user.id
-        App.findOne data, (err, app) ->
+        findOne App, data, (err, app) ->
             if err
                 res.serverError err
             else if app

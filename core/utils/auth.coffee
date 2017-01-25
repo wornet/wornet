@@ -83,7 +83,7 @@ exports.auth = (req, res, user, done) ->
 
 exports.login = (req, res, done) ->
     # Retrieve the user from the database by login
-    User.findOne
+    findOne User,
         email: strtolower req.body.email
     , (err, user) ->
 
@@ -110,7 +110,6 @@ exports.login = (req, res, done) ->
             else
                 req.flash "loginErrors", incorrectLoginMessage unless req.xhr
                 done incorrectLoginMessage, false
-
 
 # Try to login with session data or remember cookie
 exports.tryLogin = (req, res, next) ->

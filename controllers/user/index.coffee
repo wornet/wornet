@@ -171,7 +171,7 @@ module.exports = (router) ->
                                                     MailPackage.send user.email, s("Bienvenue sur le réseau social WORNET !"), message
                                             emailUnsubscribed email, (err, unsub) ->
                                                 if unsub
-                                                    Counter.findOne name: 'resubscribe', (err, counter) ->
+                                                    findOne Counter, name: 'resubscribe', (err, counter) ->
                                                         if counter
                                                             counter.inc()
                     if count
@@ -191,7 +191,7 @@ module.exports = (router) ->
         fail = ->
             req.flash 'resetPasswordErrors', s("Réinitialisation impossible, vérifiez votre adresse e-mail et vérifiez que vous n'avez pas déjà reçu de lien de réinitialisation de Wornet.")
             res.redirect req.originalUrl
-        User.findOne email: req.body.email, (err, user) ->
+        findOne User, email: req.body.email, (err, user) ->
             if ! err and user
                 ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
                     if err
@@ -221,7 +221,7 @@ module.exports = (router) ->
         ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
             if err
                 warn err, req
-            ResetPassword.findOne
+            findOne ResetPassword,
                 user: userId
                 token: req.params.token
             , (err, reset) ->
@@ -243,7 +243,7 @@ module.exports = (router) ->
             ResetPassword.remove createdAt: $lt: Date.yesterday(), (err) ->
                 if err
                     warn err, req
-                ResetPassword.findOne
+                findOne ResetPassword,
                     user: userId
                     token: req.params.token
                 , (err, reset) ->
@@ -390,7 +390,7 @@ module.exports = (router) ->
                 publicDataError = true
                 req.flash 'settingsErrors', s("Les nouveaux mots de passe ne correspondent pas.")
                 treatPublic()
-            User.findOne
+            findOne User,
                 _id: req.user._id
             , (err, user) ->
                 req.tryPassword user, req.body.actualPassword, (ok) ->
@@ -629,7 +629,7 @@ module.exports = (router) ->
                     res.serverError err
 
     router.get '/album/one/:id', (req, res) ->
-        Album.findOne
+        findOne Album,
             _id: req.params.id
         , (err, album) ->
             if err
@@ -733,15 +733,16 @@ module.exports = (router) ->
                             album = lastestAlbum
                             next()
                         else
-                            Album.findOne()
+                            Album.find(user: req.user._id)
+                            .limit 1
                             .sort _id: 'desc'
-                            .exec (err, foundAlbum) ->
+                            .exec (err, foundAlbums) ->
                                 if err
                                     data.error = err
                                     warn err, req
                                     done data
                                 else
-                                    album = foundAlbum._id
+                                    album = (foundAlbums or [])[0]._id
                                     lastestAlbum = album
                                     next()
                     else
@@ -945,7 +946,7 @@ module.exports = (router) ->
                                     unsub = new Unsubscribe email: email
                                 unsub.count++
                                 unsub.save()
-                                Counter.findOne name: 'unsubscribe', (err, counter) ->
+                                findOne Counter, name: 'unsubscribe', (err, counter) ->
                                     if counter
                                         counter.inc()
 

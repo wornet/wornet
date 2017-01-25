@@ -705,6 +705,31 @@ module.exports =
             [val]
 
     ###
+    Workaround for Kareem bug in Mongoose findOne method
+    @param model
+    @param search
+    @param callback
+
+    @return promise
+    ###
+    findOne: (model, search, callback) ->
+        unless callback
+            return model.findOne search
+        model.find(search).limit(1).exec (err, collection) ->
+            callback err, (collection or [])[0]
+
+    ###
+    Workaround for Kareem bug in Mongoose findOne method
+    @param model
+    @param search
+    @param callback
+
+    @return promise
+    ###
+    findOneDebounced: (model, search) ->
+        findOne.bind model, search
+
+    ###
     Return a regex string from RegExpString object get with the specified method (trim if any)
     This can be used in a pattern attribute (HTML5)
     @param string name of the pattern
@@ -901,7 +926,7 @@ module.exports =
     emailUnsubscribed: (email, done) ->
         email = email.toLowerCase()
         email = sha1 email.substr(0, 3) + '%' + email.substr(3, 3) + '*' + email.substr(6)
-        Unsubscribe.findOne email: email, done
+        findOne Unsubscribe, email: email, done
 
     ###
     Get a user from an object
@@ -1076,7 +1101,7 @@ module.exports =
                 albumProperties =
                     user: req.user.id
                     name: defaultName
-            Album.findOne albumProperties, (err, album) ->
+            findOne Album, albumProperties, (err, album) ->
                 if album
                     albumId = album.id
                     next album
@@ -1501,7 +1526,7 @@ module.exports =
                     _id: cesarRight id
                 else
                     uniqueURLID: id
-                User.findOne where, (err, user) ->
+                findOne User, where, (err, user) ->
                     warn err if err
                     if user
                         if user.accountConfidentiality is "public"

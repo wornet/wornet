@@ -66,7 +66,7 @@ UserPackage =
         isAPublicAccount req, hashedId, true, (err, publicAccount) =>
             if @isMeOrAFriend(req, hashedId) or publicAccount
                 idUser = cesarRight hashedId
-                UserAlbums.findOne
+                findOne UserAlbums,
                     user: idUser
                 , (err, userAlbums) ->
                     if err
@@ -466,7 +466,7 @@ UserPackage =
                 accountConfidentiality: "public"
                 certifiedAccount: true
                 _id: $nin: exceptions
-            User.findOne where, (err, certifiedUser) ->
+            findOne User, where, (err, certifiedUser) ->
                 warn err if err
                 if certifiedUser
                     done certifiedUser.publicInformations()
@@ -482,7 +482,7 @@ UserPackage =
                             certifiedAccount: false
                         ]
                         _id: $nin: exceptions
-                    User.findOne where, (err, user) ->
+                    findOne User, where, (err, user) ->
                         warn err if err
                         if user
                             done user.publicInformations()
@@ -667,7 +667,7 @@ UserPackage =
                     warn err
                 else
                     updateUser req, photoId: photo._id, ->
-                        Album.findOne
+                        findOne Album,
                             _id: photoBase.album
                         , (err, album) ->
                             if !err and album

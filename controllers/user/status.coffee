@@ -33,7 +33,7 @@ module.exports = (router) ->
                 res.json()
 
             else
-                Status.findOne
+                findOne Status,
                     _id: req.params.id
                     $or: [
                         at: me
@@ -60,7 +60,7 @@ module.exports = (router) ->
                                 warn err if err
                                 deleteStatus()
                         else if status.isAShare and status.referencedStatus
-                            Status.findOne
+                            findOne Status,
                                 _id: status.referencedStatus
                             , (err, originalStatus) ->
                                 warn err if err
@@ -118,7 +118,7 @@ module.exports = (router) ->
     router.get '/:id', (req, res) ->
         id = req.params.id
         if id
-            Status.findOne
+            findOne Status,
                 _id: id
             , (err, status) ->
                 if err
@@ -189,7 +189,7 @@ module.exports = (router) ->
                 author: user.id
                 at: null
                 isAShare: true
-            Status.findOne
+            findOne Status,
                 _id: statusId
             , (err, statusShared) ->
                 warn err if err
@@ -278,7 +278,7 @@ module.exports = (router) ->
                                                     author: user._id
                                                     notice: notice
                                             else
-                                                Notice.findOne
+                                                findOne Notice,
                                                     type: 'share_count'
                                                     attachedStatus: originalStatus._id
                                                     place: cesarRight originalStatus.author.hashedId

@@ -406,42 +406,41 @@ extend userSchema.methods,
             data =
                 askedFrom: askedFrom
                 askedTo: askedTo
-            Friend
-                .findOne $or: [
-                    askedFrom: askedTo
-                    askedTo: askedFrom
-                    data
-                ]
-                .exec (err, friend) ->
-                    if err
-                        warn err
-                    exists = false
-                    next = ->
-                        if typeof done is 'function'
-                            done
-                                err: err
-                                friend: friend
-                                exists: exists
-                    if friend
-                        exists = equals askedTo, friend.askedFrom
-                        if !exists and friend.status isnt "refused"
-                            err = new PublicError s("Une demande est déjà en attente.")
-                            next()
-                        else
-                            friend.status = 'waiting'
-                            friend.save next
-
-                        # if config.wornet.lockFriendAsk.contains friend.status
-                        #     err = new PublicError s("Une demande est déjà en attente.")
-                        #     next()
-                        # else
-                        #     friend.status = 'waiting'
-                        #     friend.save next
-                    else unless err
-                        friend = new Friend data
-                        friend.save next
-                    else
+            where = $or: [
+                askedFrom: askedTo
+                askedTo: askedFrom
+                data
+            ]
+            findOne Friend, where, (err, friend) ->
+                if err
+                    warn err
+                exists = false
+                next = ->
+                    if typeof done is 'function'
+                        done
+                            err: err
+                            friend: friend
+                            exists: exists
+                if friend
+                    exists = equals askedTo, friend.askedFrom
+                    if !exists and friend.status isnt "refused"
+                        err = new PublicError s("Une demande est déjà en attente.")
                         next()
+                    else
+                        friend.status = 'waiting'
+                        friend.save next
+
+                    # if config.wornet.lockFriendAsk.contains friend.status
+                    #     err = new PublicError s("Une demande est déjà en attente.")
+                    #     next()
+                    # else
+                    #     friend.status = 'waiting'
+                    #     friend.save next
+                else unless err
+                    friend = new Friend data
+                    friend.save next
+                else
+                    next()
 
     getFriendsIds: (done, forceReload = false, returnIds = true) ->
         @getFriends done, forceReload, returnIds

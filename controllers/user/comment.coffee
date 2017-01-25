@@ -32,7 +32,7 @@ module.exports = (router) ->
                     res.json()
 
         if userComment and userComment._id
-            Comment.findOne
+            findOne Comment,
                 _id: userComment._id
             , (err, comment) ->
                 if err

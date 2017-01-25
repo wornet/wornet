@@ -286,7 +286,7 @@ module.exports = (router) ->
                                     # In case of many "Photos de profil" albums
                                     if albumList.length > 1
                                         if @photoId
-                                            Photo.findOne
+                                            findOne Photo,
                                                 _id: @photoId
                                             , (err, photo) =>
                                                 if err
@@ -341,7 +341,7 @@ module.exports = (router) ->
                                                                 if err
                                                                     warn err
                                                     lastFour = lastFour.slice 0, 4
-                                                    UserAlbums.findOne
+                                                    findOne UserAlbums,
                                                         user: @_id
                                                     , (err, userAlbum) =>
                                                         if !userAlbum or err

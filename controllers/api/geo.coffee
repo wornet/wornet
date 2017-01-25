@@ -90,10 +90,10 @@ module.exports = (router) ->
         router.get '/city/distance/:country1/:city1/:country2/:city2', (req, res) ->
 
             parallel
-                city1: City.findOne.bind City,
+                city1: findOneDebounced City,
                     code: req.params.city1.accents()
                     country: req.params.country1.accents()
-                city2: City.findOne.bind City,
+                city2: findOneDebounced City,
                     code: req.params.city2.accents()
                     country: req.params.country2.accents()
             , (results) ->

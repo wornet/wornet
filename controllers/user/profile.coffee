@@ -19,7 +19,7 @@ module.exports = (router) ->
             if dataCache['publicAccountByHashedId-' + req.params.id]
                 res.redirect '/' + dataCache['publicAccountByHashedId-' + req.params.id]
             else
-                User.findOne
+                findOne User,
                     _id: cesarRight req.params.id
                 , (err, user) ->
                     memSet 'publicAccountByHashedId-' + req.params.id, user.uniqueURLID
@@ -52,7 +52,7 @@ module.exports = (router) ->
             options = safe: true
             Photo.findOneAndUpdate where, values, options, (err, photo) ->
                 if ! err and photo
-                    Album.findOne
+                    findOne Album,
                         _id: photo.album
                     , (err, album) ->
                         if !err and album
@@ -91,13 +91,13 @@ module.exports = (router) ->
                         data._id = req.user.photoAlbumId
                     else
                         data.name = photoDefaultName()
-                    Album.findOne data, (err, album) ->
+                    findOne Album, data, (err, album) ->
                         if !err and album
                             done null, album
                         else
                             done err
                 photo: (done) ->
-                    Photo.findOne
+                    findOne Photo,
                         _id: photoId
                     , (err, photo) ->
                         if !err and photo
