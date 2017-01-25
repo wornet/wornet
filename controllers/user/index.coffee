@@ -19,7 +19,7 @@ module.exports = (router) ->
     if config.env.development
         router.get '/test/sms', (req, res) ->
             titre = "Super Event Trop Genial"
-            url = "https://www.wornet.fr/move/event/98413141316987"
+            url = "https://www.wornet.net/move/event/98413141316987"
             NoticePackage.notify [req.user._id], null,
                 action: 'sms'
                 author: req.user._id

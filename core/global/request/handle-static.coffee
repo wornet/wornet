@@ -201,7 +201,7 @@ module.exports = (app) ->
                         return
                 else if req.url.startWith '/fonts/glyphicons'
                     req.url = '/components/bootstrap' + req.url
-                    # Allow cross-origin from all wornet.fr subdomains
+                    # Allow cross-origin from all subdomains of the main host
                     res.header 'access-control-allow-origin', '*'
                     res.header 'access-control-allow-methods', 'GET'
                 done()

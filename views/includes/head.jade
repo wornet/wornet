@@ -13,7 +13,7 @@ block meta
     +meta("keywords", "réseau social, réseau, social, wornet, français, étudiants, Limoges, France, plateforme, vidéos, médias, amis, contacts, espace, personnel, professionnel, portefeuille, clients, e-réputation, entreprises, sociétés, célébrités")
     +meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
     +meta("_csrf", _csrf)
-    +meta("facebook-image", "https://www.wornet.fr/img/wornet-thumb200.png")(property="og:image")
+    +meta("facebook-image", png("wornet-thumb200.png"))(property="og:image")
     +meta("google-site-verification", "nZfteLZ64gML9RUcDzzFEgh6Rmgf6sWj-vM8oanlQl4")
 block css
     each style in options.css().main

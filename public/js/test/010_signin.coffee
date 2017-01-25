@@ -26,14 +26,14 @@ describe "Signin", ->
                 shouldExists '.tooltip:hidden'
                 shouldNotExists '.tooltip:visible'
                 $form = w.$ '#login-signin'
-                $form.find('input[name="email"]').set('invalid@wornet.fr').focus().click()
+                $form.find('input[name="email"]').set('invalid@wornet.net').focus().click()
                 existsNow = w.exists '.tooltip:visible'
                 shouldExists '.tooltip:visible'
                 $form.find('.sign-in').click()
                 $tester.page fulfill, reject
 
             .then (fulfill, reject) ->
-                expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid@wornet.fr'
+                expect(w.$('[ng-controller="SigninSecondStepCtrl"] input[name="email"]').val()).toBe 'invalid@wornet.net'
                 shouldExists 'input[name="birthDate"]:visible'
                 $tester.src signinUrl, fulfill, reject
 

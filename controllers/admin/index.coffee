@@ -381,16 +381,16 @@ module.exports = (router) ->
             for status in statusList
                 modified = false
                 for link in status.links
-                    if ! link.https and link.href.startWith 'static.wornet.fr/'
-                        link.href = 'www.' + link.href.substr ('static.').length
+                    if ! link.href.startWith 'www.wornet.fr/'
+                        link.href = 'www.wornet.net/' + link.href.substr ('www.wornet.fr/').length
                         link.https = true
                         modified = true
                 for image in status.images
-                    if image and image.src and image.src.startWith 'http://static.wornet.fr/'
-                        image.src = 'https://www.' + image.src.substr ('http://static.').length
+                    if image and image.src and image.src.startWith 'https://www.wornet.fr/'
+                        image.src = 'https://www.wornet.net/' + image.src.substr ('http://www.wornet.fr/').length
                         modified = true
-                if status.content.contains 'http://static.wornet.fr'
-                    status.content = status.content.replace /http:\/\/static\.wornet\.fr\//g, 'https://www.wornet.fr/'
+                if status.content.contains 'https://www.wornet.fr'
+                    status.content = status.content.replace /http:\/\/www\.wornet\.fr\//g, 'https://www.wornet.net/'
                     modified = true
                 if modified
                     count++
