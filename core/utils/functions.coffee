@@ -726,8 +726,8 @@ module.exports =
 
     @return promise
     ###
-    findById: (id, search, callback) ->
-        model = _id: id
+    findById: (model, id, callback) ->
+        search = _id: id
         findOne model, search, callback
     ###
     Workaround for Kareem bug in Mongoose findOne method
