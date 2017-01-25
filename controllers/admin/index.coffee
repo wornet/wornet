@@ -389,7 +389,7 @@ module.exports = (router) ->
                     if image and image.src and image.src.startWith 'https://www.wornet.fr/'
                         image.src = 'https://www.wornet.net/' + image.src.substr ('http://www.wornet.fr/').length
                         modified = true
-                if status.content.contains 'https://www.wornet.fr'
+                if status.content and status.content.contains 'https://www.wornet.fr'
                     status.content = status.content.replace /http:\/\/www\.wornet\.fr\//g, 'https://www.wornet.net/'
                     modified = true
                 if modified
