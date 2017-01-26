@@ -707,13 +707,13 @@ Controllers =
     Invite: ($scope) ->
         s = textReplacements
         FACEBOOK_APP_ID = "400859870103849"
-        FACEBOOK_POST_LINK = "https://www.wornet.fr"
+        FACEBOOK_POST_LINK = "https://www.wornet.net"
         FACEBOOK_POST_LIST = [
-            message: s("Salut les amis, je viens de rejoindre le réseau social éthique Wornet ! Rejoignez-moi sur www.wornet.fr :)")
+            message: s("Salut les amis, je viens de rejoindre le réseau social éthique Wornet ! Rejoignez-moi sur www.wornet.net :)")
         ,
-            message: s("Hello les amis, je me suis inscrit sur le réseau social éthique Wornet ! C'est plutôt sympathique rejoignez-moi sur www.wornet.fr :)")
+            message: s("Hello les amis, je me suis inscrit sur le réseau social éthique Wornet ! C'est plutôt sympathique rejoignez-moi sur www.wornet.net :)")
         ,
-            message: s("Je viens de rejoindre le réseau social éthique Wornet (www.wornet.fr). Rejoignez-moi dessus :)")
+            message: s("Je viens de rejoindre le réseau social éthique Wornet (www.wornet.net). Rejoignez-moi dessus :)")
         ]
 
         FB.init
@@ -1465,7 +1465,7 @@ Controllers =
     Settings: ($scope) ->
 
         s = textReplacements
-        urlPattern = "https://www.wornet.fr/"
+        urlPattern = "https://www.wornet.net/"
         $scope.generateURLVisu = ->
             $('#urlVisual').html urlPattern + $('#uniqueURLID').val().toLowerCase()
             return

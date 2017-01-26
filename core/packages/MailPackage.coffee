@@ -57,7 +57,7 @@ MailPackage =
                 .replace /&#039;/g, "'"
                 .replace /&amp;/g, '&'
         if from is null
-            from = 'Wornet <contact@wornet.fr>'
+            from = 'Wornet <contact@' + process.env.DEFAULT_HOST + '>'
 
         mailOptions =
             from: from

@@ -1418,7 +1418,7 @@ module.exports =
                 appendVersion = ''
                 unless file.startWith 'photo/'
                     appendVersion = '?' + version
-                (config.wornet.staticServer || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
+                (config.wornet.staticServer || process.env.STATIC_CDN || '') + '/' + directory + '/' + file + '.' + extension + appendVersion
 
     ###
     Generate an style URL (automaticaly compiled with stylus)
