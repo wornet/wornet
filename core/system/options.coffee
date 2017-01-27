@@ -76,6 +76,9 @@ module.exports = (app, port) ->
                 ['ios-app', style('ios-app')]
             ]
 
+    env: (key) ->
+        process.env[key] or null
+
     css: ->
         if config.env.development
             main: @mainCss()

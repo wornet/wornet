@@ -5,7 +5,6 @@ module.exports = (defer, start) ->
     # Make functions and config usables in views
     extend app.locals, functions
     extend app.locals,
-    	env: process.env
         config: config
         options: options
 
