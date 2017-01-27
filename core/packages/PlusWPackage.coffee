@@ -45,7 +45,7 @@ PlusWPackage =
                 end null
 
         if statusReq.isAShare and statusReq.referencedStatus
-            Status.findOne
+            findOne Status,
                 _id: statusReq.referencedStatus
             , (err, originalStatus) ->
                 warn err if err
@@ -85,7 +85,7 @@ PlusWPackage =
                     end err
 
         if statusReq.isAShare and statusReq.referencedStatus
-            Status.findOne
+            findOne Status,
                 _id: statusReq.referencedStatus
             , (err, originalStatus) ->
                 warn err if err

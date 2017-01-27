@@ -151,7 +151,7 @@ module.exports = (router) ->
                                 today = (new Date).midnight()
                                 id = Math.floor(today.getTime() / 1000).toString(16) + "0000000000000000"
                                 img = jd 'img(src=user.thumb50 alt=user.name.full data-id=user.hashedId data-toggle="tooltip" data-placement="top" title=user.name.full).thumb', user: req.user
-                                Notice.findOne
+                                findOne Notice,
                                     user: userId
                                     type: 'follow_count'
                                     _id: $gt: id

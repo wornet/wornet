@@ -545,7 +545,7 @@ StatusPackage =
             else
                 done null, status
         else
-            Status.findOne
+            findOne Status,
                 _id: status.referencedStatus
             , (err, originalStatus) ->
                 warn err if err

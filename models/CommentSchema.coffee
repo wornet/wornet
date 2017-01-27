@@ -18,7 +18,7 @@ commentSchema.pre 'save', (next) ->
                 if equals at, @author
                     next()
                 else
-                    Friend.findOne
+                    findOne Friend,
                         status: 'accepted'
                         $or: [
                             askedFrom: at
@@ -32,7 +32,7 @@ commentSchema.pre 'save', (next) ->
                             else if friend
                                 next()
                             else
-                                Follow.findOne
+                                findOne Follow,
                                     followed: at
                                     follower: @author
                                 , (err, follow) =>

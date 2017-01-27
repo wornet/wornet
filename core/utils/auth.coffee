@@ -14,7 +14,7 @@ exports.remember = (res, id) ->
 exports.remembered = (req, done) ->
     id = req.cookie config.wornet.remember.key
     if id and id isnt config.wornet.remember.off
-        User.findOne
+        findOne User,
             _id: id
         , (err, user) ->
             if err

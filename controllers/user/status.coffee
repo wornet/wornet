@@ -232,7 +232,7 @@ module.exports = (router) ->
                                                     author: user._id
                                                     notice: notice
                                             else
-                                                Notice.findOne
+                                                findOne Notice,
                                                     type: 'share_count'
                                                     attachedStatus: originalStatus._id
                                                     place: cesarRight originalStatus.at.hashedId

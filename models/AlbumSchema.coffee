@@ -43,7 +43,7 @@ albumSchema.methods.refreshPreview = (save = true, done) ->
                 done null, photos
 
 albumSchema.methods.firstPhoto = (done, thumbSize = null) ->
-    Photo.findOne
+    findOne Photo,
         album: @id
         status: 'published'
     , (err, photo) ->
