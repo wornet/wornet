@@ -412,6 +412,9 @@
             "beautify": true,
             "comments": false,
             "mangle": true,
+            "compress": {
+                "drop_console": true
+            },
             "minifyOnRate": false,
             "minRate": 0.99
         },
