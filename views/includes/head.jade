@@ -16,8 +16,8 @@ block meta
     +meta("robots", noIndex ? "noindex, nofollow" : "index, follow")
     +meta("_csrf", _csrf)
     +meta("facebook-image", png("wornet-thumb200.png"))(property="og:image")
-    if config.env('GOOGLE_SITE_VERIFICATION')
-        +meta("google-site-verification", config.env('GOOGLE_SITE_VERIFICATION'))
+    if options.env('GOOGLE_SITE_VERIFICATION')
+        +meta("google-site-verification", options.env('GOOGLE_SITE_VERIFICATION'))
 
 block css
     each style in options.css().main
