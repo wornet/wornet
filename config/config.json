@@ -115,30 +115,8 @@
 
     "view engines": {
 
-        "dust": {
-            "module": "adaro",
-            "renderer": {
-                "method": "dust",
-                "arguments": [{ "cache": false }]
-            }
-        },
-
-        "html": {
-            "name": "ejs",
-            "module": "ejs",
-            "renderer": "renderFile"
-        },
-
         "jade": {
             "module": "consolidate"
-        },
-
-        "js": {
-            "module": "adaro",
-            "renderer": {
-                "method": "js",
-                "arguments": [{ "cache": false }]
-            }
         }
 
     },
