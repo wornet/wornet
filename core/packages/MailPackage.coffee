@@ -25,10 +25,10 @@ MailPackage =
             fillOptionsWith process.env.MAIL_SERVICE, process.env.MAIL_AUTH_USER, process.env.MAIL_AUTH_PASS
         else if config and config.wornet and config.wornet.mail and !empty(config.wornet.mail.auth.user)
             fillOptionsWith config.wornet.mail.service, config.wornet.mail.auth.user, config.wornet.mail.auth.pass
-        if options and options.auth and !empty(options.auth.user)
-            transporter = nodemailer.createTransport options
-        else
+        if empty(((options.options or options or {}).auth or {}).user)
             warn errorMessage
+        else
+            transporter = nodemailer.createTransport options
 
     send: (to, subject, text, html = null, from = null, done = null) ->
         if typeof html is 'function'
