@@ -9,28 +9,26 @@ transporter = null
 MailPackage =
 
     init: (options) ->
-        if process.env.MAIL_SERVICE
+        fillOptionsWith = (service, user, pass) ->
             options ||=
-                service: process.env.MAIL_SERVICE
+                service: service
                 auth:
-                    user: process.env.MAIL_AUTH_USER
-                    pass: process.env.MAIL_AUTH_PASS
-            transporter = nodemailer.createTransport options
-        else if empty(config) or empty(config.wornet) or empty(config.wornet.mail) or empty(config.wornet.mail.auth.user)
-            warn errorMessage
-        else
-            options ||=
-                service: config.wornet.mail.service
-                auth:
-                    user: config.wornet.mail.auth.user
-                    pass: config.wornet.mail.auth.pass
+                    user: user
+                    pass: pass
             if options.service is 'OVH'
                 smtpTransport = require 'nodemailer-smtp-transport'
                 options = smtpTransport
                     host: 'SSL0.OVH.NET'
                     port: 587
                     auth: options.auth
+        if process.env.MAIL_SERVICE
+            fillOptionsWith process.env.MAIL_SERVICE, process.env.MAIL_AUTH_USER, process.env.MAIL_AUTH_PASS
+        else if config and config.wornet and config.wornet.mail and !empty(config.wornet.mail.auth.user)
+            fillOptionsWith config.wornet.mail.service, config.wornet.mail.auth.user, config.wornet.mail.auth.pass
+        if options and options.auth and !empty(options.auth.user)
             transporter = nodemailer.createTransport options
+        else
+            warn errorMessage
 
     send: (to, subject, text, html = null, from = null, done = null) ->
         if typeof html is 'function'
