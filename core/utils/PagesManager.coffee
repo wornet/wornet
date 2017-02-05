@@ -24,7 +24,7 @@ class PagesManager
                     rendered = true
                     res.render template, model
             else
-                fs.readFile template, (err, data) ->
+                fs.readFile __dirname + '/../../views/' + template, (err, data) ->
                     if err
                         res.notFound()
                     else
