@@ -575,12 +575,12 @@ StatusPackage =
             present: false
             points: 0
         concernMe: false
-        content: s("Les premiers statuts sont important... Qu'allez-vous poster ? Un texte bien sympa du type \"Bonjour Wornet !\" ? Vos photos de vacances pour faire rêver vos premiers amis worners ? Un court-métrage que vous avez vu sur Youtube comme \"Les Seigneurs du Temps\" ?")
+        content: s("Les premiers statuts sont important... Qu'allez-vous poster ? Un texte bien sympa du type \"Bonjour Wornet !\" ? Vos photos de vacances pour faire rêver vos premiers amis worners ? Un court-métrage que vous avez vu sur Youtube comme \"Y a-t-il un geek pour sauver le soldat Johnson ?\"")
         date: new Date()
         status: 'active'
         images: []
         videos: [
-            href: '//www.youtube.com/embed/p9ysQgby8T8'
+            href: '//www.youtube.com/embed/JEn3wRyk5uE'
             _id: "100000000000000000000002"
         ]
         links: []
