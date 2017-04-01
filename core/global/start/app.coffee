@@ -64,7 +64,7 @@ module.exports = (defer, start) ->
                     console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
         else
             ca = if process.env.SSL_CA_CHAIN
-                process.env.SSL_CA_CHAIN
+                fs.readFileSync process.env.SSL_CA_CHAIN, 'utf8'
             else if process.env.SSL_CA_DIRECTORY
                 glob process.env.SSL_CA_DIRECTORY, (er, files) ->
                     files.map file ->
@@ -74,9 +74,9 @@ module.exports = (defer, start) ->
                     fs.readFileSync '/etc/ssl/' + file, 'utf8'
 
             options =
-                key: fs.readFileSync process.env.SSL_PRIVATE_KEY or '/etc/ssl/private/key.pem'
+                key: fs.readFileSync(process.env.SSL_PRIVATE_KEY, 'utf8') or '/etc/ssl/private/key.pem'
                 ca: ca
-                cert: fs.readFileSync process.env.SSL_CERTIFICATE or '/etc/ssl/certificate.crt'
+                cert: fs.readFileSync(process.env.SSL_CERTIFICATE, 'utf8') or '/etc/ssl/certificate.crt'
 
             global.server = httpsServer.createServer(options, app).listen port, (err) ->
                 if err
