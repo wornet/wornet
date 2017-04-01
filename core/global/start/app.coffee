@@ -63,7 +63,9 @@ module.exports = (defer, start) ->
                 else
                     console['log'] '[%s] Listening on http://localhost:%d', app.settings.env, port
         else
-            ca = if process.env.SSL_CA_DIRECTORY
+            ca = if process.env.SSL_CA_CHAIN
+                process.env.SSL_CA_CHAIN
+            else if process.env.SSL_CA_DIRECTORY
                 glob process.env.SSL_CA_DIRECTORY, (er, files) ->
                     files.map file ->
                         fs.readFileSync file, 'utf8'

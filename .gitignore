@@ -2,6 +2,7 @@
 *.lnk
 .npm/*
 .config/*
+.idea/
 tags
 node_modules/*
 views/testfb.jade
