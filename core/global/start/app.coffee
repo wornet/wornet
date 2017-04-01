@@ -74,9 +74,9 @@ module.exports = (defer, start) ->
                     fs.readFileSync '/etc/ssl/' + file, 'utf8'
 
             options =
-                key: fs.readFileSync(process.env.SSL_PRIVATE_KEY, 'utf8') or '/etc/ssl/private/key.pem'
+                key: fs.readFileSync process.env.SSL_PRIVATE_KEY or '/etc/ssl/private/key.pem', 'utf8'
                 ca: ca
-                cert: fs.readFileSync(process.env.SSL_CERTIFICATE, 'utf8') or '/etc/ssl/certificate.crt'
+                cert: fs.readFileSync process.env.SSL_CERTIFICATE or '/etc/ssl/certificate.crt', 'utf8'
 
             global.server = httpsServer.createServer(options, app).listen port, (err) ->
                 if err
