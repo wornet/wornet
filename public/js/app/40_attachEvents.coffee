@@ -254,7 +254,7 @@ do ->
         ]
         [
             'error'
-            '#profile-photo, #profile-photo-media'
+            '.profile-photo, .profile-photo-media'
             ($form, e, error) ->
                 $form.find('input[type="submit"]').prop 'disabled', false
                 $loader = $form.find '.loader'
@@ -263,7 +263,7 @@ do ->
         ]
         [
             'upload'
-            '#profile-photo, #profile-photo-media'
+            '.profile-photo, .profile-photo-media'
             ($form, e, body) ->
                 $form.find('input[type="submit"]').prop 'disabled', false
                 $img = $form.find 'img.upload-thumb'
@@ -314,7 +314,7 @@ do ->
         ]
         [
             'submit'
-            '#profile-photo, #profile-photo-media'
+            '.profile-photo, .profile-photo-media'
             ($form, e) ->
                 $form.find('input[type="submit"]').prop 'disabled', true
                 $img = $form.find 'img.upload-thumb'
@@ -359,11 +359,11 @@ do ->
                 $container = $form.find '.upload-container'
                 $container.html $container.data 'save-html'
                 $scope = $form.scope()
-                $html = $('<div>' + body
+                $html = $('<div>' + (body
                     .replace /[\n\r\t]/g, ''
                     .replace /^.*<body[^>]*>/ig, ''
                     .replace /<\/body>.*$/ig, ''
-                + '</div>')
+                    ) + '</div>')
                 if $html.find('h3').length
                     $('.errors').errors $html.find('h3 + p').text()
                 else

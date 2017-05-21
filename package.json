@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
-    "start": "pm2 start server.js"
+    "start": "pm2 start server.js",
+    "dev": "cross-env CITIES_EXPECTED_COUNT=0 nodemon -e js,coffee,pug,jade --watch views --watch code --watch models --watch controllers --watch config server.js"
   },
   "dependencies": {
     "basic-auth-connect": "~1.0.0",
@@ -38,6 +39,7 @@
     "localizr": "^0.1.0",
     "lusca": "~1.0.3",
     "method-override": "~1.0.0",
+    "momentum-js": "^0.1.0",
     "mongoose": "^4.4.7",
     "mongoose-simple-random": "~0.3.0",
     "newrelic": "^1.36.0",
@@ -47,6 +49,7 @@
     "passport": "^0.2.0",
     "phantomjs": "~1.9.16",
     "pm2": "^2.2.3",
+    "pug": "^2.0.0-rc.1",
     "redis": "^2.3.0",
     "requirejs": "^2.1.11",
     "stitch": "^0.3.3",

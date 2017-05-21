@@ -154,7 +154,7 @@ GeoPackage =
             if err
                 done err
             else
-                done(null, cities
+                done(null, (cities
                     .map (city) ->
                         city.toCloseCity lat, long
                     .filter (city) ->
@@ -166,6 +166,7 @@ GeoPackage =
                             0
                         else
                             -1
+                    )
                 )
 
     closestCities: (lat, long, distance, done) ->

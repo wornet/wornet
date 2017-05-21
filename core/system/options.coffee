@@ -25,14 +25,14 @@ module.exports = (app, port) ->
         warn err, req
         err
 
-    app.on 'middleware:after:session', (eventargs) ->
+    app.on 'middleware:after:session', () ->
 
         # Flash session (store data in sessions to the next page only)
         app.use flash()
         # Allow to set and get cookies in routes methods
         app.use cookiesInit()
 
-        # Check if user is authentificated and is allowed to access the requested URL
+        # Check if user is authenticated and is allowed to access the requested URL
         app.use auth.isAuthenticated
 
     trackers: ->

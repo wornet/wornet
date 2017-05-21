@@ -5,6 +5,7 @@ module.exports = (router) ->
     pm = new PagesManager router
         #.page '/newsroom'
         #.page '/jobs'
+        .page '/game/chess'
         .page '/static/legals'
         .page '/robots.txt'
 
@@ -47,8 +48,8 @@ module.exports = (router) ->
             delay time.seconds, ->
                 res.json {}
 
-        pm.page '/testfb', (req, res, done) ->
-            res.render 'testfb',
+        pm.page '/testfb', (req, res) ->
+            res.render 'testfb'
 
     else
         router.get '/photos', (req, res) ->

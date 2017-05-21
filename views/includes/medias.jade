@@ -18,7 +18,7 @@
             =s(photoDefaultName())
         //- iframe(name="upload")
         .photo-options-media
-            +form("/user/photo", "FILE")#profile-photo-media(target="upload")
+            +form("/user/photo", "FILE").profile-photo-media(target="upload")
                 input(type="hidden" name="mediaFlag" value="O")
                 .progress-radial: .overlay
                     img#upload-thumb-media.upload-thumb(data-user-thumb=profile.hashedId)

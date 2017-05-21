@@ -23,8 +23,8 @@ Wornet = angular.module 'Wornet', [
 #Angular Wornet services
 .factory 'chatService', ['$rootScope', ($rootScope) ->
     window.chatService =
-        chatWith: (user, message) ->
-            $rootScope.$broadcast 'chatWith', user, message
+        chatWith: (users, message) ->
+            $rootScope.$broadcast 'chatWith', users, message
             return
         all: (messages) ->
             $rootScope.$broadcast 'all', messages
@@ -254,7 +254,7 @@ Wornet = angular.module 'Wornet', [
 
 ControllersByService =
     notificationsService: 'Notifications'
-    chatService: 'Profile'
+    chatService: 'Profile Chat ChatList'
     smiliesService: 'Status'
     statusService: 'Status'
     $sce: 'Notifications NotificationList'

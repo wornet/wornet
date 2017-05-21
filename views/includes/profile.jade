@@ -10,7 +10,7 @@
                     .alert.alert-success
                         =friendAsked
             .photo-options
-                #profile-photo
+                .profile-photo
                     img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" data-view-src=profile.photo alt=profile.fullName)
                 if isAFriend || isAPublicAccount
                     h6.profile-confidentiality
@@ -44,12 +44,17 @@
                             type="button"
                         )
                     if isAPublicAccount && !isAFriend
-                        input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value="Suivre" type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
-                        input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value="Ne plus suivre" type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
+                        input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value=s("Suivre") type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
+                        input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value=s("Ne plus suivre") type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
+                    if isAFriend
+                        a.dropdown-toggle(data-toggle="dropdown")
+                            =s("Jouer")
+                        ul.dropdown-menu(role="menu")
+                            li: a(href="/game/chess/" + profile.hashedId)=s("Échecs")
         .profile-edit(class=(edit ? null : "hidden"))
             iframe(name="upload")
             .photo-options
-                +form("/user/photo", "FILE")#profile-photo(target="upload")
+                +form("/user/photo", "FILE").profile-photo(target="upload")
                     .progress-radial: .overlay
                         img.upload-thumb(src=profile.thumb200 data-user-thumb=profile.hashedId data-thumb-size="200" alt=profile.fullName)
                         .btn

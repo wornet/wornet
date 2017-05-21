@@ -332,7 +332,7 @@ Controllers =
 
         return
 
-    Chat: ($scope, $sce) ->
+    Chat: ($scope, chatService) ->
         $('#chat').show()
         chats = getChats()
         $scope.chats = chats
@@ -396,6 +396,13 @@ Controllers =
             if !message
                 delay 1, ->
                     $('.chat[data-chat-id="' + id + '"] textarea:first').focus()
+            if exists '[data-chat-with]'
+                $('[data-chat-with]').each ->
+                    $message = $ @
+                    friend = $message.data 'chat-with'
+                    message = content: $message.html().trim()
+                    $scope.send message, friend.hashedId
+                    $message.remove()
 
             return
 
@@ -475,6 +482,13 @@ Controllers =
             else
                 '(' + nbMessages + ') ' + name
 
+        $scope.getContent = (message) ->
+            message.content.replace /#goto\[(\S+)\s([^\]]+)\]/g, (all, href, text) ->
+                if message.from and href.charAt(0) is '/'
+                    '<a href="' + href + '">' + text+ '</a>'
+                else
+                    text
+
         $scope.close = (chat) ->
             chat.open = false
             saveChatState chat
@@ -516,9 +530,14 @@ Controllers =
                 chatService.all data.chat
                 return
 
+        if exists '[data-chat-with]'
+            $('[data-chat-with]').each ->
+                $message = $ @
+                friend = $message.data 'chat-with'
+                chatService.chatWith [objectResolve friend]
         return
 
-    ChatList: ($scope) ->
+    ChatList: ($scope, chatService) ->
 
         $scope.chatWith = (user, $event) ->
             chatService.chatWith [objectResolve user]
@@ -1118,8 +1137,8 @@ Controllers =
                     Ajax.post '/user/profile/photo',
                         data: photoId: $scope.loadedMedia.id
                         success: (res) ->
-                            if $('#profile-photo') and res and res.src
-                                $('#profile-photo img').thumbSrc res.src
+                            if res and res.src
+                                $('.profile-photo img').thumbSrc res.src
                             window.refreshMediaAlbums()
                             return
             return
@@ -1380,7 +1399,7 @@ Controllers =
         $scope.isMobile = window.isMobile()
         return
 
-    Search: ($scope) ->
+    Search: ($scope, chatService) ->
 
         askedForFriends = []
 

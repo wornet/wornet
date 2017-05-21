@@ -156,6 +156,7 @@ exports.isAuthenticated = (req, res, next) ->
                     "/photos"
                     "/report/**"
                     "/user/**"
+                    "/game/**"
                 ]
 
                 whitelist = [
