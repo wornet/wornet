@@ -30,7 +30,6 @@ block append js
                     piece = positionToCode
                         x: data.target.x
                         y: data.origin.y
-                    console.log piece
                     board.move piece + '-' + data.to
                 board.move data.from + '-' + data.to
             positionToCode = (pos) ->

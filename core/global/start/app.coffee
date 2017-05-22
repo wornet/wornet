@@ -66,11 +66,6 @@ module.exports = (defer, start) ->
         momentum.setAuthorizationStrategy (mode, method, args, req, res) ->
             new Promise (resolve) ->
                 pieces = args[0].split '-'
-                console.log [
-                    pieces.length is 3
-                    pieces[0] in ['chess', 'chessMoves']
-                    req.user._id in pieces
-                ]
                 resolve pieces.length is 3 and pieces[0] in ['chess', 'chessMoves'] and req.user.hashedId in pieces
     httpsPort = process.env.HTTPS_PORT or 443
     httpPort = process.env.HTTP_PORT or 80
