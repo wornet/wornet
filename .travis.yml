@@ -3,6 +3,7 @@ language: node_js
 node_js:
   - "6.0"
   - "6.1"
+  - "7"
 
 notifications:
   slack: wornet:enTUXnVTJ6Uu4ST2r1sbi5kb

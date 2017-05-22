@@ -567,8 +567,9 @@ module.exports = (app, port) ->
                     clearTimeout @excedeedTimeout
                 if time > 0
                     res = @
-                    @excedeedTimeout = delay time.seconds, ->
-                        res.serverError new PublicError s("Navré, nous n'avons pas pu traiter votre demande, veuillez réessayer ultérieurement.")
+                    unless /^\/api\/mm\//.test @req.url
+                        @excedeedTimeout = delay time.seconds, ->
+                            res.serverError standartError()
             catch: (callback) ->
                 res = @
                 ->

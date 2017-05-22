@@ -62,11 +62,6 @@ module.exports = (defer, start) ->
             files.forEach (file) ->
                 require file
 
-    require('momentum-js').connect(app, 'mongodb://localhost:27017/momentum').then (momentum) ->
-        momentum.setAuthorizationStrategy (mode, method, args, req, res) ->
-            new Promise (resolve) ->
-                pieces = args[0].split '-'
-                resolve pieces.length is 3 and pieces[0] in ['chess', 'chessMoves'] and req.user.hashedId in pieces
     httpsPort = process.env.HTTPS_PORT or 443
     httpPort = process.env.HTTP_PORT or 80
 
@@ -99,16 +94,22 @@ module.exports = (defer, start) ->
                 else
                     console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
-    # Handle errors and print in the console
-    if config.port is httpsPort
-        global.httpsServer = require 'https'
-        app.all '*', (req, res, next) ->
-            if req.secure
-                next()
-            else
-                res.redirect 'https://' + req.hostname + req.url
+    require('momentum-js').connect(app, 'mongodb://localhost:27017/game').then (momentum) ->
+        momentum.setAuthorizationStrategy (mode, method, args, req, res) ->
+            pieces = args[0].split '_'
+            id = ((req.session or {}).user or {}).hashedId
+            pieces.length is 3 and pieces[0] in ['chessGames', 'chessMoves'] and id in pieces
 
-        listen httpPort
-        listen httpsPort
-    else
-        listen config.port
+        # Handle errors and print in the console
+        if config.port is httpsPort
+            global.httpsServer = require 'https'
+            app.all '*', (req, res, next) ->
+                if req.secure
+                    next()
+                else
+                    res.redirect 'https://' + req.hostname + req.url
+
+            listen httpPort
+            listen httpsPort
+        else
+            listen config.port

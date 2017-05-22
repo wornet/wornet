@@ -396,13 +396,7 @@ Controllers =
             if !message
                 delay 1, ->
                     $('.chat[data-chat-id="' + id + '"] textarea:first').focus()
-            if exists '[data-chat-with]'
-                $('[data-chat-with]').each ->
-                    $message = $ @
-                    friend = $message.data 'chat-with'
-                    message = content: $message.html().trim()
-                    $scope.send message, friend.hashedId
-                    $message.remove()
+                    return
 
             return
 
@@ -481,11 +475,35 @@ Controllers =
                 s("{count} nouveaux messages", count: nbMessages)
             else
                 '(' + nbMessages + ') ' + name
+            return
+
+        $scope.$on 'sendMessage', (e, message, id) ->
+            $scope.send message, id
+            return
 
         $scope.getContent = (message) ->
-            message.content.replace /#goto\[(\S+)\s([^\]]+)\]/g, (all, href, text) ->
-                if message.from and href.charAt(0) is '/'
-                    '<a href="' + href + '">' + text+ '</a>'
+            message.content.replace /#goto\[(\S+)\s([^\]]+)\]/g, (all, hrefPattern, text) ->
+                hrefs = {}
+                keys = ['from', 'to']
+                $.each hrefPattern.split(','), (i, href) ->
+                    pieces = href.split ':'
+                    key = if pieces.length is 1
+                            keys[i]
+                        else
+                            pieces[0]
+                    href = if pieces.length is 1
+                        pieces[0]
+                    else
+                        pieces.slice(1).join(':')
+                    if href.charAt(0) is '/'
+                        hrefs[key] = href
+                    return
+                key = if message.from
+                        'to'
+                    else
+                        'from'
+                if hrefs[key]
+                    '<a href="' + hrefs[key] + '">' + text+ '</a>'
                 else
                     text
 
@@ -530,11 +548,8 @@ Controllers =
                 chatService.all data.chat
                 return
 
-        if exists '[data-chat-with]'
-            $('[data-chat-with]').each ->
-                $message = $ @
-                friend = $message.data 'chat-with'
-                chatService.chatWith [objectResolve friend]
+        chatService.chatReady()
+
         return
 
     ChatList: ($scope, chatService) ->
@@ -590,6 +605,21 @@ Controllers =
             return
 
         return
+
+    Game: ($scope) ->
+        s = textReplacements
+        friend = objectResolve getData 'game-with'
+        $scope.$on 'chatReady', ->
+            chatService.chatWith [friend]
+        me = getCachedData 'me'
+        $scope.message = s("Une partie d'échecs ?")
+        $scope.invite = ->
+            $scope.sent = true
+            message = content: $scope.message + '\n' +
+                '#goto[from:/game/chess/' + friend.hashedId + ',to:/game/chess/' + me + ' ' + s("Rejoindre") + ']'
+            chatService.sendMessage message, friend.hashedId
+            return
+
 
     Event: ($scope, $http) ->
         loadTemplate = ->
