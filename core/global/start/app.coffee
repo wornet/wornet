@@ -95,10 +95,26 @@ module.exports = (defer, start) ->
                     console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
     require('momentum-js').connect(app, 'mongodb://localhost:27017/game').then (momentum) ->
-        momentum.setAuthorizationStrategy (mode, method, args, req, res) ->
+        momentum.setAuthorizationStrategy (mode, method, args, req) ->
             pieces = args[0].split '_'
             id = ((req.session or {}).user or {}).hashedId
-            pieces.length is 3 and pieces[0] in ['chessGames', 'chessMoves'] and id in pieces
+            if pieces.length is 3 and pieces[0] in ['chessGames', 'chessMoves'] and id in pieces
+                if pieces[0] is 'chessGames'
+                    return mode is 'data'
+
+                if method is 'remove'
+                    return new Promise (resolve) ->
+                        game =
+                            date: new Date()
+                            abandon: id
+                        collection = 'chessGames_' + pieces.slice(1).join '_'
+                        momentum.insert(collection, game).then ->
+                            resolve true
+                            return
+                        return
+                return method in ['find', 'insertOne', 'remove']
+
+            return false
 
         # Handle errors and print in the console
         if config.port is httpsPort
