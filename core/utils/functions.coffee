@@ -246,7 +246,7 @@ module.exports =
             fs.readFile path, (err, data) ->
                 if err
                     if err.code is 'ENOENT'
-                        request = require('http').get
+                        request = (httpsServer or require 'http').get
                             host: process.env.DEFAULT_HOST or '127.0.0.1'
                             port: process.env.PORT or config.port
                             path: pathWithoutParams
