@@ -193,88 +193,92 @@ module.exports =
         iosApp = !! options.iosApp
         if i >= lst.length
             end content
-        else
-            file = lst[i]
-            # Internet Explorer condition
-            if typeof(file) is 'object' and file[0]
-                file = switch file[0]
-                    when 'ios-app'
-                        if iosApp
-                            file[1]
-                    when 'non-ie'
-                        if ie
-                            file[1]
-                    else
-                        version = 1
-                        symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
-                            version = intval v
-                            s
-                        versionMatch = switch symbol
-                            when 'gt'
-                                ie > version
-                            when 'gte'
-                                ie >= version
-                            when 'lt'
-                                ie < version
-                            when 'lte'
-                                ie <= version
-                            else
-                                ie is version
-                        if versionMatch
-                            file[1]
-            done = ->
-                concatCallback content, lst, proceed, end,
-                    i: i + 1
-                    ie: ie
-                    iosApp: iosApp
-            concat = (data) ->
-                content += proceed strval data
-                if content.endWith ';'
-                    content += ';'
-                content += '\n'
-            if file
-                pathWithoutParams = file
-                path = if file.contains '?'
-                    file.replace /^([^\?]+)\?.*$/g, (m, start) ->
-                        pathWithoutParams = start
-                        __dirname + '/../../.build' + start
-                else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
-                    __dirname + '/../../public' + file
-                else
-                    file
-                fs.readFile path, (err, data) ->
-                    if err
-                        if err.code is 'ENOENT'
-                            require('http').get
-                                host: '127.0.0.1'
-                                port: config.port
-                                path: pathWithoutParams
-                            , (res) ->
-                                if res.statusCode in [0, 200]
-                                    data = ''
-                                    res.on 'error', (err) ->
-                                        console.warn err
-                                        done()
-                                    res.on 'data', (chunk) ->
-                                        data += chunk
-                                    res.on 'end', ->
-                                        if data.startWith '<!DOCTYPE html>'
-                                            warn path + ' return HTML'
-                                        else
-                                            concat data
-                                        done()
-                                else
-                                    warn pathWithoutParams + ' : Error ' + res.statusCode
-                                    done()
+            return
 
+        file = lst[i]
+        # Internet Explorer condition
+        if typeof(file) is 'object' and file[0]
+            file = switch file[0]
+                when 'ios-app'
+                    if iosApp
+                        file[1]
+                when 'non-ie'
+                    if ie
+                        file[1]
+                else
+                    version = 1
+                    symbol = file[0].replace /if\s*([^\s]*)\s*IE\s+([0-9\.]+)/g, (m, s, v)->
+                        version = intval v
+                        s
+                    versionMatch = switch symbol
+                        when 'gt'
+                            ie > version
+                        when 'gte'
+                            ie >= version
+                        when 'lt'
+                            ie < version
+                        when 'lte'
+                            ie <= version
                         else
-                            warn err
-                            done()
-                    else
-                        concat data
-                        done()
+                            ie is version
+                    if versionMatch
+                        file[1]
+        done = ->
+            concatCallback content, lst, proceed, end,
+                i: i + 1
+                ie: ie
+                iosApp: iosApp
+        concat = (data) ->
+            content += proceed strval data
+            if content.endWith ';'
+                content += ';'
+            content += '\n'
+        if file
+            pathWithoutParams = file
+            path = if file.contains '?'
+                file.replace /^([^\?]+)\?.*$/g, (m, start) ->
+                    pathWithoutParams = start
+                    __dirname + '/../../.build' + start
+            else if file.charAt(0) is '/' and file.charAt(1) isnt '/'
+                __dirname + '/../../public' + file
             else
-                done()
+                file
+            fs.readFile path, (err, data) ->
+                if err
+                    if err.code is 'ENOENT'
+                        request = require('http').get
+                            host: process.env.DEFAULT_HOST or '127.0.0.1'
+                            port: process.env.PORT or config.port
+                            path: pathWithoutParams
+                        , (res) ->
+                            if res.statusCode in [0, 200]
+                                data = ''
+                                res.on 'error', (err) ->
+                                    console.warn err
+                                    done()
+                                res.on 'data', (chunk) ->
+                                    data += chunk
+                                res.on 'end', ->
+                                    if data.startWith '<!DOCTYPE html>'
+                                        warn path + ' return HTML'
+                                    else
+                                        concat data
+                                    done()
+                            else
+                                warn pathWithoutParams + ' : Error ' + res.statusCode
+                                done()
+                        request.setTimeout 60000, ->
+                            warn pathWithoutParams + ' : Timeout error'
+                            done()
+
+                    else
+                        warn err
+                        done()
+                else
+                    concat data
+                    done()
+        else
+            done()
 
     ###
     Do extend but hide the property/method to forbbid enumerate on it
