@@ -75,19 +75,19 @@ block append js
                                     '<br>' +
                                     message
                                 )
-                            triggerMove = (data) ->
+                            localRecordMove = (data) ->
+                                lastMove = data
+                                movedPieces[data.from] = true
                                 moveCode = data.from + '-' + data.to
                                 $reset.prop 'disabled', false
+                                $.extend {code: moveCode}, data
+                            move = (data) ->
+                                moveInfo = localRecordMove data
                                 board.position game.fen()
-                                moveInfo = $.extend {code: moveCode}, data
                                 moves.insertOne moveInfo, ->
                                     if game.in_checkmate() or game.in_draw() or game.in_stalemate() or game.in_threefold_repetition()
                                         games.insertOne {}
                                     return
-                            move = (data) ->
-                                lastMove = data
-                                movedPieces[data.from] = true
-                                triggerMove data
                             positionToCode = (pos) ->
                                 COLUMNS[pos.x - 1] + pos.y
                             codeToPosition = (code) ->
@@ -203,6 +203,7 @@ block append js
                                 return
                             squares = '#board .square-55d63'
                             moves.onInsert (event) ->
+                                localRecordMove event.item
                                 game.move event.item
                                 board.position game.fen()
                                 updateStatus()
@@ -240,7 +241,7 @@ block append js
                                         else
                                             'q'
                                     else
-                                        if previousPieceType is 'p' and distance is Math.SQRT2 !positionPieceColor origin
+                                        if previousPieceType is 'p' and distance is Math.SQRT2 and !positionPieceColor origin
                                             'e'
                                         else
                                             null

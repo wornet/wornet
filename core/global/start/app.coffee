@@ -94,7 +94,7 @@ module.exports = (defer, start) ->
                 else
                     console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
-    GamePackage.init app, ->
+    GamePackage.init(app).then ->
 
         # Handle errors and print in the console
         if config.port is httpsPort

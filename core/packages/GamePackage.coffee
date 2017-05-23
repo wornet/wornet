@@ -3,7 +3,7 @@
 GamePackage =
 
     init: (app) ->
-        return new Promise (resolve) ->
+        new Promise (resolve) =>
             games = [
                 'chess'
             ]
@@ -12,10 +12,13 @@ GamePackage =
                 @[game](app).then ->
                     unless --count
                         resolve()
+                    return
+            return
 
     chess: (app) ->
-        Chess = require('./chess').Chess
-        return new Promise (gameResolve) ->
+        Chess = require('chess.js').Chess
+
+        new Promise (gameResolve) ->
             require('momentum-js').connect(app, 'mongodb://localhost:27017/game').then (momentum) ->
                 getGameState = (couple, me) ->
                     return new Promise (resolve) ->
@@ -78,3 +81,6 @@ GamePackage =
                     return false
 
                 gameResolve()
+            return
+
+module.exports = GamePackage
