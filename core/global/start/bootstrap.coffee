@@ -40,7 +40,8 @@ do ->
     global.options = require(coreDir + 'system/options') app, port
 
     unless global.stopCatchException
-        process.on 'uncaughtException', (err) ->
+
+        errorHandler = (err) ->
             if err.code is 'EADDRINUSE'
                 console['log'] 'Attempt to listen ' + port + ' on ' + app.settings.env + '(' + app.get('env') + ')'
                 throw err
@@ -58,3 +59,6 @@ do ->
                     global.server.close()
                 delay 1.seconds, ->
                     process.exit 1
+
+        process.on 'uncaughtException', errorHandler
+        process.on 'unhandledRejection', errorHandler

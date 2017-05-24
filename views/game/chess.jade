@@ -4,27 +4,26 @@ block append link
     link(rel="stylesheet" href="/components/chessboard/css/chessboard-0.3.0.css")
 
 block body
-    h3(style="text-align: center;")=s("Partie d'échecs avec {friend}", {friend: friend.fullName})
-    #board(style="max-width: 400px; margin: auto;")
-    div(style="text-align: center;")
-        #board-info
-        button.btn#board-reset=s("Réinitialiser (abandon)")
-    div(ng-controller="GameCtrl" ng-hide="sent" style="max-width: 400px; margin: auto; padding-top: 15px;")
-        p=s("Invitez {friend} à vous rejoindre via le chat :", {friend: friend.fullName})
-        +data('game-with', friend.publicInformations())
-        +form()(ng-submit="invite()")
-            textarea.form-control(ng-model="message")
-            input(type="submit" value=s("Inviter")).btn.btn-primary
-    div(ng-controller="ChessHistoryCtrl")
-        div(style="max-width: 400px;margin: auto; padding-top: 15px;" ng-if="history.length")
-            h3 Historique des parties
-            p(ng-repeat="game in history | orderBy : 'date' : true")
-                | {{ game.date | date : 'medium' }}
-                !=" &nbsp; "
-                strong(ng-if="game.abandon && isMe(game.abandon)")
-                    =s("Vous avez abandonné")
-                strong(ng-if="game.abandon && !isMe(game.abandon)")
-                    =s("{friend} a abandonné", {friend: friend.fullName})
+    section.loading
+        h3(style="text-align: center;")=s("Partie d'échecs avec {friend}", {friend: friend.fullName})
+        #board.center-medium-panel
+        div(style="text-align: center;")
+            #board-info.center-medium-panel.top-padding
+            button.btn#board-reset=s("Réinitialiser (abandon)")
+        div.center-medium-panel.top-padding(ng-controller="GameCtrl" ng-hide="sent")
+            p=s("Invitez {friend} à vous rejoindre via le chat :", {friend: friend.fullName})
+            +data('game-with', friend.publicInformations())
+            +form()(ng-submit="invite()")
+                textarea.form-control(ng-model="message")
+                input.btn.btn-primary(type="submit" value=s("Inviter"))
+        div(ng-controller="ChessHistoryCtrl")
+            div.center-medium-panel.top-padding(ng-if="history.length")
+                h3 Historique des parties
+                p(ng-repeat="game in history | orderBy : 'date' : true")
+                    | {{ game.date | date : 'medium' }}
+                    !=" &nbsp; "
+                    strong {{ getDescription(game) }}
+
 block append js
     script(src="/components/chessboard/js/chessboard-0.3.0.js")
     script(src="/game/chess.min.js")
@@ -56,25 +55,42 @@ block append js
                 momentum = new Momentum()
                 momentum.onReady ->
                     momentum.getCollection chessGames, (games) ->
-                        $scope.isMe = (id) -> id is me
+                        s = textReplacements
+                        $scope.getDescription = (game) ->
+                            isMe = game.user is me
+                            iMTheLast = isMe is game.myTurn
+                            if game.checkmate
+                                if iMTheLast
+                                    s("{friend} vous a mis échec et mat.", {friend: friend.name.full})
+                                else
+                                    s("Vous avez mis {friend} échec et mat.", {friend: friend.name.full})
+                            else if game.draw
+                                s("Pat.")
+                            else if game.stalemate
+                                s("Partie nulle (impasse).")
+                            else if game.stalemate
+                                s("Partie nulle (trois répétitions).")
+                            else if isMe
+                                s("Vous avez abandonné.")
+                            else
+                                s("{friend} a abandonné.", {friend: friend.name.full})
+                        
                         $scope.$apply ->
                             $scope.history = games
                         games.onInsert ->
-                            $scope.$apply()
+                            delay 200, ->
+                                $scope.$apply()
                         momentum.getCollection chessMoves, (moves) ->
-                            s = textReplacements
+                            movesCount = moves.length
                             isWhiteTurn = -> game.turn() is 'w'
                             isPlayingWhite = -> ids[games.length % 2] is me
                             isMyTurn = -> isWhiteTurn() is isPlayingWhite()
-                            setInfo = (message) ->
-                                data =
-                                    color: if isWhiteTurn() then s("blancs") else s("noirs")
-                                    player: if isMyTurn() then s("vous") else friend.name.first
-                                $('#board-info').html(
-                                    s("À {player} de jouer, traits aux {color}", data) +
-                                    '<br>' +
-                                    message
-                                )
+                            resetButton = (disabled, text) ->
+                                $reset.prop('disabled', disabled).text(text)
+                            enableResetButton = (text) ->
+                                resetButton(false, text)
+                            disableResetButton = (text) ->
+                                resetButton(true, text)
                             localRecordMove = (data) ->
                                 lastMove = data
                                 movedPieces[data.from] = true
@@ -84,10 +100,8 @@ block append js
                             move = (data) ->
                                 moveInfo = localRecordMove data
                                 board.position game.fen()
-                                moves.insertOne moveInfo, ->
-                                    if game.in_checkmate() or game.in_draw() or game.in_stalemate() or game.in_threefold_repetition()
-                                        games.insertOne {}
-                                    return
+                                movesCount++
+                                moves.insertOne moveInfo
                             positionToCode = (pos) ->
                                 COLUMNS[pos.x - 1] + pos.y
                             codeToPosition = (code) ->
@@ -168,30 +182,49 @@ block append js
                                             x: x
                                             y: 6
                                         ))
-                            updateStatus = ->
+                            updateStatus = (message) ->
+                                status = ''
+                                message ||= ''
+                                ended = false
                                 if game.in_checkmate()
-                                    setInfo if isMyTurn()
+                                    ended = true
+                                    status = if isMyTurn()
                                         s("Vous êtes échec et mat.")
                                     else
                                         s("{friend} est échec et mat.", {friend: friend.name.first})
-                                    return
-                                if game.in_check()
-                                    setInfo if isMyTurn()
+                                else if game.in_check()
+                                    status = if isMyTurn()
                                         s("Vous êtes en échec.")
                                     else
                                         s("{friend} est en échec.", {friend: friend.name.first})
-                                    return
-                                if game.in_draw()
-                                    setInfo s("Pat. Partie terminée.")
-                                    return
-                                if game.in_stalemate()
-                                    setInfo s("Partie nulle (impasse).")
-                                    return
-                                if game.in_threefold_repetition()
-                                    setInfo s("Partie nulle (trois répétitions).")
-                                    return
-                                    # flags
-                                setInfo ''
+                                else if game.in_draw()
+                                    ended = true
+                                    status = s("Pat. Partie terminée.")
+                                else if game.in_stalemate()
+                                    ended = true
+                                    status = s("Partie nulle (impasse).")
+                                else if game.in_threefold_repetition()
+                                    ended = true
+                                    status = s("Partie nulle (trois répétitions).")
+                                if ended
+                                    enableResetButton s("Relancer une partie")
+                                else
+                                    resetButton !moves.length, s("Relancer une partie (abandon)")
+                                status &&= '<div>' + status + '</div>'
+                                message &&= '<div>' + message.trim() + '</div>'
+                                status += message
+                                lastError = $('.errors .alert-warning:first').html() or ''
+                                if status and lastError.trim() isnt status.trim()
+                                    $('.errors').warnings status
+                                data =
+                                    color: if isWhiteTurn() then s("blancs") else s("noirs")
+                                    player: if isMyTurn() then s("vous") else friend.name.first
+                                $('#board-info').html(
+                                    '<div>' +
+                                        s("À {player} de jouer, traits aux {color}", data) +
+                                    '</div>' +
+                                    status
+                                )
                             initMoves = ->
                                 lastMove = null
                                 $.each moves, () ->
@@ -202,23 +235,45 @@ block append js
                                 updateStatus()
                                 return
                             squares = '#board .square-55d63'
+                            lastInsertCallback = ->
+                            newGamePending = false
+                            newGameInstanciated = false
                             moves.onInsert (event) ->
-                                localRecordMove event.item
-                                game.move event.item
-                                board.position game.fen()
-                                updateStatus()
+                                lastInsertCallback = ->
+                                    newGameInstanciated = false
+                                    movesCount = moves.length
+                                    localRecordMove event.item
+                                    game.move event.item
+                                    board.position game.fen()
+                                    updateStatus()
+                                    return
+                                unless newGamePending
+                                    lastInsertCallback()
+                                    lastInsertCallback = ->
                                 return
                             moves.onRemove ->
-                                $reset.prop 'disabled', true
+                                unless newGameInstanciated
+                                    newGamePending = true
+                                    disableResetButton s("Relancer une partie (abandon)")
+                                    updateStatus(
+                                        s("Votre adversaire a relancé une nouvelle partie.") +
+                                        '<button class="btn btn-primary ok-reset corner-button">' +
+                                            s("OK") +
+                                        '</button>'
+                                    )
+                                return
+                            $('.ok-reset').click ->
                                 game = new Chess()
                                 board.start()
-                                initMoves()
+                                lastInsertCallback()
+                                return
                             $reset = $('#board-reset').click ->
                                 game = new Chess()
                                 board.start()
+                                updateStatus()
+                                newGameInstanciated = true
                                 moves.remove {}
                                 return
-                            $reset.prop 'disabled', !moves.length
                             initMoves()
                             updateStatus()
                             $(squares).click ->
@@ -231,7 +286,6 @@ block append js
                                 piece = positions[code]
                                 if $square.hasClass 'highlight-green'
                                     previousPiece = positions[selectedSquare]
-                                    previousPieceColor = previousPiece.charAt(0).toLowerCase()
                                     previousPieceType = previousPiece.charAt(1).toLowerCase()
                                     previousOrigin = codeToPosition selectedSquare
                                     distance = Math.sqrt Math.pow(previousOrigin.x - origin.x, 2) + Math.pow(previousOrigin.y - origin.y, 2)
