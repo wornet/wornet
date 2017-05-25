@@ -234,6 +234,19 @@ block append js
                                 board.position game.fen()
                                 updateStatus()
                                 return
+                            start = ->
+                                board.start()
+                                window.board = board
+                                console.log if isPlayingWhite()
+                                    'white'
+                                else
+                                    'black'
+                                board.orientation if isPlayingWhite()
+                                    'white'
+                                else
+                                    'black'
+                                return
+                            $('.flip-board').click board.flip
                             squares = '#board .square-55d63'
                             lastInsertCallback = ->
                             newGamePending = false
