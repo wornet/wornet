@@ -4,7 +4,7 @@ block append link
     link(rel="stylesheet" href="/components/chessboard/css/chessboard-0.3.0.css")
 
 block body
-    section.loading
+    section.board-section.loading
         h3(style="text-align: center;")=s("Partie d'échecs avec {friend}", {friend: friend.fullName})
         #board.center-medium-panel
         div(style="text-align: center;")
@@ -49,8 +49,7 @@ block append js
                 chessMoves = 'chessMoves_' + couple
                 chessGames = 'chessGames_' + couple
                 COLUMNS = 'abcdefgh'.split ''
-                board = ChessBoard 'board',
-                    position: 'start'
+                $section = $ '.board-section'
                 game = new Chess()
                 momentum = new Momentum()
                 momentum.onReady ->
@@ -77,14 +76,28 @@ block append js
                         
                         $scope.$apply ->
                             $scope.history = games
+                            return
+                        insertCallback = ->
                         games.onInsert ->
+                            insertCallback()
                             delay 200, ->
                                 $scope.$apply()
+                                return
+                            return
                         momentum.getCollection chessMoves, (moves) ->
                             movesCount = moves.length
+                            board = null
                             isWhiteTurn = -> game.turn() is 'w'
                             isPlayingWhite = -> ids[games.length % 2] is me
                             isMyTurn = -> isWhiteTurn() is isPlayingWhite()
+                            start = ->
+                                board = ChessBoard 'board',
+                                    position: 'start'
+                                    orientation: if isPlayingWhite()
+                                        'white'
+                                    else
+                                        'black'
+                                return
                             resetButton = (disabled, text) ->
                                 $reset.prop('disabled', disabled).text(text)
                             enableResetButton = (text) ->
@@ -219,12 +232,13 @@ block append js
                                 data =
                                     color: if isWhiteTurn() then s("blancs") else s("noirs")
                                     player: if isMyTurn() then s("vous") else friend.name.first
-                                $('#board-info').html(
+                                nextToPlay = if ended
+                                    ''
+                                else
                                     '<div>' +
                                         s("À {player} de jouer, traits aux {color}", data) +
-                                    '</div>' +
-                                    status
-                                )
+                                    '</div>'
+                                $('#board-info').html nextToPlay + status
                             initMoves = ->
                                 lastMove = null
                                 $.each moves, () ->
@@ -234,26 +248,42 @@ block append js
                                 board.position game.fen()
                                 updateStatus()
                                 return
-                            start = ->
-                                board.start()
-                                window.board = board
-                                console.log if isPlayingWhite()
-                                    'white'
+                            cleanSquares = ->
+                                $(squares).removeClass 'highlight-yellow highlight-green highlight-red'
+                            getMoveInfo = (origin, code, selectedSquare) ->
+                                positions = board.position()
+                                previousPiece = positions[selectedSquare]
+                                previousPieceType = previousPiece.charAt(1).toLowerCase()
+                                previousOrigin = codeToPosition selectedSquare
+                                distance = Math.sqrt Math.pow(previousOrigin.x - origin.x, 2) + Math.pow(previousOrigin.y - origin.y, 2)
+                                flags = if previousPieceType is 'k' and distance is 2
+                                    if origin.x > 4
+                                        'k'
+                                    else
+                                        'q'
                                 else
-                                    'black'
-                                board.orientation if isPlayingWhite()
-                                    'white'
-                                else
-                                    'black'
+                                    if previousPieceType is 'p' and distance is Math.SQRT2 and !positionPieceColor origin
+                                        'e'
+                                    else
+                                        null
+                                from: selectedSquare
+                                to: code
+                                piece: previousPiece
+                                origin: previousOrigin
+                                target: origin
+                                distance: distance
+                                promotion: if previousPieceType is 'p' then 'q' else null
+                                flags: flags
+                            $section.on 'click', '.flip-board', ->
+                                board.flip()
                                 return
-                            $('.flip-board').click board.flip
                             squares = '#board .square-55d63'
                             lastInsertCallback = ->
                             newGamePending = false
-                            newGameInstanciated = false
+                            newGameInstantiated = false
                             moves.onInsert (event) ->
                                 lastInsertCallback = ->
-                                    newGameInstanciated = false
+                                    newGameInstantiated = false
                                     movesCount = moves.length
                                     localRecordMove event.item
                                     game.move event.item
@@ -265,7 +295,7 @@ block append js
                                     lastInsertCallback = ->
                                 return
                             moves.onRemove ->
-                                unless newGameInstanciated
+                                unless newGameInstantiated
                                     newGamePending = true
                                     disableResetButton s("Relancer une partie (abandon)")
                                     updateStatus(
@@ -275,60 +305,45 @@ block append js
                                         '</button>'
                                     )
                                 return
-                            $('.ok-reset').click ->
+                            $('body').on 'click', '.ok-reset', ->
                                 game = new Chess()
-                                board.start()
+                                start()
                                 lastInsertCallback()
+                                updateStatus()
+                                $('.errors .alert').slideUp()
                                 return
                             $reset = $('#board-reset').click ->
-                                game = new Chess()
-                                board.start()
-                                updateStatus()
-                                newGameInstanciated = true
+                                insertCallback = ->
+                                    game = new Chess()
+                                    start()
+                                    updateStatus()
+                                    $('.errors .alert').slideUp()
+                                    return
+                                newGameInstantiated = true
                                 moves.remove {}
                                 return
+                            start()
                             initMoves()
                             updateStatus()
-                            $(squares).click ->
+                            $section.on 'click', squares, ->
                                 if game.game_over() or !isMyTurn()
                                     return
+                                $('.errors .alert').slideUp()
                                 $square = $ @
                                 code = $square.data 'square'
                                 origin = codeToPosition code
                                 positions = board.position()
                                 piece = positions[code]
                                 if $square.hasClass 'highlight-green'
-                                    previousPiece = positions[selectedSquare]
-                                    previousPieceType = previousPiece.charAt(1).toLowerCase()
-                                    previousOrigin = codeToPosition selectedSquare
-                                    distance = Math.sqrt Math.pow(previousOrigin.x - origin.x, 2) + Math.pow(previousOrigin.y - origin.y, 2)
-                                    flags = if previousPieceType is 'k' and distance is 2
-                                        if origin.x > 4
-                                            'k'
-                                        else
-                                            'q'
-                                    else
-                                        if previousPieceType is 'p' and distance is Math.SQRT2 and !positionPieceColor origin
-                                            'e'
-                                        else
-                                            null
-                                    moveInfo =
-                                        from: selectedSquare
-                                        to: code
-                                        piece: previousPiece
-                                        origin: previousOrigin
-                                        target: origin
-                                        distance: distance
-                                        promotion: if previousPieceType is 'p' then 'q' else null
-                                        flags: flags
+                                    moveInfo = getMoveInfo origin, code, selectedSquare
                                     info = game.move moveInfo
                                     unless info
                                         return
-                                    $(squares).removeClass 'highlight-yellow highlight-green'
+                                    cleanSquares()
                                     move moveInfo
                                     return
                                 selectedSquare = code
-                                $(squares).removeClass 'highlight-yellow highlight-green'
+                                cleanSquares()
                                 unless piece
                                     return
                                 pieceColor = piece.charAt(0).toLowerCase()
@@ -345,8 +360,14 @@ block append js
                                     if pieceColor is positionPieceColor target
                                         return true
                                     if isAllowed[pieceType] origin, target, pieceColor, lastMove
-                                        $target.addClass 'highlight-green'
-            
+                                        temp = new Chess()
+                                        temp.load game.fen()
+                                        moveInfo = getMoveInfo origin, targetSquare, selectedSquare
+                                        ok = temp.move moveInfo
+                                        $target.addClass if ok
+                                            'highlight-green'
+                                        else
+                                            'highlight-red'
                                     return true
                                 return
                             return
