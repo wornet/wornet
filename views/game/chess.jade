@@ -306,6 +306,7 @@ block append js
                                     )
                                 return
                             $('body').on 'click', '.ok-reset', ->
+                                newGamePending = false
                                 game = new Chess()
                                 start()
                                 lastInsertCallback()
