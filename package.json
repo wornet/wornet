@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
     "start": "pm2 start server.js",
-    "dev": "cross-env CITIES_EXPECTED_COUNT=0 nodemon -e js,coffee,pug,jade --watch views --watch code --watch models --watch controllers --watch config server.js"
+    "dev": "cross-env CITIES_EXPECTED_COUNT=0 nodemon -e js,coffee,pug,jade --watch views --watch core --watch code --watch models --watch controllers --watch config server.js"
   },
   "dependencies": {
     "basic-auth-connect": "~1.0.0",

@@ -121,12 +121,7 @@ NoticePackage =
 
     unnotify: (groupData) ->
         if groupData.action is 'notice' and groupData.notice
-            notice = groupData.notice
-            Notice.find
-                type: notice.type
-                launcher: notice.launcher
-                attachedStatus: notice.status
-            , (err, notices) ->
+            Notice.find groupData.notice, (err, notices) ->
                 if ! err and notices
                     for notice in notices
                         notice.remove()

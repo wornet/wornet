@@ -89,6 +89,7 @@ block append js
                             board = null
                             isWhiteTurn = -> game.turn() is 'w'
                             isPlayingWhite = -> ids[games.length % 2] is me
+                            getMyColor = -> if isPlayingWhite() then 'w' else 'b'
                             isMyTurn = -> isWhiteTurn() is isPlayingWhite()
                             start = ->
                                 board = ChessBoard 'board',
@@ -282,17 +283,18 @@ block append js
                             newGamePending = false
                             newGameInstantiated = false
                             moves.onInsert (event) ->
-                                lastInsertCallback = ->
-                                    newGameInstantiated = false
-                                    movesCount = moves.length
-                                    localRecordMove event.item
-                                    game.move event.item
-                                    board.position game.fen()
-                                    updateStatus()
-                                    return
-                                unless newGamePending
-                                    lastInsertCallback()
+                                if event.item.piece.charAt(0) isnt getMyColor()
                                     lastInsertCallback = ->
+                                        newGameInstantiated = false
+                                        movesCount = moves.length
+                                        localRecordMove event.item
+                                        game.move event.item
+                                        board.position game.fen()
+                                        updateStatus()
+                                        return
+                                    unless newGamePending
+                                        lastInsertCallback()
+                                        lastInsertCallback = ->
                                 return
                             moves.onRemove ->
                                 unless newGameInstantiated
