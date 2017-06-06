@@ -47,10 +47,15 @@
                         input.profile-btn.destroyable.inline-button.btn-primary.btn.follow(value=s("Suivre") type="button" ng-click="follow('" + profile.hashedId + "')" style="display:" + (amIAFollower?"none":"inline-block"))
                         input.profile-btn.destroyable.inline-button.btn-primary.btn.unfollow(value=s("Ne plus suivre") type="button" ng-click="unfollow('" + profile.hashedId + "')" style="display:" + (!amIAFollower?"none":"inline-block"))
                     if isAFriend
-                        a.dropdown-toggle(data-toggle="dropdown")
+                        button.dropdown-toggle.btn.btn-primary(data-toggle="dropdown")
+                            +glyph('play').lower
+                            !='&nbsp; '
                             =s("Jouer")
-                        ul.dropdown-menu(role="menu")
-                            li: a(href="/game/chess/" + profile.hashedId)=s("Échecs")
+                        ul.dropdown-menu.game-list(role="menu")
+                            li: a(href="/game/chess/" + profile.hashedId)
+                                +glyph('tower').lower
+                                !='&nbsp; '
+                                =s("Échecs")
         .profile-edit(class=(edit ? null : "hidden"))
             iframe(name="upload")
             .photo-options
