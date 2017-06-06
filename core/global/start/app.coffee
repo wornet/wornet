@@ -94,11 +94,7 @@ module.exports = (defer, start) ->
                 else
                     console['log'] '[%s] Listening on https://localhost:%d', app.settings.env, port
 
-    require('momentum-js').connect(app, 'mongodb://localhost:27017/game').then (momentum) ->
-        momentum.setAuthorizationStrategy (mode, method, args, req, res) ->
-            pieces = args[0].split '_'
-            id = ((req.session or {}).user or {}).hashedId
-            pieces.length is 3 and pieces[0] in ['chessGames', 'chessMoves'] and id in pieces
+    GamePackage.init(app).then ->
 
         # Handle errors and print in the console
         if config.port is httpsPort

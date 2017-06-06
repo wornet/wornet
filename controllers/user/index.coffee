@@ -53,7 +53,6 @@ module.exports = (router) ->
             req.goingTo req.body.goingTo
         res.redirect '/'
 
-
     # When signin step 2 page displays
     pm.page '/signin', (req) ->
         # Get errors in flash memory (any if AJAX is used and works on client device)
@@ -298,10 +297,7 @@ module.exports = (router) ->
                 userTexts: userTexts()
                 certifPendingOrApproved: !!certif
 
-
     router.post '/settings', (req, res) ->
-
-
         userModifications = UserPackage.getUserModificationsFromRequest req
         publicDataError = false
         newUrlId = replaceAccent req.body.uniqueURLID
@@ -883,7 +879,7 @@ module.exports = (router) ->
             clearTimeout searchesByIp[ip][1]
         searchesByIp[ip] = [
             res
-            delay 1.second, ->
+            delay 0.3.second, ->
                 delete searchesByIp[ip]
                 regexp = req.params.query.toBeginRegExp true
                 friends = req.session.friends.filter (user) ->
